@@ -1,0 +1,114 @@
+// BOSS FIGHT SCRIPT TEMPLATE
+
+// general definitions
+.var .yes 1
+.var .no 0
+.var .done -1
+.var .more -2
+
+// progress-frame definitions
+.param sees-player P0
+.var .pf-sees-player P0
+// health can be modified
+.param health P1
+.var .pf-health P1
+.param my-x P2
+.var .pf-x P2
+.param my-y P3
+.var .pf-y P3
+.param player-x P4
+.var .pf-player-x P4
+.param player-y P5
+.var .pf-player-y P5
+
+.entry-point progress-frame
+// todo
+return 0
+
+// movement-strategies
+.var .strategy-attack 0
+.var .strategy-avoid 1
+.var .strategy-stay 2
+.var .strategy-random 3
+
+.entry-point movement-strategy
+// todo
+return .strategy-attack
+
+.entry-point want-to-shoot
+// todo
+return .yes
+
+// modify-player definitions
+.param player-health P0
+.var .mp-health P0
+.param player-magic P1
+.var .mp-magic P1
+.param player-gold P2
+.var .mp-gold P2
+
+.entry-point modify-player
+// todo
+return 0
+
+.entry-point want-to-modify-terrain
+// todo
+return .no
+
+// modify-terrain (modify terrain parameters, return tile index to request information about the tile, return -1 after done, return -2 for more calls)
+// modify-terrain definitions
+.var .terrain-floor 1
+.var .terrain-wall 2
+.var .terrain-teleport 3
+// unmodifiable terrain data
+.var .terrain-door 4
+.var .terrain-monster 10
+.var .terrain-player 11
+.var .terrain-no-modify 0
+
+// extra return type, tells info also about enemy / player position
+.var .request-tile-info 1
+
+.param x P0
+.var .mod-x P0
+.param y P1
+.var .mod-y P1
+.param type P2
+.var .mod-type P2
+
+.entry-point modify-terrain
+// todo
+return .done
+
+.entry-point want-to-spawn-monsters
+// todo
+return .no
+
+// spawn-monster definitions
+// same params as modify-terrain
+.var .monster-adept 1
+.var .monster-mage 2
+.var .monster-imp 3
+.var .monster-alien 4
+.var .monster-turret 5
+.var .monster-no-modify 0
+
+.entry-point spawn-monster
+// todo
+return .done
+
+.entry-point want-to-spawn-fire-balls
+// todo
+return .no
+
+// spawn-fire-ball definitions
+.var .fb-x P0
+.var .fb-y P1
+.param direction-x P2
+.var .fb-dx P2
+.param direction-y P3
+.var .fb-dy P3
+
+.entry-point spawn-fire-ball
+// todo
+return .done

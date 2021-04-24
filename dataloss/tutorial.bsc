@@ -1,0 +1,134 @@
+// These must be set, others are optional
+.param player-health P1
+.param player-magic P2
+.param player-gold P3
+
+.mem v 1
+.param player-room P0
+.var .p-room P0
+.var .timer G0
+// G1..5 reserved for 'rooms visited' look-up table (see :new-room-entered)
+.var .room G6
+
+.entry-point progress-frame-not-in-same-room
+	.room = .p-room
+	V0 = :new-room-entered call
+	if-equal V0 1 >reset-timer
+	.timer = .timer + 1
+	return 0
+	>reset-timer
+	.timer = 0
+	return 0
+
+.string-count 16
+$0 Hello Adventurer, welcome to Destination Underworld.
+$1 You can move around by using the cursor keys.
+$2 After you are familiar with walking proceed...
+$3 ...to the gray door at the bottom of the screen.
+$4 That there is an enemy mage adept.
+$5 Use space to shoot fireballs to kill him!
+$6 Keep in mind though that shooting costs mana which...
+$7 ...however recovers slightly each time you kill someone.
+$8 Oh shit! A malicious imp encountered!
+$9 If I were you I'd switch my weapon to...
+$10 ...a larger blast by pressing X.
+$11 You can switch back to the single fire mode by pressing Z.
+$12 Killing that magical creature granted you a piece of gold!
+$13 You can buy power ups with gold by pressing C and V keys:
+$14 C: health boost, cost one gold
+$15 V: defensive fire ball tower, cost three gold
+
+.entry-point show-text
+	if-equal .room 1 >room-1
+	if-equal .room 2 >room-2
+	if-equal .room 3 >room-3
+	if-equal .room 4 >room-4
+	if-equal .room 5 >room-5
+	
+	return -1
+>room-1
+	if-not-equal .timer 1 >next
+		render-string 0
+		return 0
+	>next
+	if-not-equal .timer 10 >next
+		render-string 1
+		return 1
+	>next
+	if-not-equal .timer 20 >next
+		render-string 2
+		return 2
+	>next
+	if-not-equal .timer 30 >next
+		render-string 3
+		return 3
+	>next
+	return -1
+	
+>room-2
+	if-not-equal .timer 1 >next
+		render-string 4
+		return 4
+	>next
+	if-not-equal .timer 10 >next
+		render-string 5
+		return 5
+	>next
+	return -1
+	
+>room-3
+	if-not-equal .timer 1 >next
+		render-string 6
+		return 6
+	>next
+	if-not-equal .timer 10 >next
+		render-string 7
+		return 7
+	>next
+	return -1
+	
+>room-4
+	if-not-equal .timer 1 >next
+		render-string 8
+		return 8
+	>next
+	if-not-equal .timer 10 >next
+		render-string 9
+		return 9
+	>next
+	if-not-equal .timer 20 >next
+		render-string 10
+		return 10
+	>next
+	if-not-equal .timer 30 >next
+		render-string 11
+		return 11
+	>next
+	return -1
+	
+>room-5
+	if-not-equal .timer 1 >next
+		render-string 12
+		return 12
+	>next
+	if-not-equal .timer 10 >next
+		render-string 13
+		return 13
+	>next
+	if-not-equal .timer 20 >next
+		render-string 14
+		return 14
+	>next
+	if-not-equal .timer 30 >next
+		render-string 15
+		return 15
+	>next
+	return -1
+	
+:new-room-entered
+	index .room
+	V0 = G@
+	G@ = 1
+	V0 = 1 - V0
+	return V0
+	

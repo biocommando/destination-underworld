@@ -1,0 +1,259 @@
+.mem v 17
+.mem g 14
+.param sees-player P0
+.var .P0-seesPlayer P0
+.param health P1
+.var .P0-health P1
+.param my-x P2
+.var .P0-x P2
+.param my-y P3
+.var .P0-y P3
+.param player-x P4
+.var .P0-playerX P4
+.param player-y P5
+.var .P0-playerY P5
+.param player-health P0
+.var .P1-health P0
+.param player-magic P1
+.var .P1-magic P1
+.param player-gold P2
+.var .P1-gold P2
+.param x P0
+.var .P2-x P0
+.param y P1
+.var .P2-y P1
+.param type P2
+.var .P2-type P2
+.param x P0
+.var .P3-x P0
+.param y P1
+.var .P3-y P1
+.param type P2
+.var .P3-type P2
+.var .C-yes 1
+.var .C-no 0
+.var .C-done -1
+.var .C-more -2
+.var .C2-floor 1
+.var .C2-wall 2
+.var .C2-teleport 3
+.var .C2-door 4
+.var .C2-monster 10
+.var .C2-player 11
+.var .C2-noModify 0
+.var .C4-attack 0
+.var .C4-avoid 1
+.var .C4-stay 2
+.var .C4-random 3
+.var .C-requestTileInfo 1
+.var .C3-adept 1
+.var .C3-mage 2
+.var .C3-imp 3
+.var .C3-alien 4
+.var .C3-turret 5
+.var .C3-noModify 0
+.var .G-playerResetDone G0
+.var .G-playerGoldStore G1
+.var .G-myHealth G2
+.var .G-origHealth G3
+.var .G-bossHasSpawned G4
+.var .G-playerVisible G5
+.var .G3-spawn G6
+.var .G3-spawnPhase G7
+.var .G2-isDoorShut G8
+.var .G2-timer G9
+.var .G2-mem G10
+.var .G2-modState G11
+.var .G-showText G12
+.var .V-temp V15
+.var .V-temp2 V16
+.var .G-finalized G13
+.string-count 2
+$0 All gold (\G1%.0f;) replaced with infinite mana
+$1 Gold restored (original + 5)
+.entry-point progress-frame-not-in-same-room
+V0 = .G-bossHasSpawned == .C-no
+<>if-equal V0 1 >lbl-endif-1
+.G-myHealth = 50
+>lbl-endif-1
+return 0
+.entry-point progress-frame
+V0 = .G-bossHasSpawned == .C-no
+<>if-equal V0 1 >lbl-endif-1
+.G-bossHasSpawned = .C-yes
+.G-origHealth = .P0-health
+>lbl-endif-1
+.G-myHealth = .P0-health
+.G-playerVisible = .P0-seesPlayer
+return 0
+.entry-point movement-strategy
+V0 = .G-playerVisible == .C-yes
+<>if-equal V0 1 >lbl-endif-1
+return .C4-attack
+>lbl-endif-1
+V0 = .P0-x < 210
+<>if-equal V0 1 >lbl-endif-1
+return .C4-avoid
+>lbl-endif-1
+return .C4-random
+.entry-point want-to-shoot
+return .G-playerVisible
+.entry-point modify-player
+V0 = .G-finalized == .C-yes
+<>if-equal V0 1 >lbl-endif-1
+return 0
+>lbl-endif-1
+V0 = .G-playerResetDone == .C-no
+<>if-equal V0 1 >lbl-endif-1
+.G-showText = 1
+.P1-health = 6
+.G-playerGoldStore = .P1-gold
+.P1-gold = 0
+.G-playerResetDone = .C-yes
+.G2-isDoorShut = .C-no
+>lbl-endif-1
+V0 = .G-myHealth <= 0
+<>if-equal V0 1 >lbl-endif-1
+.G-finalized = .C-yes
+.G-showText = 2
+.P1-gold = .G-playerGoldStore + 5
+.G-playerGoldStore = 0
+return 0
+goto >lbl-endelse-1
+>lbl-endif-1
+.P1-magic = 15
+>lbl-endelse-1
+return 0
+.entry-point want-to-modify-terrain
+V0 = .G2-isDoorShut == .C-no
+<>if-equal V0 1 >lbl-endif-1
+return .C-yes
+>lbl-endif-1
+V0 = .G2-modState < 100
+V1 = .G-myHealth == 0
+V2 = V0 && V1
+<>if-equal V2 1 >lbl-endif-1
+.G2-timer = .G2-timer + 1
+.V-temp = .G2-timer % 2
+V0 = .V-temp == 1
+<>if-equal V0 1 >lbl-endif-2
+return .C-yes
+>lbl-endif-2
+>lbl-endif-1
+return .C-no
+.entry-point modify-terrain
+V0 = .G2-isDoorShut == .C-no
+<>if-equal V0 1 >lbl-endif-1
+.P2-x = 2
+.P2-y = 0
+V0 = .P2-type == 0
+<>if-equal V0 1 >lbl-endif-2
+.P2-type = .C2-noModify
+return .C-requestTileInfo
+>lbl-endif-2
+V0 = .P2-type == .C2-door
+<>if-equal V0 1 >lbl-endif-2
+.P2-type = .C2-wall
+.G2-isDoorShut = .C-yes
+return .C-done
+>lbl-endif-2
+.P2-type = .C2-noModify
+return .C-done
+>lbl-endif-1
+.P2-x = 13
+.P2-type = .C2-floor
+V0 = .G2-modState == 0
+<>if-equal V0 1 >lbl-endif-1
+.P2-x = 12
+.P2-y = 1
+goto >lbl-endelse-1
+>lbl-endif-1
+V0 = .G2-modState == 1
+<>if-equal V0 1 >lbl-endif-2
+.P2-y = 1
+goto >lbl-endelse-2
+>lbl-endif-2
+V0 = .G2-modState < 7.5
+<>if-equal V0 1 >lbl-endif-3
+.P2-y = .G2-mem + 1
+goto >lbl-endelse-3
+>lbl-endif-3
+V0 = .G2-modState < 10.5
+<>if-equal V0 1 >lbl-endif-4
+.P2-y = .G2-mem + 1
+.P2-type = .C2-teleport
+V0 = .P2-x + .G2-modState
+.P2-x = V0 - 8
+.G2-modState = .G2-modState + 1
+return .C-more
+>lbl-endif-4
+.P2-type = .C2-noModify
+.G2-modState = 999
+return .C-done
+>lbl-endelse-3
+>lbl-endelse-2
+>lbl-endelse-1
+.G2-mem = .P2-y
+.G2-modState = .G2-modState + 1
+return .C-done
+.entry-point want-to-spawn-monsters
+.V-temp = .G-origHealth * 0.6
+V0 = .G-myHealth < .V-temp
+V1 = .G3-spawnPhase == 0
+V2 = V0 && V1
+<>if-equal V2 1 >lbl-endif-1
+return .C-yes
+>lbl-endif-1
+.V-temp = .G-origHealth * 0.3
+V0 = .G-myHealth < .V-temp
+V1 = .G3-spawnPhase == 1
+V2 = V0 && V1
+<>if-equal V2 1 >lbl-endif-1
+return .C-yes
+>lbl-endif-1
+return .C-no
+.entry-point spawn-monster
+V0 = .G3-spawnPhase == 0
+<>if-equal V0 1 >lbl-endif-1
+.V-temp = .G3-spawn / 2
+.V-temp := int .V-temp
+V0 = 2 * .V-temp
+.P3-x = V0 + 7
+V0 = .G3-spawn % 2
+V1 = V0 * 2
+.P3-y = 4 + V1
+.P3-type = .C3-mage
+.G3-spawn = .G3-spawn + 1
+V0 = .G3-spawn == 6
+<>if-equal V0 1 >lbl-endif-2
+.G3-spawn = 0
+.G3-spawnPhase = 1
+return .C-done
+>lbl-endif-2
+return .C-more
+>lbl-endif-1
+.V-temp = .G3-spawn / 2
+.V-temp := int .V-temp
+V0 = .V-temp % 2
+V1 = V0 * 10
+.P3-x = 1 + V1
+V0 = .G3-spawn % 2
+V1 = V0 * 9
+.P3-y = 1 + V1
+.P3-type = .C3-turret
+.G3-spawn = .G3-spawn + 1
+V0 = .G3-spawn == 4
+<>if-equal V0 1 >lbl-endif-1
+.G3-spawnPhase = 2
+return .C-done
+>lbl-endif-1
+return .C-more
+.entry-point show-text
+V0 = .G-showText == 0
+<>if-equal V0 1 >lbl-endif-1
+return -1
+>lbl-endif-1
+.V-temp = .G-showText - 1
+.G-showText = 0
+render-string .V-temp
+return .V-temp

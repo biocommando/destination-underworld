@@ -1,0 +1,237 @@
+.mem v 15
+.mem g 10
+.param sees-player P0
+.var .P0-seesPlayer P0
+.param health P1
+.var .P0-health P1
+.param my-x P2
+.var .P0-x P2
+.param my-y P3
+.var .P0-y P3
+.param player-x P4
+.var .P0-playerX P4
+.param player-y P5
+.var .P0-playerY P5
+.param player-room P6
+.var .P0-room P6
+.param player-health P0
+.var .P1-health P0
+.param player-magic P1
+.var .P1-magic P1
+.param player-gold P2
+.var .P1-gold P2
+.param x P0
+.var .P2-x P0
+.param y P1
+.var .P2-y P1
+.param type P2
+.var .P2-type P2
+.param x P0
+.var .P3-x P0
+.param y P1
+.var .P3-y P1
+.param type P2
+.var .P3-type P2
+.var .C-yes 1
+.var .C-no 0
+.var .C-done -1
+.var .C-more -2
+.var .C2-floor 1
+.var .C2-wall 2
+.var .C2-teleport 3
+.var .C2-door 4
+.var .C2-monster 10
+.var .C2-player 11
+.var .C2-noModify 0
+.var .C4-attack 0
+.var .C4-avoid 1
+.var .C4-stay 2
+.var .C4-random 3
+.var .C-requestTileInfo 1
+.var .C3-adept 1
+.var .C3-mage 2
+.var .C3-imp 3
+.var .C3-alien 4
+.var .C3-turret 5
+.var .C3-noModify 0
+.var .G-timer G0
+.var .G-terrainMem G1
+.var .G-myHealth G2
+.var .G-exitOpen G3
+.var .G-playerResetDone G4
+.var .G-playerGoldStore G5
+.var .G-tileInfoRequested G6
+.var .G-playerRoom G7
+.var .G-exitRoomDoorSealed G8
+.var .G-goldRestoredTextShown G9
+.var .C-triggerPlayerFree 8
+.var .C-trigger1stMonstersFree 22
+.var .C-trigger2ndMonstersFree 35
+.var .C-triggerBossFree 50
+.string-count 2
+$0 All gold (\G5%.0f;) replaced with infinite mana
+$1 Gold restored
+.entry-point progress-frame
+.G-timer = .G-timer + 1
+.G-terrainMem = 0
+.G-myHealth = .P0-health
+.G-playerRoom = .P0-room
+return 0
+.entry-point progress-frame-not-in-same-room
+.G-playerRoom = .P0-room
+return 0
+.entry-point movement-strategy
+V0 = .G-timer > 70
+V1 = .P0-seesPlayer == .C-yes
+V2 = V0 && V1
+V3 = .G-timer > 50
+V4 = .G-timer < 70
+V5 = V3 && V4
+V6 = V2 || V5
+<>if-equal V6 1 >lbl-endif-1
+return .C4-attack
+>lbl-endif-1
+return .C4-random
+.entry-point want-to-shoot
+return .P0-seesPlayer
+.entry-point modify-player
+V0 = .G-myHealth > 0
+<>if-equal V0 1 >lbl-endif-1
+V0 = .G-playerResetDone == .C-no
+<>if-equal V0 1 >lbl-endif-2
+.P1-health = 6
+.G-playerGoldStore = .P1-gold
+.P1-gold = 0
+.G-playerResetDone = .C-yes
+>lbl-endif-2
+.P1-magic = 15
+goto >lbl-endelse-1
+>lbl-endif-1
+V0 = .G-playerGoldStore == 0
+<>if-equal V0 1 >lbl-endif-2
+.P1-gold = .G-playerGoldStore
+.G-playerGoldStore = 0
+>lbl-endif-2
+>lbl-endelse-1
+return 0
+.entry-point want-to-modify-terrain
+V0 = .G-timer == .C-triggerPlayerFree
+V1 = .G-timer == .C-trigger1stMonstersFree
+V2 = .G-timer == .C-trigger2ndMonstersFree
+V3 = .G-timer == .C-triggerBossFree
+V4 = V0 || V1
+V5 = V4 || V2
+V6 = V5 || V3
+<>if-equal V6 1 >lbl-endif-1
+return .C-yes
+>lbl-endif-1
+V0 = .G-playerRoom == 2
+V1 = .G-exitRoomDoorSealed == .C-no
+V2 = V0 && V1
+<>if-equal V2 1 >lbl-endif-1
+return .C-yes
+>lbl-endif-1
+V0 = .G-myHealth < 1
+V1 = .G-exitOpen == .C-no
+V2 = V0 && V1
+<>if-equal V2 1 >lbl-endif-1
+return .C-yes
+>lbl-endif-1
+return .C-no
+.entry-point modify-terrain
+V0 = .G-playerRoom == 2
+<>if-equal V0 1 >lbl-endif-1
+.P2-x = 0
+.P2-y = 4
+V0 = .P2-type == .C2-door
+<>if-equal V0 1 >lbl-endif-2
+.G-exitRoomDoorSealed = .C-yes
+.P2-type = .C2-wall
+return .C-done
+>lbl-endif-2
+V0 = .G-tileInfoRequested == .C-yes
+<>if-equal V0 1 >lbl-endif-2
+.G-tileInfoRequested = .C-no
+.P2-type = .C2-noModify
+return .C-done
+>lbl-endif-2
+.P2-type = .C2-noModify
+.G-tileInfoRequested = .C-yes
+return .C-requestTileInfo
+>lbl-endif-1
+.P2-type = .C2-floor
+V0 = .G-timer == .C-triggerPlayerFree
+<>if-equal V0 1 >lbl-endif-1
+.P2-x = 3
+.P2-y = 1
+return .C-done
+>lbl-endif-1
+V0 = .G-timer == .C-trigger1stMonstersFree
+<>if-equal V0 1 >lbl-endif-1
+V0 = .G-terrainMem == 0
+<>if-equal V0 1 >lbl-endif-2
+.G-terrainMem = 1
+.P2-x = 1
+.P2-y = 8
+return .C-more
+>lbl-endif-2
+V0 = .G-terrainMem == 1
+<>if-equal V0 1 >lbl-endif-2
+.G-terrainMem = 2
+.P2-x = 3
+.P2-y = 10
+>lbl-endif-2
+return .C-done
+>lbl-endif-1
+V0 = .G-timer == .C-trigger2ndMonstersFree
+<>if-equal V0 1 >lbl-endif-1
+.G-terrainMem = .G-terrainMem + 1
+.P2-x = 6 + .G-terrainMem
+.P2-y = 3
+V0 = .G-terrainMem < 4
+<>if-equal V0 1 >lbl-endif-2
+return .C-more
+>lbl-endif-2
+return .C-done
+>lbl-endif-1
+V0 = .G-timer == .C-triggerBossFree
+<>if-equal V0 1 >lbl-endif-1
+.P2-x = 11
+.P2-y = 9
+return .C-done
+>lbl-endif-1
+V0 = .G-myHealth > 0
+<>if-equal V0 1 >lbl-endif-1
+return .C-done
+>lbl-endif-1
+.G-exitOpen = .C-no
+.P2-x = 12 + .G-terrainMem
+.G-terrainMem = .G-terrainMem + 1
+.P2-y = 4
+V0 = .G-terrainMem < 3
+<>if-equal V0 1 >lbl-endif-1
+return .C-more
+>lbl-endif-1
+.G-exitOpen = .C-yes
+return .C-done
+.entry-point want-to-spawn-monsters
+return .C-no
+.entry-point want-to-spawn-fire-balls
+return .C-no
+.entry-point show-text
+V0 = .G-timer == 1
+<>if-equal V0 1 >lbl-endif-1
+render-string 0
+return 0
+>lbl-endif-1
+V0 = .G-myHealth > 0
+<>if-equal V0 1 >lbl-endif-1
+return -1
+>lbl-endif-1
+V0 = .G-goldRestoredTextShown == .C-no
+<>if-equal V0 1 >lbl-endif-1
+.G-goldRestoredTextShown = .C-yes
+render-string 1
+return 1
+>lbl-endif-1
+return -1

@@ -1,0 +1,219 @@
+// BOSS FIGHT SCRIPT TEMPLATE
+
+// general definitions
+.var .yes 1
+.var .no 0
+.var .done -1
+.var .more -2
+
+.var .timer G0
+.var .terrain-mem G1
+.var .my-health G2
+.var .exit-open G3
+.var .player-reset-done G4
+.var .player-gold-store G5
+.var .tile-info-requested G6
+.var .player-room G7
+.var .exit-room-door-sealed G8
+.var .gold-restored-text-shown G9
+
+// progress-frame definitions
+.param sees-player P0
+.var .pf-sees-player P0
+// health can be modified
+.param health P1
+.var .pf-health P1
+.param my-x P2
+.var .pf-x P2
+.param my-y P3
+.var .pf-y P3
+.param player-x P10
+.var .pf-player-x P10
+.param player-y P11
+.var .pf-player-y P11
+.param player-room P4
+.var .pf-room P4
+
+.entry-point progress-frame
+	.timer = .timer + 1
+	.terrain-mem = 0
+	.my-health = .pf-health
+	.player-room = .pf-room
+return 0
+
+.entry-point progress-frame-not-in-same-room
+	.player-room = .pf-room
+return 0
+
+// movement-strategies
+.var .strategy-attack 0
+.var .strategy-avoid 1
+.var .strategy-stay 2
+.var .strategy-random 3
+
+.entry-point movement-strategy
+if-greater .timer 70 >maybe-attack
+if-greater .timer 50 :strategy-attack
+return .strategy-random
+:strategy-attack
+return .strategy-attack
+>maybe-attack
+	if-equal .pf-sees-player .yes :strategy-attack
+	return .strategy-random
+
+.entry-point want-to-shoot
+return .pf-sees-player
+
+// modify-player definitions
+.param player-health P0
+.var .mp-health P0
+.param player-magic P1
+.var .mp-magic P1
+.param player-gold P2
+.var .mp-gold P2
+
+.entry-point modify-player
+	if-greater .my-health 0 >reset
+	if-equal .player-gold-store 0 >no-modify
+	.mp-gold = .player-gold-store
+	.player-gold-store = 0
+	>reset
+	if-not-equal .player-reset-done .no >no-modify
+		.mp-health = 6
+		.player-gold-store = .mp-gold
+		.mp-gold = 0
+		.player-reset-done = .yes
+	>no-modify
+	.mp-magic = 15
+return 0
+
+.var .trigger-player-free 8
+.var .trigger-1st-monsters-free 22
+.var .trigger-2nd-monsters-free 35
+.var .trigger-boss-free 50
+
+.entry-point want-to-modify-terrain
+	if-equal .timer .trigger-player-free >yes
+	if-equal .timer .trigger-1st-monsters-free >yes
+	if-equal .timer .trigger-2nd-monsters-free >yes
+	if-equal .timer .trigger-boss-free >yes
+	if-equal .player-room 2 >then
+	goto >else
+	>then
+	if-equal .exit-room-door-sealed .no >yes
+	return .no	
+	>else
+	if-less .my-health 1 >then
+	return .no
+	>then
+	if-equal .exit-open .no >yes
+return .no
+>yes
+return .yes
+
+// modify-terrain (modify terrain parameters, return tile index to request information about the tile, return -1 after done, return -2 for more calls)
+// modify-terrain definitions
+.var .terrain-floor 1
+.var .terrain-wall 2
+.var .terrain-teleport 3
+// unmodifiable terrain data
+.var .terrain-door 4
+.var .terrain-monster 10
+.var .terrain-player 11
+.var .terrain-no-modify 0
+
+// extra return type, tells info also about enemy / player position
+.var .request-tile-info 1
+
+.param x P0
+.var .mod-x P0
+.param y P1
+.var .mod-y P1
+.param type P2
+.var .mod-type P2
+
+.entry-point modify-terrain
+	if-equal .player-room 2 >room-2
+	.mod-type = .terrain-floor
+	if-equal .timer .trigger-player-free >1
+	if-equal .timer .trigger-1st-monsters-free >2
+	if-equal .timer .trigger-2nd-monsters-free >3
+	if-equal .timer .trigger-boss-free >4
+	if-greater .my-health 0 >done
+	
+	.exit-open = .no
+	.mod-x = 12 + .terrain-mem
+	.terrain-mem = .terrain-mem + 1
+	.mod-y = 4
+	if-less .terrain-mem 3 >more
+	.exit-open = .yes
+	return .done
+	
+	>1
+		.mod-x = 3
+		.mod-y = 1
+	return .done
+	>2
+		.terrain-mem = .terrain-mem + 1
+		if-equal .terrain-mem 2 >no-more
+		.mod-x = 1
+		.mod-y = 8
+		if-equal .terrain-mem 1 >more
+		>no-more
+		.mod-x = 3
+		.mod-y = 10
+	return .done
+	>3
+		.terrain-mem = .terrain-mem + 1
+		.mod-x = 6 + .terrain-mem
+		.mod-y = 3
+		if-less .terrain-mem 4 >more
+		
+	return .done
+	>4
+		.mod-x = 11
+		.mod-y = 9
+	return .done
+>more
+return .more
+>room-2
+.mod-x = 0
+.mod-y = 4
+if-equal .mod-type .terrain-door >seal-exit-room-door
+if-equal .tile-info-requested .yes >done
+.mod-type = .no-modify
+.tile-info-requested = .yes
+return .request-tile-info
+>seal-exit-room-door
+.exit-room-door-sealed = .yes
+.mod-type = .terrain-wall
+return .done
+
+>done
+.tile-info-requested = .no
+.mod-type = .no-modify
+return .done
+
+.entry-point want-to-spawn-monsters
+return .no
+
+.entry-point want-to-spawn-fire-balls
+return .no
+
+.string-count 2
+$0 All gold (\G5%.0f;) replaced with infinite mana
+$1 Gold restored
+   
+.entry-point show-text
+	if-equal .timer 1 >show-1
+	if-greater .my-health 0 >no
+	if-equal .gold-restored-text-shown .no >show-2
+	>no
+	return -1
+>show-1
+	render-string 0
+	return 0
+>show-2
+	.gold-restored-text-shown = .yes
+	render-string 1
+	return 1

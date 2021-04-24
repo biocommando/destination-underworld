@@ -1,0 +1,44 @@
+
+// general definitions
+const yes = 1
+const no = 0
+const done = -1
+const more = -2
+
+// modify-terrain (modify terrain parameters, return -1 after done, return -2 for more calls)
+// modify-terrain definitions
+namespace terrain
+	const floor = 1
+	const wall = 2
+	const teleport = 3
+// unmodifiable terrain data
+	const door = 4
+	const monster = 10
+	const player = 11
+	const noModify = 0
+
+end namespace
+
+// movement-strategies
+namespace strategy
+	const attack = 0
+	const avoid = 1
+	const stay = 2
+	const random = 3
+end namespace
+
+
+// extra return type, tells info also about enemy / player position
+const requestTileInfo = 1
+
+
+// spawn-monster definitions
+// same params as modify-terrain
+namespace monster
+	const adept = 1
+	const mage = 2
+	const imp = 3
+	const alien = 4
+	const turret = 5
+	const noModify = 0
+end namespace

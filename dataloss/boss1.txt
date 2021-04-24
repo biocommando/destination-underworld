@@ -1,0 +1,211 @@
+import ./param-defs/param-defs.txt
+import constants.txt
+
+// BOSS FIGHT 1
+
+def global playerResetDone
+def global playerGoldStore
+def global myHealth
+def global origHealth
+def global bossHasSpawned
+def global playerVisible
+def global playerHealth
+namespace monster
+    def global spawn
+    def global spawnPhase
+end namespace
+namespace terrain
+    // is door replaced with a wall?
+    def global isDoorShut
+    def global timer
+    def global mem
+    def global modState
+end namespace
+def global showText
+
+def var temp
+def var temp2
+def global finalized
+
+onEvent('progress-frame-not-in-same-room')
+	// Set boss's health to correct number before it has spawn
+	// not to trigger unwanted actions.
+	// As the entrance is blocked after entering the boss room
+	// the health setting doesn't need to have any other conditions.
+    if bossHasSpawned == no
+        myHealth = 100
+    endif
+	
+    return 0
+
+onEvent('progress-frame', 'progressFrame')
+    if bossHasSpawned == no
+        bossHasSpawned = yes
+        origHealth = health
+    endif
+	myHealth = health
+	playerVisible = seesPlayer
+    return 0
+
+onEvent('movement-strategy', 'strategy')
+    if playerVisible == yes
+        return attack
+    endif
+
+    // scaled player health: 6 hearts = 100 boss health
+    if (playerHealth * (100 / 6)) > myHealth
+        return avoid
+    endif
+    return random
+
+onEvent('want-to-shoot')
+    return playerVisible
+
+
+onEvent('modify-player', 'modifyPlayer')
+    if finalized == yes
+        return 0
+    endif
+    if playerResetDone == no
+        showText = 1
+        health = 6
+        playerGoldStore = gold
+        gold = 0
+        playerResetDone = yes
+        terrain::isDoorShut = no
+    endif
+
+    if myHealth <= 0
+        finalized = yes
+        showText = 2
+        gold = playerGoldStore + 5
+        playerGoldStore = 0
+        return 0
+    else
+        magic = 15
+    endif
+
+    playerHealth = health
+
+    return 0
+
+onEvent('want-to-modify-terrain', 'terrain')
+    if isDoorShut == no
+        return yes
+    endif
+    if modState < 100 && myHealth == 0
+        timer = timer + 1
+        temp = timer % 2
+        if temp == 1
+            return yes
+        endif
+    endif
+    return no
+
+
+onEvent('modify-terrain', 'terrain')
+    if isDoorShut == no
+        x = 2
+        y = 0
+        // If re-written with events, usage could be:
+        // sendEvent(requestTileInfo, x, y) -> type
+        if type == 0
+            type = noModify
+            return requestTileInfo
+        endif
+        // terrain info requested -> response value in type
+        if type == door
+            type = wall
+            isDoorShut = yes
+            return done
+        endif
+        type = noModify
+        return done
+    endif
+
+	x = 13
+	type = floor
+	if modState == 0
+		x = 12
+		y = 1
+    else
+        if modState == 1
+            y = 1
+        else
+            if modState < 7.5
+                y = mem + 1
+            else
+                if modState < 10.5
+                    y = mem + 1
+                    type = teleport
+                    x = x + modState - 8
+                    modState = modState + 1
+                    return more
+                endif
+                type = noModify
+                modState = 999
+                return done
+            endif
+        endif
+    endif
+    mem = y
+    modState = modState + 1
+    return done
+
+
+onEvent('want-to-spawn-monsters', 'monster')
+    temp = origHealth * 0.6
+	if myHealth < temp && spawnPhase == 0
+        return yes
+    endif
+    temp = origHealth * 0.3
+	if myHealth < temp && spawnPhase == 1
+        return yes
+    endif
+    return no
+
+onEvent('spawn-monster', 'monster')
+    if spawnPhase == 0
+        temp = spawn / 2
+        temp = int(temp)
+        x = 2 * temp + 7
+        y = 4 + (spawn % 2) * 2
+        type = mage
+        spawn = spawn + 1
+        
+        if spawn == 6
+            spawn = 0
+            spawnPhase = 1
+            return done
+        endif
+        return more
+    endif
+    
+    temp = spawn / 2
+    temp = int(temp)
+    x = 1 + (temp % 2) * 10
+    y = 1 + (spawn % 2) * 9
+    
+    type = turret
+    spawn = spawn + 1
+    
+    if spawn == 4
+        spawnPhase = 2
+        return done
+    endif
+    
+    return more
+    
+
+def string[0] = 'All gold (${playerGoldStore,format=%.0f}) replaced with infinite mana'
+def string[1] = 'Gold restored (original + 5)'
+
+onEvent('show-text')
+	if showText == 0
+        return -1
+    endif
+	temp = showText - 1
+	showText = 0
+	renderString(temp)
+	return temp
+ 

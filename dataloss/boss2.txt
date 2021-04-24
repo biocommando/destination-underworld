@@ -1,0 +1,170 @@
+import ./param-defs/param-defs.txt
+import constants.txt
+
+// BOSS FIGHT SCRIPT TEMPLATE
+
+def global timer
+def global terrainMem
+def global myHealth
+def global exitOpen
+def global playerResetDone
+def global playerGoldStore
+def global tileInfoRequested
+def global playerRoom
+def global exitRoomDoorSealed
+def global goldRestoredTextShown
+
+
+onEvent('progress-frame', 'progressFrame')
+	timer = timer + 1
+	terrainMem = 0
+	myHealth = health
+	playerRoom = room
+return 0
+
+onEvent('progress-frame-not-in-same-room', 'progressFrame')
+	playerRoom = room
+return 0
+
+onEvent('movement-strategy', 'strategy')
+if (timer > 70 && progressFrame::seesPlayer == yes) || ((timer > 50) && (timer < 70))
+    return attack
+endif
+return random
+
+onEvent('want-to-shoot')
+return progressFrame::seesPlayer
+
+onEvent('modify-player', 'modifyPlayer')
+	if myHealth > 0 
+        if playerResetDone == no
+            health = 6
+            playerGoldStore = gold
+            gold = 0
+            playerResetDone = yes
+        endif
+        magic = 15
+    else
+       	if playerGoldStore == 0
+            gold = playerGoldStore
+            playerGoldStore = 0
+        endif 
+    endif
+
+return 0
+
+const triggerPlayerFree = 8
+const trigger1stMonstersFree = 22
+const trigger2ndMonstersFree = 35
+const triggerBossFree = 50
+
+onEvent('want-to-modify-terrain', 'terrain')
+	if timer == triggerPlayerFree || timer == trigger1stMonstersFree || timer == trigger2ndMonstersFree || timer == triggerBossFree
+        return yes
+    endif        
+    
+	if playerRoom == 2 && exitRoomDoorSealed == no
+        return yes
+    endif
+    
+    if myHealth < 1 && exitOpen == no
+        return yes
+    endif
+return no
+
+onEvent('modify-terrain', 'terrain')
+	if playerRoom == 2
+        x = 0
+        y = 4
+        if type == door
+            exitRoomDoorSealed = yes
+            type = wall
+            return done
+        endif
+        if tileInfoRequested == yes
+            tileInfoRequested = no
+            type = noModify
+            return done
+        endif
+        type = noModify
+        tileInfoRequested = yes
+        return requestTileInfo
+    endif
+    
+	type = floor
+	if timer == triggerPlayerFree
+		x = 3
+		y = 1
+        return done
+    endif
+	if timer == trigger1stMonstersFree
+		if terrainMem == 0
+            terrainMem = 1
+            x = 1
+            y = 8
+            return more
+        endif
+		if terrainMem == 1
+            terrainMem = 2
+            x = 3
+            y = 10
+        endif
+        
+        return done
+    endif 
+    
+	if timer == trigger2ndMonstersFree    
+		terrainMem = terrainMem + 1
+		x = 6 + terrainMem
+		y = 3
+		if terrainMem < 4
+            return more
+        endif
+        return done
+    endif
+    
+	if timer == triggerBossFree
+		x = 11
+		y = 9
+        return done
+    endif
+    
+	if myHealth > 0
+        return done
+    endif
+    
+	exitOpen = no
+	x = 12 + terrainMem
+	terrainMem = terrainMem + 1
+	y = 4
+	if terrainMem < 3
+        return more
+    endif
+    
+	exitOpen = yes
+	return done
+
+
+onEvent('want-to-spawn-monsters', 'monster')
+return no
+
+onEvent('want-to-spawn-fire-balls')
+return no
+
+def string[0] = 'All gold (${playerGoldStore}) replaced with infinite mana'
+def string[1] = 'Gold restored'
+   
+onEvent('show-text')
+	if timer == 1 
+        renderString(0)
+        return 0
+    endif
+	if myHealth > 0
+        return -1
+    endif
+	if goldRestoredTextShown == no 
+        goldRestoredTextShown = yes
+        renderString(1)
+        return 1
+    endif
+    return -1

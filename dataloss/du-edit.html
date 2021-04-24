@@ -1,0 +1,273 @@
+<html>
+
+<head>
+    <style>
+        .cell {
+            width: 80px;
+            height: 80px;
+            display: inline-block;
+            background-color: darkgray;
+            vertical-align: bottom;
+            font-family: consolas;
+            font-weight: bold;
+        }
+
+        .row {
+            display: block;
+        }
+
+        .wall {
+            background-color: sienna;
+        }
+
+        .lava {
+            background-color: orange;
+        }
+
+        .exit-point {
+            background-color: seagreen;
+        }
+
+        .exit-level {
+            background-color: darkturquoise;
+        }
+
+        .enemy {
+            background-image: url(./edit-res/enemy.png);
+            background-repeat: no-repeat;
+        }
+
+        .restrict {
+            background-image: url(./edit-res/restrict.png);
+            background-repeat: no-repeat;
+        }
+
+        .restrict-trig {
+            background-image: url(./edit-res/restrict-trig.png);
+            background-repeat: no-repeat;
+        }
+
+        .cursor {
+            border-style: dashed;
+        }
+    </style>
+    <title>Destination Underworld - level editor</title>
+</head>
+
+<body>
+    Mode:
+    <select id="edit-mode">
+        <option value="add">Add</option>
+        <option value="delete">Delete</option>
+        <option value="replace">Replace</option>
+        <option value="pick">Pick</option>
+        <option value="select" selected>Select</option>
+        <option value="fill">Fill</option>
+    </select>
+    Paint:
+    <select id="paint" onchange="(() => cursor.paintId = Number(this.value))()">
+    </select>
+    Room:
+    <select id="room" onchange="changeRoom(Number(this.value))">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+    </select>
+    Number of enemies: <span id="numEnemies"></span>
+    <hr />
+    <div id="container"></div>
+    metadata
+    <br />
+    <textarea id="metadata" rows="5" cols="100"></textarea>
+    <button onclick="storeMetadata()">Store metadata</button>
+    <br />
+    <textarea id="level-code" rows="10" cols="100"></textarea>
+    <div>
+        <button onclick="save()">save</button>
+        <button onclick="load()">load</button>
+    </div>
+    <script src="tilemap-serialization.js"></script>
+    <script>
+        const width = 16, height = 12;
+        const ascii = chr => chr.charCodeAt(0);
+        const cursor = { x: 0, y: 0, paintId: 46 };
+        const objectTypes = [
+            { name: 'floor', id: 46 },
+            { name: 'wall', id: 120, css: 'wall' },
+            { name: 'wall2', id: 113, css: 'wall' },
+            { name: 'lava', id: 122, css: 'lava' },
+            { name: 'room 1', id: 1001, css: 'exit-point' },
+            { name: 'room 2', id: 1002, css: 'exit-point' },
+            { name: 'room 3', id: 1003, css: 'exit-point' },
+            { name: 'room 4', id: 1004, css: 'exit-point' },
+            { name: 'room 5', id: 1005, css: 'exit-point' },
+            { name: 'room 6', id: 1006, css: 'exit-point' },
+            { name: 'room 7', id: 1007, css: 'exit-point' },
+            { name: 'room 8', id: 1008, css: 'exit-point' },
+            { name: 'adept', id: 200, css: 'enemy' },
+            { name: 'mage', id: 201, css: 'enemy' },
+            { name: 'imp', id: 202, css: 'enemy' },
+            { name: 'alien', id: 203, css: 'enemy' },
+            { name: 'turret', id: 204, css: 'enemy' },
+            { name: 'boss', id: 205, css: 'enemy' },
+            { name: 'exit', id: 60, css: 'exit-level' },
+            { name: 'enm-restrict', id: 44, css: 'restrict', notSelectable: true },
+            { name: 'restrict-trigger', id: 59, css: 'restrict-trig', notSelectable: true },
+            { name: 'enm-restrict1', id: 500, css: 'restrict' },
+            { name: 'restrict-trigger1', id: 510, css: 'restrict-trig' },
+            { name: 'enm-restrict2', id: 501, css: 'restrict' },
+            { name: 'restrict-trigger2', id: 511, css: 'restrict-trig' },
+            { name: 'enm-restrict3', id: 502, css: 'restrict' },
+            { name: 'restrict-trigger3', id: 512, css: 'restrict-trig' },
+        ];
+        let map = { version: 0, width, height, objects: [], metadata: [], levelMetadata: '' };
+        let room;
+        const addTile = (id, x, y, room) => map.objects.push({ id, x, y, room });
+        const deleteTile = (id, x, y, room) => {
+            const sameLocation = o => o.x === x && o.y === y && o.room === room;
+            map.objects = map.objects
+                .filter(o =>
+                    ((!sameLocation(o) || o.id !== id) && id !== undefined) ||
+                    (!sameLocation(o) && id === undefined));
+        };
+        const replaceTile = (oldId, newId, x, y, room) => {
+            deleteTile(oldId, x, y, room);
+            addTile(newId, x, y, room);
+        };
+        const fill = (id, x1, y1, x2, y2, aRoom, replacing = true) => {
+            aRoom = aRoom !== undefined ? aRoom : room;
+            if (x1 > x2) {
+                const swap = x1;
+                x1 = x2;
+                x2 = swap;
+            }
+            if (y1 > y2) {
+                const swap = y1;
+                y1 = y2;
+                y2 = swap;
+            }
+            while (x1 !== x2 + 1) {
+                let y = y1;
+                while (y !== y2 + 1) {
+                    if (replacing) {
+                        replaceTile(undefined, id, x1, y, aRoom);
+                    } else {
+                        addTile(undefined, id, x1, y, aRoom);
+                    }
+                    y++;
+                }
+                x1++;
+            }
+        };
+
+        const clearMap = () => {
+            map.objects = map.objects.filter(o => o.room !== room);
+            fill(objectTypes[0].id, 0, 0, map.width - 1, map.height - 1);
+        };
+
+        const idSorter = (a, b) => a.id - b.id;
+        const reverseIdSorter = (a, b) => b.id - a.id;
+
+        const renderMap = () => {
+            const xhtml = Array(map.height).fill().map(() => Array(map.width).fill().map(() => []));
+            map.objects.filter(o => o.room === room).sort(idSorter).forEach(o => xhtml[o.y][o.x].push(o.id));
+            let html = '';
+            xhtml.forEach((row, y) => {
+                html += '<div class="row">'
+                row.forEach((cell, x) => {
+                    let cellHtml = `<button class="cell__addclass" onclick="onClickCell(${x},${y})">`;
+                    cell.forEach(id => {
+                        const type = objectTypes.find(t => t.id === id);
+                        cellHtml += `${type ? type.name : id} `;
+                        if (type && type.css) {
+                            cellHtml = cellHtml.replace('__addclass', ` ${type.css}__addclass`);
+                        }
+                    });
+                    cellHtml += '</button>';
+                    html += cellHtml.replace('__addclass', cursor.x === x && cursor.y === y ? ' cursor' : '');
+                });
+                html += '</div>';
+            });
+            document.getElementById('container').innerHTML = html;
+            document.getElementById('metadata').value = map.metadata.join('\n');
+            document.getElementById('numEnemies').innerText = map.objects.filter(o => o.id >= 200 && o.id <= 210).length;
+        };
+
+        const onClickCell = (x, y) => {
+            const tile = map.objects.filter(o => o.x === x && o.y === y && o.room === room);
+            const topObject = tile.sort(reverseIdSorter)[0].id;
+            const mode = document.getElementById('edit-mode').value;
+            switch (mode) {
+                case 'add':
+                    addTile(cursor.paintId, x, y, room);
+                    break;
+                case 'delete':
+                    if (tile.length > 1) {
+                        deleteTile(topObject, x, y, room);
+                    }
+                    break;
+                case 'replace':
+                    replaceTile(undefined, cursor.paintId, x, y, room);
+                    break;
+                case 'fill':
+                    fill(cursor.paintId, cursor.x, cursor.y, x, y);
+                    break;
+                case 'pick':
+                    cursor.paintId = topObject;
+                    const i = objectTypes.findIndex(ot => ot.id === topObject);
+                    if (i > -1) {
+                        document.getElementById('paint').options[i].selected = true;
+                    }
+                    break;
+                default:
+                case 'select':
+            }
+            cursor.x = x;
+            cursor.y = y;
+            renderMap();
+        };
+
+        const load = () => {
+            room = 1;
+            document.getElementById('room').options[0].selected = true;
+            map = deserializeTileMap(document.getElementById('level-code').value);
+            renderMap();
+        };
+
+        const save = () => {
+            const el = document.getElementById('level-code');
+            const rooms = Array(8).fill().map((a, i) => i + 1);
+            const emptyRooms = rooms.filter(roomNumber => !map.objects.some(o => o.room === roomNumber && o.id !== objectTypes[0].id));
+            map.objects = map.objects.filter(o => emptyRooms.indexOf(o.room) === -1);
+            el.value = serializeTileMap(map);
+            el.select();
+            changeRoom(room);
+        };
+
+        const storeMetadata = () => {
+            map.metadata = document.getElementById('metadata').value.split('\n');
+        };
+
+        const changeRoom = toRoom => {
+            room = toRoom;
+            if (map.objects.filter(o => o.room === room).length === 0) {
+                clearMap();
+            }
+            renderMap();
+        };
+
+        document.getElementById('paint').innerHTML =
+            objectTypes.filter(ot => !ot.notSelectable).map(ot => `<option value="${ot.id}">${ot.name}</option>`).join('');
+
+        changeRoom(1);
+        renderMap();
+
+    </script>
+</body>
+
+</html>
