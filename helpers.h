@@ -8,4 +8,9 @@ inline void climit(char *v, char limit);
 
 void chunkrest(int ms);
 
+typedef struct coordinates {
+    double x;
+    double y;
+} Coordinates;
+
 #endif

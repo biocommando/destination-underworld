@@ -11,10 +11,10 @@ int shootOneShotAtXy(double x, double y, double dx, double dy, int enm_id, int h
 int bullet_hit(Enemy *enm, Bullet *bb);
 int sees_each_other(Enemy *e1, Enemy *e2, World *world);
 void createExplosion(int x, int y, World *world);
-void readLevel(World *world, const char *missionName, int roomTo);
+int readLevel(World *world, const char *missionName, int roomTo);
 Enemy *getNextAvailableEnemy(World *world, int *index);
 Enemy *spawnEnemy(int x, int y, int type, int roomId, World *world);
-void createClusterExplosion(World *w, double x0, double y0, int intensity);
+void createClusterExplosion(World *w, double x0, double y0, int num_directions, int intensity, int shoot_id);
 void changeRoomIfAtExitPoint(World *world, int mission);
 
 #endif

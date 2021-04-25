@@ -12,7 +12,8 @@
 #include "gamePersistence.h"
 #include "menu.h"
 #include "iniRead.h"
-#include "scripting.h"
+//#include "scripting.h"
+#include "bossfightconf.h"
 #include "predictableRandom.h"
 #include "settings.h"
 #include "continuousData.h"
@@ -116,7 +117,20 @@ int main(int argc, char **argv)
 }
 END_OF_MAIN();
 
-void enemyLogic(World *world, int bossMovementStrategy, int bossWantToShoot)
+void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
+{
+  if (enm->x > aim_at->x + aim_window)
+    enm->dx = -1;
+  if (enm->x < aim_at->x - aim_window)
+    enm->dx = 1;
+  if (enm->y > aim_at->y + aim_window)
+    enm->dy = -1;
+  if (enm->y < aim_at->y - aim_window)
+    enm->dy = 1;
+}
+
+
+void enemyLogic(World *world, Coordinates *boss_waypoint, int bossWantToShoot)
 {  // Viholliset
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
@@ -129,17 +143,25 @@ void enemyLogic(World *world, int bossMovementStrategy, int bossWantToShoot)
         EnemyType enmType = world->enm[x].type;
         if (enmType != TURRET) // not a turret
         {
-          int reactsToPlayer = (enmType == ARCH_MAGE && (bossMovementStrategy == 0 || bossMovementStrategy == 1)) || (enmType != ARCH_MAGE && sees_each_other(world->enm + x, &world->plr, world));
-          if (reactsToPlayer)
+          Coordinates aim_at = {world->plr.x, world->plr.y};
+          int aim_window = 2 + (enmType == ALIEN_TURRET || enmType == ARCH_MAGE ? 5 : 0);
+          //int reactsToPlayer = (enmType == ARCH_MAGE && (bossMovementStrategy == 0 || bossMovementStrategy == 1)) || (enmType != ARCH_MAGE && sees_each_other(world->enm + x, &world->plr, world));
+          int reactsToPlayer = sees_each_other(world->enm + x, &world->plr, world);
+
+          if (reactsToPlayer || (enmType == ARCH_MAGE && boss_waypoint->x >= 0))
           {
             world->enm[x].move = 1;
-            if (enmType != ARCH_MAGE || bossWantToShoot)
+            if (enmType != ARCH_MAGE || (bossWantToShoot && reactsToPlayer))
             {
-              if (enmType == ARCH_MAGE && bossMovementStrategy == 1)
+              if (enmType == ARCH_MAGE)
+              {
+                set_directions(&world->enm[x], &aim_at, aim_window);
+              }
+              /*if (enmType == ARCH_MAGE && bossMovementStrategy == 1)
               {
                 world->enm[x].dx *= -1;
                 world->enm[x].dy *= -1;
-              }
+              }*/
               int playSample = shoot(world->enm + x, world);
               if (playSample)
               {
@@ -148,33 +170,42 @@ void enemyLogic(World *world, int bossMovementStrategy, int bossWantToShoot)
               }
             }
 
-            if (enmType != ARCH_MAGE || bossMovementStrategy != 2)
+            world->enm[x].dx = world->enm[x].dy = 0;
+            if (enmType == ARCH_MAGE && boss_waypoint->x >= 0)
             {
-              world->enm[x].dx = world->enm[x].dy = 0;
-              int aim_window = 2 + (enmType == ALIEN_TURRET || enmType == ARCH_MAGE ? 5 : 0);
-              if (world->enm[x].x > world->plr.x + aim_window)
-                world->enm[x].dx = -1;
-              if (world->enm[x].x < world->plr.x - aim_window)
-                world->enm[x].dx = 1;
-              if (world->enm[x].y > world->plr.y + aim_window)
-                world->enm[x].dy = -1;
-              if (world->enm[x].y < world->plr.y - aim_window)
-                world->enm[x].dy = 1;
-              if (world->enm[x].dx == 0 && world->enm[x].dy == 0)
+              aim_at.x = boss_waypoint->x * TILESIZE + HALFTILESIZE;
+              aim_at.y = boss_waypoint->y * TILESIZE + HALFTILESIZE;
+              aim_window = 0;
+              if (world->enm[x].x / TILESIZE == (int)boss_waypoint->x && world->enm[x].y / TILESIZE == (int)boss_waypoint->y)
               {
-                world->enm[x].dx = 1 - 2 * prGetRandom() % 2;
-                world->enm[x].dy = 1 - 2 * prGetRandom() % 2;
-              }
-              if (enmType == ARCH_MAGE && bossMovementStrategy == 1)
-              {
-                world->enm[x].dx *= -1;
-                world->enm[x].dy *= -1;
+                printf("Waypoint reached\n");
+                boss_waypoint->x = boss_waypoint->y = -1;
+                world->bossFightConfig.state.waypoint_reached = 1;
               }
             }
+            set_directions(&world->enm[x], &aim_at, aim_window);
+            /*if (world->enm[x].x > aim_at.x + aim_window)
+              world->enm[x].dx = -1;
+            if (world->enm[x].x < aim_at.x - aim_window)
+              world->enm[x].dx = 1;
+            if (world->enm[x].y > aim_at.y + aim_window)
+              world->enm[x].dy = -1;
+            if (world->enm[x].y < aim_at.y - aim_window)
+              world->enm[x].dy = 1;*/
+            if (world->enm[x].dx == 0 && world->enm[x].dy == 0)
+            {
+              world->enm[x].dx = 1 - 2 * prGetRandom() % 2;
+              world->enm[x].dy = 1 - 2 * prGetRandom() % 2;
+            }
+            /*if (enmType == ARCH_MAGE && bossMovementStrategy == 1)
+            {
+              world->enm[x].dx *= -1;
+              world->enm[x].dy *= -1;
+            }*/
           }
           else
           {
-            if (prGetRandom() % 30 == 0 && (enmType != ARCH_MAGE || bossMovementStrategy != 2))
+            if (prGetRandom() % 30 == 0 )//&& (enmType != ARCH_MAGE || bossMovementStrategy != 2))
             {
               world->enm[x].move = prGetRandom() % 2;
               world->enm[x].move = prGetRandom() % 2;
@@ -182,7 +213,12 @@ void enemyLogic(World *world, int bossMovementStrategy, int bossWantToShoot)
               world->enm[x].dy = 1 - (prGetRandom() % 3);
             }
           }
-          if (enmType != ALIEN_TURRET)
+          if (enmType == ARCH_MAGE)
+          {
+            for (int m = 0; m < world->bossFightConfig.speed; m++)
+              move_enemy(world->enm + x, world);
+          }
+          else if (enmType != ALIEN_TURRET)
           {
             if (enmType == IMP || enmType == ALIEN)
             {
@@ -201,9 +237,10 @@ void enemyLogic(World *world, int bossMovementStrategy, int bossWantToShoot)
           if (enmType == ARCH_MAGE)
           {
             // health bar for the boss
-            for (int i = 0; i < world->enm[x].health / 10 + 1; i++)
+            for (int i = 0; i < 6; i++)
             {
-              masked_blit(world->spr, world->buf, 60, 0, world->enm[x].x - 23, world->enm[x].y - 18 + 4 * i, 7, 6);
+              if (world->enm[x].health >= (world->bossFightConfig.health * (i + 1) / 6))
+                masked_blit(world->spr, world->buf, 60, 0, world->enm[x].x - 23, world->enm[x].y - 18 + 4 * i, 7, 6);
             }
           }
         }
@@ -267,6 +304,99 @@ void drawStaticBackground()
     }
 }
 
+void boss_logic(World *world, int *bossWantToShoot, Coordinates *boss_waypoint, int boss_died)
+{
+  Enemy *boss = NULL;
+  if (world->bossFight)
+  {
+    for (int x = 0; x < ENEMYCOUNT; x++)
+    {
+      if (world->enm[x].type == ARCH_MAGE)
+      {
+        boss = &world->enm[x];
+        break;
+      }
+    }
+  }
+  int inSameRoom = boss != NULL && boss->roomid == world->currentRoom;
+  if (inSameRoom || boss_died)
+  {
+    world->bossFightConfig.state.health = boss_died ? 0 : boss->health;
+    bossfight_process_event_triggers(&world->bossFightConfig);
+    for (int x = 0; x < BFCONF_MAX_EVENTS; x++)
+    {
+      if (!world->bossFightConfig.state.triggers[x]) continue;
+      
+      BossFightEventConfig *event = &world->bossFightConfig.events[x];
+      
+      printf("Trigger %c\n", event->event_type);
+      switch (event->event_type)
+      {
+        case BFCONF_EVENT_TYPE_SPAWN:
+        {
+          BossFightSpawnPointConfig *spawnPoint =  &event->spawn_point;
+          int random_num = prGetRandom() % 100;
+          for (int spawnType = 0; spawnType < 5; spawnType++)
+          {
+            if (random_num >= spawnPoint->probability_thresholds[spawnType][0]
+              && random_num < spawnPoint->probability_thresholds[spawnType][1])
+            {
+              spawnEnemy(spawnPoint->x, spawnPoint->y, spawnType + 200, world->currentRoom, world);
+              break; 
+            }
+          }
+        }
+        break;
+        case BFCONF_EVENT_TYPE_ALLOW_FIRING:
+          *bossWantToShoot = 1;
+        break;
+        case BFCONF_EVENT_TYPE_DISALLOW_FIRING:
+          *bossWantToShoot = 0;
+        break;
+        case BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE:
+          if (boss)
+            createClusterExplosion(world, boss->x, boss->y, event->parameters[0], event->parameters[1], boss->id);
+        break;
+        case BFCONF_EVENT_TYPE_MODIFY_TERRAIN:
+        {
+          int tile_type = 0;
+          switch (event->parameters[2])
+          {
+            case BFCONF_MODIFY_TERRAIN_FLOOR:
+              tile_type = TILE_SYM_FLOOR;
+              break;
+            case BFCONF_MODIFY_TERRAIN_WALL:
+              tile_type = TILE_SYM_WALL1;
+              break;
+            case BFCONF_MODIFY_TERRAIN_EXIT:
+              tile_type = TILE_SYM_EXIT_LEVEL;
+              break;
+          }
+          if (tile_type)
+          {
+            world->map[event->parameters[0]][event->parameters[1]] = createTile(TILE_SYM_FLOOR);
+            triggerSample(SAMPLE_EXPLOSION(rand() % 6), 200);
+            for (int y = 0; y < 3; y++)
+              createExplosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world);
+          }
+        }
+        break;
+        case BFCONF_EVENT_TYPE_SET_WAYPOINT:
+          boss_waypoint->x = event->parameters[0];
+          boss_waypoint->y = event->parameters[1];
+          world->bossFightConfig.state.waypoint = event->parameters[2];
+          world->bossFightConfig.state.waypoint_reached = 0;
+        break;
+        case BFCONF_EVENT_TYPE_CLEAR_WAYPOINT:
+          boss_waypoint->x = -1;
+          boss_waypoint->y = -1;
+          world->bossFightConfig.state.waypoint = 0;
+        break;
+      }
+    }
+  }
+}
+
 int game(int mission, int *gameModifiers)
 {
   prResetRandom();
@@ -275,7 +405,8 @@ int game(int mission, int *gameModifiers)
 
   World world;
   world.gameModifiers = *gameModifiers;
-  world.worldScriptInited = 0;
+//  world.worldScriptInited = 0;
+  memset(&world.bossFightConfig, 0, sizeof(BossFightConfig));
   world.buf = create_bitmap(480, 360);
   world.spr = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
   world.explosSpr = load_bitmap(".\\dataloss\\explosions.bmp", default_palette);
@@ -304,6 +435,9 @@ int game(int mission, int *gameModifiers)
   int keyPressBufferSz = 128;
   int keyPressBufferIdx = 0;
   long keyPressMask = 0;
+  
+  Coordinates boss_waypoint = {-1, -1};
+
   if (recordMode == RECORD_MODE_RECORD)
   {
      char fname[100];
@@ -321,7 +455,14 @@ int game(int mission, int *gameModifiers)
   }
   long timeStamp = 0;
 
-  readLevel(&world, gameSettings.missions[mission - 1].filename, 1);
+  {
+    char special_filename[256];
+    sprintf(special_filename, "%s.mode.%d", gameSettings.missions[mission - 1].filename, *gameModifiers);
+    if (readLevel(&world, special_filename, 1) < 0)
+    {
+      readLevel(&world, gameSettings.missions[mission - 1].filename, 1);
+    }
+  }
   if (world.bossFight)
   {
     //play_sample(s_bosstalk1, 255, 127, 1000, 0);
@@ -354,6 +495,11 @@ int game(int mission, int *gameModifiers)
   }
   else if (difficulty == DIFFICULTY_BRUTAL)
     world.plr.gold = 0;
+
+  if (world.bossFight && world.bossFightConfig.player_initial_gold >= 0)
+  {
+    world.plr.gold = world.bossFightConfig.player_initial_gold;
+  }
     
   int plr_rune_of_protection_active = 0;
 
@@ -549,7 +695,7 @@ int game(int mission, int *gameModifiers)
       break;
     }
     
-    enemyLogic(&world, bossMovementStrategy, bossWantToShoot);
+    enemyLogic(&world, &boss_waypoint, bossWantToShoot);
 
     // ammukset
 
@@ -581,7 +727,7 @@ int game(int mission, int *gameModifiers)
                   world.bullets[x].x -= 5 * world.bullets[x].dx;
                   world.bullets[x].y -= 5 * world.bullets[x].dy;
               }
-              createClusterExplosion(&world, world.bullets[x].x, world.bullets[x].y, cluster_strength);
+              createClusterExplosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
             }
             
             break;
@@ -594,10 +740,10 @@ int game(int mission, int *gameModifiers)
                 if (world.plr.health < 0) world.plr.health = 1;
                 world.plr.id = PLAYER_ID;
                 plr_rune_of_protection_active = -50;
-                createClusterExplosion(&world, world.plr.x, world.plr.y, difficulty == DIFFICULTY_BRUTAL ? 3 : 4);
+                createClusterExplosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
                 if ((world.gameModifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
                 {
-                  createClusterExplosion(&world, world.plr.x, world.plr.y, difficulty == DIFFICULTY_BRUTAL ? 3 : 4);
+                  createClusterExplosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
                 }
             }
             if (playcount == 0)
@@ -642,7 +788,7 @@ int game(int mission, int *gameModifiers)
                     
                 if (world.bullets[x].bulletType == BULLET_TYPE_CLUSTER)
                 {
-                    createClusterExplosion(&world, world.bullets[x].x, world.bullets[x].y, cluster_strength);
+                    createClusterExplosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
                 }
                     
                 playcount = PLAYDELAY;
@@ -672,6 +818,8 @@ int game(int mission, int *gameModifiers)
 
                   if (world.enm[y].type == ARCH_MAGE) // Archmage dies
                   {
+                    printf("boss die logic\n");
+                    boss_logic(&world, &bossWantToShoot, &boss_waypoint, 1);
                     chunkrest(1);
 //                    play_sample(s_bosstalk2, 255, 127 + (world.enm[y].x - 240) / 8, 1000, 0);
                     triggerSampleWithParams(SAMPLE_BOSSTALK_2, 255, 127 + (world.enm[y].x - 240) / 8, 1000);
@@ -714,8 +862,12 @@ int game(int mission, int *gameModifiers)
       int hint_col = hint_timeShows * hintDim;
       textprintf_ex(world.buf, font, hintX, hintY, GRAY(hint_col), -1, hintText);
     }
-
-    if (world.scripting && ++worldScriptFrameCount >= 10)
+    if (world.bossFight && ++worldScriptFrameCount >= 3)
+    {
+      worldScriptFrameCount = 0;
+      boss_logic(&world, &bossWantToShoot, &boss_waypoint, 0);
+    }
+    /*if (world.scripting && ++worldScriptFrameCount >= 10)
     {
       worldScriptFrameCount = 0;
 
@@ -882,7 +1034,7 @@ int game(int mission, int *gameModifiers)
         strcpy(hintText, world.worldScript.strings[showText].str);
       }
       //world.plr.ammo = 15;
-    }
+    }*/
 
     if (plr_dir_helper_intensity > 0)
     {
@@ -985,10 +1137,10 @@ int game(int mission, int *gameModifiers)
     fclose(fKeyPresses);
   }
 
-  if (world.worldScriptInited)
+  /*if (world.worldScriptInited)
   {
     freeMemScript(&world.worldScript);
-  }
+  }*/
 
   destroy_bitmap(world.buf);
   destroy_bitmap(world.spr);
@@ -1042,5 +1194,5 @@ void initAllegro()
         exit(1);
     }
   }
-  printf("allegro inited");
+  printf("allegro inited\n");
 }

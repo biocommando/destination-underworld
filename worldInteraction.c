@@ -351,9 +351,10 @@ Enemy *spawnEnemy(int x, int y, int type, int roomId, World *world)
     }
     if (enemytype == 5)
     {
-        newEnemy->rate = 10;
-        newEnemy->health = 50;
-        if (difficulty == DIFFICULTY_BRUTAL) newEnemy->health = 100;
+        newEnemy->rate = world->bossFightConfig.fire_rate;
+        /*newEnemy->health = 50;
+        if (difficulty == DIFFICULTY_BRUTAL) newEnemy->health = 100;*/
+        newEnemy->health = world->bossFightConfig.health;
     }
     newEnemy->roomid = roomId;
     if (enemytype > 1)
@@ -392,7 +393,7 @@ Enemy *spawnEnemy(int x, int y, int type, int roomId, World *world)
     return newEnemy;
 }
 
-void readLevel(World *world, const char *missionName, int roomTo)
+int readLevel(World *world, const char *missionName, int roomTo)
 {
     char buf[256];
 
@@ -401,12 +402,12 @@ void readLevel(World *world, const char *missionName, int roomTo)
     clearMap(world);
 
     world->bossFight = 0;
-    world->scripting = 0;
+//    world->scripting = 0;
 
     FILE *f = fopen(missionName, "r");
     if (f == NULL)
     {
-        return;
+        return -1;
     }
 
     fgets(buf, 256, f); // version
@@ -459,9 +460,9 @@ void readLevel(World *world, const char *missionName, int roomTo)
         char readStr[64];
         sscanf(buf, "%s", readStr);
 
-        if (!strcmp(readStr, "scripting"))
+/*        if (!strcmp(readStr, "scripting"))
         {
-            world->scripting = 1;
+//            world->scripting = 1;
             if (!world->roomsVisited[0])
             {
                 sscanf(buf, "%*s %s", readStr);
@@ -474,32 +475,44 @@ void readLevel(World *world, const char *missionName, int roomTo)
                 translateMemScript(buf, &world->worldScript, 32);
             }
             continue;
-        }
+        }*/
         if (!strcmp(readStr, "bossfight")) 
         {
-            printf("Bossfight initiated\n");
-            world->bossFight = 1;
-            continue;
+            sscanf(buf, "%*s %s", readStr);
+            sprintf(buf, ".\\dataloss\\%s", readStr);
+            printf("Opening bossfight config at %s\n", buf);
+            FILE *f2 = fopen(buf, "r");
+            if (f2)
+            {
+                read_bfconfig(f2, &world->bossFightConfig);
+                fclose(f2);
+                printf("Bossfight initiated\n");
+                world->bossFight = 1;
+                continue;
+            }
+            else printf("No such file!\n");
         }
     }
 
     fclose(f);
     world->roomsVisited[roomTo - 1] = 1;
+    return 0;
 }
 
-void createClusterExplosion(World *w, double x0, double y0, int intensity)
+void createClusterExplosion(World *w, double x0, double y0, int num_directions, int intensity, int shoot_id)
 {
-  for (int i = 0; i < 16; i++)
+  double half_dirs = num_directions / 2;
+  for (int i = 0; i < num_directions; i++)
   {
       double x = x0;
       double y = y0;
-      double dx = sin(M_PI * i / 8) * 0.5;
-      double dy = cos(M_PI * i / 8) * 0.5;
+      double dx = sin(M_PI * i / half_dirs) * 0.5;
+      double dy = cos(M_PI * i / half_dirs) * 0.5;
       for (int bidx = 0; bidx < intensity; bidx++)
       {
           x += dx * 0.66;
           y += dy * 0.66;
-          shootOneShotAtXy(x, y, dx, dy, PLAYER_ID, 1, w);
+          shootOneShotAtXy(x, y, dx, dy, shoot_id, shoot_id == PLAYER_ID ? 1 : 0, w);
       }
   }
 }

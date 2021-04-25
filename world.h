@@ -2,7 +2,8 @@
 #define WORLD_H
 #include "allegro.h"
 #include "duconstants.h"
-#include "scripting.h"
+#include "bossfightconf.h"
+//#include "scripting.h"
 
 typedef enum EnemyTypeEnum
 {
@@ -134,12 +135,13 @@ typedef struct
         BITMAP *spr;
         BITMAP *explosSpr;
 
-        MemScript worldScript;
-        int worldScriptInited;
+        //MemScript worldScript;
+        //int worldScriptInited;
 
         int bossFight;
-        int scripting;
+        //int scripting;
         int gameModifiers;
+        BossFightConfig bossFightConfig;
 } World;
 
 void clearExplosions(World *);

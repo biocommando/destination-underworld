@@ -180,7 +180,7 @@ int handlePowerUpKeys(World *world, int keyA, int keyS, int keyD, int keyF, int 
           b->dy *= 0.5;
           if (overpowered)
           {
-             createClusterExplosion(world, world->plr.x, world->plr.y, 16);
+             createClusterExplosion(world, world->plr.x, world->plr.y, 16, 16, PLAYER_ID);
           }
           world->plr.gold -= cost_blast;
           world->plr.reload = 40;
