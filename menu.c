@@ -71,7 +71,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
     SAMPLE *s_c = load_sample(MENU_SAMPLE_FILENAME), *s_s = load_sample(MENU_SELECT_SAMPLE_FILENAME), *s_ex = load_sample(MENU_EXPLODE_FILENAME);
     FONT *menufont = load_font(FONT_FILENAME, default_palette, NULL);
 
-    int c = 0, flicker = 0, wait = 0;
+    int c = 0, flicker = 0, wait = 0, show_help = 0;
 
     // Transition animation
     clear_to_color(screen, 0);
@@ -145,6 +145,8 @@ int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
             flicker = -16;
         circlefill(buf, 30, c * 40 + 70, abs(flicker / 2), makecol(abs(flicker * 8) + 50, 0, 0));
         stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
+        if (show_help)
+            blit(help_pic, screen, 0, 0, screen->w - help_pic->w, screen->h - help_pic->h, help_pic->w, help_pic->h);
         chunkrest(50);
         circlefill(buf, 30, c * 40 + 70, abs(flicker / 2), 0);
         if (wait == 0)
@@ -200,7 +202,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
             }
             if (key[KEY_F1])
             {
-                blit(help_pic, screen, 0, 0, screen->w / 2 + 50, 108, help_pic->w, help_pic->h);
+                show_help = !show_help;
                 wait = 3;
             }
         }
