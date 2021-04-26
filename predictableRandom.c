@@ -1,6 +1,6 @@
 #include"predictableRandom.h"
 
-uint32_t prGetRandomStateless(uint32_t state)
+uint32_t pr_get_random_stateless(uint32_t state)
 {
 	state ^= state << 13;
 	state ^= state >> 17;
@@ -8,7 +8,7 @@ uint32_t prGetRandomStateless(uint32_t state)
 	return state;
 }
 
-int predictableRandom_next(int reset)
+int predictable_random_next(int reset)
 {
     static uint32_t state = 0;
     if (reset)
@@ -16,17 +16,17 @@ int predictableRandom_next(int reset)
         state = PREDICTABLE_RANDOM_SEED;
         return 0;
     }
-    state = prGetRandomStateless(state);
+    state = pr_get_random_stateless(state);
     return state & 0x7FFFFFFF;
 }
 
 
-int prGetRandom()
+int pr_get_random()
 {
-    return predictableRandom_next(0);
+    return predictable_random_next(0);
 }
 
-void prResetRandom()
+void pr_reset_random()
 {
-    predictableRandom_next(1);
+    predictable_random_next(1);
 }

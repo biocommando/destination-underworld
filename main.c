@@ -12,7 +12,6 @@
 #include "gamePersistence.h"
 #include "menu.h"
 #include "iniRead.h"
-//#include "scripting.h"
 #include "bossfightconf.h"
 #include "predictableRandom.h"
 #include "settings.h"
@@ -21,44 +20,40 @@
 #include "sampleRegister.h"
 #include "helpers.h"
 
-extern int musicOn;
+extern int music_on;
 extern MP3FILE *mp3;
 
-void initAllegro();
-int game(int mission, int *gameModifiers);
-void readSettings();
+void init_allegro();
+int game(int mission, int *game_modifiers);
+void read_settings();
 
 SAMPLE *s_throw;
 
-//extern struct gamedata UniqueGameData;
-
-GameSettings gameSettings;
+GameSettings game_settings;
 
 Enemy plrautosave;
 
 FONT *GameFont;
 int fname_counter = 0;
 
-//int difficulty = DIFFICULTY_BRUTAL;
-
-int recordMode = RECORD_MODE_NONE;
-FILE *recordInputFile = NULL;
+int record_mode = RECORD_MODE_NONE;
+FILE *record_input_file = NULL;
 
 int main(int argc, char **argv)
 {
-  recordMode = readCmdLineArgInt("record-mode", argv, argc);
-  if (recordMode == RECORD_MODE_RECORD)
+  record_mode = read_cmd_line_arg_int("record-mode", argv, argc);
+  if (record_mode == RECORD_MODE_RECORD)
   {
     printf("Record mode active.\n");
   }
-  if (recordMode == RECORD_MODE_PLAYBACK)
+  if (record_mode == RECORD_MODE_PLAYBACK)
   {
     char fname[256];
-    if (readCmdLineArgStr("file", argv, argc, fname))
+    if (read_cmd_line_arg_str("file", argv, argc, fname))
     {
-        recordInputFile = fopen(fname, "r");
+        record_input_file = fopen(fname, "r");
     }
-    if (recordInputFile == NULL) 
+    if (record_input_file == NULL) 
     {
       printf("Valid input file required (--file=<filename>)!!\n");
       return 0;
@@ -66,48 +61,44 @@ int main(int argc, char **argv)
     printf("Playback mode active.\n");
   }
   
-  readSettings();
-  initAllegro();
+  read_settings();
+  init_allegro();
   srand((int)time(NULL));
   int mission = 1;
-  int gameModifiers = 0;
+  int game_modifiers = 0;
   GameFont = load_font(FONT_FILENAME, default_palette, NULL);
 
-  registerSample(SAMPLE_SELECT, ".\\dataloss\\sel.wav");
-  registerSample(SAMPLE_WARP, ".\\dataloss\\warp.wav");
-  registerSample(SAMPLE_BOSSTALK_1, ".\\dataloss\\bt1.wav");
-  registerSample(SAMPLE_BOSSTALK_2, ".\\dataloss\\bt2.wav");
-  registerSample(SAMPLE_THROW, ".\\dataloss\\throw.wav");
-  registerSample(SAMPLE_SELECT_WEAPON, ".\\dataloss\\select_weapon.wav");
-  registerSample(SAMPLE_HEAL, ".\\dataloss\\healing.wav");
-  registerSample(SAMPLE_PROTECTION, ".\\dataloss\\rune_of_protection.wav");
-  registerSample(SAMPLE_TURRET, ".\\dataloss\\turret.wav");
-  registerSample(SAMPLE_BLAST, ".\\dataloss\\blast.wav");
+  register_sample(SAMPLE_SELECT, ".\\dataloss\\sel.wav");
+  register_sample(SAMPLE_WARP, ".\\dataloss\\warp.wav");
+  register_sample(SAMPLE_BOSSTALK_1, ".\\dataloss\\bt1.wav");
+  register_sample(SAMPLE_BOSSTALK_2, ".\\dataloss\\bt2.wav");
+  register_sample(SAMPLE_THROW, ".\\dataloss\\throw.wav");
+  register_sample(SAMPLE_SELECT_WEAPON, ".\\dataloss\\select_weapon.wav");
+  register_sample(SAMPLE_HEAL, ".\\dataloss\\healing.wav");
+  register_sample(SAMPLE_PROTECTION, ".\\dataloss\\rune_of_protection.wav");
+  register_sample(SAMPLE_TURRET, ".\\dataloss\\turret.wav");
+  register_sample(SAMPLE_BLAST, ".\\dataloss\\blast.wav");
 
-/*  SAMPLE *s_expl[6], *s_die[6], *s_sel = load_sample(".\\dataloss\\sel.wav"), *s_warp = load_sample(".\\dataloss\\warp.wav");
-  SAMPLE *s_bosstalk1 = load_sample(".\\dataloss\\bt1.wav"), *s_bosstalk2 = load_sample(".\\dataloss\\bt2.wav");*/
-
-  //s_throw = load_sample(".\\dataloss\\throw.wav");
   for (int i = 0; i < 6; i++)
   {
     char loadsamplename[100];
     sprintf(loadsamplename, ".\\dataloss\\ex%d.wav", i + 1);
-    registerSample(SAMPLE_EXPLOSION(i), loadsamplename);
+    register_sample(SAMPLE_EXPLOSION(i), loadsamplename);
     sprintf(loadsamplename, ".\\dataloss\\die%d.wav", i + 1);
-    registerSample(SAMPLE_DEATH(i), loadsamplename);
+    register_sample(SAMPLE_DEATH(i), loadsamplename);
   }
 
-  nextTrack();
-  menu(0, &plrautosave, &mission, &gameModifiers);
+  next_track();
+  menu(0, &plrautosave, &mission, &game_modifiers);
 
   while (mission != 0)
   {
-    mission = game(mission, &gameModifiers);
+    mission = game(mission, &game_modifiers);
   }
-  destroyRegisteredSamples();
-  if (recordInputFile) fclose(recordInputFile);
+  destroy_registered_samples();
+  if (record_input_file) fclose(record_input_file);
   
-  free(gameSettings.missions);
+  free(game_settings.missions);
   close_mp3_file(mp3);
   destroy_font(GameFont);
   set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
@@ -130,48 +121,41 @@ void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
 }
 
 
-void enemyLogic(World *world, Coordinates *boss_waypoint, int bossWantToShoot)
+void enemy_logic(World *world, Coordinates *boss_waypoint, int boss_want_to_shoot)
 {  // Viholliset
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
-      if (world->enm[x].roomid != world->currentRoom || world->enm[x].id == NO_OWNER)
+      if (world->enm[x].roomid != world->current_room || world->enm[x].id == NO_OWNER)
         continue;
 
       if (world->plr.health > 0)
       {
 
-        EnemyType enmType = world->enm[x].type;
-        if (enmType != TURRET) // not a turret
+        EnemyType enm_type = world->enm[x].type;
+        if (enm_type != TURRET) // not a turret
         {
           Coordinates aim_at = {world->plr.x, world->plr.y};
-          int aim_window = 2 + (enmType == ALIEN_TURRET || enmType == ARCH_MAGE ? 5 : 0);
-          //int reactsToPlayer = (enmType == ARCH_MAGE && (bossMovementStrategy == 0 || bossMovementStrategy == 1)) || (enmType != ARCH_MAGE && sees_each_other(world->enm + x, &world->plr, world));
-          int reactsToPlayer = sees_each_other(world->enm + x, &world->plr, world);
+          int aim_window = 2 + (enm_type == ALIEN_TURRET || enm_type == ARCH_MAGE ? 5 : 0);
+          int reacts_to_player = sees_each_other(world->enm + x, &world->plr, world);
 
-          if (reactsToPlayer || (enmType == ARCH_MAGE && boss_waypoint->x >= 0))
+          if (reacts_to_player || (enm_type == ARCH_MAGE && boss_waypoint->x >= 0))
           {
             world->enm[x].move = 1;
-            if (enmType != ARCH_MAGE || (bossWantToShoot && reactsToPlayer))
+            if (enm_type != ARCH_MAGE || (boss_want_to_shoot && reacts_to_player))
             {
-              if (enmType == ARCH_MAGE)
+              if (enm_type == ARCH_MAGE)
               {
                 set_directions(&world->enm[x], &aim_at, aim_window);
               }
-              /*if (enmType == ARCH_MAGE && bossMovementStrategy == 1)
+              int play_sample = shoot(world->enm + x, world);
+              if (play_sample)
               {
-                world->enm[x].dx *= -1;
-                world->enm[x].dy *= -1;
-              }*/
-              int playSample = shoot(world->enm + x, world);
-              if (playSample)
-              {
-                //play_sample(s_throw, 255, 127, 800 + rand() % 400, 0);
-                triggerSample(SAMPLE_THROW, 255);
+                trigger_sample(SAMPLE_THROW, 255);
               }
             }
 
             world->enm[x].dx = world->enm[x].dy = 0;
-            if (enmType == ARCH_MAGE && boss_waypoint->x >= 0)
+            if (enm_type == ARCH_MAGE && boss_waypoint->x >= 0)
             {
               aim_at.x = boss_waypoint->x * TILESIZE + HALFTILESIZE;
               aim_at.y = boss_waypoint->y * TILESIZE + HALFTILESIZE;
@@ -180,47 +164,34 @@ void enemyLogic(World *world, Coordinates *boss_waypoint, int bossWantToShoot)
               {
                 printf("Waypoint reached\n");
                 boss_waypoint->x = boss_waypoint->y = -1;
-                world->bossFightConfig.state.waypoint_reached = 1;
+                world->boss_fight_config.state.waypoint_reached = 1;
               }
             }
             set_directions(&world->enm[x], &aim_at, aim_window);
-            /*if (world->enm[x].x > aim_at.x + aim_window)
-              world->enm[x].dx = -1;
-            if (world->enm[x].x < aim_at.x - aim_window)
-              world->enm[x].dx = 1;
-            if (world->enm[x].y > aim_at.y + aim_window)
-              world->enm[x].dy = -1;
-            if (world->enm[x].y < aim_at.y - aim_window)
-              world->enm[x].dy = 1;*/
             if (world->enm[x].dx == 0 && world->enm[x].dy == 0)
             {
-              world->enm[x].dx = 1 - 2 * prGetRandom() % 2;
-              world->enm[x].dy = 1 - 2 * prGetRandom() % 2;
+              world->enm[x].dx = 1 - 2 * pr_get_random() % 2;
+              world->enm[x].dy = 1 - 2 * pr_get_random() % 2;
             }
-            /*if (enmType == ARCH_MAGE && bossMovementStrategy == 1)
-            {
-              world->enm[x].dx *= -1;
-              world->enm[x].dy *= -1;
-            }*/
           }
           else
           {
-            if (prGetRandom() % 30 == 0 )//&& (enmType != ARCH_MAGE || bossMovementStrategy != 2))
+            if (pr_get_random() % 30 == 0 )
             {
-              world->enm[x].move = prGetRandom() % 2;
-              world->enm[x].move = prGetRandom() % 2;
-              world->enm[x].dx = 1 - (prGetRandom() % 3);
-              world->enm[x].dy = 1 - (prGetRandom() % 3);
+              world->enm[x].move = pr_get_random() % 2;
+              world->enm[x].move = pr_get_random() % 2;
+              world->enm[x].dx = 1 - (pr_get_random() % 3);
+              world->enm[x].dy = 1 - (pr_get_random() % 3);
             }
           }
-          if (enmType == ARCH_MAGE)
+          if (enm_type == ARCH_MAGE)
           {
-            for (int m = 0; m < world->bossFightConfig.speed; m++)
+            for (int m = 0; m < world->boss_fight_config.speed; m++)
               move_enemy(world->enm + x, world);
           }
-          else if (enmType != ALIEN_TURRET)
+          else if (enm_type != ALIEN_TURRET)
           {
-            if (enmType == IMP || enmType == ALIEN)
+            if (enm_type == IMP || enm_type == ALIEN)
             {
               move_enemy(world->enm + x, world);
             }
@@ -230,16 +201,16 @@ void enemyLogic(World *world, Coordinates *boss_waypoint, int bossWantToShoot)
           {
             world->enm[x].reload--;
           }
-          if (enmType != ALIEN || rand() % 32) // Alienit (muttei turretit) vilkkuvat
+          if (enm_type != ALIEN || rand() % 32) // Alienit (muttei turretit) vilkkuvat
           {
             draw_enemy(world->enm + x, world);
           }
-          if (enmType == ARCH_MAGE)
+          if (enm_type == ARCH_MAGE)
           {
             // health bar for the boss
             for (int i = 0; i < 6; i++)
             {
-              if (world->enm[x].health >= (world->bossFightConfig.health * (i + 1) / 6))
+              if (world->enm[x].health >= (world->boss_fight_config.health * (i + 1) / 6))
                 masked_blit(world->spr, world->buf, 60, 0, world->enm[x].x - 23, world->enm[x].y - 18 + 4 * i, 7, 6);
             }
           }
@@ -259,11 +230,11 @@ void enemyLogic(World *world, Coordinates *boss_waypoint, int bossWantToShoot)
             circular = sin((float)(world->enm[x].ammo / 4 % 32) * M_PI / 16) * 4;
             world->enm[x].dy = (int)circular; //(circular > 0.1) - 1 * (circular < -0.1);
 
-            int playSample = shoot(world->enm + x, world);
-            if (playSample)
+            int play_sample = shoot(world->enm + x, world);
+            if (play_sample)
             {
               // play_sample(s_throw, 255, 127, 800 + rand() % 400, 0);
-              triggerSample(SAMPLE_THROW, 255);
+              trigger_sample(SAMPLE_THROW, 255);
             }
 
             world->enm[x].reload--;
@@ -272,13 +243,13 @@ void enemyLogic(World *world, Coordinates *boss_waypoint, int bossWantToShoot)
           if (world->enm[x].ammo == 0)
           {
             //if (playcount == 0)
-                triggerSample(SAMPLE_EXPLOSION(rand() % 6), 200);
+                trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
 //              play_sample(s_expl[rand() % 6], 200, 127, 800 + rand() % 400, 0);
            // playcount = PLAYDELAY;
-            createShadeAroundHitPoint(world->enm[x].x, world->enm[x].y, 9, world);
-            createExplosion(world->enm[x].x, world->enm[x].y, world);
-            createExplosion(world->enm[x].x, world->enm[x].y, world);
-            createExplosion(world->enm[x].x, world->enm[x].y, world);
+            create_shade_around_hit_point(world->enm[x].x, world->enm[x].y, 9, world);
+            create_explosion(world->enm[x].x, world->enm[x].y, world);
+            create_explosion(world->enm[x].x, world->enm[x].y, world);
+            create_explosion(world->enm[x].x, world->enm[x].y, world);
             world->enm[x].ammo = -1;
             world->enm[x].shots = 1;
             world->enm[x].id = NO_OWNER;
@@ -290,7 +261,7 @@ void enemyLogic(World *world, Coordinates *boss_waypoint, int bossWantToShoot)
     }
 }
 
-void drawStaticBackground()
+void draw_static_background()
 {
     rectfill(screen, 0, 0, screen->w, screen->h, 0);
     int maxsz = screen->h > screen->w ? screen->h : screen->w;
@@ -304,10 +275,10 @@ void drawStaticBackground()
     }
 }
 
-void boss_logic(World *world, int *bossWantToShoot, Coordinates *boss_waypoint, int boss_died)
+void boss_logic(World *world, int *boss_want_to_shoot, Coordinates *boss_waypoint, int boss_died)
 {
   Enemy *boss = NULL;
-  if (world->bossFight)
+  if (world->boss_fight)
   {
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
@@ -318,44 +289,44 @@ void boss_logic(World *world, int *bossWantToShoot, Coordinates *boss_waypoint, 
       }
     }
   }
-  int inSameRoom = boss != NULL && boss->roomid == world->currentRoom;
-  if (inSameRoom || boss_died)
+  int in_same_room = boss != NULL && boss->roomid == world->current_room;
+  if (in_same_room || boss_died)
   {
-    world->bossFightConfig.state.health = boss_died ? 0 : boss->health;
-    bossfight_process_event_triggers(&world->bossFightConfig);
+    world->boss_fight_config.state.health = boss_died ? 0 : boss->health;
+    bossfight_process_event_triggers(&world->boss_fight_config);
     for (int x = 0; x < BFCONF_MAX_EVENTS; x++)
     {
-      if (!world->bossFightConfig.state.triggers[x]) continue;
+      if (!world->boss_fight_config.state.triggers[x]) continue;
       
-      BossFightEventConfig *event = &world->bossFightConfig.events[x];
+      BossFightEventConfig *event = &world->boss_fight_config.events[x];
       
       printf("Trigger %c\n", event->event_type);
       switch (event->event_type)
       {
         case BFCONF_EVENT_TYPE_SPAWN:
         {
-          BossFightSpawnPointConfig *spawnPoint =  &event->spawn_point;
-          int random_num = prGetRandom() % 100;
-          for (int spawnType = 0; spawnType < 5; spawnType++)
+          BossFightSpawnPointConfig *spawn_point =  &event->spawn_point;
+          int random_num = pr_get_random() % 100;
+          for (int spawn_type = 0; spawn_type < 5; spawn_type++)
           {
-            if (random_num >= spawnPoint->probability_thresholds[spawnType][0]
-              && random_num < spawnPoint->probability_thresholds[spawnType][1])
+            if (random_num >= spawn_point->probability_thresholds[spawn_type][0]
+              && random_num < spawn_point->probability_thresholds[spawn_type][1])
             {
-              spawnEnemy(spawnPoint->x, spawnPoint->y, spawnType + 200, world->currentRoom, world);
+              spawn_enemy(spawn_point->x, spawn_point->y, spawn_type + 200, world->current_room, world);
               break; 
             }
           }
         }
         break;
         case BFCONF_EVENT_TYPE_ALLOW_FIRING:
-          *bossWantToShoot = 1;
+          *boss_want_to_shoot = 1;
         break;
         case BFCONF_EVENT_TYPE_DISALLOW_FIRING:
-          *bossWantToShoot = 0;
+          *boss_want_to_shoot = 0;
         break;
         case BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE:
           if (boss)
-            createClusterExplosion(world, boss->x, boss->y, event->parameters[0], event->parameters[1], boss->id);
+            create_cluster_explosion(world, boss->x, boss->y, event->parameters[0], event->parameters[1], boss->id);
         break;
         case BFCONF_EVENT_TYPE_MODIFY_TERRAIN:
         {
@@ -374,100 +345,97 @@ void boss_logic(World *world, int *bossWantToShoot, Coordinates *boss_waypoint, 
           }
           if (tile_type)
           {
-            world->map[event->parameters[0]][event->parameters[1]] = createTile(TILE_SYM_FLOOR);
-            triggerSample(SAMPLE_EXPLOSION(rand() % 6), 200);
+            world->map[event->parameters[0]][event->parameters[1]] = create_tile(TILE_SYM_FLOOR);
+            trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
             for (int y = 0; y < 3; y++)
-              createExplosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world);
+              create_explosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world);
           }
         }
         break;
         case BFCONF_EVENT_TYPE_SET_WAYPOINT:
           boss_waypoint->x = event->parameters[0];
           boss_waypoint->y = event->parameters[1];
-          world->bossFightConfig.state.waypoint = event->parameters[2];
-          world->bossFightConfig.state.waypoint_reached = 0;
+          world->boss_fight_config.state.waypoint = event->parameters[2];
+          world->boss_fight_config.state.waypoint_reached = 0;
         break;
         case BFCONF_EVENT_TYPE_CLEAR_WAYPOINT:
           boss_waypoint->x = -1;
           boss_waypoint->y = -1;
-          world->bossFightConfig.state.waypoint = 0;
+          world->boss_fight_config.state.waypoint = 0;
         break;
       }
     }
   }
 }
 
-int game(int mission, int *gameModifiers)
+int game(int mission, int *game_modifiers)
 {
-  prResetRandom();
+  pr_reset_random();
 
   long completetime = 0;
 
   World world;
-  world.gameModifiers = *gameModifiers;
-//  world.worldScriptInited = 0;
-  memset(&world.bossFightConfig, 0, sizeof(BossFightConfig));
+  world.game_modifiers = *game_modifiers;
+  memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
   world.buf = create_bitmap(480, 360);
   world.spr = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
-  world.explosSpr = load_bitmap(".\\dataloss\\explosions.bmp", default_palette);
+  world.explos_spr = load_bitmap(".\\dataloss\\explosions.bmp", default_palette);
   BITMAP *bmp_levclear = load_bitmap(".\\dataloss\\levelclear.bmp", default_palette);
 
   char c;
   int vibrations = 0;
-  int x, y, i, playcount = 0, addittAnim = 0;
+  int x, y, i, playcount = 0, additt_anim = 0;
 
-  char hintText[256];
-  int hint_timeShows = 0, hintX, hintY, hintDim;
-  int flyInTextX = world.buf->w;
-  int worldScriptFrameCount = 0;
-  int bossMovementStrategy = 0;
-  int bossWantToShoot = 0;
-  char flyInText[64];
-  strcpy(flyInText, gameSettings.missions[mission - 1].name);
+  char hint_text[256];
+  int hint_time_shows = 0, hint_x, hint_y, hint_dim;
+  int fly_in_text_x = world.buf->w;
+  int boss_fight_frame_count = 0;
+  int boss_want_to_shoot = 0;
+  char fly_in_text[64];
+  strcpy(fly_in_text, game_settings.missions[mission - 1].name);
 
-  world.currentRoom = 1;
+  world.current_room = 1;
 
-  initWorld(&world);
-  initPlayer(&world, &plrautosave);
+  init_world(&world);
+  init_player(&world, &plrautosave);
   
-  FILE *fKeyPresses = NULL;
-  ContinuousData keyPresses[128];
-  int keyPressBufferSz = 128;
-  int keyPressBufferIdx = 0;
-  long keyPressMask = 0;
+  FILE *f_key_presses = NULL;
+  ContinuousData key_presses[128];
+  int key_press_buffer_sz = 128;
+  int key_press_buffer_idx = 0;
+  long key_press_mask = 0;
   
   Coordinates boss_waypoint = {-1, -1};
 
-  if (recordMode == RECORD_MODE_RECORD)
+  if (record_mode == RECORD_MODE_RECORD)
   {
      char fname[100];
      sprintf(fname, "recorded-mission%d-take%d.dat", mission, ++fname_counter);
-     fKeyPresses = fopen(fname, "w");
-     saveGameSaveData(fKeyPresses, &world.plr, mission, *gameModifiers);
-     fprintf(fKeyPresses, "\n-- data start --\n");
+     f_key_presses = fopen(fname, "w");
+     save_game_save_data(f_key_presses, &world.plr, mission, *game_modifiers);
+     fprintf(f_key_presses, "\n-- data start --\n");
   }
-  else if (recordMode == RECORD_MODE_PLAYBACK)
+  else if (record_mode == RECORD_MODE_PLAYBACK)
   {
-    fseek(recordInputFile, 0, SEEK_SET);
-    fKeyPresses = recordInputFile;
-    loadGameSaveData(fKeyPresses, &world.plr, &mission, &world.gameModifiers);
-    keyPressBufferIdx = -1;
+    fseek(record_input_file, 0, SEEK_SET);
+    f_key_presses = record_input_file;
+    load_game_save_data(f_key_presses, &world.plr, &mission, &world.game_modifiers);
+    key_press_buffer_idx = -1;
   }
-  long timeStamp = 0;
+  long time_stamp = 0;
 
-  readLevel(&world, gameSettings.missions[mission - 1].filename, 1);
-  if (world.bossFight)
+  read_level(&world, game_settings.missions[mission - 1].filename, 1);
+  if (world.boss_fight)
   {
-    //play_sample(s_bosstalk1, 255, 127, 1000, 0);
-    triggerSampleWithParams(SAMPLE_BOSSTALK_1, 255, 127, 1000);
+    trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
   }
   
-  int difficulty = (world.gameModifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+  int difficulty = (world.game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
   
   if (world.plr.gold > (difficulty == DIFFICULTY_BRUTAL ? 0 : 5))
   {
-    int excessGold = world.plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
-    world.plr.health += excessGold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
+    int excess_gold = world.plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
+    world.plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
     world.plr.health = world.plr.health > 6 ? 6 : world.plr.health;
     world.plr.gold = 5;
   }
@@ -479,19 +447,17 @@ int game(int mission, int *gameModifiers)
   
   int cluster_strength = 16;
   
-  if ((world.gameModifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
+  if ((world.game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
   {
     cluster_strength = 5;
     world.plr.gold = 40;
-    /*if (world.plr.gold < 2) world.plr.gold = 2;
-    world.plr.gold *= 6;*/
   }
   else if (difficulty == DIFFICULTY_BRUTAL)
     world.plr.gold = 0;
 
-  if (world.bossFight && world.bossFightConfig.player_initial_gold >= 0)
+  if (world.boss_fight && world.boss_fight_config.player_initial_gold >= 0)
   {
-    world.plr.gold = world.bossFightConfig.player_initial_gold;
+    world.plr.gold = world.boss_fight_config.player_initial_gold;
   }
     
   int plr_rune_of_protection_active = 0;
@@ -500,46 +466,41 @@ int game(int mission, int *gameModifiers)
   
   int restart_requested = 0;
   
-/*  int cost_heal = 1;
-  int cost_protection = 2;
-  int cost_turret = difficulty == DIFFICULTY_BRUTAL ? 4 : 3;
-  int cost_blast = difficulty == DIFFICULTY_BRUTAL ? 8 : 6;*/
-//  stretch_blit(world.buf, screen, 0, 0, 480, 360, offset, offset, screen->w, screen->h);
-  int screenWidthScaled, screenHOffset, screenVOffset, screenHeightScaled;
+  int screen_width_scaled, screen_h_offset, screen_v_offset, screen_height_scaled;
   {
-    double screenRatio = 480.0 / 360.0;
-    screenWidthScaled = screen->h * screenRatio;
-    screenHeightScaled = screen->h;
-    if (screenWidthScaled > screen->w)
+    double screen_ratio = 480.0 / 360.0;
+    screen_width_scaled = screen->h * screen_ratio;
+    screen_height_scaled = screen->h;
+    if (screen_width_scaled > screen->w)
     {
-      screenWidthScaled = screen->w;
-      screenHeightScaled = screen->w / screenRatio;
+      screen_width_scaled = screen->w;
+      screen_height_scaled = screen->w / screen_ratio;
     }
-    screenHOffset = (screen->w - screenWidthScaled) / 2;
-    screenVOffset = (screen->h - screenHeightScaled) / 2;
+    screen_h_offset = (screen->w - screen_width_scaled) / 2;
+    screen_v_offset = (screen->h - screen_height_scaled) / 2;
   }
   
-  drawStaticBackground();
+  draw_static_background();
   while (restart_requested < 2)
   {
-    if (timeStamp % 3 == 0) resetSampleTriggers();
-    timeStamp++;
+    if (time_stamp % 3 == 0) reset_sample_triggers();
+    time_stamp++;
     draw_map(&world, -1 * vibrations); // shadows
-    moveAndDrawBodyParts(&world);
+    move_and_draw_body_parts(&world);
 
     if (playcount > 0)
       playcount--;
 
-    vibrations = progressAndDrawExplosions(&world);
-    if (gameSettings.vibrationMode != 1)
+    vibrations = progress_and_draw_explosions(&world);
+    if (game_settings.vibration_mode != 1)
     {
-     if (gameSettings.vibrationMode == 0)
+     if (game_settings.vibration_mode == 0)
      {
       vibrations = 0;
      }
      else
      {
-      vibrations /= gameSettings.vibrationMode;
+      vibrations /= game_settings.vibration_mode;
      }
     }
     
@@ -547,86 +508,69 @@ int game(int mission, int *gameModifiers)
     if (world.plr.health > 0)
     {
         draw_enemy(&world.plr, &world);
-/*       
-        world.plr.move = 0;
-         int orig_dx = world.plr.dx;
-        int orig_dy = world.plr.dy;*/
         
-        int keyLeft, keyRight, keyUp, keyDown, keySpace, 
-            keyX, keyZ, keyA, keyS, keyD, keyF;
-        if (recordMode == RECORD_MODE_PLAYBACK)
+        int key_left, key_right, key_up, key_down, key_space, 
+            key_x, key_z, key_a, key_s, key_d, key_f;
+        if (record_mode == RECORD_MODE_PLAYBACK)
         {
-           int hasMore = readAndProcessContinuousData(keyPresses, 
-               &keyPressBufferSz, &keyPressBufferIdx, fKeyPresses, 
-               timeStamp, getKeyPresses, &keyPressMask);
-           if (!hasMore) break;
+           int has_more = read_and_process_continuous_data(key_presses, 
+               &key_press_buffer_sz, &key_press_buffer_idx, f_key_presses, 
+               time_stamp, get_key_presses, &key_press_mask);
+           if (!has_more) break;
            
-            keyLeft = keyPressMask & 1;
-            keyRight = keyPressMask & 2;
-            keyUp = keyPressMask & 4;
-            keyDown = keyPressMask & 8;
-            keySpace = keyPressMask & 16;
-            keyX = keyPressMask & 32;
-            keyZ = keyPressMask & 64;
-            keyA = keyPressMask & 128;
-            keyS = keyPressMask & 256;
-            keyD = keyPressMask & 512;
-            keyF = keyPressMask & 1024;
+            key_left = key_press_mask & 1;
+            key_right = key_press_mask & 2;
+            key_up = key_press_mask & 4;
+            key_down = key_press_mask & 8;
+            key_space = key_press_mask & 16;
+            key_x = key_press_mask & 32;
+            key_z = key_press_mask & 64;
+            key_a = key_press_mask & 128;
+            key_s = key_press_mask & 256;
+            key_d = key_press_mask & 512;
+            key_f = key_press_mask & 1024;
         }
         else
         {
-            keyLeft = key[KEY_LEFT];
-            keyRight = key[KEY_RIGHT];
-            keyUp = key[KEY_UP];
-            keyDown = key[KEY_DOWN];
-            keySpace = key[KEY_SPACE];
-            keyX = key[KEY_X];
-            keyZ = key[KEY_Z];
-            keyA = key[KEY_A];
-            keyS = key[KEY_S];
-            keyD = key[KEY_D];
-            keyF = key[KEY_F];
+            key_left = key[KEY_LEFT];
+            key_right = key[KEY_RIGHT];
+            key_up = key[KEY_UP];
+            key_down = key[KEY_DOWN];
+            key_space = key[KEY_SPACE];
+            key_x = key[KEY_X];
+            key_z = key[KEY_Z];
+            key_a = key[KEY_A];
+            key_s = key[KEY_S];
+            key_d = key[KEY_D];
+            key_f = key[KEY_F];
         }
         
-        int playerDidChangeDir = handleDirectionKeys(&world, keyUp, keyDown, keyLeft, keyRight);
-        if (playerDidChangeDir)
+        int player_did_change_dir = handle_direction_keys(&world, key_up, key_down, key_left, key_right);
+        if (player_did_change_dir)
         {
            plr_dir_helper_intensity = PLR_DIR_HELPER_INITIAL_INTENSITY;
         }
           
         
-        int playSample = handleShootKey(&world, keySpace);
+        int play_sample = handle_shoot_key(&world, key_space);
         
-        if (playSample)
+        if (play_sample)
         {
-//            play_sample(s_throw, 255, 127, 800 + rand() % 400, 0);
-              triggerSample(SAMPLE_THROW, 255);
+              trigger_sample(SAMPLE_THROW, 255);
         }
         
-        /*if (key[KEY_U] && key[KEY_N] && key[KEY_LCONTROL] && world.plr.health > 0) // cheat for dev
+        play_sample = handle_weapon_change_keys(&world, key_x, key_z);
+        if (play_sample)
         {
-          world.plr.health = 3;
-          world.plr.ammo = 15;
-          world.plr.gold = 15;
-        }
-        if (key[KEY_U] && key[KEY_N] && key[KEY_RCONTROL] && world.plr.health > 0) // cheat for dev
-        {
-          world.plr.health = 30;
-        }*/
-        
-        playSample = handleWeaponChangeKeys(&world, keyX, keyZ);
-        if (playSample)
-        {
-//            play_sample(s_sel, 255, 127, 1000, 0);
-              triggerSampleWithParams(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
+              trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
         }
         
-        int goldHintAmount = 0;
-        int activatedPowerup = handlePowerUpKeys(&world, keyA, keyS, keyD, keyF, &goldHintAmount, &plr_rune_of_protection_active);
-        playSample = activatedPowerup || playSample;
-        if (goldHintAmount)
+        int gold_hint_amount = 0;
+        int activated_powerup = handle_power_up_keys(&world, key_a, key_s, key_d, key_f, &gold_hint_amount, &plr_rune_of_protection_active);
+        play_sample = activated_powerup || play_sample;
+        if (gold_hint_amount)
         {
-          show_gold_hint(&world, hintText, &hintX, &hintY, &hintDim, &hint_timeShows, goldHintAmount);
+          show_gold_hint(&world, hint_text, &hint_x, &hint_y, &hint_dim, &hint_time_shows, gold_hint_amount);
         }
         
                 
@@ -636,9 +580,9 @@ int game(int mission, int *gameModifiers)
         }
         else if (restart_requested) restart_requested = 2;
         
-        if (recordMode == RECORD_MODE_RECORD)
+        if (record_mode == RECORD_MODE_RECORD)
         {
-            long newKeyPressMask = (key[KEY_LEFT] ? 1 : 0) 
+            long new_key_press_mask = (key[KEY_LEFT] ? 1 : 0) 
                  | (key[KEY_RIGHT] ? 2 : 0) 
                  | (key[KEY_UP] ? 4 : 0) 
                  | (key[KEY_DOWN] ? 8 : 0) 
@@ -649,10 +593,10 @@ int game(int mission, int *gameModifiers)
                  | (key[KEY_S] ? 256 : 0)
                  | (key[KEY_D] ? 512 : 0)
                  | (key[KEY_F] ? 1024 : 0);
-            if (newKeyPressMask != keyPressMask)
+            if (new_key_press_mask != key_press_mask)
             {
-              keyPressMask = newKeyPressMask;
-              produceAndWriteContinuousData(keyPresses, keyPressBufferSz, &keyPressBufferIdx, fKeyPresses, timeStamp, 1, keyPressMask);
+              key_press_mask = new_key_press_mask;
+              produce_and_write_continuous_data(key_presses, key_press_buffer_sz, &key_press_buffer_idx, f_key_presses, time_stamp, 1, key_press_mask);
             }
         }
       
@@ -665,21 +609,18 @@ int game(int mission, int *gameModifiers)
     move_enemy(&world.plr, &world);
     move_enemy(&world.plr, &world);
 
-    changeRoomIfAtExitPoint(&world, mission);
+    change_room_if_at_exit_point(&world, mission);
 
 
-    if (getTileAt(&world, world.plr.x, world.plr.y).flags & TILE_IS_EXIT_LEVEL && world.plr.health > 0)
+    if (get_tile_at(&world, world.plr.x, world.plr.y).flags & TILE_IS_EXIT_LEVEL && world.plr.health > 0)
     {
-      hint_timeShows = 0;
-//      play_sample(s_warp, 255, 127, 500, 0);
-      triggerSampleWithParams(SAMPLE_WARP, 255, 127, 500);
+      hint_time_shows = 0;
+      trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      //NewUniqueGameId(&UniqueGameData);
-      displayLevelInfo(&world, mission, gameSettings.missionCount, bmp_levclear, font);
+      display_level_info(&world, mission, game_settings.mission_count, bmp_levclear, font);
 
       while (!key[KEY_ENTER])
       {
-        //playMP3();
         chunkrest(15);
       }
       chunkrest(250);
@@ -688,7 +629,7 @@ int game(int mission, int *gameModifiers)
       break;
     }
     
-    enemyLogic(&world, &boss_waypoint, bossWantToShoot);
+    enemy_logic(&world, &boss_waypoint, boss_want_to_shoot);
 
     // ammukset
 
@@ -707,20 +648,19 @@ int game(int mission, int *gameModifiers)
           if (world.bullets[x].owner_id == NO_OWNER)
           {
             if (playcount == 0)
-               triggerSample(SAMPLE_EXPLOSION(rand() % 6), 200);
-              //play_sample(s_expl[rand() % 6], 200, 127, 800 + rand() % 400, 0);
+               trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
             playcount = PLAYDELAY;
-            createExplosion(world.bullets[x].x, world.bullets[x].y, &world);
-            if (world.bullets[x].bulletType == BULLET_TYPE_CLUSTER)
+            create_explosion(world.bullets[x].x, world.bullets[x].y, &world);
+            if (world.bullets[x].bullet_type == BULLET_TYPE_CLUSTER)
             {
               world.bullets[x].x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
               world.bullets[x].y = ((int)(bullet_orig_y / TILESIZE)) * TILESIZE + HALFTILESIZE;
-              while (checkFlagsAt(&world, (int)world.bullets[x].x, (int)world.bullets[x].y, TILE_IS_WALL))
+              while (check_flags_at(&world, (int)world.bullets[x].x, (int)world.bullets[x].y, TILE_IS_WALL))
               {
                   world.bullets[x].x -= 5 * world.bullets[x].dx;
                   world.bullets[x].y -= 5 * world.bullets[x].dy;
               }
-              createClusterExplosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
+              create_cluster_explosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
             }
             
             break;
@@ -733,74 +673,67 @@ int game(int mission, int *gameModifiers)
                 if (world.plr.health < 0) world.plr.health = 1;
                 world.plr.id = PLAYER_ID;
                 plr_rune_of_protection_active = -50;
-                createClusterExplosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
-                if ((world.gameModifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
+                create_cluster_explosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
+                if ((world.game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
                 {
-                  createClusterExplosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
+                  create_cluster_explosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
                 }
             }
             if (playcount == 0)
-//              play_sample(s_expl[rand() % 6], 200, 127, 800 + rand() % 400, 0);
-                triggerSample(SAMPLE_EXPLOSION(rand() % 6), 200);
+                trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
             playcount = PLAYDELAY;
-            createShadeAroundHitPoint(world.plr.x, world.plr.y, 9, &world);
-            createExplosion(world.plr.x, world.plr.y, &world);
+            create_shade_around_hit_point(world.plr.x, world.plr.y, 9, &world);
+            create_explosion(world.plr.x, world.plr.y, &world);
             if (world.plr.health <= 0)
             {
-              createExplosion(world.plr.x - 20, world.plr.y - 20, &world);
-              createExplosion(world.plr.x + 20, world.plr.y + 20, &world);
-              createExplosion(world.plr.x - 20, world.plr.y + 20, &world);
-              createExplosion(world.plr.x + 20, world.plr.y - 20, &world);
-              //UniqueGameData.deaths++;
-              //StoreUniqueGame(&UniqueGameData);
+              create_explosion(world.plr.x - 20, world.plr.y - 20, &world);
+              create_explosion(world.plr.x + 20, world.plr.y + 20, &world);
+              create_explosion(world.plr.x - 20, world.plr.y + 20, &world);
+              create_explosion(world.plr.x + 20, world.plr.y - 20, &world);
 
               chunkrest(1); // The death sample won't play else
-//              play_sample(s_die[rand() % 6], 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200, 0);
-              triggerSampleWithParams(SAMPLE_DEATH(rand() % 6), 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200);
+              trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200);
               world.plr.reload = 100;
               break;
             }
           }
           int deathsample_plays = 0;
-          if (world.bullets[x].hurtsMonsters)
+          if (world.bullets[x].hurts_monsters)
             for (y = 0; y < ENEMYCOUNT; y++)
             {
-              if (world.enm[y].id == NO_OWNER || world.enm[y].id >= 9000 || world.enm[y].roomid != world.currentRoom)
+              if (world.enm[y].id == NO_OWNER || world.enm[y].id >= 9000 || world.enm[y].roomid != world.current_room)
                 continue;
 
               if (bullet_hit(world.enm + y, world.bullets + x))
               {
-                createShadeAroundHitPoint(world.enm[y].x, world.enm[y].y, 9, &world);
-                createExplosion(world.enm[y].x, world.enm[y].y, &world);
-                createExplosion(world.enm[y].x, world.enm[y].y, &world);
-                createExplosion(world.enm[y].x, world.enm[y].y, &world);
+                create_shade_around_hit_point(world.enm[y].x, world.enm[y].y, 9, &world);
+                create_explosion(world.enm[y].x, world.enm[y].y, &world);
+                create_explosion(world.enm[y].x, world.enm[y].y, &world);
+                create_explosion(world.enm[y].x, world.enm[y].y, &world);
                 if (!deathsample_plays)
                   if (playcount == 0)
-                    triggerSample(SAMPLE_EXPLOSION(rand() % 6), 200);
-                    //play_sample(s_expl[rand() % 6], 200, 127, 800 + rand() % 400, 0);
+                    trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
                     
-                if (world.bullets[x].bulletType == BULLET_TYPE_CLUSTER)
+                if (world.bullets[x].bullet_type == BULLET_TYPE_CLUSTER)
                 {
-                    createClusterExplosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
+                    create_cluster_explosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
                 }
                     
                 playcount = PLAYDELAY;
                 if (world.enm[y].id == NO_OWNER) // enemy was killed (bullet_hit has side effects)
                 {
-                  //world.floorShadeMap[world.currentRoom][world.enm[y].x / TILESIZE][world.enm[y].y / TILESIZE] |= FLOOR_SHADE_MAP_FLAG_BLOOD;
-                  setTileFlag(&world, world.enm[y].x, world.enm[y].y, TILE_IS_BLOOD_STAINED);
-                  //UniqueGameData.kills++;
+                  set_tile_flag(&world, world.enm[y].x, world.enm[y].y, TILE_IS_BLOOD_STAINED);
                   world.plr.gold += world.enm[y].gold;
 
                   if (world.enm[y].gold > 0)
                   {
-                    sprintf(hintText, "+ %d", world.enm[y].gold);
-                    hintX = world.enm[y].x - 15;
-                    hintY = world.enm[y].y - 15;
-                    hintDim = 6;
-                    hint_timeShows = 40;
+                    sprintf(hint_text, "+ %d", world.enm[y].gold);
+                    hint_x = world.enm[y].x - 15;
+                    hint_y = world.enm[y].y - 15;
+                    hint_dim = 6;
+                    hint_time_shows = 40;
                   }
-                  if((world.gameModifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
+                  if((world.game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
                   {
                       if (world.plr.health < 3 && world.plr.health > 0)
                         world.plr.health++;
@@ -812,30 +745,28 @@ int game(int mission, int *gameModifiers)
                   if (world.enm[y].type == ARCH_MAGE) // Archmage dies
                   {
                     printf("boss die logic\n");
-                    boss_logic(&world, &bossWantToShoot, &boss_waypoint, 1);
+                    boss_logic(&world, &boss_want_to_shoot, &boss_waypoint, 1);
                     chunkrest(1);
-//                    play_sample(s_bosstalk2, 255, 127 + (world.enm[y].x - 240) / 8, 1000, 0);
-                    triggerSampleWithParams(SAMPLE_BOSSTALK_2, 255, 127 + (world.enm[y].x - 240) / 8, 1000);
+                    trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (world.enm[y].x - 240) / 8, 1000);
                   }
                   else
                   {
                     chunkrest(1); // The death sample won't play else
                     if (!deathsample_plays)
-//                      play_sample(s_die[rand() % 6], 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200, 0);
-                     triggerSampleWithParams(SAMPLE_DEATH(rand() % 6), 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200);
+                     trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200);
                   }
                   deathsample_plays = 1;
-                  spawnBodyParts(&world.enm[y]);
+                  spawn_body_parts(&world.enm[y]);
                 }
                 break;
               }
             }
         }
-        if (world.bullets[x].bulletType == BULLET_TYPE_NORMAL)
+        if (world.bullets[x].bullet_type == BULLET_TYPE_NORMAL)
         {
             int bullet_sprite = ((int)(world.bullets[x].x + world.bullets[x].y) / 30) % 4;
             masked_blit(world.spr, world.buf, 140 + bullet_sprite * 10, 140, world.bullets[x].x - 5, world.bullets[x].y - 5, 10, 10);
-        } else if (world.bullets[x].bulletType == BULLET_TYPE_CLUSTER)
+        } else if (world.bullets[x].bullet_type == BULLET_TYPE_CLUSTER)
         {
             masked_blit(world.spr, world.buf, 140, 150, world.bullets[x].x - 6, world.bullets[x].y - 6, 13, 12);
         }
@@ -843,191 +774,23 @@ int game(int mission, int *gameModifiers)
 
     draw_map(&world, mission % 3 + 1);
 
-    drawPlayerLegend(&world);
+    draw_player_legend(&world);
     
     completetime++;
 
     // Draw hint
 
-    if (hint_timeShows > 0)
+    if (hint_time_shows > 0)
     {
-      hint_timeShows--;
-      int hint_col = hint_timeShows * hintDim;
-      textprintf_ex(world.buf, font, hintX, hintY, GRAY(hint_col), -1, hintText);
+      hint_time_shows--;
+      int hint_col = hint_time_shows * hint_dim;
+      textprintf_ex(world.buf, font, hint_x, hint_y, GRAY(hint_col), -1, hint_text);
     }
-    if (world.bossFight && ++worldScriptFrameCount >= 3)
+    if (world.boss_fight && ++boss_fight_frame_count >= 3)
     {
-      worldScriptFrameCount = 0;
-      boss_logic(&world, &bossWantToShoot, &boss_waypoint, 0);
+      boss_fight_frame_count = 0;
+      boss_logic(&world, &boss_want_to_shoot, &boss_waypoint, 0);
     }
-    /*if (world.scripting && ++worldScriptFrameCount >= 10)
-    {
-      worldScriptFrameCount = 0;
-
-      Enemy *boss = NULL;
-      if (world.bossFight)
-      {
-        for (x = 0; x < ENEMYCOUNT; x++)
-        {
-          if (world.enm[x].type == ARCH_MAGE)
-          {
-            boss = &world.enm[x];
-            break;
-          }
-        }
-      }
-      int inSameRoom = boss != NULL && boss->roomid == world.currentRoom;
-      double seesPlayer = (inSameRoom && sees_each_other(boss, &world.plr, &world)) ? 1 : 0;
-      setMemScriptParameter(&world.worldScript, "sees-player", seesPlayer);
-      setMemScriptParameter(&world.worldScript, "health", inSameRoom ? boss->health : -1);
-      setMemScriptParameter(&world.worldScript, "my-x", inSameRoom ? boss->x : -1);
-      setMemScriptParameter(&world.worldScript, "my-y", inSameRoom ? boss->y : -1);
-      setMemScriptParameter(&world.worldScript, "player-x", world.plr.x);
-      setMemScriptParameter(&world.worldScript, "player-y", world.plr.y);
-      setMemScriptParameter(&world.worldScript, "player-room", world.currentRoom);
-      setMemScriptParameter(&world.worldScript, "difficulty", difficulty);
-      if (inSameRoom)
-      {
-        runMemScript(&world.worldScript, "progress-frame", NULL);
-        boss->health = getMemScriptParameter(&world.worldScript, "health");
-      }
-      else
-      {
-        runMemScript(&world.worldScript, "progress-frame-not-in-same-room", NULL);
-      }
-      bossMovementStrategy = runMemScript(&world.worldScript, "movement-strategy", NULL);
-      bossWantToShoot = runMemScript(&world.worldScript, "want-to-shoot", NULL);
-
-      setMemScriptParameter(&world.worldScript, "player-health", world.plr.health);
-      setMemScriptParameter(&world.worldScript, "player-magic", world.plr.ammo);
-      setMemScriptParameter(&world.worldScript, "player-gold", world.plr.gold);
-      runMemScript(&world.worldScript, "modify-player", NULL);
-      world.plr.health = getMemScriptParameter(&world.worldScript, "player-health");
-      world.plr.ammo = getMemScriptParameter(&world.worldScript, "player-magic");
-      world.plr.gold = getMemScriptParameter(&world.worldScript, "player-gold");
-
-      int wantToModifyTerrain = runMemScript(&world.worldScript, "want-to-modify-terrain", NULL);
-      int modMapX = 0, modMapY = 0, modMapType = 0;
-      int wantMore;
-      if (wantToModifyTerrain)
-      {
-        do
-        {
-          setMemScriptParameter(&world.worldScript, "x", modMapX);
-          setMemScriptParameter(&world.worldScript, "y", modMapY);
-          setMemScriptParameter(&world.worldScript, "type", modMapType);
-          wantMore = runMemScript(&world.worldScript, "modify-terrain", NULL);
-
-          modMapX = getMemScriptParameter(&world.worldScript, "x");
-          modMapY = getMemScriptParameter(&world.worldScript, "y");
-          modMapType = getMemScriptParameter(&world.worldScript, "type");
-          if (wantMore != 1)
-          {
-            if (modMapType == 1)
-            {
-              world.map[modMapX][modMapY] = createTile(TILE_SYM_FLOOR);
-            }
-            else if (modMapType == 2)
-            {
-              world.map[modMapX][modMapY] = createTile(TILE_SYM_WALL1);
-            }
-            else if (modMapType == 3)
-            {
-              world.map[modMapX][modMapY] = createTile(TILE_SYM_EXIT_LEVEL);
-            }
-            if (modMapType > 0)
-            {
-              triggerSample(SAMPLE_EXPLOSION(rand() % 6), 200);
-             // play_sample(s_expl[rand() % 6], 200, 127, 800 + rand() % 400, 0);
-              createExplosion(modMapX * TILESIZE + TILESIZE / 2, modMapY * TILESIZE + TILESIZE / 2, &world);
-              createExplosion(modMapX * TILESIZE + TILESIZE / 2, modMapY * TILESIZE + TILESIZE / 2, &world);
-              createExplosion(modMapX * TILESIZE + TILESIZE / 2, modMapY * TILESIZE + TILESIZE / 2, &world);
-            }
-          }
-
-          int flags = world.map[modMapX][modMapY].flags;
-          if (flags & TILE_IS_WALL)
-          {
-            modMapType = 2;
-          }
-          else if (flags & TILE_IS_EXIT_LEVEL)
-          {
-            modMapType = 3;
-          }
-          else if (flags & TILE_IS_EXIT_POINT)
-          {
-            modMapType = 4;
-          }
-          else
-          {
-            modMapType = 1;
-          }
-
-          if (wantMore == 1)
-          {
-            if ((int)(world.plr.x / TILESIZE) == modMapX && (int)(world.plr.y / TILESIZE) == modMapY)
-            {
-              modMapType = 11;
-            }
-            else for (int i = 0; i < ENEMYCOUNT; i++)
-            {
-              Enemy *e = &world.enm[i];
-              if (e->id != NO_OWNER && (int)(e->x / TILESIZE) == modMapX && (int)(e->y / TILESIZE) == modMapY)
-              {
-                modMapType = 10;
-                break;
-              }
-            }
-            wantMore = -2;
-          }
-
-        } while (wantMore == -2);
-      }
-
-      int wantToSpawnMonsters = runMemScript(&world.worldScript, "want-to-spawn-monsters", NULL);
-      if (wantToSpawnMonsters)
-      {
-        do
-        {
-          wantMore = runMemScript(&world.worldScript, "spawn-monster", NULL);
-          modMapX = getMemScriptParameter(&world.worldScript, "x");
-          modMapY = getMemScriptParameter(&world.worldScript, "y");
-          modMapType = getMemScriptParameter(&world.worldScript, "type");
-          if (modMapType > 0)
-          {
-            spawnEnemy(modMapX, modMapY, modMapType + 200 - 1, world.currentRoom, &world);
-          }
-        } while (wantMore == -2);
-      }
-
-      int wantToSpawnFireballs = runMemScript(&world.worldScript, "want-to-spawn-fire-balls", NULL);
-      if (wantToSpawnFireballs)
-      {
-        do
-        {
-          wantMore = runMemScript(&world.worldScript, "spawn-fire-ball", NULL);
-          modMapX = getMemScriptParameter(&world.worldScript, "x");
-          modMapY = getMemScriptParameter(&world.worldScript, "y");
-          double dx = getMemScriptParameter(&world.worldScript, "direction-x");
-          double dy = getMemScriptParameter(&world.worldScript, "direction-y");
-          double dirNormalize = 1 / sqrt((dx * dx) + (dy * dy));
-          dx *= dirNormalize;
-          dy *= dirNormalize;
-          shootOneShotAtXy(modMapX, modMapY, dx, dy, boss->id, 0, &world);
-        } while (wantMore == -2);
-      }
-
-      int showText = runMemScript(&world.worldScript, "show-text", NULL);
-      if (showText > -1 && world.worldScript.strings)
-      {
-        hintX = 5;
-        hintY = 5;
-        hintDim = 6;
-        hint_timeShows = 120;
-        strcpy(hintText, world.worldScript.strings[showText].str);
-      }
-      //world.plr.ammo = 15;
-    }*/
 
     if (plr_dir_helper_intensity > 0)
     {
@@ -1042,12 +805,6 @@ int game(int mission, int *gameModifiers)
     
     if (plr_rune_of_protection_active)
     {
-/*      circle(world.buf, world.plr.x + TILESIZE * sin(completetime * 0.1), 
-                        world.plr.y + TILESIZE * cos(completetime * 0.1), 
-                        (1 - sin(completetime * 0.2)) * 3, makecol(0, 166, 0));
-      circle(world.buf, world.plr.x - TILESIZE * sin(completetime * 0.1), 
-                        world.plr.y - TILESIZE * cos(completetime * 0.1), 
-                        (1 - cos(completetime * 0.2)) * 3, makecol(0, 0, 166));*/
         if (plr_rune_of_protection_active < 0)
         {
            plr_rune_of_protection_active++;
@@ -1062,23 +819,23 @@ int game(int mission, int *gameModifiers)
                                13, 13);
     }
     
-    if (flyInTextX > -400)
+    if (fly_in_text_x > -400)
     {
-      textprintf_ex(world.buf, font, flyInTextX, 170, GRAY(255), -1, flyInText);
-      if (flyInTextX > world.buf->w / 8 * 3 && flyInTextX < world.buf->w / 8 * 5)
+      textprintf_ex(world.buf, font, fly_in_text_x, 170, GRAY(255), -1, fly_in_text);
+      if (fly_in_text_x > world.buf->w / 8 * 3 && fly_in_text_x < world.buf->w / 8 * 5)
       {
-        flyInTextX -= 4;
+        fly_in_text_x -= 4;
       }
       else
       {
-        flyInTextX -= 10;
+        fly_in_text_x -= 10;
       }
     }
 
     int offset = 2 * vibrations - rand() % (1 + 2 * vibrations);
     if (world.plr.health > 0)
     {
-      stretch_blit(world.buf, screen, 0, 0, 480, 360, offset + screenHOffset, offset + screenVOffset, screenWidthScaled, screenHeightScaled);
+      stretch_blit(world.buf, screen, 0, 0, 480, 360, offset + screen_h_offset, offset + screen_v_offset, screen_width_scaled, screen_height_scaled);
     }
     else
     {
@@ -1095,13 +852,13 @@ int game(int mission, int *gameModifiers)
       endy = world.plr.reload * 2 * 0.75;
       if (starty + endy > 360)
         endy = 360 - starty;
-      stretch_blit(world.buf, screen, startx, starty, endx, endy, screenHOffset, screenVOffset, screenWidthScaled, screenHeightScaled);
+      stretch_blit(world.buf, screen, startx, starty, endx, endy, screen_h_offset, screen_v_offset, screen_width_scaled, screen_height_scaled);
       chunkrest(20);
       if (world.plr.reload <= 0)
         break;
     }
 
-    //playMP3();
+    //play_mp3();
     if (key[KEY_B])
     {
       char fname[123];
@@ -1114,47 +871,32 @@ int game(int mission, int *gameModifiers)
     if (key[KEY_ESC])
     {
 
-      hint_timeShows = 0;
-      int switchLevel = menu(1, &plrautosave, &mission, gameModifiers);
-      if (switchLevel)
+      hint_time_shows = 0;
+      int switch_level = menu(1, &plrautosave, &mission, game_modifiers);
+      if (switch_level)
       {
         break;
       }
-      drawStaticBackground();
+      draw_static_background();
     }
   }
   
-  if (recordMode == RECORD_MODE_RECORD)
+  if (record_mode == RECORD_MODE_RECORD)
   {
-    produceAndWriteContinuousData(keyPresses, keyPressBufferIdx + 1, &keyPressBufferIdx, fKeyPresses, timeStamp, 999, 999);
-    fclose(fKeyPresses);
+    produce_and_write_continuous_data(key_presses, key_press_buffer_idx + 1, &key_press_buffer_idx, f_key_presses, time_stamp, 999, 999);
+    fclose(f_key_presses);
   }
 
-  /*if (world.worldScriptInited)
-  {
-    freeMemScript(&world.worldScript);
-  }*/
 
   destroy_bitmap(world.buf);
   destroy_bitmap(world.spr);
-  destroy_bitmap(world.explosSpr);
+  destroy_bitmap(world.explos_spr);
   destroy_bitmap(bmp_levclear);
-  /*destroy_sample(s_throw);
-  destroy_sample(s_sel);
-
-  destroy_sample(s_bosstalk1);
-  destroy_sample(s_bosstalk2);
-
-  for (i = 0; i < 6; i++)
-  {
-    destroy_sample(s_expl[i]);
-    destroy_sample(s_die[i]);
-  }*/
 
   return mission;
 }
 
-void initAllegro()
+void init_allegro()
 {
   srand((int)time(NULL));
   allegro_init();
@@ -1162,7 +904,6 @@ void initAllegro()
 
   set_color_depth(32);
   install_keyboard();
-  //install_mouse();
 
   if (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) != 0)
   {
@@ -1170,15 +911,15 @@ void initAllegro()
     exit(1);
   }
 
-  int w = gameSettings.screenWidth;
-  int h = gameSettings.screenHeight;
-  int fullScreen = gameSettings.screenMode == 1;
-  if (fullScreen)
+  int w = game_settings.screen_width;
+  int h = game_settings.screen_height;
+  int full_screen = game_settings.screen_mode == 1;
+  if (full_screen)
   {
    printf("starting in fullscreen\n");
-   fullScreen = !set_gfx_mode(GFX_AUTODETECT_FULLSCREEN, w, h, 0, 0);
+   full_screen = !set_gfx_mode(GFX_AUTODETECT_FULLSCREEN, w, h, 0, 0);
   }
-  if (!fullScreen)
+  if (!full_screen)
   {
     if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 960, 720, 0, 0))
     {

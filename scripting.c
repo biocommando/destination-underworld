@@ -239,7 +239,7 @@ double runScript_obsolete(char *fname, double *p, int memSize)
 		}
 		if (!strcmp(a, "random"))
 		{
-			double r = (double)(prGetRandom() % 10000) / 10000.0;
+			double r = (double)(pr_get_random() % 10000) / 10000.0;
 			double min = *cmdf[2];
 			double max = *cmdf[3];
 			*cmdf[1] = min + r * (max - min);
@@ -961,7 +961,7 @@ double runMemScriptFromPosition(MemScript *script, int command_position, void (*
 		int cmdType = memCmd.type;
 		if (cmdType == CT_RANDOM)
 		{
-			const double r = (double)(prGetRandom() % 30000) / 30000.0;
+			const double r = (double)(pr_get_random() % 30000) / 30000.0;
 			const double min = *b;
 			const double max = *c;
 			*a = min + r * (max - min);

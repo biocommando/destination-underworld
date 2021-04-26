@@ -35,7 +35,7 @@ int chunkrest_step(int ms, int step)
  int i;
  for (i = 0; i < ms; i += step)
  {
-  playMP3();
+  play_mp3();
   dynamic_scaling_rest(step);
  }
  return i - ms;

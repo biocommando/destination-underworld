@@ -1,6 +1,6 @@
 #include "continuousData.h"
 
-int readContinuousDataBuffer(ContinuousData *buffer, int sz, FILE *f)
+int read_continuous_data_buffer(ContinuousData *buffer, int sz, FILE *f)
 {
     char s[256];
     int i = 0;
@@ -9,60 +9,59 @@ int readContinuousDataBuffer(ContinuousData *buffer, int sz, FILE *f)
         fgets(s, 256, f);
         int a;
         long b, c;
-        int readValues = sscanf(s, "%d@%lu:%lu", &a, &b, &c);
-        if (readValues == 3)
+        int read_values = sscanf(s, "%d@%lu:%lu", &a, &b, &c);
+        if (read_values == 3)
         {
-            buffer[i].dataTypeId = a;
-            buffer[i].timeStamp = b;
-            buffer[i].dataValue = c;
+            buffer[i].data_type_id = a;
+            buffer[i].time_stamp = b;
+            buffer[i].data_value = c;
             i++;
         }
     }
     return i;
 }
 
-void writeContinuousDataBuffer(ContinuousData *buffer, int sz, FILE *f)
+void write_continuous_data_buffer(ContinuousData *buffer, int sz, FILE *f)
 {
     for (int i = 0; i < sz; i++)
     {
         ContinuousData *d = buffer + i;
-        fprintf(f, "%d@%u:%u\n", d->dataTypeId, d->timeStamp, d->dataValue);
+        fprintf(f, "%d@%u:%u\n", d->data_type_id, d->time_stamp, d->data_value);
     }
 }
 
-void produceAndWriteContinuousData(ContinuousData *buffer, int sz, int *idx, FILE *f, long timeStamp, int id, long value)
+void produce_and_write_continuous_data(ContinuousData *buffer, int sz, int *idx, FILE *f, long time_stamp, int id, long value)
 {
-    // printf("writing @idx=%d, %d:%d\n", *idx, id, value);
-    buffer[*idx].dataTypeId = id;
-    buffer[*idx].timeStamp = timeStamp;
-    buffer[*idx].dataValue = value;
+    buffer[*idx].data_type_id = id;
+    buffer[*idx].time_stamp = time_stamp;
+    buffer[*idx].data_value = value;
     *idx = *idx + 1;
     if (*idx == sz)
     {
-        writeContinuousDataBuffer(buffer, sz, f);
+        write_continuous_data_buffer(buffer, sz, f);
         *idx = 0;
     }
 }
 
-int readAndProcessContinuousData(ContinuousData *buffer, int *sz, int *idx, FILE *f, long timeStamp, 
-    void (*callback)(ContinuousData*,void*), void *callbackArg)
+int read_and_process_continuous_data(ContinuousData *buffer, int *sz, int *idx, FILE *f, long time_stamp, 
+    void (*callback)(ContinuousData*,void*), void *callback_arg)
 {
     if (*idx == -1)
     {
-        *sz = readContinuousDataBuffer(buffer, *sz, f);
+        *sz = read_continuous_data_buffer(buffer, *sz, f);
         if (*sz == 0) return 0;
         *idx = 0;
     }
-    while (buffer[*idx].timeStamp == timeStamp)
+    while (buffer[*idx].time_stamp == time_stamp)
     {
-        callback(&buffer[*idx], callbackArg);
+        callback(&buffer[*idx], callback_arg);
         *idx = *idx + 1;
         if (*idx == *sz)
         {
-            *sz = readContinuousDataBuffer(buffer, *sz, f);
+            *sz = read_continuous_data_buffer(buffer, *sz, f);
             if (*sz == 0) return 0;
             *idx = 0;
-            return readAndProcessContinuousData(buffer, sz, idx, f, timeStamp, callback, callbackArg);
+            return read_and_process_continuous_data(buffer, sz, idx, f, time_stamp, callback, callback_arg);
         }
     }
     return 1;

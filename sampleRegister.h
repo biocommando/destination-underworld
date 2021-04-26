@@ -2,13 +2,13 @@
 #define SAMPLEREGISTER_H
 #include "allegro.h"
 
-void registerSample(int id, const char *fname);
+void register_sample(int id, const char *fname);
 
-void triggerSample(int id, int volume);
-void triggerSampleWithParams(int id, int volume, int pan, int pitch);
+void trigger_sample(int id, int volume);
+void trigger_sample_with_params(int id, int volume, int pan, int pitch);
 
-void resetSampleTriggers();
+void reset_sample_triggers();
 
-void destroyRegisteredSamples();
+void destroy_registered_samples();
 
 #endif

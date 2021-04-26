@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include "iniRead.h"
 
-void iniReadCharValue(FILE *file, char *segment, char *key, char *value)
+void ini_read_string_value(FILE *file, char *segment, char *key, char *value)
 {
 	fseek(file, SEEK_SET, 0);
 	char s[256] = "";
-	int segmentFound = 0;
+	int segment_found = 0;
 	while (!feof(file))
 	{
 		int i;
@@ -17,7 +17,7 @@ void iniReadCharValue(FILE *file, char *segment, char *key, char *value)
             fgets(s, 256, file);
 			continue;
         }
-		char *xSegment = NULL, *xKey = s, *xValue = NULL;
+		char *x_segment = NULL, *x_key = s, *x_value = NULL;
 		for (i = 0; i < 256; i++)
 		{
 			char c = s[i];
@@ -25,26 +25,26 @@ void iniReadCharValue(FILE *file, char *segment, char *key, char *value)
 				break;
 			if (c == '[')
 			{
-				xSegment = &s[i + 1];
-				segmentFound = 0;
+				x_segment = &s[i + 1];
+				segment_found = 0;
 			}
-			else if (c == ']' && xSegment != NULL)
+			else if (c == ']' && x_segment != NULL)
 			{
 				s[i] = 0;
-				if (!strcmp(segment, xSegment))
+				if (!strcmp(segment, x_segment))
 				{
-					segmentFound = 1;
+					segment_found = 1;
 				}
 				break;
 			}
-			else if (xSegment != NULL || segmentFound)
+			else if (x_segment != NULL || segment_found)
 			{
 				if (c == '=')
 				{
 					s[i] = 0;
-					if (!strcmp(key, xKey))
+					if (!strcmp(key, x_key))
 					{
-						xValue = &s[i + 1];
+						x_value = &s[i + 1];
 					}
 				}
 				else if (c == '\n')
@@ -53,29 +53,29 @@ void iniReadCharValue(FILE *file, char *segment, char *key, char *value)
 				}
 			}
 		}
-		if (xValue != NULL)
+		if (x_value != NULL)
 		{
-			strcpy(value, xValue);
+			strcpy(value, x_value);
 			break;
 		}
 		fgets(s, 256, file);
 	}
 }
 
-int iniReadIntValue(FILE *file, char *segment, char *key)
+int ini_read_int_value(FILE *file, char *segment, char *key)
 {
 	char value[256] = "";
-	iniReadCharValue(file, segment, key, value);
-	int iValue = 0;
-	sscanf(value, "%d", &iValue);
-	return iValue;
+	ini_read_string_value(file, segment, key, value);
+	int i_value = 0;
+	sscanf(value, "%d", &i_value);
+	return i_value;
 }
 
-double iniReadDoubleValue(FILE *file, char *segment, char *key)
+double ini_read_double_value(FILE *file, char *segment, char *key)
 {
 	char value[256] = "";
-	iniReadCharValue(file, segment, key, value);
-	int dValue = 0;
-	sscanf(value, "%lf", &dValue);
-	return dValue;
+	ini_read_string_value(file, segment, key, value);
+	int d_value = 0;
+	sscanf(value, "%lf", &d_value);
+	return d_value;
 }

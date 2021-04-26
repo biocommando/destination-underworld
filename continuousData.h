@@ -3,13 +3,13 @@
 #include <stdio.h>
 
 typedef struct {
-    int dataTypeId;
-    long timeStamp;
-    long dataValue;
+    int data_type_id;
+    long time_stamp;
+    long data_value; 
 } ContinuousData;
 
-void produceAndWriteContinuousData(ContinuousData *buffer, int sz, int *idx, FILE *f, long timeStamp, int id, long value);
-int readAndProcessContinuousData(ContinuousData *buffer, int *sz, int *idx, FILE *f, long timeStamp, 
-    void (*callback)(ContinuousData*,void*), void *callbackArg);
+void produce_and_write_continuous_data(ContinuousData *buffer, int sz, int *idx, FILE *f, long time_stamp, int id, long value);
+int read_and_process_continuous_data(ContinuousData *buffer, int *sz, int *idx, FILE *f, long time_stamp, 
+    void (*callback)(ContinuousData*,void*), void *callback_arg);
 
 #endif

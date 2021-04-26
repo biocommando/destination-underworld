@@ -14,10 +14,10 @@ MP3FILE *open_mp3_file(char *filename);
 int poll_mp3_file(MP3FILE *mp3);
 void close_mp3_file(MP3FILE *mp3);
 int play_mp3_file(MP3FILE *mp3, int buflen, int vol, int pan);
-void nextTrack();
-void playMP3();
+void next_track();
+void play_mp3();
 
-void playMp3InThread();
+void play_mp3_in_thread();
         
     
 #endif

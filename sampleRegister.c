@@ -1,48 +1,47 @@
 #include "sampleRegister.h"
 
-int sampleRegIdx = 0;
+int sample_reg_idx = 0;
 
 struct {
          int id;
          int triggered;
          SAMPLE *sample;
-       } sampleRegister[64];
+       } sample_register[64];
 
-void registerSample(int id, const char *filename)
+void register_sample(int id, const char *filename)
 {
-     if (sampleRegIdx < 64)
+     if (sample_reg_idx < 64)
      {
-       sampleRegister[sampleRegIdx].id = id;
-       sampleRegister[sampleRegIdx].sample = load_sample(filename);
-       //printf("Registered sample %d %d %s\n", sampleRegIdx, id, filename);
-       sampleRegIdx++;
+       sample_register[sample_reg_idx].id = id;
+       sample_register[sample_reg_idx].sample = load_sample(filename);
+       sample_reg_idx++;
      }
 }
 
-void triggerSampleWithParams(int id, int volume, int pan, int pitch)
+void trigger_sample_with_params(int id, int volume, int pan, int pitch)
 {
- for (int i = sampleRegIdx - 1; i >= 0; i--)
+ for (int i = sample_reg_idx - 1; i >= 0; i--)
  {
-  if (sampleRegister[i].id == id)
+  if (sample_register[i].id == id)
   {
-    if (!sampleRegister[i].triggered) play_sample(sampleRegister[i].sample, volume, pan, pitch, 0);
-    sampleRegister[i].triggered = 0;
+    if (!sample_register[i].triggered) play_sample(sample_register[i].sample, volume, pan, pitch, 0);
+    sample_register[i].triggered = 0;
     return;
   }
  }
 }
 
-void triggerSample(int id, int volume)
+void trigger_sample(int id, int volume)
 {
- triggerSampleWithParams(id, volume, 127, 800 + rand() % 400);
+ trigger_sample_with_params(id, volume, 127, 800 + rand() % 400);
 }
 
-void resetSampleTriggers()
+void reset_sample_triggers()
 {
- for (int i = sampleRegIdx - 1; i >= 0; i--) sampleRegister[i].triggered = 0;
+ for (int i = sample_reg_idx - 1; i >= 0; i--) sample_register[i].triggered = 0;
 }
 
-void destroyRegisteredSamples()
+void destroy_registered_samples()
 {
-     for (int i = sampleRegIdx - 1; i >= 0; i--) destroy_sample(sampleRegister[i].sample);
+     for (int i = sample_reg_idx - 1; i >= 0; i--) destroy_sample(sample_register[i].sample);
 }

@@ -5,21 +5,20 @@
 #include "helpers.h"
 #include "predictableRandom.h"
 
-//extern struct gamedata UniqueGameData;
-extern GameSettings gameSettings; 
+extern GameSettings game_settings; 
 
-int isPassable(World *world, int x, int y)
+int is_passable(World *world, int x, int y)
 {
-    return !checkFlagsAt(world, x, y, TILE_IS_BLOCKER);
+    return !check_flags_at(world, x, y, TILE_IS_BLOCKER);
 }
 
-void clearRestrictedTiles(World *world, int id)
+void clear_restricted_tiles(World *world, int id)
 {
     for (int x = 0; x < MAPMAX_X; x++)
     {
         for (int y = 0; y < MAPMAX_Y; y++)
         {
-            if (ns_checkFlagsAt(world, x, y, TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION) && ns_getTileAt(world, x, y).data == id)
+            if (ns_check_flags_at(world, x, y, TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION) && ns_get_tile_at(world, x, y).data == id)
             {
                 world->map[x][y].flags &= ~(TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION | TILE_IS_BLOCKER);
                 world->map[x][y].flags |= TILE_IS_FLOOR;
@@ -28,7 +27,7 @@ void clearRestrictedTiles(World *world, int id)
     }
 }
 
-double calcSqrDistance(double x1, double y1, double x2, double y2)
+double calc_sqr_distance(double x1, double y1, double x2, double y2)
 {
     return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
@@ -43,19 +42,19 @@ void move_enemy(Enemy *enm, World *world)
         return;
     int animate = 0;
     int ex = enm->x, ey = enm->y;
-    int xCheck = enm->x + enm->dx * HALFTILESIZE;
-    int yCheck = enm->y + enm->dy * HALFTILESIZE;
+    int x_check = enm->x + enm->dx * HALFTILESIZE;
+    int y_check = enm->y + enm->dy * HALFTILESIZE;
     if (enm->dx != 0 &&
-        isPassable(world, xCheck, enm->y) && isPassable(world, xCheck, enm->y - THIRDTILESIZE) && isPassable(world, xCheck, enm->y + THIRDTILESIZE))
+        is_passable(world, x_check, enm->y) && is_passable(world, x_check, enm->y - THIRDTILESIZE) && is_passable(world, x_check, enm->y + THIRDTILESIZE))
     {
-        if (!isPassable(world, xCheck, enm->y - THIRDTILESIZE * 1.3))
+        if (!is_passable(world, x_check, enm->y - THIRDTILESIZE * 1.3))
             enm->y = (enm->y + TILESIZE / 2) / TILESIZE * TILESIZE + HALFTILESIZE;
-        if (!isPassable(world, xCheck, enm->y + THIRDTILESIZE * 1.3))
+        if (!is_passable(world, x_check, enm->y + THIRDTILESIZE * 1.3))
             enm->y = enm->y / TILESIZE * TILESIZE + HALFTILESIZE;
         enm->x += enm->dx;
         animate = 1;
     }
-    if (enm->dy != 0 && isPassable(world, enm->x, yCheck) && isPassable(world, enm->x - THIRDTILESIZE * 1.4, yCheck))
+    if (enm->dy != 0 && is_passable(world, enm->x, y_check) && is_passable(world, enm->x - THIRDTILESIZE * 1.4, y_check))
     {
         enm->y += enm->dy;
         animate = 1;
@@ -68,37 +67,30 @@ void move_enemy(Enemy *enm, World *world)
     }
 
     if ((enm->x >= world->buf->w || enm->x < 0 || enm->y >= world->buf->h || enm->y < 0) ||
-        (enm->id != PLAYER_ID && (checkFlagsAt(world, enm->x, enm->y, TILE_IS_EXIT_POINT))))
+        (enm->id != PLAYER_ID && (check_flags_at(world, enm->x, enm->y, TILE_IS_EXIT_POINT))))
     {
         enm->x = ex;
         enm->y = ey;
     }
 
-    if (enm->id == PLAYER_ID && (checkFlagsAt(world, enm->x, enm->y, TILE_IS_CLEAR_RESTRICTION)))
+    if (enm->id == PLAYER_ID && (check_flags_at(world, enm->x, enm->y, TILE_IS_CLEAR_RESTRICTION)))
     {
-        //printf("Clear restr found: %d\n", getTileAt(world, enm->x, enm->y).data);
-        clearRestrictedTiles(world, getTileAt(world, enm->x, enm->y).data);
+        clear_restricted_tiles(world, get_tile_at(world, enm->x, enm->y).data);
     }
-    /*if(enm->id == PLAYER_ID)
-    {
-        FILE *f = fopen("log.txt", "a");
-        fprintf(f,"%d,%d %d\n", enm->x, enm->y, getTileAt(world, enm->x, enm->y).flags);
-        fclose(f);
-    }*/
 }
 
-void createShadeAroundHitPoint(int x, int y, int spread, World *world)
+void create_shade_around_hit_point(int x, int y, int spread, World *world)
 {
     for (int xx = 0; xx < MAPMAX_X; xx++)
     {
         for (int yy = 0; yy < MAPMAX_Y; yy++)
         {
-            int sqrDist = (int)calcSqrDistance(x / TILESIZE, y / TILESIZE, xx, yy);
-            if (sqrDist < spread)
+            int sqr_dist = (int)calc_sqr_distance(x / TILESIZE, y / TILESIZE, xx, yy);
+            if (sqr_dist < spread)
             {
-                int shadeDiff = 4 - sqrt(sqrDist);
-                world->floorShadeMap[world->currentRoom - 1][xx][yy] += imax(shadeDiff, 1);
-                climit(&world->floorShadeMap[world->currentRoom - 1][xx][yy], 9);
+                int shade_diff = 4 - sqrt(sqr_dist);
+                world->floor_shade_map[world->current_room - 1][xx][yy] += imax(shade_diff, 1);
+                climit(&world->floor_shade_map[world->current_room - 1][xx][yy], 9);
             }
         }
     }
@@ -109,9 +101,9 @@ void move_bullet(Bullet *bb, World *world)
     if (bb->owner_id == NO_OWNER)
         return;
     // Enemy restricts are blockers but not walls, also allows adding e.g. shoot through walls
-    if (!checkFlagsAt(world, (int)bb->x + (int)bb->dx, (int)bb->y, TILE_IS_WALL) &&
-        !checkFlagsAt(world, (int)bb->x, (int)bb->y + (int)bb->dy, TILE_IS_WALL) &&
-        !checkFlagsAt(world, (int)bb->x + (int)bb->dx, (int)bb->y + (int)bb->dy, TILE_IS_WALL) &&
+    if (!check_flags_at(world, (int)bb->x + (int)bb->dx, (int)bb->y, TILE_IS_WALL) &&
+        !check_flags_at(world, (int)bb->x, (int)bb->y + (int)bb->dy, TILE_IS_WALL) &&
+        !check_flags_at(world, (int)bb->x + (int)bb->dx, (int)bb->y + (int)bb->dy, TILE_IS_WALL) &&
         bb->x < 480 && bb->x > 0 && bb->y < 360 && bb->y > 0)
     {
         bb->x += bb->dx;
@@ -119,16 +111,16 @@ void move_bullet(Bullet *bb, World *world)
     }
     else
     {
-        createShadeAroundHitPoint((int)bb->x, (int)bb->y, 4, world);
+        create_shade_around_hit_point((int)bb->x, (int)bb->y, 4, world);
         bb->owner_id = NO_OWNER;
     }
 }
-double randomizedBulletDirection(double dir)
+double randomized_bullet_direction(double dir)
 {
-    return dir + 0.03 - 0.01 * (prGetRandom() % 7);
+    return dir + 0.03 - 0.01 * (pr_get_random() % 7);
 }
 
-Bullet *getNextAvailableBullet(World *world)
+Bullet *get_next_available_bullet(World *world)
 {
     for (int i = 0; i < BULLETCOUNT; i++)
     {
@@ -141,17 +133,17 @@ Bullet *getNextAvailableBullet(World *world)
     return world->bullets;
 }
 
-int shootOneShotAtXy(double x, double y, double dx, double dy, int enm_id, int hurtsMonsters, World *world)
+int shoot_one_shot_at_xy(double x, double y, double dx, double dy, int enm_id, int hurts_monsters, World *world)
 {
-    int numShots = (world->gameModifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? 2 : 1;
-    for (int i = 0; i < numShots; i++)
+    int num_shots = (world->game_modifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? 2 : 1;
+    for (int i = 0; i < num_shots; i++)
     {
-        Bullet *bb = getNextAvailableBullet(world);
+        Bullet *bb = get_next_available_bullet(world);
     
         if (dx != 0 || dy != 0)
         {
-            bb->dx = randomizedBulletDirection(dx);
-            bb->dy = randomizedBulletDirection(dy);
+            bb->dx = randomized_bullet_direction(dx);
+            bb->dy = randomized_bullet_direction(dy);
         }
         else
             return 0;
@@ -160,18 +152,14 @@ int shootOneShotAtXy(double x, double y, double dx, double dy, int enm_id, int h
         bb->y = y;
     
         bb->owner_id = enm_id;
-/*        if (bb->owner_id == PLAYER_ID)
-        {
-            UniqueGameData.fireballs++;
-        }*/
     
-        bb->hurtsMonsters = hurtsMonsters;
-        bb->bulletType = BULLET_TYPE_NORMAL;
+        bb->hurts_monsters = hurts_monsters;
+        bb->bullet_type = BULLET_TYPE_NORMAL;
     }
     return 1;
 }
 
-int shootOneShot(Enemy *enm, World *world)
+int shoot_one_shot(Enemy *enm, World *world)
 {
     if (enm->ammo == 0)
     {
@@ -181,9 +169,9 @@ int shootOneShot(Enemy *enm, World *world)
     {
         enm->ammo--;
     }
-    int hurtsMonsters = enm->type == ALIEN_TURRET || enm->type == TURRET || enm->type == PLAYER;
+    int hurts_monsters = enm->type == ALIEN_TURRET || enm->type == TURRET || enm->type == PLAYER;
 
-    return shootOneShotAtXy(enm->x, enm->y, enm->dx, enm->dy, enm->id, hurtsMonsters, world);
+    return shoot_one_shot_at_xy(enm->x, enm->y, enm->dx, enm->dy, enm->id, hurts_monsters, world);
 }
 
 // Returns 1 if shoot sample should be played
@@ -197,8 +185,8 @@ int shoot(Enemy *enm, World *world)
     int sample_plays = 0;
     for (int i = 0; i < enm->shots; i++)
     {
-        int ammoLeft = shootOneShot(enm, world);
-        if (!ammoLeft)
+        int ammo_left = shoot_one_shot(enm, world);
+        if (!ammo_left)
         {
             break;
         }
@@ -238,7 +226,7 @@ int sees_each_other(Enemy *e1, Enemy *e2, World *world)
     // a proper unit vector, maybe some stupid optimization?)
     double dx = (double)(e2->x - e1->x) / 32;
     double dy = (double)(e2->y - e1->y) / 32;
-    while (isPassable(world, x, y))
+    while (is_passable(world, x, y))
     {
         x += dx;
         y += dy;
@@ -250,18 +238,18 @@ int sees_each_other(Enemy *e1, Enemy *e2, World *world)
     return 0;
 }
 
-void bounceBodyParts(int x, int y, World *world)
+void bounce_body_parts(int x, int y, World *world)
 {
     // Make existing bodyparts bounce all over the place
     for (int i = 0; i < ENEMYCOUNT; i++)
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
             BodyPart *bp = &world->enm[i].bodyparts[j];
-            if (!bp->exists || world->enm[i].roomid != world->currentRoom || bp->velocity >= 20)
+            if (!bp->exists || world->enm[i].roomid != world->current_room || bp->velocity >= 20)
             {
                 continue;
             }
-            double distance = calcSqrDistance(x, y, bp->x, bp->y);
+            double distance = calc_sqr_distance(x, y, bp->x, bp->y);
             if (distance < 8100) // 90^2
             {
                 distance = sqrt(distance) + 1; // +1 to ensure non-zero divider
@@ -275,28 +263,28 @@ void bounceBodyParts(int x, int y, World *world)
         }
 }
 
-void createExplosion(int x, int y, World *world)
+void create_explosion(int x, int y, World *world)
 {
-    static int explosionCounter = 0;
+    static int explosion_counter = 0;
 
-    world->explosion[explosionCounter].x = x - 16 + prGetRandom() % 32;
-    world->explosion[explosionCounter].y = y - 16 + prGetRandom() % 32;
-    world->explosion[explosionCounter].phase = prGetRandom() % 5;
-    world->explosion[explosionCounter].sprite = prGetRandom() % 16;
-    world->explosion[explosionCounter].exists = 1;
-    if (++explosionCounter == EXPLOSIONCOUNT)
+    world->explosion[explosion_counter].x = x - 16 + pr_get_random() % 32;
+    world->explosion[explosion_counter].y = y - 16 + pr_get_random() % 32;
+    world->explosion[explosion_counter].phase = pr_get_random() % 5;
+    world->explosion[explosion_counter].sprite = pr_get_random() % 16;
+    world->explosion[explosion_counter].exists = 1;
+    if (++explosion_counter == EXPLOSIONCOUNT)
     {
-        explosionCounter = 0;
+        explosion_counter = 0;
     }
-    bounceBodyParts(x, y, world);
+    bounce_body_parts(x, y, world);
 }
 
-Enemy *getNextAvailableEnemy(World *world, int *index)
+Enemy *get_next_available_enemy(World *world, int *index)
 {
     int fallback = 1;
     for (int i = 1; i < ENEMYCOUNT; i++)
     {
-        if (world->enm[i].formerId == NO_OWNER)
+        if (world->enm[i].former_id == NO_OWNER)
         {
             if (index != NULL)
             {
@@ -316,7 +304,7 @@ Enemy *getNextAvailableEnemy(World *world, int *index)
     return &world->enm[fallback];
 }
 
-void clearMap(World *world)
+void clear_map(World *world)
 {
     for (int x = 0; x < MAPMAX_X; x++)
     {
@@ -328,88 +316,85 @@ void clearMap(World *world)
     }
 }
 
-Enemy *spawnEnemy(int x, int y, int type, int roomId, World *world)
+Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
 {
     int index;
-    Enemy *newEnemy = getNextAvailableEnemy(world, &index);
+    Enemy *new_enemy = get_next_available_enemy(world, &index);
     int enemytype = (type - 200);
 
-    newEnemy->id = 1000 * enemytype + index + 1;
-    newEnemy->formerId = newEnemy->id;
-    newEnemy->x = x * TILESIZE + HALFTILESIZE;
-    newEnemy->y = y * TILESIZE + HALFTILESIZE;
-    newEnemy->move = 0;
-    newEnemy->rate = 25 - 5 * enemytype;
-    newEnemy->health = 2 + enemytype * 3 / 2;
-    int difficulty = (world->gameModifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+    new_enemy->id = 1000 * enemytype + index + 1;
+    new_enemy->former_id = new_enemy->id;
+    new_enemy->x = x * TILESIZE + HALFTILESIZE;
+    new_enemy->y = y * TILESIZE + HALFTILESIZE;
+    new_enemy->move = 0;
+    new_enemy->rate = 25 - 5 * enemytype;
+    new_enemy->health = 2 + enemytype * 3 / 2;
+    int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
     
-    if (difficulty == DIFFICULTY_BRUTAL) newEnemy->health++; 
+    if (difficulty == DIFFICULTY_BRUTAL) new_enemy->health++; 
 
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
-        newEnemy->bodyparts[j].exists = 0;
+        new_enemy->bodyparts[j].exists = 0;
     }
     if (enemytype == 5)
     {
-        newEnemy->rate = world->bossFightConfig.fire_rate;
-        /*newEnemy->health = 50;
-        if (difficulty == DIFFICULTY_BRUTAL) newEnemy->health = 100;*/
-        newEnemy->health = world->bossFightConfig.health;
+        new_enemy->rate = world->boss_fight_config.fire_rate;
+        new_enemy->health = world->boss_fight_config.health;
     }
-    newEnemy->roomid = roomId;
+    new_enemy->roomid = room_id;
     if (enemytype > 1)
-        newEnemy->gold = 1;
+        new_enemy->gold = 1;
     else
-        newEnemy->gold = 0;
+        new_enemy->gold = 0;
         
-    if (newEnemy->id < 1000)
+    if (new_enemy->id < 1000)
     {
-        newEnemy->type = ADEPT;
+        new_enemy->type = ADEPT;
     }
-    else if (newEnemy->id < 2000)
+    else if (new_enemy->id < 2000)
     {
-        newEnemy->type = MAGICIAN;
+        new_enemy->type = MAGICIAN;
     }
-    else if (newEnemy->id < 3000)
+    else if (new_enemy->id < 3000)
     {
-        newEnemy->type = IMP;
+        new_enemy->type = IMP;
     }
-    else if (newEnemy->id < 4000)
+    else if (new_enemy->id < 4000)
     {
-        newEnemy->type = ALIEN;
+        new_enemy->type = ALIEN;
     }
-    else if (newEnemy->id < 5000)
+    else if (new_enemy->id < 5000)
     {
-        newEnemy->type = ALIEN_TURRET;
+        new_enemy->type = ALIEN_TURRET;
     }
-    else if (newEnemy->id < 6000)
+    else if (new_enemy->id < 6000)
     {
-        newEnemy->type = ARCH_MAGE;
+        new_enemy->type = ARCH_MAGE;
     }
     else
     {
-        newEnemy->type = TURRET;
+        new_enemy->type = TURRET;
     }
-    return newEnemy;
+    return new_enemy;
 }
 
-int readLevel(World *world, const char *missionName, int roomTo)
+int read_level(World *world, const char *mission_name, int room_to)
 {
     char buf[256];
 
-    int roomFrom = world->currentRoom;
+    int room_from = world->current_room;
 
-    clearMap(world);
+    clear_map(world);
 
-    world->bossFight = 0;
-//    world->scripting = 0;
+    world->boss_fight = 0;
 
     char special_filename[256];
-    sprintf(special_filename, "%s.mode.%d", missionName, world->gameModifiers);
+    sprintf(special_filename, "%s.mode.%d", mission_name, world->game_modifiers);
     FILE *f = fopen(special_filename, "r");
     if (f == NULL)
     {
-        f = fopen(missionName, "r");
+        f = fopen(mission_name, "r");
         if (f == NULL)
             return -1;
     }
@@ -417,19 +402,19 @@ int readLevel(World *world, const char *missionName, int roomTo)
     fgets(buf, 256, f); // version
     fgets(buf, 256, f); // dimensions
     fgets(buf, 256, f);
-    int objectCount = 0;
-    sscanf(buf, "%d", &objectCount);
-    while (objectCount-- > 0)
+    int object_count = 0;
+    sscanf(buf, "%d", &object_count);
+    while (object_count-- > 0)
     {
         fgets(buf, 256, f);
         int id, x, y, room;
         sscanf(buf, "%d %d %d %d", &id, &x, &y, &room);
-        if (room == roomTo)
+        if (room == room_to)
         {
-            Tile tile = createTile(id);
+            Tile tile = create_tile(id);
             if (!(tile.flags & TILE_UNRECOGNIZED))
             {
-                if (tile.flags & TILE_IS_EXIT_POINT && tile.data == roomFrom)
+                if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_from)
                 {
                     world->plr.x = x * TILESIZE + 15;
                     world->plr.y = y * TILESIZE + 15;
@@ -438,9 +423,9 @@ int readLevel(World *world, const char *missionName, int roomTo)
                     if (world->plr.y < 0) world->plr.y = 0;
                     if (world->plr.y >= 360) world->plr.y = 360 - 1;
                 }
-                if (tile.flags & TILE_IS_EXIT_POINT && tile.data == roomTo) // eka huone
+                if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_to) // eka huone
                 {
-                    tile = createTile(TILE_SYM_FLOOR);
+                    tile = create_tile(TILE_SYM_FLOOR);
                 }
                 world->map[x][y].flags |= tile.flags;
                 if (tile.data != 0)
@@ -448,50 +433,34 @@ int readLevel(World *world, const char *missionName, int roomTo)
                     world->map[x][y].data = tile.data;
                 }
             }
-            else if (id >= 200 && id <= 205 && !world->roomsVisited[roomTo - 1])
+            else if (id >= 200 && id <= 205 && !world->rooms_visited[room_to - 1])
             {
-                spawnEnemy(x, y, id, roomTo, world);
+                spawn_enemy(x, y, id, room_to, world);
             }
         }
     }
 
-    int metadataCount = 0;
+    int metadata_count = 0;
     fgets(buf, 256, f);
-    sscanf(buf, "%d", &metadataCount);
-    while (metadataCount-- > 0)
+    sscanf(buf, "%d", &metadata_count);
+    while (metadata_count-- > 0)
     {
         fgets(buf, 256, f);
-        char readStr[64];
-        sscanf(buf, "%s", readStr);
+        char read_str[64];
+        sscanf(buf, "%s", read_str);
 
-/*        if (!strcmp(readStr, "scripting"))
+        if (!strcmp(read_str, "bossfight")) 
         {
-//            world->scripting = 1;
-            if (!world->roomsVisited[0])
-            {
-                sscanf(buf, "%*s %s", readStr);
-                sprintf(buf, ".\\dataloss\\%s", readStr);
-                if (world->worldScriptInited)
-                {
-                    freeMemScript(&world->worldScript);
-                }
-                world->worldScriptInited = 1;
-                translateMemScript(buf, &world->worldScript, 32);
-            }
-            continue;
-        }*/
-        if (!strcmp(readStr, "bossfight")) 
-        {
-            sscanf(buf, "%*s %s", readStr);
-            sprintf(buf, ".\\dataloss\\%s", readStr);
+            sscanf(buf, "%*s %s", read_str);
+            sprintf(buf, ".\\dataloss\\%s", read_str);
             printf("Opening bossfight config at %s\n", buf);
             FILE *f2 = fopen(buf, "r");
             if (f2)
             {
-                read_bfconfig(f2, &world->bossFightConfig);
+                read_bfconfig(f2, &world->boss_fight_config);
                 fclose(f2);
                 printf("Bossfight initiated\n");
-                world->bossFight = 1;
+                world->boss_fight = 1;
                 continue;
             }
             else printf("No such file!\n");
@@ -499,11 +468,11 @@ int readLevel(World *world, const char *missionName, int roomTo)
     }
 
     fclose(f);
-    world->roomsVisited[roomTo - 1] = 1;
+    world->rooms_visited[room_to - 1] = 1;
     return 0;
 }
 
-void createClusterExplosion(World *w, double x0, double y0, int num_directions, int intensity, int shoot_id)
+void create_cluster_explosion(World *w, double x0, double y0, int num_directions, int intensity, int shoot_id)
 {
   double half_dirs = num_directions / 2;
   for (int i = 0; i < num_directions; i++)
@@ -516,38 +485,38 @@ void createClusterExplosion(World *w, double x0, double y0, int num_directions, 
       {
           x += dx * 0.66;
           y += dy * 0.66;
-          shootOneShotAtXy(x, y, dx, dy, shoot_id, shoot_id == PLAYER_ID ? 1 : 0, w);
+          shoot_one_shot_at_xy(x, y, dx, dy, shoot_id, shoot_id == PLAYER_ID ? 1 : 0, w);
       }
   }
 }
 
-void changeRoomIfAtExitPoint(World *world, int mission)
+void change_room_if_at_exit_point(World *world, int mission)
 {
-    if (checkFlagsAt(world, world->plr.x, world->plr.y, TILE_IS_EXIT_POINT) && world->plr.health > 0)
+    if (check_flags_at(world, world->plr.x, world->plr.y, TILE_IS_EXIT_POINT) && world->plr.health > 0)
     {
-      int toRoom = getTileAt(world, world->plr.x, world->plr.y).data;
-      if (world->plr.roomid != toRoom)
+      int to_room = get_tile_at(world, world->plr.x, world->plr.y).data;
+      if (world->plr.roomid != to_room)
       {
-        readLevel(world, gameSettings.missions[mission - 1].filename, toRoom);
-        world->currentRoom = toRoom;
+        read_level(world, game_settings.missions[mission - 1].filename, to_room);
+        world->current_room = to_room;
         for (int i = 0; i < BULLETCOUNT; i++)
         {
           world->bullets[i].owner_id = NO_OWNER;
         }
         for (int i = 0; i < ENEMYCOUNT; i++)
         {
-          if (world->enm[i].roomid == world->currentRoom && 
-              world->enm[i].id == NO_OWNER && world->enm[i].formerId != NO_OWNER)
+          if (world->enm[i].roomid == world->current_room && 
+              world->enm[i].id == NO_OWNER && world->enm[i].former_id != NO_OWNER)
           {
-             setTileFlag(world, world->enm[i].x, world->enm[i].y, TILE_IS_BLOOD_STAINED);
+             set_tile_flag(world, world->enm[i].x, world->enm[i].y, TILE_IS_BLOOD_STAINED);
           }
         }
-        clearExplosions(world);
-        stopBodyparts(world);
+        clear_explosions(world);
+        stop_bodyparts(world);
       }
     }
     else
     {
-      world->plr.roomid = world->currentRoom;
+      world->plr.roomid = world->current_room;
     }
 }

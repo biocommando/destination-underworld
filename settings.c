@@ -3,49 +3,49 @@
 #include "settings.h"
 #include "iniRead.h"
 
-extern GameSettings gameSettings;
+extern GameSettings game_settings;
 
-void readSettings()
+void read_settings()
 {
   FILE *f = fopen(".\\dataloss\\settings.ini", "r");
-  gameSettings.missionCount = iniReadIntValue(f, "general", "missions");
-  char missionPack[64];
-  iniReadCharValue(f, "general", "mission-pack", missionPack);
-  gameSettings.missions = (NameToFilenameMapping*) malloc(gameSettings.missionCount * sizeof(NameToFilenameMapping));
-  for(int i = 0; i < gameSettings.missionCount; i++) 
+  game_settings.mission_count = ini_read_int_value(f, "general", "missions");
+  char mission_pack[64];
+  ini_read_string_value(f, "general", "mission-pack", mission_pack);
+  game_settings.missions = (NameToFilenameMapping*) malloc(game_settings.mission_count * sizeof(NameToFilenameMapping));
+  for(int i = 0; i < game_settings.mission_count; i++) 
   {
-    char readValue[256];
-    char keyToRead[64];
-    sprintf(keyToRead, "mission%d", i + 1);
-    iniReadCharValue(f, missionPack, keyToRead, readValue);
-    sprintf(gameSettings.missions[i].filename, ".\\dataloss\\%s", readValue);
-    sprintf(keyToRead, "mission%d-name", i + 1);
-    iniReadCharValue(f, missionPack, keyToRead, gameSettings.missions[i].name);
+    char read_value[256];
+    char key_to_read[64];
+    sprintf(key_to_read, "mission%d", i + 1);
+    ini_read_string_value(f, mission_pack, key_to_read, read_value);
+    sprintf(game_settings.missions[i].filename, ".\\dataloss\\%s", read_value);
+    sprintf(key_to_read, "mission%d-name", i + 1);
+    ini_read_string_value(f, mission_pack, key_to_read, game_settings.missions[i].name);
   }
-  gameSettings.screenWidth = iniReadIntValue(f, "graphics", "width");
-  gameSettings.screenHeight = iniReadIntValue(f, "graphics", "height");
-  gameSettings.screenMode = iniReadIntValue(f, "graphics", "screen");
-  gameSettings.vibrationMode = iniReadIntValue(f, "graphics", "vibration-mode");
+  game_settings.screen_width = ini_read_int_value(f, "graphics", "width");
+  game_settings.screen_height = ini_read_int_value(f, "graphics", "height");
+  game_settings.screen_mode = ini_read_int_value(f, "graphics", "screen");
+  game_settings.vibration_mode = ini_read_int_value(f, "graphics", "vibration-mode");
   
   fclose(f);
 }
 
-int readCmdLineArgStr(const char *arg, char **argv, int argc, char *output)
+int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output)
 {
-  char formatStr[256];
-  sprintf(formatStr, "--%s=%%s", arg);
+  char format_str[256];
+  sprintf(format_str, "--%s=%%s", arg);
   while(argc--)
   {
-    int success = sscanf(argv[argc], formatStr, output);
+    int success = sscanf(argv[argc], format_str, output);
     if (success) return 1;
   }
   return 0;
 }
 
-int readCmdLineArgInt(const char *arg, char **argv, int argc)
+int read_cmd_line_arg_int(const char *arg, char **argv, int argc)
 {
   char str[256];
-  int success = readCmdLineArgStr(arg, argv, argc, str);
+  int success = read_cmd_line_arg_str(arg, argv, argc, str);
   if (success)
   {
     int value;

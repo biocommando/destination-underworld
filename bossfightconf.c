@@ -28,18 +28,18 @@ void print_configs(BossFightConfig *config)
 
 void read_bfconfig(FILE *f, BossFightConfig *config)
 {
- config->health = iniReadIntValue(f, "main", "health");
- config->speed = iniReadIntValue(f, "main", "speed");
- config->fire_rate = iniReadIntValue(f, "main", "fire_rate");
- config->player_initial_gold = iniReadIntValue(f, "main", "player_initial_gold");
- config->num_events = iniReadIntValue(f, "main", "events");
+ config->health = ini_read_int_value(f, "main", "health");
+ config->speed = ini_read_int_value(f, "main", "speed");
+ config->fire_rate = ini_read_int_value(f, "main", "fire_rate");
+ config->player_initial_gold = ini_read_int_value(f, "main", "player_initial_gold");
+ config->num_events = ini_read_int_value(f, "main", "events");
  
  for (int i = 0; i < config->num_events && i < BFCONF_MAX_EVENTS; i++)
  {
   char event_segment[100];
   sprintf(event_segment, "event_%d", i);
   char s[256];
-  iniReadCharValue(f, event_segment, "trigger_type", s);
+  ini_read_string_value(f, event_segment, "trigger_type", s);
   if (!strcmp(s, "time_interval"))
   {
     config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_TIME_INTERVAL;
@@ -56,27 +56,27 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
   {
     config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED;
   }
-  config->events[i].trigger_value = iniReadIntValue(f, event_segment, "trigger_value");
+  config->events[i].trigger_value = ini_read_int_value(f, event_segment, "trigger_value");
   
-  iniReadCharValue(f, event_segment, "event_type", s);
+  ini_read_string_value(f, event_segment, "event_type", s);
   
   if (!strcmp(s, "spawn"))
   {
     config->events[i].event_type = BFCONF_EVENT_TYPE_SPAWN;
-    int spawn_point = iniReadIntValue(f, event_segment, "spawn_point");
+    int spawn_point = ini_read_int_value(f, event_segment, "spawn_point");
     char spawn_segment[100];
     sprintf(spawn_segment, "spawn_point_%d", spawn_point);
     for (int j = 0; j < 5; j++)
     {
         char key[100];
         sprintf(key, "enemy_%d_probability", j);
-        int prob = iniReadIntValue(f, spawn_segment, key);
+        int prob = ini_read_int_value(f, spawn_segment, key);
         // >= min, < max
         config->events[i].spawn_point.probability_thresholds[j][0] = j == 0 ? 0 : config->events[i].spawn_point.probability_thresholds[j - 1][1];
         config->events[i].spawn_point.probability_thresholds[j][1] = config->events[i].spawn_point.probability_thresholds[j][0] + prob;
     }
-    config->events[i].spawn_point.x = iniReadIntValue(f, spawn_segment, "x");
-    config->events[i].spawn_point.y = iniReadIntValue(f, spawn_segment, "y");
+    config->events[i].spawn_point.x = ini_read_int_value(f, spawn_segment, "x");
+    config->events[i].spawn_point.y = ini_read_int_value(f, spawn_segment, "y");
   }
   if (!strcmp(s, "allow_firing"))
   {
@@ -90,16 +90,16 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
   if (!strcmp(s, "fire_in_circle"))
   {
     config->events[i].event_type = BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE;
-    config->events[i].parameters[0] = iniReadIntValue(f, event_segment, "number_of_directions");
-    config->events[i].parameters[1] = iniReadIntValue(f, event_segment, "intensity");
+    config->events[i].parameters[0] = ini_read_int_value(f, event_segment, "number_of_directions");
+    config->events[i].parameters[1] = ini_read_int_value(f, event_segment, "intensity");
   }
   if (!strcmp(s, "modify_terrain"))
   {
     config->events[i].event_type = BFCONF_EVENT_TYPE_MODIFY_TERRAIN;
-    config->events[i].parameters[0] = iniReadIntValue(f, event_segment, "x");
-    config->events[i].parameters[1] = iniReadIntValue(f, event_segment, "y");
+    config->events[i].parameters[0] = ini_read_int_value(f, event_segment, "x");
+    config->events[i].parameters[1] = ini_read_int_value(f, event_segment, "y");
     char terrain_type[100];
-    iniReadCharValue(f, event_segment, "terrain_type", terrain_type);
+    ini_read_string_value(f, event_segment, "terrain_type", terrain_type);
     if (!strcmp(terrain_type, "floor"))
     {
       config->events[i].parameters[2] = BFCONF_MODIFY_TERRAIN_FLOOR;
@@ -116,9 +116,9 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
   if (!strcmp(s, "set_waypoint"))
   {
     config->events[i].event_type = BFCONF_EVENT_TYPE_SET_WAYPOINT;
-    config->events[i].parameters[0] = iniReadIntValue(f, event_segment, "x");
-    config->events[i].parameters[1] = iniReadIntValue(f, event_segment, "y");
-    config->events[i].parameters[2] = iniReadIntValue(f, event_segment, "waypoint_id");
+    config->events[i].parameters[0] = ini_read_int_value(f, event_segment, "x");
+    config->events[i].parameters[1] = ini_read_int_value(f, event_segment, "y");
+    config->events[i].parameters[2] = ini_read_int_value(f, event_segment, "waypoint_id");
   }
   if (!strcmp(s, "clear_waypoint"))
   {

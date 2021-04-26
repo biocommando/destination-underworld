@@ -5,11 +5,11 @@
 #include "world.h"
 
 
-void getKeyPresses(ContinuousData *data, void *keyPressOutput);
+void get_key_presses(ContinuousData *data, void *key_press_output);
 
-int handleDirectionKeys(World *world, int keyUp, int keyDown, int keyLeft, int keyRight);
-int handleWeaponChangeKeys(World *world, int keyX, int keyZ);
-int handlePowerUpKeys(World *world, int keyA, int keyS, int keyD, int keyF, int *goldHintAmount, int *plr_rune_of_protection_active);
-int handleShootKey(World *world, int keySpace);
+int handle_direction_keys(World *world, int key_up, int key_down, int key_left, int key_right);
+int handle_weapon_change_keys(World *world, int key_x, int key_z);
+int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount, int *plr_rune_of_protection_active);
+int handle_shoot_key(World *world, int key_space);
 
 #endif

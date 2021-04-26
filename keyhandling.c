@@ -5,35 +5,33 @@
 #include "worldInteraction.h"
 #include "sampleRegister.h"
 
-//extern struct gamedata UniqueGameData;
-
-void getKeyPresses(ContinuousData *data, void *keyPressOutput)
+void get_key_presses(ContinuousData *data, void *key_press_output)
 {
-     long *keyPressOutputLong = (long *) keyPressOutput;
-     if (data->dataTypeId == 1)
+     long *key_press_output_long = (long *) key_press_output;
+     if (data->data_type_id == 1)
      {
-       *keyPressOutputLong = data->dataValue;
+       *key_press_output_long = data->data_value;
      }
 }
 
-int handleDirectionKeys(World *world, int keyUp, int keyDown, int keyLeft, int keyRight)
+int handle_direction_keys(World *world, int key_up, int key_down, int key_left, int key_right)
 {
         int orig_dx = world->plr.dx;
         int orig_dy = world->plr.dy;
         world->plr.move = 0;
-        if (keyLeft)
+        if (key_left)
         {
             world->plr.dx = -1;
             world->plr.dy = 0;
             world->plr.move = 1;
         }
-        else if (keyRight)
+        else if (key_right)
         {
             world->plr.dx = 1;
             world->plr.dy = 0;
             world->plr.move = 1;
         }
-        if (keyDown)
+        if (key_down)
         {
             if (!world->plr.move)
             {
@@ -42,7 +40,7 @@ int handleDirectionKeys(World *world, int keyUp, int keyDown, int keyLeft, int k
             world->plr.dy = 1;
             world->plr.move = 1;
         }
-        else if (keyUp)
+        else if (key_up)
         {
             if (!world->plr.move)
             {
@@ -54,10 +52,10 @@ int handleDirectionKeys(World *world, int keyUp, int keyDown, int keyLeft, int k
         return orig_dx != world->plr.dx || orig_dy != world->plr.dy;
 }
 
-int handleWeaponChangeKeys(World *world, int keyX, int keyZ)
+int handle_weapon_change_keys(World *world, int key_x, int key_z)
 {
-    const int difficulty = (world->gameModifiers & GAMEMODIFIER_BRUTAL) != 0;
-    if (keyX && world->plr.wait == 0) // Power
+    const int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0;
+    if (key_x && world->plr.wait == 0) // Power
     {
       world->plr.shots = 6;
       world->plr.rate = 200;
@@ -71,7 +69,7 @@ int handleWeaponChangeKeys(World *world, int keyX, int keyZ)
       world->plr.wait = 20;
       return 1;
     }
-    if (keyZ && world->plr.wait == 0) // Speed
+    if (key_z && world->plr.wait == 0) // Speed
     {
       world->plr.shots = 1;
       world->plr.rate = 7;
@@ -86,12 +84,12 @@ int handleWeaponChangeKeys(World *world, int keyX, int keyZ)
     return 0;
 }
 
-Enemy *createTurret(World *world)
+Enemy *create_turret(World *world)
 {
-  int enmIdx = 0;
-  Enemy *enm = getNextAvailableEnemy(world, &enmIdx);
-  enm->id = 9000 + enmIdx;
-  enm->formerId = enm->id;
+  int enm_idx = 0;
+  Enemy *enm = get_next_available_enemy(world, &enm_idx);
+  enm->id = 9000 + enm_idx;
+  enm->former_id = enm->id;
   enm->ammo = 128;
   enm->x = world->plr.x;
   enm->y = world->plr.y;
@@ -102,27 +100,26 @@ Enemy *createTurret(World *world)
   enm->dx = world->plr.dx;
   enm->dy = world->plr.dy;
   enm->health = 20;
-  enm->roomid = world->currentRoom;
+  enm->roomid = world->current_room;
   enm->gold = 0;
   enm->type = TURRET;
   return enm;
 }
 
-int handlePowerUpKeys(World *world, int keyA, int keyS, int keyD, int keyF, int *goldHintAmount, int *plr_rune_of_protection_active)
+int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount, int *plr_rune_of_protection_active)
 {
-    const int price_bonus = (world->gameModifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
+    const int price_bonus = (world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
     const int cost_heal = 1 + price_bonus;
     const int cost_protection = 2 + price_bonus;
-    const int difficulty = (world->gameModifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+    const int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
     const int cost_turret = (difficulty == DIFFICULTY_BRUTAL ? 4 : 3) + price_bonus;
     const int cost_blast = (difficulty == DIFFICULTY_BRUTAL ? 8 : 6) + price_bonus;
     
-    const int overpowered = (world->gameModifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0;
+    const int overpowered = (world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0;
     
-    if (keyA && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < 6 && world->plr.wait == 0)
+    if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < 6 && world->plr.wait == 0)
     {
-      //UniqueGameData.powerups++;
-      *goldHintAmount = cost_heal;
+      *gold_hint_amount = cost_heal;
       world->plr.gold -= cost_heal;
       world->plr.health += difficulty == DIFFICULTY_BRUTAL ? 2 : 3;
       if (world->plr.health > 6)
@@ -135,28 +132,26 @@ int handlePowerUpKeys(World *world, int keyA, int keyS, int keyD, int keyF, int 
       }
       world->plr.reload = 40;
       world->plr.wait = 80;
-      triggerSample(SAMPLE_HEAL, 255);
+      trigger_sample(SAMPLE_HEAL, 255);
       return 1;
     }
-    if (keyS && world->plr.gold >= cost_protection && world->plr.wait == 0 && *plr_rune_of_protection_active == 0)
+    if (key_s && world->plr.gold >= cost_protection && world->plr.wait == 0 && *plr_rune_of_protection_active == 0)
     {
-      //UniqueGameData.powerups++;
-      *goldHintAmount = cost_protection;
+      *gold_hint_amount = cost_protection;
       world->plr.gold -= cost_protection;
       *plr_rune_of_protection_active = 1;
       world->plr.reload = 40;
       world->plr.wait = 80;
-      triggerSample(SAMPLE_PROTECTION, 255);
+      trigger_sample(SAMPLE_PROTECTION, 255);
       return 2;
     }
-    if (keyD && world->plr.gold >= cost_turret && world->plr.wait == 0) // Turret
+    if (key_d && world->plr.gold >= cost_turret && world->plr.wait == 0) // Turret
     {
-      //UniqueGameData.powerups++;
-      *goldHintAmount = cost_turret;
-      createTurret(world);
+      *gold_hint_amount = cost_turret;
+      create_turret(world);
       if (overpowered)
       {
-          Enemy *created = createTurret(world);
+          Enemy *created = create_turret(world);
           created->dx *= 2;
           created->dy *= 2;
       }
@@ -164,37 +159,36 @@ int handlePowerUpKeys(World *world, int keyA, int keyS, int keyD, int keyF, int 
       world->plr.gold -= cost_turret;
       world->plr.reload = 40;
       world->plr.wait = 80;
-      triggerSample(SAMPLE_TURRET, 255);
+      trigger_sample(SAMPLE_TURRET, 255);
       return 3;
     }
-    if (keyF && world->plr.gold >= cost_blast && world->plr.wait == 0)
+    if (key_f && world->plr.gold >= cost_blast && world->plr.wait == 0)
     {
-      //UniqueGameData.powerups++;
-      Bullet *b = getNextAvailableBullet(world);
-      int didShoot = shootOneShotAtXy(world->plr.x, world->plr.y, world->plr.dx, world->plr.dy, PLAYER_ID, 1, world);
-      if (didShoot)
+      Bullet *b = get_next_available_bullet(world);
+      int did_shoot = shoot_one_shot_at_xy(world->plr.x, world->plr.y, world->plr.dx, world->plr.dy, PLAYER_ID, 1, world);
+      if (did_shoot)
       {
-          *goldHintAmount = cost_blast;
-          b->bulletType = BULLET_TYPE_CLUSTER;
+          *gold_hint_amount = cost_blast;
+          b->bullet_type = BULLET_TYPE_CLUSTER;
           b->dx *= 0.5;
           b->dy *= 0.5;
           if (overpowered)
           {
-             createClusterExplosion(world, world->plr.x, world->plr.y, 16, 16, PLAYER_ID);
+             create_cluster_explosion(world, world->plr.x, world->plr.y, 16, 16, PLAYER_ID);
           }
           world->plr.gold -= cost_blast;
           world->plr.reload = 40;
           world->plr.wait = 80;
-          triggerSampleWithParams(SAMPLE_BLAST, 255, 127, 1000);
+          trigger_sample_with_params(SAMPLE_BLAST, 255, 127, 1000);
           return 4;
       }
     }
     return 0;
 }
 
-int handleShootKey(World *world, int keySpace)
+int handle_shoot_key(World *world, int key_space)
 {
-    if (keySpace)
+    if (key_space)
     {
       return shoot(&world->plr, world);
     }

@@ -16,60 +16,60 @@ void draw_enemy(Enemy *enm, World *world)
 
 void draw_map(World *world, int col)
 {
-    const int floorBaseCol = 100; // 66
-    const int shadowBaseCol = floorBaseCol - 44;
+    const int floor_base_col = 100; // 66
+    const int shadow_base_col = floor_base_col - 44;
     
-    static int lavaFluctuations = 0;
-    if (++lavaFluctuations == 150)
-        lavaFluctuations = -149;
+    static int lava_fluctuations = 0;
+    if (++lava_fluctuations == 150)
+        lava_fluctuations = -149;
     if (col <= 0)
     {
         for (int y = 0; y < 12; y++)
         {
             for (int x = 0; x < 16; x++)
             {
-                int fshd = world->floorShadeMap[world->currentRoom - 1][x][y] * 5;
-                int shadowcol = shadowBaseCol - 5 * col - fshd;
+                int fshd = world->floor_shade_map[world->current_room - 1][x][y] * 5;
+                int shadowcol = shadow_base_col - 5 * col - fshd;
                 shadowcol = shadowcol < 0 ? 0 : shadowcol;
-                int floorcol = floorBaseCol - 5 * col - fshd;
+                int floorcol = floor_base_col - 5 * col - fshd;
                 floorcol = floorcol < 0 ? 0 : floorcol;
                 int shadowcolm1 = 0;
                 if (x > 0)
                 {
-                    shadowcolm1 = shadowBaseCol - 5 * col - world->floorShadeMap[world->currentRoom - 1][x - 1][y] * 5;
+                    shadowcolm1 = shadow_base_col - 5 * col - world->floor_shade_map[world->current_room - 1][x - 1][y] * 5;
                 }
                 if (shadowcolm1 < 0)
                 {
                     shadowcolm1 = 0;
                 }
-                int wallType = ns_getWallTypeAt(world, x, y);
-                if (wallType == WALL_NORMAL || wallType == WALL_PENTAGRAM)
+                int wall_type = ns_getWallTypeAt(world, x, y);
+                if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                 {
                     rectfill(world->buf, (x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE, (y + 1) * TILESIZE - 1, GRAY(shadowcolm1));
                 }
-                if (ns_checkFlagsAt(world, x, y, TILE_IS_FLOOR | TILE_IS_EXIT_POINT | TILE_IS_EXIT_LEVEL))
+                if (ns_check_flags_at(world, x, y, TILE_IS_FLOOR | TILE_IS_EXIT_POINT | TILE_IS_EXIT_LEVEL))
                 {
-                    int drawnColor = GRAY(floorcol);
+                    int drawn_color = GRAY(floorcol);
 
-                    if (ns_checkFlagsAt(world, x, y, TILE_IS_EXIT_POINT))
+                    if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_POINT))
                     {
-                        drawnColor = GRAY(shadowcol);
+                        drawn_color = GRAY(shadowcol);
                     }
-                    else if (ns_checkFlagsAt(world, x, y, TILE_IS_EXIT_LEVEL))
+                    else if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_LEVEL))
                     {
-                        drawnColor = makecol(rand() % 32 - 5 * col, rand() % 64 - 5 * col, rand() % 128 - 5 * col);
+                        drawn_color = makecol(rand() % 32 - 5 * col, rand() % 64 - 5 * col, rand() % 128 - 5 * col);
                     }
-                    rectfill(world->buf, (x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawnColor);
+                    rectfill(world->buf, (x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawn_color);
                 }
                 
-                if (ns_checkFlagsAt(world, x, y, TILE_IS_BLOOD_STAINED))
+                if (ns_check_flags_at(world, x, y, TILE_IS_BLOOD_STAINED))
                 {
                    for(int j = 0; j < 10; j++)
                    {
                        int x_pos = x * TILESIZE + HALFTILESIZE;
                        int y_pos = y * TILESIZE + HALFTILESIZE;
-                       int dx = 3 - (x * 13 + y * 7 + j * 3 + world->currentRoom) % 7;
-                       int dy = 3 - (j * 13 + x * 7 + y * 3 + world->currentRoom) % 7;
+                       int dx = 3 - (x * 13 + y * 7 + j * 3 + world->current_room) % 7;
+                       int dy = 3 - (j * 13 + x * 7 + y * 3 + world->current_room) % 7;
                        for (int i = 0; i < 4; i++)
                        {
                           x_pos += dx;
@@ -105,25 +105,25 @@ void draw_map(World *world, int col)
                 }
                 for (int x = 0; x < 16; x++)
                 {
-                    int wallType = ns_getWallTypeAt(world, x, y);
-                    if (wallType)
+                    int wall_type = ns_getWallTypeAt(world, x, y);
+                    if (wall_type)
                     {
-                        if (wallType == WALL_NORMAL || wallType == WALL_PENTAGRAM)
+                        if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                         {
                             rectfill(world->buf, x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, col_wall);
                         }
-                        if (wallType == WALL_LAVA && (((int)abs(lavaFluctuations) / 5 + (y & x) * (y | x)) % 15 == lev || lev == 15))
+                        if (wall_type == WALL_LAVA && (((int)abs(lava_fluctuations) / 5 + (y & x) * (y | x)) % 15 == lev || lev == 15))
                         {
                             rectfill(world->buf, x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, makecol(colcalc, colcalc >> 1, colcalc >> 2));
                         }
                     }
                     if (lev == 0)
                     {
-                        if (wallType == WALL_PENTAGRAM)
+                        if (wall_type == WALL_PENTAGRAM)
                         {
                             masked_blit(world->spr, world->buf, 47, 145, x * TILESIZE - 15, y * TILESIZE - 15, 30, 30);
                         }
-                        else if (ns_checkFlagsAt(world, x, y, TILE_IS_EXIT_POINT))
+                        else if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_POINT))
                         {
                             rectfill(world->buf, x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 14, y * TILESIZE + 14, GRAY(100));
                             rectfill(world->buf, x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 9, y * TILESIZE + 9, GRAY(90));
@@ -136,7 +136,7 @@ void draw_map(World *world, int col)
     }
 }
 
-void drawPlayerLegend(World *world)
+void draw_player_legend(World *world)
 {
     if (world->plr.health > 0)
     {
@@ -163,7 +163,7 @@ void drawPlayerLegend(World *world)
     }
 }
 
-void moveAndDrawBodyParts(World *world)
+void move_and_draw_body_parts(World *world)
 {
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
@@ -171,7 +171,7 @@ void moveAndDrawBodyParts(World *world)
         {
             int bonesturn = 0;
             BodyPart *bodypart = &world->enm[x].bodyparts[j];
-            if (bodypart->exists && world->enm[x].roomid == world->currentRoom)
+            if (bodypart->exists && world->enm[x].roomid == world->current_room)
             {
                 if (bodypart->velocity > 0)
                 {
@@ -184,12 +184,12 @@ void moveAndDrawBodyParts(World *world)
                         }
                         
                         bodypart->x += bodypart->dx;
-                        if (getWallTypeAt(world, bodypart->x, bodypart->y))
+                        if (get_wall_type_at(world, bodypart->x, bodypart->y))
                         {
                             bodypart->dx = -bodypart->dx;
                         }
                         bodypart->y += bodypart->dy;
-                        if (getWallTypeAt(world, bodypart->x, bodypart->y))
+                        if (get_wall_type_at(world, bodypart->x, bodypart->y))
                         {
                             bodypart->dy = -bodypart->dy;
                         }
@@ -215,7 +215,7 @@ void moveAndDrawBodyParts(World *world)
     }
 }
 
-int progressAndDrawExplosions(World *world)
+int progress_and_draw_explosions(World *world)
 {
     int vibrations = 0;
     for (int x = 0; x < EXPLOSIONCOUNT; x++)
@@ -224,8 +224,7 @@ int progressAndDrawExplosions(World *world)
         if (!ex->exists)
             continue;
         vibrations++;
-        //masked_blit(world->spr, world->buf, 100 + (ex->sprite) * 32, (ex->phase / 10) * 32, ex->x - 16, ex->y - 16, 32, 32);
-        masked_blit(world->explosSpr, world->buf, (ex->sprite) * 64, (ex->phase / 10) * 64, ex->x - 32, ex->y - 32, 64, 64);
+        masked_blit(world->explos_spr, world->buf, (ex->sprite) * 64, (ex->phase / 10) * 64, ex->x - 32, ex->y - 32, 64, 64);
         ex->phase += 8;
         if (ex->phase >= 240)
         {
@@ -235,31 +234,21 @@ int progressAndDrawExplosions(World *world)
     return vibrations;
 }
 
-void displayLevelInfo(World *world, int mission, int missionCount, BITMAP *bmp_levclear, FONT *font)
+void display_level_info(World *world, int mission, int mission_count, BITMAP *bmp_levclear, FONT *font)
 {
     clear_to_color(world->buf, 0);
     blit(bmp_levclear, world->buf, 0, 0, 0, world->buf->h - bmp_levclear->h, bmp_levclear->w, bmp_levclear->h);
     textprintf_ex(world->buf, font, 5, 5, WHITE, -1, "Level cleared!");
-    textprintf_ex(world->buf, font, 5, 30, WHITE, -1, "Now entering level %d / %d.", mission + 1, missionCount);
-/*    textprintf_ex(world->buf, font, 5, 45, WHITE, -1, "Current game total stats:");
-    textprintf_ex(world->buf, font, 5, 60, WHITE, -1, "Deaths: %d", uniqueData->deaths);
-    textprintf_ex(world->buf, font, 5, 75, WHITE, -1, "Kills: %d", uniqueData->kills);
-    textprintf_ex(world->buf, font, 5, 90, WHITE, -1, "Fireballs fired: %d", uniqueData->fireballs);
-    if (uniqueData->deaths > 0)
-    {
-        textprintf_ex(world->buf, font, 200, 75, WHITE, -1, "Kill/death ratio: %.2f", (float)uniqueData->kills / uniqueData->deaths);
-    }
-    textprintf_ex(world->buf, font, 200, 90, WHITE, -1, "Fireball/kill ratio: %.2f", (float)uniqueData->fireballs / uniqueData->kills);
-    textprintf_ex(world->buf, font, 5, 105, WHITE, -1, "Power ups used: %d", uniqueData->powerups);*/
+    textprintf_ex(world->buf, font, 5, 30, WHITE, -1, "Now entering level %d / %d.", mission + 1, mission_count);
     textprintf_ex(world->buf, font, 5, 120, WHITE, -1, "Press enter to continue!");
     stretch_blit(world->buf, screen, 0, 0, 480, 360, 0, 0, screen->w, screen->h);
 }
 
-void show_gold_hint(World *world, char *hintText, int *hintX, int *hintY, int *hintDim, int *hint_timeShows, int number)
+void show_gold_hint(World *world, char *hint_text, int *hint_x, int *hint_y, int *hint_dim, int *hint_time_shows, int number)
 {
-  sprintf(hintText, "- %d", number);
-  *hintX = world->plr.x - 15;
-  *hintY = world->plr.y - 30;
-  *hintDim = 4;
-  *hint_timeShows = 60;
+  sprintf(hint_text, "- %d", number);
+  *hint_x = world->plr.x - 15;
+  *hint_y = world->plr.y - 30;
+  *hint_dim = 4;
+  *hint_time_shows = 60;
 }

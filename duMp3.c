@@ -3,41 +3,41 @@
 #include "allegro.h"
 #include "dump3.h"
 
-int musicOn = 1;
+int music_on = 1;
 MP3FILE *mp3 = NULL;
 
-void nextTrack()
+void next_track()
 {
-  static int currentTrack = 0;
+  static int current_track = 0;
 
   char filename[32];
-  currentTrack = currentTrack < 3 ? currentTrack + 1 : 1;
-  sprintf(filename, ".\\dataloss\\music%d.mp3", currentTrack);
+  current_track = current_track < 3 ? current_track + 1 : 1;
+  sprintf(filename, ".\\dataloss\\music%d.mp3", current_track);
   close_mp3_file(mp3);
   mp3 = open_mp3_file(filename);
 }
 
-void playMP3()
+void play_mp3()
 {
-  static int musicOnStatus = 0;
-  if (musicOnStatus != musicOn)
+  static int music_on_status = 0;
+  if (music_on_status != music_on)
   {
-    if (musicOn)
+    if (music_on)
       play_mp3_file(mp3, BUFSZ, 255, 127);
     else
     {
-      nextTrack();
+      next_track();
     }
   }
-  if (musicOn)
+  if (music_on)
   {
     if (((mp3) && (poll_mp3_file(mp3) != ALMP3_OK)))
     {
-      nextTrack();
+      next_track();
       play_mp3_file(mp3, BUFSZ, 255, 127);
     }
   }
-  musicOnStatus = musicOn;
+  music_on_status = music_on;
 }
 
 /****************MP3MP3MP3MP3**********************/

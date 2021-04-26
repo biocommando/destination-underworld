@@ -3,7 +3,6 @@
 #include "allegro.h"
 #include "duconstants.h"
 #include "bossfightconf.h"
-//#include "scripting.h"
 
 typedef enum EnemyTypeEnum
 {
@@ -20,7 +19,7 @@ typedef enum EnemyTypeEnum
 
 struct gamedata
 {
-        char gameId[256];
+        char game_id[256];
         long kills;
         long deaths;
         long fireballs;
@@ -55,7 +54,7 @@ typedef struct
         int ammo;
         int gold;
         int id;
-        int formerId;
+        int former_id;
         int roomid;
         long completetime;
         EnemyType type;
@@ -72,8 +71,8 @@ typedef struct
         double dx;
         double dy;
         int owner_id;
-        int hurtsMonsters;
-        int bulletType;
+        int hurts_monsters;
+        int bullet_type;
 } Bullet;
 
 #define TILE_IS_EXIT_LEVEL /*-------*/ 0x01
@@ -109,7 +108,7 @@ typedef struct
         int data;
 } Tile;
 
-Tile createTile(int symbol);
+Tile create_tile(int symbol);
 
 typedef struct
 {
@@ -123,9 +122,9 @@ typedef struct
 typedef struct
 {
         Tile map[MAPMAX_X][MAPMAX_Y];
-        char floorShadeMap[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
-        char roomsVisited[ROOMCOUNT];
-        int currentRoom;
+        char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
+        char rooms_visited[ROOMCOUNT];
+        int current_room;
         Enemy enm[ENEMYCOUNT];
         Enemy plr;
         Bullet bullets[BULLETCOUNT];
@@ -133,30 +132,26 @@ typedef struct
 
         BITMAP *buf;
         BITMAP *spr;
-        BITMAP *explosSpr;
+        BITMAP *explos_spr;
 
-        //MemScript worldScript;
-        //int worldScriptInited;
-
-        int bossFight;
-        //int scripting;
-        int gameModifiers;
-        BossFightConfig bossFightConfig;
+        int boss_fight;
+        int game_modifiers;
+        BossFightConfig boss_fight_config;
 } World;
 
-void clearExplosions(World *);
-void stopBodyparts(World *);
-void initWorld(World *world);
-void spawnBodyParts(Enemy *enm);
+void clear_explosions(World *);
+void stop_bodyparts(World *);
+void init_world(World *world);
+void spawn_body_parts(Enemy *enm);
 
-Tile getTileAt(World *world, int x, int y);
-int checkFlagsAt(World *world, int x, int y, int flagsToCheck);
-int getWallTypeAt(World *world, int x, int y);
+Tile get_tile_at(World *world, int x, int y);
+int check_flags_at(World *world, int x, int y, int flags_to_check);
+int get_wall_type_at(World *world, int x, int y);
 // no scale versions
-Tile ns_getTileAt(World *world, int x, int y);
-int ns_checkFlagsAt(World *world, int x, int y, int flagsToCheck);
+Tile ns_get_tile_at(World *world, int x, int y);
+int ns_check_flags_at(World *world, int x, int y, int flags_to_check);
 int ns_getWallTypeAt(World *world, int x, int y);
-void setTileFlag(World *world, int x, int y, int flags);
-void initPlayer(World *world, Enemy *plrautosave);
+void set_tile_flag(World *world, int x, int y, int flags);
+void init_player(World *world, Enemy *plrautosave);
 
 #endif

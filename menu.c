@@ -4,27 +4,27 @@
 #include "duColors.h"
 #include "helpers.h"
 
-extern int musicOn;
+extern int music_on;
 extern MP3FILE *mp3;
 
-void init_new_game(Enemy *autosave, int *mission, int *gameModifiers, int game_mode)
+void init_new_game(Enemy *autosave, int *mission, int *game_modifiers, int game_mode)
 {
-    if (game_mode == 0) *gameModifiers = 0;
-    if (game_mode == 1) *gameModifiers = GAMEMODIFIER_BRUTAL;
-    if (game_mode == 2) *gameModifiers = GAMEMODIFIER_DOUBLED_SHOTS;
-    if (game_mode == 3) *gameModifiers = GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS;
-    if (game_mode == 4) *gameModifiers = GAMEMODIFIER_MULTIPLIED_GOLD;
+    if (game_mode == 0) *game_modifiers = 0;
+    if (game_mode == 1) *game_modifiers = GAMEMODIFIER_BRUTAL;
+    if (game_mode == 2) *game_modifiers = GAMEMODIFIER_DOUBLED_SHOTS;
+    if (game_mode == 3) *game_modifiers = GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS;
+    if (game_mode == 4) *game_modifiers = GAMEMODIFIER_MULTIPLIED_GOLD;
     
     *mission = 1;
     autosave->id = NO_OWNER;
 }
 
-int handleMenuchoice(int menuchoice, Enemy *autosave, 
-    int *mission, int *gameModifiers, int slot, int game_mode)
+int handle_menuchoice(int menuchoice, Enemy *autosave, 
+    int *mission, int *game_modifiers, int slot, int game_mode)
 {
     if (menuchoice == MENUOPT_NEW_GAME)
     {
-        init_new_game(autosave, mission, gameModifiers, game_mode);
+        init_new_game(autosave, mission, game_modifiers, game_mode);
         return 1;
     }
     if (menuchoice == MENUOPT_LOAD)
@@ -34,14 +34,13 @@ int handleMenuchoice(int menuchoice, Enemy *autosave,
         FILE *f = fopen(filename, "r");
         if (f)
         {
-            //loadUniqueGameData(f, uniqueData);
-            loadGameSaveData(f, autosave, mission, gameModifiers);
+            load_game_save_data(f, autosave, mission, game_modifiers);
             autosave->id = PLAYER_ID;
             fclose(f);
         }
         else
         {
-            init_new_game(autosave, mission, gameModifiers, game_mode);
+            init_new_game(autosave, mission, game_modifiers, game_mode);
         }
         if (*mission == 1)
             autosave->id = NO_OWNER;
@@ -49,7 +48,7 @@ int handleMenuchoice(int menuchoice, Enemy *autosave,
     }
     if (menuchoice == MENUOPT_SAVE)
     {
-        saveGame(autosave, *mission, *gameModifiers, slot);
+        save_game(autosave, *mission, *game_modifiers, slot);
     }
     if (menuchoice == MENUOPT_EXIT)
     {
@@ -59,12 +58,12 @@ int handleMenuchoice(int menuchoice, Enemy *autosave,
     return 0;
 }
 
-int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
+int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
 {
     int game_mode = 0;
     int slot = 0;
     int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
-    peekIntoSaveData(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
+    peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
 
     BITMAP *menu_bg = create_bitmap(640, 480), *menupic = load_bitmap(MENU_BITMAP_FILENAME, default_palette), *buf = create_bitmap(640, 480);
     BITMAP *help_pic = load_bitmap(HELP_BITMAP_FILENAME, default_palette);
@@ -82,8 +81,6 @@ int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
     for (int i = 0; i < 24; i++)
     {
         stretch_blit(menu_bg, screen, 0, 0, 26 * (i + 1), 480, 0, 0, screen->w, screen->h);
-/*        if (mp3)
-            playMP3();*/
         chunkrest(20);
     }
     clear_to_color(screen, WHITE);
@@ -166,14 +163,14 @@ int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
             if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && key[KEY_LEFT] && slot > 0)
             {
                 slot--;
-                peekIntoSaveData(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
+                peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
                 play_sample(s_c, 255, 127, 1000, 0);
                 wait = 3;
             }
             if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && key[KEY_RIGHT] && slot < 9)
             {
                 slot++;
-                peekIntoSaveData(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
+                peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
                 play_sample(s_c, 255, 127, 1000, 0);
                 wait = 3;
             }
@@ -196,7 +193,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
             }
             if (key[KEY_M])
             {
-                musicOn = 1 - musicOn;
+                music_on = 1 - music_on;
                 chunkrest(50);
                 wait = 3;
             }
@@ -218,5 +215,5 @@ int menu(int ingame, Enemy *autosave, int *mission, int *gameModifiers)
     destroy_sample(s_ex);
     destroy_font(menufont);
 
-    return handleMenuchoice(c, autosave, mission, gameModifiers, slot, game_mode);
+    return handle_menuchoice(c, autosave, mission, game_modifiers, slot, game_mode);
 }

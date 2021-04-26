@@ -3,11 +3,11 @@
 #include "world.h"
 
 void draw_enemy(Enemy *enm, World *world);
-void drawPlayerLegend(World *world);
+void draw_player_legend(World *world);
 void draw_map(World *world, int col);
-void moveAndDrawBodyParts(World *world);
-int progressAndDrawExplosions(World *world);
-void displayLevelInfo(World *world, int mission, int missionCount, BITMAP *bmp_levclear, FONT *font);
-void show_gold_hint(World *world, char *hintText, int *hintX, int *hintY, int *hintDim, int *hint_timeShows, int number);
+void move_and_draw_body_parts(World *world);
+int progress_and_draw_explosions(World *world);
+void display_level_info(World *world, int mission, int mission_count, BITMAP *bmp_levclear, FONT *font);
+void show_gold_hint(World *world, char *hint_text, int *hint_x, int *hint_y, int *hint_dim, int *hint_time_shows, int number);
 
 #endif

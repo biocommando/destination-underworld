@@ -7,15 +7,15 @@ typedef struct {
 
 typedef struct
 {
-  int missionCount;
+  int mission_count;
   NameToFilenameMapping *missions;
-  int screenWidth;
-  int screenHeight;
-  int screenMode;
-  int vibrationMode;
+  int screen_width;
+  int screen_height;
+  int screen_mode;
+  int vibration_mode;
 } GameSettings;
-void readSettings();
-int readCmdLineArgInt(const char *arg, char **argv, int argc);
-int readCmdLineArgStr(const char *arg, char **argv, int argc, char *output);
+void read_settings();
+int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
+int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output);
 
 #endif

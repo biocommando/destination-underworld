@@ -3,9 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 
-//struct gamedata UniqueGameData;
-
-void stopBodyparts(World *world)
+void stop_bodyparts(World *world)
 {
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
@@ -19,7 +17,7 @@ void stopBodyparts(World *world)
     }
 }
 
-void clearExplosions(World *world)
+void clear_explosions(World *world)
 {
     for (int i = 0; i < EXPLOSIONCOUNT; i++)
     {
@@ -27,20 +25,20 @@ void clearExplosions(World *world)
     }
 }
 
-void initWorld(World *world)
+void init_world(World *world)
 {
     for (int i = 0; i < ROOMCOUNT; i++)
     {
-        world->roomsVisited[i] = 0;
+        world->rooms_visited[i] = 0;
         for (int x = 0; x < 16; x++)
         {
             for (int y = 0; y < 12; y++)
             {
-                world->floorShadeMap[i][x][y] = 0;
+                world->floor_shade_map[i][x][y] = 0;
             }
         }
     }
-    clearExplosions(world);
+    clear_explosions(world);
     for (int i = 0; i < BULLETCOUNT; i++)
     {
         world->bullets[i].owner_id = NO_OWNER;
@@ -49,14 +47,14 @@ void initWorld(World *world)
     {
         Enemy *enm = &world->enm[i];
         enm->id = NO_OWNER;
-        enm->formerId = NO_OWNER;
+        enm->former_id = NO_OWNER;
         enm->type = NOT_SET;
         enm->dx = 1;
         enm->dy = 0;
         enm->reload = 10;
         enm->shots = 1;
         enm->ammo = -1;
-        enm->anim = prGetRandom() % 15;
+        enm->anim = pr_get_random() % 15;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
             enm->bodyparts[j].exists = 0;
@@ -64,15 +62,15 @@ void initWorld(World *world)
     }
 }
 
-Tile createTile(int symbol)
+Tile create_tile(int symbol)
 {
-    const int sym_legacyRestriction = 44;
-    const int sym_legacyRestrictionClear = 59;
-    const int sym_restrcitionsStart = 500;
+    const int sym_legacy_restriction = 44;
+    const int sym_legacy_restriction_clear = 59;
+    const int sym_restrcitions_start = 500;
     const int sym_restrcitionClearsStart = 510;
-    const int maxRestrictions = 10;
+    const int max_restrictions = 10;
 
-    int sym_exitPointsStart = TILE_SYM_EXIT_POINT(0);
+    int sym_exit_points_start = TILE_SYM_EXIT_POINT(0);
 
     Tile t;
     t.flags = TILE_UNRECOGNIZED;
@@ -82,35 +80,35 @@ Tile createTile(int symbol)
         t.flags |= TILE_IS_EXIT_LEVEL;
         t.flags &= ~TILE_UNRECOGNIZED;
     }
-    if ((symbol == TILE_SYM_FLOOR) || (symbol == sym_legacyRestriction) || (symbol == sym_legacyRestrictionClear) ||
-        (symbol >= sym_restrcitionsStart && symbol < sym_restrcitionsStart + 2 * maxRestrictions))
+    if ((symbol == TILE_SYM_FLOOR) || (symbol == sym_legacy_restriction) || (symbol == sym_legacy_restriction_clear) ||
+        (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + 2 * max_restrictions))
     {
         t.flags |= TILE_IS_FLOOR;
         t.flags &= ~TILE_UNRECOGNIZED;
     }
-    if (symbol == sym_legacyRestrictionClear) // legacy support
+    if (symbol == sym_legacy_restriction_clear) // legacy support
     {
         t.flags |= TILE_IS_CLEAR_RESTRICTION;
     }
-    if (symbol >= sym_restrcitionClearsStart && symbol < sym_restrcitionClearsStart + maxRestrictions)
+    if (symbol >= sym_restrcitionClearsStart && symbol < sym_restrcitionClearsStart + max_restrictions)
     {
         t.flags |= TILE_IS_CLEAR_RESTRICTION;
         t.data = symbol - sym_restrcitionClearsStart;
     }
-    if ((symbol == TILE_SYM_WALL1) || (symbol == TILE_SYM_LAVA) || (symbol == TILE_SYM_WALL2) || (symbol == sym_legacyRestriction) ||
-        (symbol >= sym_restrcitionsStart && symbol < sym_restrcitionsStart + maxRestrictions))
+    if ((symbol == TILE_SYM_WALL1) || (symbol == TILE_SYM_LAVA) || (symbol == TILE_SYM_WALL2) || (symbol == sym_legacy_restriction) ||
+        (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions))
     {
         t.flags |= TILE_IS_BLOCKER;
         t.flags &= ~TILE_UNRECOGNIZED;
     }
-    if (symbol == sym_legacyRestriction) // legacy support
+    if (symbol == sym_legacy_restriction) // legacy support
     {
         t.flags |= TILE_IS_RESTRICTED;
     }
-    if (symbol >= sym_restrcitionsStart && symbol < sym_restrcitionsStart + maxRestrictions)
+    if (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions)
     {
         t.flags |= TILE_IS_RESTRICTED;
-        t.data = symbol - sym_restrcitionsStart;
+        t.data = symbol - sym_restrcitions_start;
     }
     if (symbol == TILE_SYM_WALL1)
     {
@@ -127,11 +125,11 @@ Tile createTile(int symbol)
         t.data = WALL_PENTAGRAM;
         t.flags |= TILE_IS_WALL;
     }
-    if (symbol > sym_exitPointsStart)
+    if (symbol > sym_exit_points_start)
     {
         t.flags |= TILE_IS_EXIT_POINT;
         t.flags &= ~TILE_UNRECOGNIZED;
-        t.data = symbol - sym_exitPointsStart;
+        t.data = symbol - sym_exit_points_start;
     }
     if (!t.flags)
     {
@@ -140,19 +138,19 @@ Tile createTile(int symbol)
     return t;
 }
 
-Tile getTileAt(World *world, int x, int y)
+Tile get_tile_at(World *world, int x, int y)
 {
     return world->map[x / TILESIZE][y / TILESIZE];
 }
 
-Tile ns_getTileAt(World *world, int x, int y)
+Tile ns_get_tile_at(World *world, int x, int y)
 {
     return world->map[x][y];
 }
 
-int ns_checkFlagsAt(World *world, int x, int y, int flagsToCheck)
+int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
 {
-    return (world->map[x][y].flags & flagsToCheck) != 0;
+    return (world->map[x][y].flags & flags_to_check) != 0;
 }
 
 int ns_getWallTypeAt(World *world, int x, int y)
@@ -161,17 +159,17 @@ int ns_getWallTypeAt(World *world, int x, int y)
     return ((t->flags & TILE_IS_WALL) != 0) ? t->data : 0;
 }
 
-int checkFlagsAt(World *world, int x, int y, int flagsToCheck)
+int check_flags_at(World *world, int x, int y, int flags_to_check)
 {
-    return ((world->map[x / TILESIZE][y / TILESIZE].flags & flagsToCheck) != 0);
+    return ((world->map[x / TILESIZE][y / TILESIZE].flags & flags_to_check) != 0);
 }
 
-int getWallTypeAt(World *world, int x, int y)
+int get_wall_type_at(World *world, int x, int y)
 {
     return ns_getWallTypeAt(world, x / TILESIZE, y / TILESIZE);
 }
 
-void spawnBodyParts(Enemy *enm)
+void spawn_body_parts(Enemy *enm)
 {
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
@@ -188,23 +186,23 @@ void spawnBodyParts(Enemy *enm)
     }
 }
 
-void setTileFlag(World *world, int x, int y, int flags)
+void set_tile_flag(World *world, int x, int y, int flags)
 {
      world->map[x / TILESIZE][y / TILESIZE].flags |= flags;
 }
 
-void initPlayer(World *world, Enemy *plrautosave)
+void init_player(World *world, Enemy *plrautosave)
 {
   if (plrautosave->id == NO_OWNER)
   {
     world->plr = world->enm[0];
     world->plr.id = PLAYER_ID;
-    world->plr.formerId = PLAYER_ID;
+    world->plr.former_id = PLAYER_ID;
     world->plr.shots = 1;
     world->plr.health = 3;
     world->plr.completetime = 0;
     world->plr.rate = 7;
-    if ((world->gameModifiers & GAMEMODIFIER_BRUTAL) != 0)
+    if ((world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
     {
         world->plr.rate = 12;
     }
