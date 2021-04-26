@@ -54,7 +54,7 @@ int handle_direction_keys(World *world, int key_up, int key_down, int key_left, 
 
 int handle_weapon_change_keys(World *world, int key_x, int key_z)
 {
-    const int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0;
+    const int difficulty = GET_DIFFICULTY(world);
     if (key_x && world->plr.wait == 0) // Power
     {
       world->plr.shots = 6;
@@ -106,16 +106,18 @@ Enemy *create_turret(World *world)
   return enm;
 }
 
-int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount, int *plr_rune_of_protection_active)
+int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount)
 {
     const int price_bonus = (world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
     const int cost_heal = 1 + price_bonus;
     const int cost_protection = 2 + price_bonus;
-    const int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+    const int difficulty = GET_DIFFICULTY(world);
     const int cost_turret = (difficulty == DIFFICULTY_BRUTAL ? 4 : 3) + price_bonus;
     const int cost_blast = (difficulty == DIFFICULTY_BRUTAL ? 8 : 6) + price_bonus;
     
     const int overpowered = (world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0;
+
+    int *plr_rune_of_protection_active = &world->powerups.rune_of_protection_active;
     
     if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < 6 && world->plr.wait == 0)
     {

@@ -121,7 +121,7 @@ void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
 }
 
 
-void enemy_logic(World *world, Coordinates *boss_waypoint, int boss_want_to_shoot)
+void enemy_logic(World *world)
 {  // Viholliset
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
@@ -138,10 +138,10 @@ void enemy_logic(World *world, Coordinates *boss_waypoint, int boss_want_to_shoo
           int aim_window = 2 + (enm_type == ALIEN_TURRET || enm_type == ARCH_MAGE ? 5 : 0);
           int reacts_to_player = sees_each_other(world->enm + x, &world->plr, world);
 
-          if (reacts_to_player || (enm_type == ARCH_MAGE && boss_waypoint->x >= 0))
+          if (reacts_to_player || (enm_type == ARCH_MAGE && world->boss_waypoint.x >= 0))
           {
             world->enm[x].move = 1;
-            if (enm_type != ARCH_MAGE || (boss_want_to_shoot && reacts_to_player))
+            if (enm_type != ARCH_MAGE || (world->boss_want_to_shoot && reacts_to_player))
             {
               if (enm_type == ARCH_MAGE)
               {
@@ -155,15 +155,15 @@ void enemy_logic(World *world, Coordinates *boss_waypoint, int boss_want_to_shoo
             }
 
             world->enm[x].dx = world->enm[x].dy = 0;
-            if (enm_type == ARCH_MAGE && boss_waypoint->x >= 0)
+            if (enm_type == ARCH_MAGE && world->boss_waypoint.x >= 0)
             {
-              aim_at.x = boss_waypoint->x * TILESIZE + HALFTILESIZE;
-              aim_at.y = boss_waypoint->y * TILESIZE + HALFTILESIZE;
+              aim_at.x = world->boss_waypoint.x * TILESIZE + HALFTILESIZE;
+              aim_at.y = world->boss_waypoint.y * TILESIZE + HALFTILESIZE;
               aim_window = 0;
-              if (world->enm[x].x / TILESIZE == (int)boss_waypoint->x && world->enm[x].y / TILESIZE == (int)boss_waypoint->y)
+              if (world->enm[x].x / TILESIZE == (int)world->boss_waypoint.x && world->enm[x].y / TILESIZE == (int)world->boss_waypoint.y)
               {
                 printf("Waypoint reached\n");
-                boss_waypoint->x = boss_waypoint->y = -1;
+                world->boss_waypoint.x = world->boss_waypoint.y = -1;
                 world->boss_fight_config.state.waypoint_reached = 1;
               }
             }
@@ -233,7 +233,6 @@ void enemy_logic(World *world, Coordinates *boss_waypoint, int boss_want_to_shoo
             int play_sample = shoot(world->enm + x, world);
             if (play_sample)
             {
-              // play_sample(s_throw, 255, 127, 800 + rand() % 400, 0);
               trigger_sample(SAMPLE_THROW, 255);
             }
 
@@ -242,10 +241,7 @@ void enemy_logic(World *world, Coordinates *boss_waypoint, int boss_want_to_shoo
           draw_enemy(world->enm + x, world);
           if (world->enm[x].ammo == 0)
           {
-            //if (playcount == 0)
                 trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-//              play_sample(s_expl[rand() % 6], 200, 127, 800 + rand() % 400, 0);
-           // playcount = PLAYDELAY;
             create_shade_around_hit_point(world->enm[x].x, world->enm[x].y, 9, world);
             create_explosion(world->enm[x].x, world->enm[x].y, world);
             create_explosion(world->enm[x].x, world->enm[x].y, world);
@@ -275,7 +271,7 @@ void draw_static_background()
     }
 }
 
-void boss_logic(World *world, int *boss_want_to_shoot, Coordinates *boss_waypoint, int boss_died)
+void boss_logic(World *world, int boss_died)
 {
   Enemy *boss = NULL;
   if (world->boss_fight)
@@ -319,10 +315,10 @@ void boss_logic(World *world, int *boss_want_to_shoot, Coordinates *boss_waypoin
         }
         break;
         case BFCONF_EVENT_TYPE_ALLOW_FIRING:
-          *boss_want_to_shoot = 1;
+          world->boss_want_to_shoot = 1;
         break;
         case BFCONF_EVENT_TYPE_DISALLOW_FIRING:
-          *boss_want_to_shoot = 0;
+          world->boss_want_to_shoot = 0;
         break;
         case BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE:
           if (boss)
@@ -353,17 +349,160 @@ void boss_logic(World *world, int *boss_want_to_shoot, Coordinates *boss_waypoin
         }
         break;
         case BFCONF_EVENT_TYPE_SET_WAYPOINT:
-          boss_waypoint->x = event->parameters[0];
-          boss_waypoint->y = event->parameters[1];
+          world->boss_waypoint.x = event->parameters[0];
+          world->boss_waypoint.y = event->parameters[1];
           world->boss_fight_config.state.waypoint = event->parameters[2];
           world->boss_fight_config.state.waypoint_reached = 0;
         break;
         case BFCONF_EVENT_TYPE_CLEAR_WAYPOINT:
-          boss_waypoint->x = -1;
-          boss_waypoint->y = -1;
+          world->boss_waypoint.x = -1;
+          world->boss_waypoint.y = -1;
           world->boss_fight_config.state.waypoint = 0;
         break;
       }
+    }
+  }
+}
+
+void bullet_logic(World *world)
+{
+  const int difficulty = GET_DIFFICULTY(world);
+  for (int i = 0; i < BULLETCOUNT; i++)
+  {
+    Bullet *bullet = &world->bullets[i];
+
+    if (bullet->owner_id == NO_OWNER)
+      continue;
+    double bullet_orig_x = bullet->x;
+    double bullet_orig_y = bullet->y;
+    for (int j = 0; j < 12; j++)
+    {
+      move_bullet(bullet, world);
+      if (bullet->owner_id == NO_OWNER)
+      {
+        if (world->playcount == 0)
+            trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
+        world->playcount = PLAYDELAY;
+        create_explosion(bullet->x, bullet->y, world);
+        if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
+        {
+          bullet->x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
+          bullet->y = ((int)(bullet_orig_y / TILESIZE)) * TILESIZE + HALFTILESIZE;
+          while (check_flags_at(world, (int)bullet->x, (int)bullet->y, TILE_IS_WALL))
+          {
+              bullet->x -= 5 * bullet->dx;
+              bullet->y -= 5 * bullet->dy;
+          }
+          create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, PLAYER_ID);
+        }
+        
+        break;
+      }
+      if (bullet->owner_id < 9000 && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
+      {
+        if (world->powerups.rune_of_protection_active == 1)
+        {
+            world->plr.health++;
+            if (world->plr.health < 0) world->plr.health = 1;
+            world->plr.id = PLAYER_ID;
+            world->powerups.rune_of_protection_active = -50;
+            create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
+            if ((world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
+            {
+              create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
+            }
+        }
+        if (world->playcount == 0)
+            trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
+        world->playcount = PLAYDELAY;
+        create_shade_around_hit_point(world->plr.x, world->plr.y, 9, world);
+        create_explosion(world->plr.x, world->plr.y, world);
+        if (world->plr.health <= 0)
+        {
+          create_explosion(world->plr.x - 20, world->plr.y - 20, world);
+          create_explosion(world->plr.x + 20, world->plr.y + 20, world);
+          create_explosion(world->plr.x - 20, world->plr.y + 20, world);
+          create_explosion(world->plr.x + 20, world->plr.y - 20, world);
+
+          chunkrest(1); // The death sample won't play else
+          trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world->plr.x - 240) / 8, 900 + rand() % 200);
+          world->plr.reload = 100;
+          break;
+        }
+      }
+      int deathsample_plays = 0;
+      if (bullet->hurts_monsters)
+        for (int j = 0; j < ENEMYCOUNT; j++)
+        {
+          Enemy *enm = &world->enm[j];
+          if (enm->id == NO_OWNER || enm->id >= 9000 || enm->roomid != world->current_room)
+            continue;
+
+          if (bullet_hit(world->enm + j, world->bullets + i))
+          {
+            create_shade_around_hit_point(enm->x, enm->y, 9, world);
+            create_explosion(enm->x, enm->y, world);
+            create_explosion(enm->x, enm->y, world);
+            create_explosion(enm->x, enm->y, world);
+            if (!deathsample_plays)
+              if (world->playcount == 0)
+                trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
+                
+            if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
+            {
+                create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, PLAYER_ID);
+            }
+                
+            world->playcount = PLAYDELAY;
+            if (enm->id == NO_OWNER) // enemy was killed (bullet_hit has side effects)
+            {
+              set_tile_flag(world, enm->x, enm->y, TILE_IS_BLOOD_STAINED);
+              world->plr.gold += enm->gold;
+
+              if (enm->gold > 0)
+              {
+                sprintf(world->hint.text, "+ %d", enm->gold);
+                world->hint.loc.x = enm->x - 15;
+                world->hint.loc.y = enm->y - 15;
+                world->hint.dim = 6;
+                world->hint.time_shows = 40;
+              }
+              if((world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
+              {
+                  if (world->plr.health < 3 && world->plr.health > 0)
+                    world->plr.health++;
+                  world->plr.ammo += 7;
+                  if (world->plr.ammo > 15)
+                    world->plr.ammo = 15;
+              }
+
+              if (enm->type == ARCH_MAGE) // Archmage dies
+              {
+                printf("boss die logic\n");
+                boss_logic(world, 1);
+                chunkrest(1);
+                trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (enm->x - 240) / 8, 1000);
+              }
+              else
+              {
+                chunkrest(1); // The death sample won't play else
+                if (!deathsample_plays)
+                  trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
+              }
+              deathsample_plays = 1;
+              spawn_body_parts(enm);
+            }
+            break;
+          }
+        }
+    }
+    if (bullet->bullet_type == BULLET_TYPE_NORMAL)
+    {
+        int bullet_sprite = ((int)(bullet->x + bullet->y) / 30) % 4;
+        masked_blit(world->spr, world->buf, 140 + bullet_sprite * 10, 140, bullet->x - 5, bullet->y - 5, 10, 10);
+    } else if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
+    {
+        masked_blit(world->spr, world->buf, 140, 150, bullet->x - 6, bullet->y - 6, 13, 12);
     }
   }
 }
@@ -384,13 +523,12 @@ int game(int mission, int *game_modifiers)
 
   char c;
   int vibrations = 0;
-  int x, y, i, playcount = 0, additt_anim = 0;
+  int x, y, i, additt_anim = 0;
+  world.playcount = 0;
 
-  char hint_text[256];
-  int hint_time_shows = 0, hint_x, hint_y, hint_dim;
   int fly_in_text_x = world.buf->w;
   int boss_fight_frame_count = 0;
-  int boss_want_to_shoot = 0;
+  world.boss_want_to_shoot = 0;
   char fly_in_text[64];
   strcpy(fly_in_text, game_settings.missions[mission - 1].name);
 
@@ -405,7 +543,8 @@ int game(int mission, int *game_modifiers)
   int key_press_buffer_idx = 0;
   long key_press_mask = 0;
   
-  Coordinates boss_waypoint = {-1, -1};
+  world.boss_waypoint.x = world.boss_waypoint.y = -1;
+  world.hint.time_shows = 0;
 
   if (record_mode == RECORD_MODE_RECORD)
   {
@@ -430,7 +569,7 @@ int game(int mission, int *game_modifiers)
     trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
   }
   
-  int difficulty = (world.game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+  int difficulty = GET_DIFFICULTY(&world);//(world.game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
   
   if (world.plr.gold > (difficulty == DIFFICULTY_BRUTAL ? 0 : 5))
   {
@@ -445,11 +584,11 @@ int game(int mission, int *game_modifiers)
   if (world.plr.ammo < 10)
     world.plr.ammo = 10;
   
-  int cluster_strength = 16;
+  world.powerups.cluster_strength = 16;
   
   if ((world.game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
   {
-    cluster_strength = 5;
+    world.powerups.cluster_strength = 5;
     world.plr.gold = 40;
   }
   else if (difficulty == DIFFICULTY_BRUTAL)
@@ -460,7 +599,7 @@ int game(int mission, int *game_modifiers)
     world.plr.gold = world.boss_fight_config.player_initial_gold;
   }
     
-  int plr_rune_of_protection_active = 0;
+  world.powerups.rune_of_protection_active = 0;
 
   int plr_dir_helper_intensity = 0;
   
@@ -488,8 +627,8 @@ int game(int mission, int *game_modifiers)
     draw_map(&world, -1 * vibrations); // shadows
     move_and_draw_body_parts(&world);
 
-    if (playcount > 0)
-      playcount--;
+    if (world.playcount > 0)
+      world.playcount--;
 
     vibrations = progress_and_draw_explosions(&world);
     if (game_settings.vibration_mode != 1)
@@ -566,11 +705,11 @@ int game(int mission, int *game_modifiers)
         }
         
         int gold_hint_amount = 0;
-        int activated_powerup = handle_power_up_keys(&world, key_a, key_s, key_d, key_f, &gold_hint_amount, &plr_rune_of_protection_active);
+        int activated_powerup = handle_power_up_keys(&world, key_a, key_s, key_d, key_f, &gold_hint_amount);
         play_sample = activated_powerup || play_sample;
         if (gold_hint_amount)
         {
-          show_gold_hint(&world, hint_text, &hint_x, &hint_y, &hint_dim, &hint_time_shows, gold_hint_amount);
+          show_gold_hint(&world, gold_hint_amount);
         }
         
                 
@@ -614,7 +753,7 @@ int game(int mission, int *game_modifiers)
 
     if (get_tile_at(&world, world.plr.x, world.plr.y).flags & TILE_IS_EXIT_LEVEL && world.plr.health > 0)
     {
-      hint_time_shows = 0;
+      world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
       display_level_info(&world, mission, game_settings.mission_count, bmp_levclear, font);
@@ -629,148 +768,14 @@ int game(int mission, int *game_modifiers)
       break;
     }
     
-    enemy_logic(&world, &boss_waypoint, boss_want_to_shoot);
+    enemy_logic(&world);
 
     // ammukset
 
     if (world.plr.health > 0)
-      for (x = 0; x < BULLETCOUNT; x++)
-      {
-
-        if (world.bullets[x].owner_id == NO_OWNER)
-          continue;
-        int z;
-        double bullet_orig_x = world.bullets[x].x;
-        double bullet_orig_y = world.bullets[x].y;
-        for (z = 0; z < 12; z++)
-        {
-          move_bullet(world.bullets + x, &world);
-          if (world.bullets[x].owner_id == NO_OWNER)
-          {
-            if (playcount == 0)
-               trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-            playcount = PLAYDELAY;
-            create_explosion(world.bullets[x].x, world.bullets[x].y, &world);
-            if (world.bullets[x].bullet_type == BULLET_TYPE_CLUSTER)
-            {
-              world.bullets[x].x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
-              world.bullets[x].y = ((int)(bullet_orig_y / TILESIZE)) * TILESIZE + HALFTILESIZE;
-              while (check_flags_at(&world, (int)world.bullets[x].x, (int)world.bullets[x].y, TILE_IS_WALL))
-              {
-                  world.bullets[x].x -= 5 * world.bullets[x].dx;
-                  world.bullets[x].y -= 5 * world.bullets[x].dy;
-              }
-              create_cluster_explosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
-            }
-            
-            break;
-          }
-          if (world.bullets[x].owner_id < 9000 && bullet_hit(&world.plr, world.bullets + x)) // Player gets hit
-          {
-            if (plr_rune_of_protection_active == 1)
-            {
-                world.plr.health++;
-                if (world.plr.health < 0) world.plr.health = 1;
-                world.plr.id = PLAYER_ID;
-                plr_rune_of_protection_active = -50;
-                create_cluster_explosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
-                if ((world.game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
-                {
-                  create_cluster_explosion(&world, world.plr.x, world.plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
-                }
-            }
-            if (playcount == 0)
-                trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-            playcount = PLAYDELAY;
-            create_shade_around_hit_point(world.plr.x, world.plr.y, 9, &world);
-            create_explosion(world.plr.x, world.plr.y, &world);
-            if (world.plr.health <= 0)
-            {
-              create_explosion(world.plr.x - 20, world.plr.y - 20, &world);
-              create_explosion(world.plr.x + 20, world.plr.y + 20, &world);
-              create_explosion(world.plr.x - 20, world.plr.y + 20, &world);
-              create_explosion(world.plr.x + 20, world.plr.y - 20, &world);
-
-              chunkrest(1); // The death sample won't play else
-              trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200);
-              world.plr.reload = 100;
-              break;
-            }
-          }
-          int deathsample_plays = 0;
-          if (world.bullets[x].hurts_monsters)
-            for (y = 0; y < ENEMYCOUNT; y++)
-            {
-              if (world.enm[y].id == NO_OWNER || world.enm[y].id >= 9000 || world.enm[y].roomid != world.current_room)
-                continue;
-
-              if (bullet_hit(world.enm + y, world.bullets + x))
-              {
-                create_shade_around_hit_point(world.enm[y].x, world.enm[y].y, 9, &world);
-                create_explosion(world.enm[y].x, world.enm[y].y, &world);
-                create_explosion(world.enm[y].x, world.enm[y].y, &world);
-                create_explosion(world.enm[y].x, world.enm[y].y, &world);
-                if (!deathsample_plays)
-                  if (playcount == 0)
-                    trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-                    
-                if (world.bullets[x].bullet_type == BULLET_TYPE_CLUSTER)
-                {
-                    create_cluster_explosion(&world, world.bullets[x].x, world.bullets[x].y, 16, cluster_strength, PLAYER_ID);
-                }
-                    
-                playcount = PLAYDELAY;
-                if (world.enm[y].id == NO_OWNER) // enemy was killed (bullet_hit has side effects)
-                {
-                  set_tile_flag(&world, world.enm[y].x, world.enm[y].y, TILE_IS_BLOOD_STAINED);
-                  world.plr.gold += world.enm[y].gold;
-
-                  if (world.enm[y].gold > 0)
-                  {
-                    sprintf(hint_text, "+ %d", world.enm[y].gold);
-                    hint_x = world.enm[y].x - 15;
-                    hint_y = world.enm[y].y - 15;
-                    hint_dim = 6;
-                    hint_time_shows = 40;
-                  }
-                  if((world.game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
-                  {
-                      if (world.plr.health < 3 && world.plr.health > 0)
-                        world.plr.health++;
-                      world.plr.ammo += 7;
-                      if (world.plr.ammo > 15)
-                        world.plr.ammo = 15;
-                  }
-
-                  if (world.enm[y].type == ARCH_MAGE) // Archmage dies
-                  {
-                    printf("boss die logic\n");
-                    boss_logic(&world, &boss_want_to_shoot, &boss_waypoint, 1);
-                    chunkrest(1);
-                    trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (world.enm[y].x - 240) / 8, 1000);
-                  }
-                  else
-                  {
-                    chunkrest(1); // The death sample won't play else
-                    if (!deathsample_plays)
-                     trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world.enm[y].x - 240) / 8, 900 + rand() % 200);
-                  }
-                  deathsample_plays = 1;
-                  spawn_body_parts(&world.enm[y]);
-                }
-                break;
-              }
-            }
-        }
-        if (world.bullets[x].bullet_type == BULLET_TYPE_NORMAL)
-        {
-            int bullet_sprite = ((int)(world.bullets[x].x + world.bullets[x].y) / 30) % 4;
-            masked_blit(world.spr, world.buf, 140 + bullet_sprite * 10, 140, world.bullets[x].x - 5, world.bullets[x].y - 5, 10, 10);
-        } else if (world.bullets[x].bullet_type == BULLET_TYPE_CLUSTER)
-        {
-            masked_blit(world.spr, world.buf, 140, 150, world.bullets[x].x - 6, world.bullets[x].y - 6, 13, 12);
-        }
-      }
+    {
+      bullet_logic(&world);
+    }
 
     draw_map(&world, mission % 3 + 1);
 
@@ -780,16 +785,16 @@ int game(int mission, int *game_modifiers)
 
     // Draw hint
 
-    if (hint_time_shows > 0)
+    if (world.hint.time_shows > 0)
     {
-      hint_time_shows--;
-      int hint_col = hint_time_shows * hint_dim;
-      textprintf_ex(world.buf, font, hint_x, hint_y, GRAY(hint_col), -1, hint_text);
+      world.hint.time_shows--;
+      int hint_col = world.hint.time_shows * world.hint.dim;
+      textprintf_ex(world.buf, font, world.hint.loc.x, world.hint.loc.y, GRAY(hint_col), -1, world.hint.text);
     }
     if (world.boss_fight && ++boss_fight_frame_count >= 3)
     {
       boss_fight_frame_count = 0;
-      boss_logic(&world, &boss_want_to_shoot, &boss_waypoint, 0);
+      boss_logic(&world, 0);
     }
 
     if (plr_dir_helper_intensity > 0)
@@ -803,14 +808,14 @@ int game(int mission, int *game_modifiers)
     }
     
     
-    if (plr_rune_of_protection_active)
+    if (world.powerups.rune_of_protection_active)
     {
-        if (plr_rune_of_protection_active < 0)
+        if (world.powerups.rune_of_protection_active < 0)
         {
-           plr_rune_of_protection_active++;
+           world.powerups.rune_of_protection_active++;
            masked_blit(world.spr, world.buf, 140, 165, 
-                   world.plr.x + plr_rune_of_protection_active * sin(completetime * 0.15) - 7, 
-                   world.plr.y + plr_rune_of_protection_active * cos(completetime * 0.15) - 7, 
+                   world.plr.x + world.powerups.rune_of_protection_active * sin(completetime * 0.15) - 7, 
+                   world.plr.y + world.powerups.rune_of_protection_active * cos(completetime * 0.15) - 7, 
                    13, 13);
         }
         else masked_blit(world.spr, world.buf, 140, 165, 
@@ -871,7 +876,7 @@ int game(int mission, int *game_modifiers)
     if (key[KEY_ESC])
     {
 
-      hint_time_shows = 0;
+      world.hint.time_shows = 0;
       int switch_level = menu(1, &plrautosave, &mission, game_modifiers);
       if (switch_level)
       {

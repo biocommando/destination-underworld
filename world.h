@@ -3,6 +3,7 @@
 #include "allegro.h"
 #include "duconstants.h"
 #include "bossfightconf.h"
+#include "helpers.h"
 
 typedef enum EnemyTypeEnum
 {
@@ -102,6 +103,8 @@ typedef struct
 #define GAMEMODIFIER_MULTIPLIED_GOLD 0x8
 #define GAMEMODIFIER_BRUTAL 0x10
 
+#define GET_DIFFICULTY(world) (((world)->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : DIFFICULTY_NORMAL)
+
 typedef struct
 {
         int flags;
@@ -118,6 +121,18 @@ typedef struct
         int sprite;
         int phase;
 } Explosion;
+
+struct hint_text {
+        Coordinates loc;
+        int dim;
+        int time_shows;
+        char text[256];
+};
+
+struct powerup_status {
+        int cluster_strength;
+        int rune_of_protection_active;
+};
 
 typedef struct
 {
@@ -137,6 +152,11 @@ typedef struct
         int boss_fight;
         int game_modifiers;
         BossFightConfig boss_fight_config;
+        Coordinates boss_waypoint;
+        int boss_want_to_shoot;
+        struct hint_text hint;
+        struct powerup_status powerups;
+        int playcount;
 } World;
 
 void clear_explosions(World *);

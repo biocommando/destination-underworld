@@ -244,11 +244,11 @@ void display_level_info(World *world, int mission, int mission_count, BITMAP *bm
     stretch_blit(world->buf, screen, 0, 0, 480, 360, 0, 0, screen->w, screen->h);
 }
 
-void show_gold_hint(World *world, char *hint_text, int *hint_x, int *hint_y, int *hint_dim, int *hint_time_shows, int number)
+void show_gold_hint(World *world, int number)
 {
-  sprintf(hint_text, "- %d", number);
-  *hint_x = world->plr.x - 15;
-  *hint_y = world->plr.y - 30;
-  *hint_dim = 4;
-  *hint_time_shows = 60;
+  sprintf(world->hint.text, "- %d", number);
+  world->hint.loc.x = world->plr.x - 15;
+  world->hint.loc.y = world->plr.y - 30;
+  world->hint.dim = 4;
+  world->hint.time_shows = 60;
 }
