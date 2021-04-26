@@ -404,10 +404,14 @@ int readLevel(World *world, const char *missionName, int roomTo)
     world->bossFight = 0;
 //    world->scripting = 0;
 
-    FILE *f = fopen(missionName, "r");
+    char special_filename[256];
+    sprintf(special_filename, "%s.mode.%d", missionName, world->gameModifiers);
+    FILE *f = fopen(special_filename, "r");
     if (f == NULL)
     {
-        return -1;
+        f = fopen(missionName, "r");
+        if (f == NULL)
+            return -1;
     }
 
     fgets(buf, 256, f); // version

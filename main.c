@@ -455,14 +455,7 @@ int game(int mission, int *gameModifiers)
   }
   long timeStamp = 0;
 
-  {
-    char special_filename[256];
-    sprintf(special_filename, "%s.mode.%d", gameSettings.missions[mission - 1].filename, *gameModifiers);
-    if (readLevel(&world, special_filename, 1) < 0)
-    {
-      readLevel(&world, gameSettings.missions[mission - 1].filename, 1);
-    }
-  }
+  readLevel(&world, gameSettings.missions[mission - 1].filename, 1);
   if (world.bossFight)
   {
     //play_sample(s_bosstalk1, 255, 127, 1000, 0);
