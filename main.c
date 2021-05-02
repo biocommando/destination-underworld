@@ -863,7 +863,6 @@ int game(int mission, int *game_modifiers)
         break;
     }
 
-    //play_mp3();
     if (key[KEY_B])
     {
       char fname[123];

@@ -1,0 +1,64 @@
+set health = 50
+set fire_rate = 10
+set speed = 2
+set player_initial_gold = 2
+
+// initial -> set waypoint to first target
+
+on time_one_time: 1 do set_waypoint: 6;9
+
+on time_one_time: 1 do allow_firing
+
+// Move in circle
+
+on waypoint_reached: 6;9 do set_waypoint: 6;5
+
+on waypoint_reached: 6;5 do set_waypoint: 8;5
+
+on waypoint_reached: 8;5 do set_waypoint: 10;5
+
+on waypoint_reached: 10;5 do set_waypoint: 12;5
+
+on waypoint_reached: 12;5 do set_waypoint: 12;9
+
+on waypoint_reached: 12;9 do set_waypoint: 9;9
+
+on waypoint_reached: 9;9 do set_waypoint: 6;9
+
+// Spawn enemies
+
+def spawnpoint imp_or_alien = 9, 7, 0, 0, 90, 10, 0
+
+on waypoint_reached: 9;9 do spawn: imp_or_alien
+
+def spawnpoint 13;5 = 13, 5, 50, 50, 0, 0, 0
+
+on waypoint_reached: 6;5 do spawn: 13;5
+
+def spawnpoint 4;5 = 4, 5, 50, 50, 0, 0, 0
+
+on waypoint_reached: 12;5 do spawn: 4;5
+
+def spawnpoint 3;10 = 3, 10, 100, 0, 0, 0, 0
+
+on waypoint_reached: 6;9 do spawn: 3;10
+
+def spawnpoint 14;10 = 14, 10, 100, 0, 0, 0, 0
+
+on waypoint_reached: 12;5 do spawn: 14;10
+
+// Firing
+
+on waypoint_reached: 9;9 do fire_in_circle: number_of_directions = 10, intensity = 2
+
+on waypoint_reached: 6;5 do disallow_firing
+
+on waypoint_reached: 8;5 do allow_firing
+
+on waypoint_reached: 10;5 do disallow_firing
+
+on waypoint_reached: 12;5 do allow_firing
+
+// Death
+
+on health: 0 do modify_terrain: x = 2, y = 4, terrain_type = floor
