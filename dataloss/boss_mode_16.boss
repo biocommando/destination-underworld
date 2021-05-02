@@ -1,0 +1,55 @@
+// Game mode: brutally hard
+
+set health = 15
+set player_initial_gold = 0
+
+// North-West room
+// This is the initial room for the player.
+// After a short while spawns turrets in each cornet with one-time trigger.
+// Same room will eventually have entrance to the boss room.
+
+def spawnpoint nw-0 = 1, 1, 0, 0, 0, 0, 100
+def spawnpoint nw-1 = 5, 1, 0, 0, 0, 0, 100
+def spawnpoint nw-2 = 1, 5, 0, 0, 0, 0, 100
+def spawnpoint nw-3 = 5, 5, 0, 0, 0, 0, 100
+
+// South-West room, has moderately difficult enemies
+
+def spawnpoint sw-0 = 1, 7, 0, 100, 0, 0, 0 
+def spawnpoint sw-1 = 5, 7, 0, 100, 0, 0, 0 
+def spawnpoint sw-2 = 1, 10, 0, 100, 0, 0, 0 
+def spawnpoint sw-3 = 5, 10, 0, 100, 0, 0, 0 
+
+// South-East room, has easy enemies
+
+def spawnpoint se-0 = 7, 5, 100, 0, 0, 0, 0
+def spawnpoint se-1 = 14, 5, 100, 0, 0, 0, 0
+def spawnpoint se-2 = 7, 10, 100, 0, 0, 0, 0
+def spawnpoint se-3 = 14, 10, 100, 0, 0, 0, 0 
+
+// North-East room, always spawns an alien in the middle
+
+def spawnpoint ne-0 = 13, 2, 0, 0, 0, 100, 0
+
+on time_one_time: ms(3000) do spawn: nw-0
+on time_one_time: ms(3000) do spawn: nw-1
+on time_one_time: ms(3000) do spawn: nw-2
+on time_one_time: ms(3000) do spawn: nw-3
+
+on time_interval: ms(15000) do spawn: sw-0
+on time_interval: ms(15000) do spawn: sw-1
+on time_interval: ms(15000) do spawn: sw-2
+on time_interval: ms(15000) do spawn: sw-3
+
+on time_interval: ms(10000) do spawn: se-0
+on time_interval: ms(10000) do spawn: se-1
+on time_interval: ms(10000) do spawn: se-2
+on time_interval: ms(10000) do spawn: se-3
+
+on time_interval: ms(15000) do spawn: ne-0
+
+on time_one_time: ms(90000) do modify_terrain: x = 6, y = 2, terrain_type = floor
+
+on health: 10 do fire_in_circle: number_of_directions = 16, intensity = 2
+
+on health: 5 do fire_in_circle: number_of_directions = 16, intensity = 2

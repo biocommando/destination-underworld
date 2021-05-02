@@ -32,6 +32,9 @@ fs
         // def waypoint name = x, y
         // spawnpoints:
         // def spawnpoint name = x, y, probs
+        // preprocessor:
+        // ms(..) = calculate boss timer value for amount of milliseconds
+        x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => Math.floor(Number(a) / 45))
         if (x.startsWith('on ')) {
             x = x.replace('on ', '')
             let evt = {}
@@ -97,6 +100,8 @@ const objToIni = obj => {
 let str = `# Generated from ${fname}\r\n\r\n`
 
 str += '[main]\r\n'
+
+main.events = events.length
 
 str += objToIni(main)
 
