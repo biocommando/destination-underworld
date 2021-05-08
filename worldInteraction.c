@@ -279,6 +279,32 @@ void create_explosion(int x, int y, World *world)
     bounce_body_parts(x, y, world);
 }
 
+void create_sparkles(int x, int y, int count, World *world)
+{
+    static int sparkle_counter = 0;
+    for (int i = 0; i < count; i++)
+    {
+        double angle = 2 * AL_PI / count * i;
+        double speed = (rand() % 20) / 10.0 + 1;
+        struct sparkle_fx *fx = &world->sparkle_fx[sparkle_counter];
+        fx->dir.x = sin(angle);
+        fx->dir.y = cos(angle);
+
+        fx->loc.x = x + fx->dir.x * 12;
+        fx->loc.y = y + fx->dir.y * 12;
+
+        fx->dir.x *= speed;
+        fx->dir.y *= speed;
+
+        fx->sprite = rand() % 4;
+        fx->duration = 10 + rand() % 10;
+        if (++sparkle_counter == SPARKLE_FX_COUNT)
+        {
+            sparkle_counter = 0;
+        }
+    }
+}
+
 Enemy *get_next_available_enemy(World *world, int *index)
 {
     int fallback = 1;
@@ -337,11 +363,6 @@ Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
     {
         new_enemy->bodyparts[j].exists = 0;
     }
-    if (enemytype == 5)
-    {
-        new_enemy->rate = world->boss_fight_config.fire_rate;
-        new_enemy->health = world->boss_fight_config.health;
-    }
     new_enemy->roomid = room_id;
     if (enemytype > 1)
         new_enemy->gold = 1;
@@ -371,6 +392,7 @@ Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
     else if (new_enemy->id < 6000)
     {
         new_enemy->type = ARCH_MAGE;
+        world->boss = new_enemy;
     }
     else
     {
@@ -404,6 +426,9 @@ int read_level(World *world, const char *mission_name, int room_to)
     fgets(buf, 256, f);
     int object_count = 0;
     sscanf(buf, "%d", &object_count);
+
+    int boss_exists = world->boss != NULL;
+
     while (object_count-- > 0)
     {
         fgets(buf, 256, f);
@@ -468,6 +493,13 @@ int read_level(World *world, const char *mission_name, int room_to)
     }
 
     fclose(f);
+
+    if (world->boss && !boss_exists)
+    {
+        world->boss->rate = world->boss_fight_config.fire_rate;
+        world->boss->health = world->boss_fight_config.health;
+    }
+
     world->rooms_visited[room_to - 1] = 1;
     return 0;
 }
@@ -511,7 +543,7 @@ void change_room_if_at_exit_point(World *world, int mission)
              set_tile_flag(world, world->enm[i].x, world->enm[i].y, TILE_IS_BLOOD_STAINED);
           }
         }
-        clear_explosions(world);
+        clear_visual_fx(world);
         stop_bodyparts(world);
       }
     }

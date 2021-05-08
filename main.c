@@ -77,7 +77,7 @@ int main(int argc, char **argv)
   register_sample(SAMPLE_HEAL, ".\\dataloss\\healing.wav");
   register_sample(SAMPLE_PROTECTION, ".\\dataloss\\rune_of_protection.wav");
   register_sample(SAMPLE_TURRET, ".\\dataloss\\turret.wav");
-  register_sample(SAMPLE_BLAST, ".\\dataloss\\blast.wav");
+  register_sample(SAMPLE_SPAWN, ".\\dataloss\\spawn.wav");
 
   for (int i = 0; i < 6; i++)
   {
@@ -205,15 +205,6 @@ void enemy_logic(World *world)
           {
             draw_enemy(world->enm + x, world);
           }
-          if (enm_type == ARCH_MAGE)
-          {
-            // health bar for the boss
-            for (int i = 0; i < 6; i++)
-            {
-              if (world->enm[x].health >= (world->boss_fight_config.health * (i + 1) / 6))
-                masked_blit(world->spr, world->buf, 60, 0, world->enm[x].x - 23, world->enm[x].y - 18 + 4 * i, 7, 6);
-            }
-          }
         }
         else // turret
         {
@@ -241,7 +232,7 @@ void enemy_logic(World *world)
           draw_enemy(world->enm + x, world);
           if (world->enm[x].ammo == 0)
           {
-                trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
+            trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
             create_shade_around_hit_point(world->enm[x].x, world->enm[x].y, 9, world);
             create_explosion(world->enm[x].x, world->enm[x].y, world);
             create_explosion(world->enm[x].x, world->enm[x].y, world);
@@ -273,18 +264,7 @@ void draw_static_background()
 
 void boss_logic(World *world, int boss_died)
 {
-  Enemy *boss = NULL;
-  if (world->boss_fight)
-  {
-    for (int x = 0; x < ENEMYCOUNT; x++)
-    {
-      if (world->enm[x].type == ARCH_MAGE)
-      {
-        boss = &world->enm[x];
-        break;
-      }
-    }
-  }
+  Enemy *boss = world->boss;
   int in_same_room = boss != NULL && boss->roomid == world->current_room;
   if (in_same_room || boss_died)
   {
@@ -309,6 +289,9 @@ void boss_logic(World *world, int boss_died)
               && random_num < spawn_point->probability_thresholds[spawn_type][1])
             {
               spawn_enemy(spawn_point->x, spawn_point->y, spawn_type + 200, world->current_room, world);
+              create_sparkles(spawn_point->x * TILESIZE + HALFTILESIZE, spawn_point->y * TILESIZE + HALFTILESIZE, 15, world);
+              
+              trigger_sample(SAMPLE_SPAWN, 255);
               break; 
             }
           }
@@ -341,7 +324,7 @@ void boss_logic(World *world, int boss_died)
           }
           if (tile_type)
           {
-            world->map[event->parameters[0]][event->parameters[1]] = create_tile(TILE_SYM_FLOOR);
+            world->map[event->parameters[0]][event->parameters[1]] = create_tile(tile_type);
             trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
             for (int y = 0; y < 3; y++)
               create_explosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world);
@@ -358,6 +341,14 @@ void boss_logic(World *world, int boss_died)
           world->boss_waypoint.x = -1;
           world->boss_waypoint.y = -1;
           world->boss_fight_config.state.waypoint = 0;
+        break;
+        case BFCONF_EVENT_TYPE_START_SECONDARY_TIMER:
+          world->boss_fight_config.state.secondary_timer_started = 1;
+          if (event->parameters[0] >= 0)
+            world->boss_fight_config.state.secondary_timer_value = event->parameters[0];
+        break;
+        case BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER:
+          world->boss_fight_config.state.secondary_timer_started = 0;
         break;
       }
     }
@@ -620,9 +611,14 @@ int game(int mission, int *game_modifiers)
   }
   
   draw_static_background();
+
+  create_sparkles(world.plr.x, world.plr.y, 30, &world);
+
+  clock_t game_loop_clk = clock();
+
   while (restart_requested < 2)
   {
-    if (time_stamp % 3 == 0) reset_sample_triggers();
+    if (time_stamp % 6 == 0) reset_sample_triggers();
     time_stamp++;
     draw_map(&world, -1 * vibrations); // shadows
     move_and_draw_body_parts(&world);
@@ -796,6 +792,15 @@ int game(int mission, int *game_modifiers)
       boss_fight_frame_count = 0;
       boss_logic(&world, 0);
     }
+    
+    if (world.boss && world.boss->roomid == world.current_room)
+    {
+      for (int i = 0; i < 6; i++)
+      {
+        if (world.boss->health >= (world.boss_fight_config.health * (i + 1) / 6))
+          masked_blit(world.spr, world.buf, 60, 0, world.boss->x - 23, world.boss->y - 18 + 4 * i, 7, 6);
+      }
+    }
 
     if (plr_dir_helper_intensity > 0)
     {
@@ -823,6 +828,8 @@ int game(int mission, int *game_modifiers)
                                world.plr.y - TILESIZE * cos(completetime * 0.15) - 7, 
                                13, 13);
     }
+    
+    progress_and_draw_sparkles(&world);
     
     if (fly_in_text_x > -400)
     {
@@ -858,7 +865,7 @@ int game(int mission, int *game_modifiers)
       if (starty + endy > 360)
         endy = 360 - starty;
       stretch_blit(world.buf, screen, startx, starty, endx, endy, screen_h_offset, screen_v_offset, screen_width_scaled, screen_height_scaled);
-      chunkrest(20);
+      chunkrest(40);
       if (world.plr.reload <= 0)
         break;
     }
@@ -870,7 +877,7 @@ int game(int mission, int *game_modifiers)
       save_bitmap(fname, world.buf, default_palette);
       chunkrest(500);
     }
-    chunkrest(15);
+    game_loop_rest(&game_loop_clk);
 
     if (key[KEY_ESC])
     {

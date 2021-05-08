@@ -9,6 +9,7 @@
 #define BFCONF_TRIGGER_TYPE_TIME_ONE_TIME 'o'
 #define BFCONF_TRIGGER_TYPE_HEALTH 'h'
 #define BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED 'w'
+#define BFCONF_TRIGGER_TYPE_SECONDARY_TIMER 's'
 
 #define BFCONF_EVENT_TYPE_SPAWN 's'
 #define BFCONF_EVENT_TYPE_ALLOW_FIRING 'a'
@@ -17,6 +18,8 @@
 #define BFCONF_EVENT_TYPE_MODIFY_TERRAIN 't'
 #define BFCONF_EVENT_TYPE_SET_WAYPOINT 'w'
 #define BFCONF_EVENT_TYPE_CLEAR_WAYPOINT 'r'
+#define BFCONF_EVENT_TYPE_START_SECONDARY_TIMER '2'
+#define BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER 'S'
 
 #define BFCONF_MODIFY_TERRAIN_FLOOR 1
 #define BFCONF_MODIFY_TERRAIN_WALL 2
@@ -41,6 +44,8 @@ typedef struct {
   int health;
   int previous_health;
   int timer_value;
+  int secondary_timer_value;
+  int secondary_timer_started;
   int waypoint;
   int waypoint_reached;
   int sees_player;

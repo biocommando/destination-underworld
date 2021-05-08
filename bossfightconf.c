@@ -33,6 +33,7 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
  config->fire_rate = ini_read_int_value(f, "main", "fire_rate");
  config->player_initial_gold = ini_read_int_value(f, "main", "player_initial_gold");
  config->num_events = ini_read_int_value(f, "main", "events");
+ config->state.timer_value = ini_read_int_value(f, "main", "time_starts_at");
  
  for (int i = 0; i < config->num_events && i < BFCONF_MAX_EVENTS; i++)
  {
@@ -55,6 +56,10 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
   if (!strcmp(s, "waypoint_reached"))
   {
     config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED;
+  }
+  if (!strcmp(s, "secondary_timer"))
+  {
+    config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_SECONDARY_TIMER;
   }
   config->events[i].trigger_value = ini_read_int_value(f, event_segment, "trigger_value");
   
@@ -124,6 +129,15 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
   {
     config->events[i].event_type = BFCONF_EVENT_TYPE_CLEAR_WAYPOINT;
   }
+  if (!strcmp(s, "start_secondary_timer"))
+  {
+    config->events[i].event_type = BFCONF_EVENT_TYPE_START_SECONDARY_TIMER;
+    config->events[i].parameters[0] = ini_read_int_value(f, event_segment, "time");
+  }
+  if (!strcmp(s, "stop_secondary_timer"))
+  {
+    config->events[i].event_type = BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER;
+  }
  }
 
   print_configs(config);
@@ -136,6 +150,10 @@ void bossfight_process_event_triggers(BossFightConfig *config)
  if (state->timer_value == 0)
  {
    state->previous_health = state->health + 1;
+ }
+ if (state->secondary_timer_started)
+ {
+   state->secondary_timer_value++;
  }
  state->timer_value++;
  int tv = state->timer_value;
@@ -156,6 +174,9 @@ void bossfight_process_event_triggers(BossFightConfig *config)
          break;
     case BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED:
          *trig = state->waypoint_reached && econf->trigger_value == state->waypoint;
+         break;
+    case BFCONF_TRIGGER_TYPE_SECONDARY_TIMER:
+         *trig = state->secondary_timer_started && state->secondary_timer_value == econf->trigger_value;
          break;
     default:
          *trig = 0;

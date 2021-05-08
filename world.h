@@ -134,6 +134,13 @@ struct powerup_status {
         int rune_of_protection_active;
 };
 
+struct sparkle_fx {
+        Coordinates loc;
+        Coordinates dir;
+        int sprite;
+        int duration;
+};
+
 typedef struct
 {
         Tile map[MAPMAX_X][MAPMAX_Y];
@@ -142,8 +149,10 @@ typedef struct
         int current_room;
         Enemy enm[ENEMYCOUNT];
         Enemy plr;
+        Enemy *boss;
         Bullet bullets[BULLETCOUNT];
         Explosion explosion[EXPLOSIONCOUNT];
+        struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
 
         BITMAP *buf;
         BITMAP *spr;
@@ -159,7 +168,7 @@ typedef struct
         int playcount;
 } World;
 
-void clear_explosions(World *);
+void clear_visual_fx(World *);
 void stop_bodyparts(World *);
 void init_world(World *world);
 void spawn_body_parts(Enemy *enm);

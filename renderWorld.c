@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include "renderWorld.h"
 #include "ducolors.h"
 #include "predictableRandom.h"
@@ -45,7 +46,8 @@ void draw_map(World *world, int col)
                 int wall_type = ns_getWallTypeAt(world, x, y);
                 if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                 {
-                    rectfill(world->buf, (x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE, (y + 1) * TILESIZE - 1, GRAY(shadowcolm1));
+                    if (x > 0 && !ns_check_flags_at(world, x - 1, y, TILE_IS_EXIT_LEVEL))
+                        rectfill(world->buf, (x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE, (y + 1) * TILESIZE - 1, GRAY(shadowcolm1));
                 }
                 if (ns_check_flags_at(world, x, y, TILE_IS_FLOOR | TILE_IS_EXIT_POINT | TILE_IS_EXIT_LEVEL))
                 {
@@ -55,9 +57,9 @@ void draw_map(World *world, int col)
                     {
                         drawn_color = GRAY(shadowcol);
                     }
-                    else if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_LEVEL))
+                    if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_LEVEL))
                     {
-                        drawn_color = makecol(rand() % 32 - 5 * col, rand() % 64 - 5 * col, rand() % 128 - 5 * col);
+                        drawn_color = makecol(0, 0, abs(lava_fluctuations) + 100);
                     }
                     rectfill(world->buf, (x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawn_color);
                 }
@@ -76,7 +78,16 @@ void draw_map(World *world, int col)
                           y_pos += dy;
                           rectfill(world->buf, x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, makecol(floorcol + 30 - i * 5, 0, 0));
                        }
-                   }          
+                   }
+                }
+                
+                if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_LEVEL))
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        double angle = (lava_fluctuations + i * 20) * AL_PI / 50;
+                        masked_blit(world->spr, world->buf, 160 + (rand() % 4) * 5, 150, x * TILESIZE + HALFTILESIZE + sin(angle) * 10 - 3, y * TILESIZE + HALFTILESIZE + cos(angle) * 10 - 3, 5, 5);
+                    }
                 }
             }
         }
@@ -218,9 +229,9 @@ void move_and_draw_body_parts(World *world)
 int progress_and_draw_explosions(World *world)
 {
     int vibrations = 0;
-    for (int x = 0; x < EXPLOSIONCOUNT; x++)
+    for (int i = 0; i < EXPLOSIONCOUNT; i++)
     {
-        Explosion *ex = &world->explosion[x];
+        Explosion *ex = &world->explosion[i];
         if (!ex->exists)
             continue;
         vibrations++;
@@ -232,6 +243,28 @@ int progress_and_draw_explosions(World *world)
         }
     }
     return vibrations;
+}
+
+
+void progress_and_draw_sparkles(World *world)
+{
+    for (int i = 0; i < SPARKLE_FX_COUNT; i++)
+    {
+        struct sparkle_fx *fx = &world->sparkle_fx[i];
+        if (fx->duration > 0)
+        {
+            int trail_sprite = (fx->sprite + 1) % 4;
+            masked_blit(world->spr, world->buf, 160 + trail_sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
+            fx->loc.x += fx->dir.x;
+            fx->loc.y += fx->dir.y;
+            masked_blit(world->spr, world->buf, 160 + fx->sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
+            fx->duration--;
+            if (fx->duration % 3 == 0)
+            {
+                fx->sprite = trail_sprite;
+            }
+        }
+    }
 }
 
 void display_level_info(World *world, int mission, int mission_count, BITMAP *bmp_levclear, FONT *font)

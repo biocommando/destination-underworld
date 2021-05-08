@@ -17,11 +17,15 @@ void stop_bodyparts(World *world)
     }
 }
 
-void clear_explosions(World *world)
+void clear_visual_fx(World *world)
 {
     for (int i = 0; i < EXPLOSIONCOUNT; i++)
     {
         world->explosion[i].exists = 0;
+    }
+    for (int i = 0; i < SPARKLE_FX_COUNT; i++)
+    {
+        world->sparkle_fx[i].duration = 0;
     }
 }
 
@@ -38,7 +42,7 @@ void init_world(World *world)
             }
         }
     }
-    clear_explosions(world);
+    clear_visual_fx(world);
     for (int i = 0; i < BULLETCOUNT; i++)
     {
         world->bullets[i].owner_id = NO_OWNER;
@@ -60,6 +64,7 @@ void init_world(World *world)
             enm->bodyparts[j].exists = 0;
         }
     }
+    world->boss = NULL;
 }
 
 Tile create_tile(int symbol)

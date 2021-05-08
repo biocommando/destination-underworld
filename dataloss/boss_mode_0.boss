@@ -1,13 +1,18 @@
-set health = 50
-set fire_rate = 10
+js$ _start_time = ms(8000) , '' $
+
+set health = 40
+set fire_rate = 20
 set speed = 2
 set player_initial_gold = 2
+set time_starts_at = js$ _start_time - 1 $
 
 // initial -> set waypoint to first target
 
-on time_one_time: 1 do set_waypoint: 6;9
+on time_one_time: js$ _start_time $ do set_waypoint: 6;9
 
-on time_one_time: 1 do allow_firing
+on time_one_time: js$ _start_time $ do allow_firing
+
+on time_one_time: js$ _start_time $ do modify_terrain: x = 9, y = 1, terrain_type = floor
 
 // Move in circle
 
@@ -27,15 +32,15 @@ on waypoint_reached: 9;9 do set_waypoint: 6;9
 
 // Spawn enemies
 
-def spawnpoint imp_or_alien = 9, 7, 0, 0, 90, 10, 0
+def spawnpoint gold_giver = 9, 7, 0, 0, 100, 0, 0
 
-on waypoint_reached: 9;9 do spawn: imp_or_alien
+on time_interval: ms(18667) do spawn: gold_giver
 
-def spawnpoint 13;5 = 13, 5, 50, 50, 0, 0, 0
+def spawnpoint 13;5 = 13, 5, 80, 20, 0, 0, 0
 
 on waypoint_reached: 6;5 do spawn: 13;5
 
-def spawnpoint 4;5 = 4, 5, 50, 50, 0, 0, 0
+def spawnpoint 4;5 = 4, 5, 80, 20, 0, 0, 0
 
 on waypoint_reached: 12;5 do spawn: 4;5
 
@@ -61,4 +66,18 @@ on waypoint_reached: 12;5 do allow_firing
 
 // Death
 
-on health: 0 do modify_terrain: x = 2, y = 4, terrain_type = floor
+// on health: 0 do modify_terrain: x = 2, y = 4, terrain_type = floor
+
+on health: 0 do start_secondary_timer: time = 0
+
+on secondary_timer: ms(500) do modify_terrain: x = 2, y = 4, terrain_type = floor
+
+on secondary_timer: ms(750) do modify_terrain: x = 2, y = 5, terrain_type = floor
+
+on secondary_timer: ms(1000) do modify_terrain: x = 1, y = 5, terrain_type = floor
+
+on secondary_timer: ms(1250) do modify_terrain: x = 1, y = 4, terrain_type = floor
+
+on secondary_timer: ms(1500) do modify_terrain: x = 1, y = 3, terrain_type = floor
+
+on secondary_timer: ms(1750) do modify_terrain: x = 2, y = 3, terrain_type = floor

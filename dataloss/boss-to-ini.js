@@ -18,6 +18,8 @@ const getNextId = () => ++idCounter
 
 const fname = process.argv.find(x => x.endsWith('.boss'))
 
+const ms = a => Math.floor(Number(a) / 40 / 3)
+
 fs
     .readFileSync(fname)
     .toString().split(/\r?\n/)
@@ -34,7 +36,9 @@ fs
         // def spawnpoint name = x, y, probs
         // preprocessor:
         // ms(..) = calculate boss timer value for amount of milliseconds
-        x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => Math.floor(Number(a) / 45))
+        // js$..$ = execute javascript
+        x = x.replace(/js\$([^$]+?)\$/g, (_, a) => eval(a))
+        x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => ms(a))
         if (x.startsWith('on ')) {
             x = x.replace('on ', '')
             let evt = {}
@@ -111,7 +115,7 @@ events.forEach((e, i) => {
 })
 
 spawnpoints.forEach((s, i) => {
-    str += `\r\n[spawnpoint_${s.value}]\r\n`
+    str += `\r\n[spawn_point_${s.value}]\r\n`
     delete s.value
     delete s.name
     str += objToIni(s)

@@ -91,8 +91,10 @@
         <button onclick="save()">save</button>
         <button onclick="load()">load</button>
     </div>
+    <button onclick="toggleCoordinates()">Toggle coordinates</button>
     <script src="tilemap-serialization.js"></script>
     <script>
+        let showCoords = false
         const width = 16, height = 12;
         const ascii = chr => chr.charCodeAt(0);
         const cursor = { x: 0, y: 0, paintId: 46 };
@@ -188,6 +190,7 @@
                             cellHtml = cellHtml.replace('__addclass', ` ${type.css}__addclass`);
                         }
                     });
+                    if (showCoords) cellHtml += `(${x}, ${y})`
                     cellHtml += '</button>';
                     html += cellHtml.replace('__addclass', cursor.x === x && cursor.y === y ? ' cursor' : '');
                 });
@@ -260,6 +263,11 @@
             }
             renderMap();
         };
+        
+        const toggleCoordinates = () => {
+            showCoords = !showCoords
+            renderMap()
+        }
 
         document.getElementById('paint').innerHTML =
             objectTypes.filter(ot => !ot.notSelectable).map(ot => `<option value="${ot.id}">${ot.name}</option>`).join('');

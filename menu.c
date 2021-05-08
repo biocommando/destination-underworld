@@ -188,13 +188,13 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 play_sample(s_c, 255, 127, 1000, 0);
                 if (!ingame && c == MENUOPT_SAVE)
                     c = MENUOPT_EXIT;
-                chunkrest(50);
+                chunkrest(100);
                 wait = 3;
             }
             if (key[KEY_M])
             {
                 music_on = 1 - music_on;
-                chunkrest(50);
+                chunkrest(100);
                 wait = 3;
             }
             if (key[KEY_F1])

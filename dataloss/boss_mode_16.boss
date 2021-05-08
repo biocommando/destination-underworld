@@ -1,7 +1,10 @@
+js$ _start_time = 18667 , '' $
+
 // Game mode: brutally hard
 
 set health = 15
 set player_initial_gold = 0
+set time_starts_at = ms(js$ _start_time $)
 
 // North-West room
 // This is the initial room for the player.
@@ -27,29 +30,39 @@ def spawnpoint se-1 = 14, 5, 100, 0, 0, 0, 0
 def spawnpoint se-2 = 7, 10, 100, 0, 0, 0, 0
 def spawnpoint se-3 = 14, 10, 100, 0, 0, 0, 0 
 
-// North-East room, always spawns an alien in the middle
+// North-East room, always spawns an imp in the middle
 
-def spawnpoint ne-0 = 13, 2, 0, 0, 0, 100, 0
+def spawnpoint ne-0 = 13, 2, 0, 0, 100, 0, 0
 
-on time_one_time: ms(3000) do spawn: nw-0
-on time_one_time: ms(3000) do spawn: nw-1
-on time_one_time: ms(3000) do spawn: nw-2
-on time_one_time: ms(3000) do spawn: nw-3
+on time_one_time: ms(js$_start_time + 2667$) do spawn: nw-0
+on time_one_time: ms(js$_start_time + 2667$) do spawn: nw-1
+on time_one_time: ms(js$_start_time + 2667$) do spawn: nw-2
+on time_one_time: ms(js$_start_time + 2667$) do spawn: nw-3
 
-on time_interval: ms(15000) do spawn: sw-0
-on time_interval: ms(15000) do spawn: sw-1
-on time_interval: ms(15000) do spawn: sw-2
-on time_interval: ms(15000) do spawn: sw-3
+on time_interval: ms(40000) do spawn: sw-0
+on time_interval: ms(40000) do spawn: sw-1
+on time_interval: ms(40000) do spawn: sw-2
+on time_interval: ms(40000) do spawn: sw-3
 
-on time_interval: ms(10000) do spawn: se-0
-on time_interval: ms(10000) do spawn: se-1
-on time_interval: ms(10000) do spawn: se-2
-on time_interval: ms(10000) do spawn: se-3
+on time_interval: ms(26667) do spawn: se-0
+on time_interval: ms(26667) do spawn: se-1
+on time_interval: ms(26667) do spawn: se-2
+on time_interval: ms(26667) do spawn: se-3
 
 on time_interval: ms(15000) do spawn: ne-0
 
-on time_one_time: ms(90000) do modify_terrain: x = 6, y = 2, terrain_type = floor
+on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 6, y = 1, terrain_type = floor
+on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 6, y = 2, terrain_type = floor
+on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 6, y = 3, terrain_type = floor
+on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 7, y = 4, terrain_type = floor
+on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 8, y = 4, terrain_type = floor
+on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 2, y = 6, terrain_type = floor
+on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 4, y = 6, terrain_type = floor
 
-on health: 10 do fire_in_circle: number_of_directions = 16, intensity = 2
+// Death
 
-on health: 5 do fire_in_circle: number_of_directions = 16, intensity = 2
+on health: 0 do modify_terrain: x = 9, y = 1, terrain_type = floor
+
+on health: 0 do modify_terrain: x = 9, y = 2, terrain_type = floor
+
+on health: 0 do modify_terrain: x = 9, y = 3, terrain_type = floor

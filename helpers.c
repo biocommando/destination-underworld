@@ -1,7 +1,6 @@
 #include "helpers.h"
 #include "allegro.h"
 #include "dump3.h"
-#include<time.h>
 
 inline int imin(int a, int b) {
     return a < b ? a : b;
@@ -30,13 +29,22 @@ void dynamic_scaling_rest(int ms) {
        scaling = (double)ms / spent_ms;
 }
 
+void rest_poll(int ms)
+{
+    clock_t stop = clock() + ms;
+    while(clock() < stop)
+    {
+        rest(0);
+    }
+}
+
 int chunkrest_step(int ms, int step)
 {
  int i;
  for (i = 0; i < ms; i += step)
  {
   play_mp3();
-  dynamic_scaling_rest(step);
+  rest_poll(step);
  }
  return i - ms;
 }
@@ -55,4 +63,14 @@ void chunkrest(int ms)
           chunkrest_step(leftover, leftover);
          }
      }
+}
+
+void game_loop_rest(clock_t *state)
+{
+    clock_t diff = clock() - *state;
+    play_mp3();
+    int rest_amt = 25 - diff;
+    if (rest_amt > 0)
+        rest_poll(rest_amt);
+    *state = clock();
 }
