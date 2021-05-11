@@ -13,11 +13,8 @@ void read_settings()
   game_settings.missions = (NameToFilenameMapping*) malloc(game_settings.mission_count * sizeof(NameToFilenameMapping));
   for(int i = 0; i < game_settings.mission_count; i++) 
   {
-    char read_value[256];
     char key_to_read[64];
-    sprintf(key_to_read, "mission%d", i + 1);
-    ini_read_string_value(f, game_settings.mission_pack, key_to_read, read_value);
-    sprintf(game_settings.missions[i].filename, ".\\dataloss\\%s\\%s", game_settings.mission_pack, read_value);
+    sprintf(game_settings.missions[i].filename, ".\\dataloss\\%s\\mission%d", game_settings.mission_pack, i + 1);
     sprintf(key_to_read, "mission%d-name", i + 1);
     ini_read_string_value(f, game_settings.mission_pack, key_to_read, game_settings.missions[i].name);
   }

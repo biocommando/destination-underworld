@@ -418,7 +418,7 @@ int read_level(World *world, const char *mission_name, int room_to)
     world->boss_fight = 0;
 
     char special_filename[256];
-    sprintf(special_filename, "%s.mode.%d", mission_name, world->game_modifiers);
+    sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
     FILE *f = fopen(special_filename, "r");
     if (f == NULL)
     {
