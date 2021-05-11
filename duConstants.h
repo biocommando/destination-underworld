@@ -20,8 +20,7 @@
 
 #define PLR_DIR_HELPER_INITIAL_INTENSITY 100
 
-#define MISSION_FILENAME ".\\dataloss\\mission%d.txt"
-#define SAVE_FILENAME ".\\dataloss\\save%d.dat"
+#define SAVE_FILENAME ".\\dataloss\\%s\\save%d.dat"
 #define MENU_BITMAP_FILENAME ".\\dataloss\\menu.bmp"
 #define HELP_BITMAP_FILENAME ".\\dataloss\\reference_full.bmp"
 #define MENU_SAMPLE_FILENAME ".\\dataloss\\menuchg.wav"

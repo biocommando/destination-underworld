@@ -1,10 +1,13 @@
 #include "gamePersistence.h"
 #include "iniRead.h"
+#include "settings.h"
+
+extern GameSettings game_settings;
 
 FILE *open_file_from_slot(int slot, const char *mode)
 {
     char filename[50];
-    sprintf(filename, SAVE_FILENAME, slot);
+    sprintf(filename, SAVE_FILENAME, game_settings.mission_pack, slot);
     return fopen(filename, mode);
 }
 

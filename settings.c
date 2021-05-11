@@ -8,19 +8,18 @@ extern GameSettings game_settings;
 void read_settings()
 {
   FILE *f = fopen(".\\dataloss\\settings.ini", "r");
-  game_settings.mission_count = ini_read_int_value(f, "general", "missions");
-  char mission_pack[64];
-  ini_read_string_value(f, "general", "mission-pack", mission_pack);
+  ini_read_string_value(f, "general", "mission-pack", game_settings.mission_pack);
+  game_settings.mission_count = ini_read_int_value(f, game_settings.mission_pack, "mission_count");
   game_settings.missions = (NameToFilenameMapping*) malloc(game_settings.mission_count * sizeof(NameToFilenameMapping));
   for(int i = 0; i < game_settings.mission_count; i++) 
   {
     char read_value[256];
     char key_to_read[64];
     sprintf(key_to_read, "mission%d", i + 1);
-    ini_read_string_value(f, mission_pack, key_to_read, read_value);
-    sprintf(game_settings.missions[i].filename, ".\\dataloss\\%s", read_value);
+    ini_read_string_value(f, game_settings.mission_pack, key_to_read, read_value);
+    sprintf(game_settings.missions[i].filename, ".\\dataloss\\%s\\%s", game_settings.mission_pack, read_value);
     sprintf(key_to_read, "mission%d-name", i + 1);
-    ini_read_string_value(f, mission_pack, key_to_read, game_settings.missions[i].name);
+    ini_read_string_value(f, game_settings.mission_pack, key_to_read, game_settings.missions[i].name);
   }
   game_settings.screen_width = ini_read_int_value(f, "graphics", "width");
   game_settings.screen_height = ini_read_int_value(f, "graphics", "height");

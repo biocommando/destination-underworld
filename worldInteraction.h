@@ -15,6 +15,7 @@ void create_sparkles(int x, int y, int count, World *world);
 int read_level(World *world, const char *mission_name, int room_to);
 Enemy *get_next_available_enemy(World *world, int *index);
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world);
+Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world);
 void create_cluster_explosion(World *w, double x0, double y0, int num_directions, int intensity, int shoot_id);
 void change_room_if_at_exit_point(World *world, int mission);
 

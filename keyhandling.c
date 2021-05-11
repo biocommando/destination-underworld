@@ -86,8 +86,20 @@ int handle_weapon_change_keys(World *world, int key_x, int key_z)
 
 Enemy *create_turret(World *world)
 {
-  int enm_idx = 0;
+  Enemy *enm = ns_spawn_enemy(world->plr.x, world->plr.y, 9, world->current_room, world);
+  enm->ammo = 128;
+  enm->rate = 1;
+  enm->shots = 2;
+  enm->reload = 10;
+  enm->move = 10;
+  enm->dx = world->plr.dx;
+  enm->dy = world->plr.dy;
+  enm->health = 20;
+  enm->gold = 0;
+  return enm;
+  /*int enm_idx = 0;
   Enemy *enm = get_next_available_enemy(world, &enm_idx);
+
   enm->id = 9000 + enm_idx;
   enm->former_id = enm->id;
   enm->ammo = 128;
@@ -103,7 +115,7 @@ Enemy *create_turret(World *world)
   enm->roomid = world->current_room;
   enm->gold = 0;
   enm->type = TURRET;
-  return enm;
+  return enm;*/
 }
 
 int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount)

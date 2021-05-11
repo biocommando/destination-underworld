@@ -3,9 +3,11 @@
 #include "gamePersistence.h"
 #include "duColors.h"
 #include "helpers.h"
+#include "settings.h"
 
 extern int music_on;
 extern MP3FILE *mp3;
+extern GameSettings game_settings;
 
 void init_new_game(Enemy *autosave, int *mission, int *game_modifiers, int game_mode)
 {
@@ -30,7 +32,7 @@ int handle_menuchoice(int menuchoice, Enemy *autosave,
     if (menuchoice == MENUOPT_LOAD)
     {
         char filename[50];
-        sprintf(filename, SAVE_FILENAME, slot);
+        sprintf(filename, SAVE_FILENAME, game_settings.mission_pack, slot);
         FILE *f = fopen(filename, "r");
         if (f)
         {

@@ -7,6 +7,7 @@ typedef struct {
 
 typedef struct
 {
+  char mission_pack[64];
   int mission_count;
   NameToFilenameMapping *missions;
   int screen_width;

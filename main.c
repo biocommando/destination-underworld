@@ -125,13 +125,14 @@ void enemy_logic(World *world)
 {  // Viholliset
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
-      if (world->enm[x].roomid != world->current_room || world->enm[x].id == NO_OWNER)
+      Enemy *enm = &world->enm[x];
+      if (enm->roomid != world->current_room || enm->id == NO_OWNER)
         continue;
 
       if (world->plr.health > 0)
       {
 
-        EnemyType enm_type = world->enm[x].type;
+        EnemyType enm_type = enm->type;
         if (enm_type != TURRET) // not a turret
         {
           Coordinates aim_at = {world->plr.x, world->plr.y};
@@ -140,12 +141,12 @@ void enemy_logic(World *world)
 
           if (reacts_to_player || (enm_type == ARCH_MAGE && world->boss_waypoint.x >= 0))
           {
-            world->enm[x].move = 1;
+            enm->move = 1;
             if (enm_type != ARCH_MAGE || (world->boss_want_to_shoot && reacts_to_player))
             {
               if (enm_type == ARCH_MAGE)
               {
-                set_directions(&world->enm[x], &aim_at, aim_window);
+                set_directions(enm, &aim_at, aim_window);
               }
               int play_sample = shoot(world->enm + x, world);
               if (play_sample)
@@ -154,97 +155,97 @@ void enemy_logic(World *world)
               }
             }
 
-            world->enm[x].dx = world->enm[x].dy = 0;
+            enm->dx = enm->dy = 0;
             if (enm_type == ARCH_MAGE && world->boss_waypoint.x >= 0)
             {
               aim_at.x = world->boss_waypoint.x * TILESIZE + HALFTILESIZE;
               aim_at.y = world->boss_waypoint.y * TILESIZE + HALFTILESIZE;
               aim_window = 0;
-              if (world->enm[x].x / TILESIZE == (int)world->boss_waypoint.x && world->enm[x].y / TILESIZE == (int)world->boss_waypoint.y)
+              if (enm->x / TILESIZE == (int)world->boss_waypoint.x && enm->y / TILESIZE == (int)world->boss_waypoint.y)
               {
                 printf("Waypoint reached\n");
                 world->boss_waypoint.x = world->boss_waypoint.y = -1;
                 world->boss_fight_config.state.waypoint_reached = 1;
               }
             }
-            set_directions(&world->enm[x], &aim_at, aim_window);
-            if (world->enm[x].dx == 0 && world->enm[x].dy == 0)
+            set_directions(enm, &aim_at, aim_window);
+            if (enm->dx == 0 && enm->dy == 0)
             {
-              world->enm[x].dx = 1 - 2 * pr_get_random() % 2;
-              world->enm[x].dy = 1 - 2 * pr_get_random() % 2;
+              enm->dx = 1 - 2 * pr_get_random() % 2;
+              enm->dy = 1 - 2 * pr_get_random() % 2;
             }
           }
           else
           {
             if (pr_get_random() % 30 == 0 )
             {
-              world->enm[x].move = pr_get_random() % 2;
-              world->enm[x].move = pr_get_random() % 2;
-              world->enm[x].dx = 1 - (pr_get_random() % 3);
-              world->enm[x].dy = 1 - (pr_get_random() % 3);
+              enm->move = pr_get_random() % 2;
+              enm->move = pr_get_random() % 2;
+              enm->dx = 1 - (pr_get_random() % 3);
+              enm->dy = 1 - (pr_get_random() % 3);
             }
           }
           if (enm_type == ARCH_MAGE)
           {
             for (int m = 0; m < world->boss_fight_config.speed; m++)
-              move_enemy(world->enm + x, world);
+              move_enemy(enm, world);
           }
           else if (enm_type != ALIEN_TURRET)
           {
             if (enm_type == IMP || enm_type == ALIEN)
             {
-              move_enemy(world->enm + x, world);
+              move_enemy(enm, world);
             }
-            move_enemy(world->enm + x, world);
+            move_enemy(enm, world);
           }
-          else if (world->enm[x].reload > 0)
+          else if (enm->reload > 0)
           {
-            world->enm[x].reload--;
+            enm->reload--;
           }
-          if (enm_type != ALIEN || rand() % 32) // Alienit (muttei turretit) vilkkuvat
-          {
-            draw_enemy(world->enm + x, world);
-          }
+          //if (enm_type != ALIEN || rand() % 32) // Alienit (muttei turretit) vilkkuvat
+          //{
+          draw_enemy(enm, world);
+          //}
         }
         else // turret
         {
-          if (world->enm[x].move > 0)
+          if (enm->move > 0)
           {
-            for (int i = 0; i < world->enm[x].move; i++)
-              move_enemy(world->enm + x, world);
-            world->enm[x].move--;
+            for (int i = 0; i < enm->move; i++)
+              move_enemy(enm, world);
+            enm->move--;
           }
           else
           {
-            float circular = cos((float)(world->enm[x].ammo / 4 % 32) * M_PI / 16) * 4;
-            world->enm[x].dx = (int)circular; //(circular > 0.1) - 1 * (circular < -0.1);
-            circular = sin((float)(world->enm[x].ammo / 4 % 32) * M_PI / 16) * 4;
-            world->enm[x].dy = (int)circular; //(circular > 0.1) - 1 * (circular < -0.1);
+            float circular = cos((float)(enm->ammo / 4 % 32) * M_PI / 16) * 4;
+            enm->dx = (int)circular; //(circular > 0.1) - 1 * (circular < -0.1);
+            circular = sin((float)(enm->ammo / 4 % 32) * M_PI / 16) * 4;
+            enm->dy = (int)circular; //(circular > 0.1) - 1 * (circular < -0.1);
 
-            int play_sample = shoot(world->enm + x, world);
+            int play_sample = shoot(enm, world);
             if (play_sample)
             {
               trigger_sample(SAMPLE_THROW, 255);
             }
 
-            world->enm[x].reload--;
+            enm->reload--;
           }
-          draw_enemy(world->enm + x, world);
-          if (world->enm[x].ammo == 0)
+          draw_enemy(enm, world);
+          if (enm->ammo == 0)
           {
             trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-            create_shade_around_hit_point(world->enm[x].x, world->enm[x].y, 9, world);
-            create_explosion(world->enm[x].x, world->enm[x].y, world);
-            create_explosion(world->enm[x].x, world->enm[x].y, world);
-            create_explosion(world->enm[x].x, world->enm[x].y, world);
-            world->enm[x].ammo = -1;
-            world->enm[x].shots = 1;
-            world->enm[x].id = NO_OWNER;
+            create_shade_around_hit_point(enm->x, enm->y, 9, world);
+            create_explosion(enm->x, enm->y, world);
+            create_explosion(enm->x, enm->y, world);
+            create_explosion(enm->x, enm->y, world);
+            enm->ammo = -1;
+            enm->shots = 1;
+            enm->id = NO_OWNER;
           }
         }
       }
       else
-        draw_enemy(world->enm + x, world);
+        draw_enemy(enm, world);
     }
 }
 
@@ -288,7 +289,7 @@ void boss_logic(World *world, int boss_died)
             if (random_num >= spawn_point->probability_thresholds[spawn_type][0]
               && random_num < spawn_point->probability_thresholds[spawn_type][1])
             {
-              spawn_enemy(spawn_point->x, spawn_point->y, spawn_type + 200, world->current_room, world);
+              spawn_enemy(spawn_point->x, spawn_point->y, spawn_type, world->current_room, world);
               create_sparkles(spawn_point->x * TILESIZE + HALFTILESIZE, spawn_point->y * TILESIZE + HALFTILESIZE, 15, world);
               
               trigger_sample(SAMPLE_SPAWN, 255);

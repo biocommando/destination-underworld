@@ -344,17 +344,23 @@ void clear_map(World *world)
 
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
 {
+    x = x * TILESIZE + HALFTILESIZE;
+    y = y * TILESIZE + HALFTILESIZE;
+    ns_spawn_enemy(x, y, type, room_id, world);
+}
+
+Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
+{
     int index;
     Enemy *new_enemy = get_next_available_enemy(world, &index);
-    int enemytype = (type - 200);
 
-    new_enemy->id = 1000 * enemytype + index + 1;
+    new_enemy->id = 1000 * type + index + 1;
     new_enemy->former_id = new_enemy->id;
-    new_enemy->x = x * TILESIZE + HALFTILESIZE;
-    new_enemy->y = y * TILESIZE + HALFTILESIZE;
+    new_enemy->x = x;
+    new_enemy->y = y;
     new_enemy->move = 0;
-    new_enemy->rate = 25 - 5 * enemytype;
-    new_enemy->health = 2 + enemytype * 3 / 2;
+    new_enemy->rate = 25 - 5 * type;
+    new_enemy->health = 2 + type * 3 / 2;
     int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
     
     if (difficulty == DIFFICULTY_BRUTAL) new_enemy->health++; 
@@ -364,7 +370,7 @@ Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
         new_enemy->bodyparts[j].exists = 0;
     }
     new_enemy->roomid = room_id;
-    if (enemytype > 1)
+    if (type > 1)
         new_enemy->gold = 1;
     else
         new_enemy->gold = 0;
@@ -460,7 +466,7 @@ int read_level(World *world, const char *mission_name, int room_to)
             }
             else if (id >= 200 && id <= 205 && !world->rooms_visited[room_to - 1])
             {
-                spawn_enemy(x, y, id, room_to, world);
+                spawn_enemy(x, y, id - 200, room_to, world);
             }
         }
     }
