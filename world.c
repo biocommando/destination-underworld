@@ -52,7 +52,6 @@ void init_world(World *world)
         Enemy *enm = &world->enm[i];
         enm->id = NO_OWNER;
         enm->former_id = NO_OWNER;
-        enm->type = NOT_SET;
         enm->dx = 1;
         enm->dy = 0;
         enm->reload = 10;
@@ -213,7 +212,7 @@ void init_player(World *world, Enemy *plrautosave)
     }
     world->plr.ammo = 15;
     world->plr.gold = 0;
-    world->plr.type = PLAYER;
+    world->plr.hurts_monsters = 1;
   }
   else
   {

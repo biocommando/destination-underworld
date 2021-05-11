@@ -130,20 +130,19 @@ void enemy_logic(World *world)
 
       if (world->plr.health > 0)
       {
-
-        EnemyType enm_type = enm->type;
-        if (enm_type != TURRET) // not a turret
+        int is_boss = enm == world->boss;
+        if (!enm->turret) // not a turret
         {
           Coordinates aim_at = {world->plr.x, world->plr.y};
-          int aim_window = 2 + (enm_type == ALIEN_TURRET || enm_type == ARCH_MAGE ? 5 : 0);
+          int aim_window = 2 + (enm->turret || enm == world->boss ? 5 : 0);
           int reacts_to_player = sees_each_other(world->enm + x, &world->plr, world);
 
-          if (reacts_to_player || (enm_type == ARCH_MAGE && world->boss_waypoint.x >= 0))
+          if (reacts_to_player || (is_boss && world->boss_waypoint.x >= 0))
           {
             enm->move = 1;
-            if (enm_type != ARCH_MAGE || (world->boss_want_to_shoot && reacts_to_player))
+            if (!is_boss || (world->boss_want_to_shoot && reacts_to_player))
             {
-              if (enm_type == ARCH_MAGE)
+              if (is_boss)
               {
                 set_directions(enm, &aim_at, aim_window);
               }
@@ -155,7 +154,7 @@ void enemy_logic(World *world)
             }
 
             enm->dx = enm->dy = 0;
-            if (enm_type == ARCH_MAGE && world->boss_waypoint.x >= 0)
+            if (is_boss && world->boss_waypoint.x >= 0)
             {
               aim_at.x = world->boss_waypoint.x * TILESIZE + HALFTILESIZE;
               aim_at.y = world->boss_waypoint.y * TILESIZE + HALFTILESIZE;
@@ -184,14 +183,14 @@ void enemy_logic(World *world)
               enm->dy = 1 - (pr_get_random() % 3);
             }
           }
-          if (enm_type == ARCH_MAGE)
+          if (is_boss)
           {
             for (int m = 0; m < world->boss_fight_config.speed; m++)
               move_enemy(enm, world);
           }
-          else if (enm_type != ALIEN_TURRET)
+          else if (!enm->turret)
           {
-            if (enm_type == IMP || enm_type == ALIEN)
+            if (enm->fast)
             {
               move_enemy(enm, world);
             }
@@ -467,7 +466,7 @@ void bullet_logic(World *world)
                     world->plr.ammo = 15;
               }
 
-              if (enm->type == ARCH_MAGE) // Archmage dies
+              if (enm == world->boss) // Archmage dies
               {
                 printf("boss die logic\n");
                 boss_logic(world, 1);
@@ -526,6 +525,7 @@ int game(int mission, int *game_modifiers)
   world.current_room = 1;
 
   init_world(&world);
+  read_enemy_configs(&world);
   init_player(&world, &plrautosave);
   
   FILE *f_key_presses = NULL;

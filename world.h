@@ -5,19 +5,6 @@
 #include "bossfightconf.h"
 #include "helpers.h"
 
-typedef enum EnemyTypeEnum
-{
-        ADEPT = 1,
-        MAGICIAN = 2,
-        IMP = 3,
-        ALIEN = 4,
-        ALIEN_TURRET = 5,
-        ARCH_MAGE = 6,
-        TURRET = 7,
-        PLAYER = 8,
-        NOT_SET = 9
-} EnemyType;
-
 struct gamedata
 {
         char game_id[256];
@@ -58,7 +45,9 @@ typedef struct
         int former_id;
         int roomid;
         long completetime;
-        EnemyType type;
+        int fast;
+        int turret;
+        int hurts_monsters;
         BodyPart bodyparts[BODYPARTCOUNT];
 } Enemy;
 
@@ -141,6 +130,15 @@ struct sparkle_fx {
         int duration;
 };
 
+struct enemy_config {
+        int turret;
+        int rate;
+        int health;
+        int gold;
+        int fast;
+        int hurts_monsters;
+};
+
 typedef struct
 {
         Tile map[MAPMAX_X][MAPMAX_Y];
@@ -153,6 +151,7 @@ typedef struct
         Bullet bullets[BULLETCOUNT];
         Explosion explosion[EXPLOSIONCOUNT];
         struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
+        struct enemy_config enemy_configs[5];
 
         BITMAP *buf;
         BITMAP *spr;

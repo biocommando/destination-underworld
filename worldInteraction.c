@@ -4,6 +4,7 @@
 #include "settings.h"
 #include "helpers.h"
 #include "predictableRandom.h"
+#include "iniRead.h"
 
 extern GameSettings game_settings; 
 
@@ -169,9 +170,8 @@ int shoot_one_shot(Enemy *enm, World *world)
     {
         enm->ammo--;
     }
-    int hurts_monsters = enm->type == ALIEN_TURRET || enm->type == TURRET || enm->type == PLAYER;
 
-    return shoot_one_shot_at_xy(enm->x, enm->y, enm->dx, enm->dy, enm->id, hurts_monsters, world);
+    return shoot_one_shot_at_xy(enm->x, enm->y, enm->dx, enm->dy, enm->id, enm->hurts_monsters, world);
 }
 
 // Returns 1 if shoot sample should be played
@@ -359,8 +359,26 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     new_enemy->x = x;
     new_enemy->y = y;
     new_enemy->move = 0;
-    new_enemy->rate = 25 - 5 * type;
-    new_enemy->health = 2 + type * 3 / 2;
+
+    if (type < 5)
+    {
+        new_enemy->turret = world->enemy_configs[type].turret;
+        new_enemy->health = world->enemy_configs[type].health;
+        new_enemy->rate = world->enemy_configs[type].rate;
+        new_enemy->fast = world->enemy_configs[type].fast;
+        new_enemy->gold = world->enemy_configs[type].gold;
+        new_enemy->hurts_monsters = world->enemy_configs[type].hurts_monsters;
+    }
+    else if (type == 5)
+    {
+        world->boss = new_enemy;
+        new_enemy->hurts_monsters = 0;
+        new_enemy->turret = 0;
+        new_enemy->gold = 0;
+        // fast is overridden by boss speed
+        // rate and health are set in boss config
+    }
+
     int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
     
     if (difficulty == DIFFICULTY_BRUTAL) new_enemy->health++; 
@@ -370,40 +388,6 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         new_enemy->bodyparts[j].exists = 0;
     }
     new_enemy->roomid = room_id;
-    if (type > 1)
-        new_enemy->gold = 1;
-    else
-        new_enemy->gold = 0;
-        
-    if (new_enemy->id < 1000)
-    {
-        new_enemy->type = ADEPT;
-    }
-    else if (new_enemy->id < 2000)
-    {
-        new_enemy->type = MAGICIAN;
-    }
-    else if (new_enemy->id < 3000)
-    {
-        new_enemy->type = IMP;
-    }
-    else if (new_enemy->id < 4000)
-    {
-        new_enemy->type = ALIEN;
-    }
-    else if (new_enemy->id < 5000)
-    {
-        new_enemy->type = ALIEN_TURRET;
-    }
-    else if (new_enemy->id < 6000)
-    {
-        new_enemy->type = ARCH_MAGE;
-        world->boss = new_enemy;
-    }
-    else
-    {
-        new_enemy->type = TURRET;
-    }
     return new_enemy;
 }
 
@@ -557,4 +541,23 @@ void change_room_if_at_exit_point(World *world, int mission)
     {
       world->plr.roomid = world->current_room;
     }
+}
+
+void read_enemy_configs(World *world)
+{
+    char fname[256];
+    sprintf(fname, ".\\dataloss\\%s\\enemy-properties.ini", game_settings.mission_pack);
+    FILE *f = fopen(fname, "r");
+    for (int i = 0; i < 5; i++)
+    {
+        char section[10];
+        sprintf(section, "type-%d", i);
+        world->enemy_configs[i].turret = ini_read_int_value(f, section, "turret");
+        world->enemy_configs[i].health = ini_read_int_value(f, section, "health");
+        world->enemy_configs[i].rate = ini_read_int_value(f, section, "rate");
+        world->enemy_configs[i].gold = ini_read_int_value(f, section, "gold");
+        world->enemy_configs[i].fast = ini_read_int_value(f, section, "fast");
+        world->enemy_configs[i].hurts_monsters = ini_read_int_value(f, section, "hurts-monsters");
+    }
+    fclose(f);
 }

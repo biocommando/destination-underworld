@@ -29,7 +29,6 @@ void play_track(int track_number)
   close_mp3_file(mp3);
   mp3 = open_mp3_file(filename);
   play_mp3_file(mp3, BUFSZ, 255, 127);
-  printf("Tried to open %s. Result: %s\n", filename, mp3 ? "success" : "failure");
 }
 
 void play_mp3()

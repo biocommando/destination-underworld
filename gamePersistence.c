@@ -21,7 +21,7 @@ void load_game_save_data(FILE *f, Enemy *data, int *mission, int *game_modifiers
     data->rate = ini_read_int_value(f, "save_game", "rate");
     data->ammo = ini_read_int_value(f, "save_game", "ammo");
     data->gold = ini_read_int_value(f, "save_game", "gold");
-    data->type = PLAYER;
+    data->hurts_monsters = 1;
 }
 
 void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifiers)

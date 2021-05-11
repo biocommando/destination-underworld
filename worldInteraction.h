@@ -18,5 +18,6 @@ Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world);
 Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world);
 void create_cluster_explosion(World *w, double x0, double y0, int num_directions, int intensity, int shoot_id);
 void change_room_if_at_exit_point(World *world, int mission);
+void read_enemy_configs(World *world);
 
 #endif
