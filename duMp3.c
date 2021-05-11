@@ -2,42 +2,55 @@
 #include <stdlib.h>
 #include "allegro.h"
 #include "dump3.h"
+#include "settings.h"
 
-int music_on = 1;
+extern GameSettings game_settings;
+
 MP3FILE *mp3 = NULL;
 
-void next_track()
+int current_track = 1;
+
+int get_current_track()
 {
-  static int current_track = 0;
+  return current_track;
+}
+
+void play_track(int track_number)
+{
+  while (track_number <= 0)
+    track_number += game_settings.num_music_tracks;
+  while (track_number > game_settings.num_music_tracks)
+    track_number -= game_settings.num_music_tracks;
+
+  current_track = track_number;
 
   char filename[32];
-  current_track = current_track < 3 ? current_track + 1 : 1;
   sprintf(filename, ".\\dataloss\\music%d.mp3", current_track);
   close_mp3_file(mp3);
   mp3 = open_mp3_file(filename);
+  play_mp3_file(mp3, BUFSZ, 255, 127);
+  printf("Tried to open %s. Result: %s\n", filename, mp3 ? "success" : "failure");
 }
 
 void play_mp3()
 {
   static int music_on_status = 0;
-  if (music_on_status != music_on)
+  if (music_on_status != game_settings.music_on)
   {
-    if (music_on)
-      play_mp3_file(mp3, BUFSZ, 255, 127);
+    if (!game_settings.music_on)
+      almp3_stop_mp3stream(mp3->s);
     else
-    {
-      next_track();
-    }
+      play_mp3_file(mp3, BUFSZ, 255, 127);
   }
-  if (music_on)
+  if (game_settings.music_on)
   {
-    if (((mp3) && (poll_mp3_file(mp3) != ALMP3_OK)))
+    if (mp3 && poll_mp3_file(mp3) != ALMP3_OK)
     {
-      next_track();
+      play_track(current_track + 1);
       play_mp3_file(mp3, BUFSZ, 255, 127);
     }
   }
-  music_on_status = music_on;
+  music_on_status = game_settings.music_on;
 }
 
 /****************MP3MP3MP3MP3**********************/
@@ -90,6 +103,7 @@ void close_mp3_file(MP3FILE *mp3)
     pack_fclose(mp3->f);
     almp3_destroy_mp3stream(mp3->s);
     free(mp3);
+    mp3 = NULL;
   }
 }
 

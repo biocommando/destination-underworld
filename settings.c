@@ -22,6 +22,8 @@ void read_settings()
   game_settings.screen_height = ini_read_int_value(f, "graphics", "height");
   game_settings.screen_mode = ini_read_int_value(f, "graphics", "screen");
   game_settings.vibration_mode = ini_read_int_value(f, "graphics", "vibration-mode");
+  game_settings.music_on = ini_read_int_value(f, "audio", "music-on");
+  game_settings.num_music_tracks =  ini_read_int_value(f, "audio", "music-track-count");
   
   fclose(f);
 }

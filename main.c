@@ -20,7 +20,6 @@
 #include "sampleRegister.h"
 #include "helpers.h"
 
-extern int music_on;
 extern MP3FILE *mp3;
 
 void init_allegro();
@@ -88,7 +87,7 @@ int main(int argc, char **argv)
     register_sample(SAMPLE_DEATH(i), loadsamplename);
   }
 
-  next_track();
+  play_track(1);
   menu(0, &plrautosave, &mission, &game_modifiers);
 
   while (mission != 0)

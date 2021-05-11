@@ -14,7 +14,8 @@ MP3FILE *open_mp3_file(char *filename);
 int poll_mp3_file(MP3FILE *mp3);
 void close_mp3_file(MP3FILE *mp3);
 int play_mp3_file(MP3FILE *mp3, int buflen, int vol, int pan);
-void next_track();
+void play_track(int track_number);
+int get_current_track();
 void play_mp3();
 
 void play_mp3_in_thread();

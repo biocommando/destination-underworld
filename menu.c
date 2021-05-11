@@ -5,7 +5,6 @@
 #include "helpers.h"
 #include "settings.h"
 
-extern int music_on;
 extern MP3FILE *mp3;
 extern GameSettings game_settings;
 
@@ -103,7 +102,8 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         textprintf_ex(menu_bg, menufont, 40, 220, WHITE, -1, "RESUME");
         c = MENUOPT_RESUME;
     }
-    textprintf_ex(menu_bg, menufont, 10, 400, RED, -1, "m: mute music");
+    textprintf_ex(menu_bg, menufont, 10, 384, RED, -1, "m: toggle music");
+    textprintf_ex(menu_bg, menufont, 10, 400, RED, -1, "n/p: next/previous track");
     textprintf_ex(menu_bg, menufont, 10, 416, RED, -1, "f1: help");
     blit(menu_bg, buf, 0, 0, 0, 0, 640, 480);
     stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
@@ -195,7 +195,19 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             }
             if (key[KEY_M])
             {
-                music_on = 1 - music_on;
+                game_settings.music_on = !game_settings.music_on;
+                chunkrest(100);
+                wait = 3;
+            }
+            if (key[KEY_N])
+            {
+                play_track(get_current_track() + 1);
+                chunkrest(100);
+                wait = 3;
+            }
+            if (key[KEY_P])
+            {
+                play_track(get_current_track() - 1);
                 chunkrest(100);
                 wait = 3;
             }

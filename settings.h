@@ -14,6 +14,8 @@ typedef struct
   int screen_height;
   int screen_mode;
   int vibration_mode;
+  int music_on;
+  int num_music_tracks;
 } GameSettings;
 void read_settings();
 int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
