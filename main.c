@@ -388,7 +388,7 @@ void bullet_logic(World *world)
         
         break;
       }
-      if (bullet->owner_id < 9000 && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
+      if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
       {
         if (world->powerups.rune_of_protection_active == 1)
         {
@@ -421,7 +421,7 @@ void bullet_logic(World *world)
         }
       }
       int deathsample_plays = 0;
-      if (bullet->hurts_monsters)
+      if (bullet->hurts_flags & BULLET_HURTS_MONSTERS)
         for (int j = 0; j < ENEMYCOUNT; j++)
         {
           Enemy *enm = &world->enm[j];

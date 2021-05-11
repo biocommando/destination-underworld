@@ -28,7 +28,7 @@ void clear_restricted_tiles(World *world, int id)
     }
 }
 
-double calc_sqr_distance(double x1, double y1, double x2, double y2)
+inline double calc_sqr_distance(double x1, double y1, double x2, double y2)
 {
     return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
@@ -154,7 +154,9 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, int enm_id, i
     
         bb->owner_id = enm_id;
     
-        bb->hurts_monsters = hurts_monsters;
+        bb->hurts_flags = 0;
+        if (hurts_monsters) bb->hurts_flags |= BULLET_HURTS_MONSTERS;
+        if (enm_id != world->plr.id && enm_id < 1000) bb->hurts_flags |= BULLET_HURTS_PLAYER;
         bb->bullet_type = BULLET_TYPE_NORMAL;
     }
     return 1;

@@ -55,6 +55,9 @@ typedef struct
 #define BULLET_TYPE_NORMAL 0
 #define BULLET_TYPE_CLUSTER 1
 
+#define BULLET_HURTS_MONSTERS 1
+#define BULLET_HURTS_PLAYER 2
+
 typedef struct
 {
         double x;
@@ -62,7 +65,7 @@ typedef struct
         double dx;
         double dy;
         int owner_id;
-        int hurts_monsters;
+        int hurts_flags;
         int bullet_type;
 } Bullet;
 
