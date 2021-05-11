@@ -20,6 +20,8 @@ const fname = process.argv.find(x => x.endsWith('.boss'))
 
 const ms = a => Math.floor(Number(a) / 40 / 3)
 
+let missionpack = 'core-pack'
+
 fs
     .readFileSync(fname)
     .toString().split(/\r?\n/)
@@ -94,6 +96,8 @@ fs
                 enemy_4_probability: params[6],
                 value: getNextId()
             })
+        } else if (x.startsWith('missionpack:')) {
+            missionpack = x.split(':')[1]
         }
     })
 
@@ -121,5 +125,5 @@ spawnpoints.forEach((s, i) => {
     str += objToIni(s)
 })
 
-fs.writeFileSync(fname.replace('.boss', '.ini'), str)
+fs.writeFileSync(missionpack + '/' + fname.replace('.boss', '.ini'), str)
 
