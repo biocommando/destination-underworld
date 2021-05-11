@@ -354,7 +354,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     int index;
     Enemy *new_enemy = get_next_available_enemy(world, &index);
 
-    new_enemy->id = 1000 * type + index + 1;
+    new_enemy->id = index + 1;
     new_enemy->former_id = new_enemy->id;
     new_enemy->x = x;
     new_enemy->y = y;
