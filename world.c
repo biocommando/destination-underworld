@@ -197,25 +197,27 @@ void set_tile_flag(World *world, int x, int y, int flags)
 
 void init_player(World *world, Enemy *plrautosave)
 {
+  Enemy *plr = &world->plr;
   if (plrautosave->id == NO_OWNER)
   {
-    world->plr = world->enm[0];
-    world->plr.id = PLAYER_ID;
-    world->plr.former_id = PLAYER_ID;
-    world->plr.shots = 1;
-    world->plr.health = 3;
-    world->plr.completetime = 0;
-    world->plr.rate = 7;
+    *plr = world->enm[0];
+    plr->id = PLAYER_ID;
+    plr->former_id = PLAYER_ID;
+    plr->sprite = -1;
+    plr->shots = 1;
+    plr->health = 3;
+    plr->completetime = 0;
+    plr->rate = 7;
     if ((world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
     {
-        world->plr.rate = 12;
+        plr->rate = 12;
     }
-    world->plr.ammo = 15;
-    world->plr.gold = 0;
-    world->plr.hurts_monsters = 1;
+    plr->ammo = 15;
+    plr->gold = 0;
+    plr->hurts_monsters = 1;
   }
   else
   {
-    world->plr = *plrautosave;
+    *plr = *plrautosave;
   }
 }

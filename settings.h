@@ -16,6 +16,7 @@ typedef struct
   int vibration_mode;
   int music_on;
   int num_music_tracks;
+  int custom_resources;
 } GameSettings;
 void read_settings();
 int read_cmd_line_arg_int(const char *arg, char **argv, int argc);

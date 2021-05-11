@@ -6,13 +6,10 @@
 
 void draw_enemy(Enemy *enm, World *world)
 {
-
-    if (enm->id == PLAYER_ID)
-        masked_blit(world->spr, world->buf, 23 * (enm->anim > 20), 0, enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 23, 29);
-    else if (enm->id >= 9000)
+    if (enm->sprite == 9)
         masked_blit(world->spr, world->buf, 47, 117, enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 24, 28);
     else
-        masked_blit(world->spr, world->buf, 23 * (enm->anim > 20), 29 * (enm->id / 1000 + 1), enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 23, 29);
+        masked_blit(world->spr, world->buf, 23 * (enm->anim > 20), 29 * (1 + enm->sprite), enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 23, 29);
 }
 
 void draw_map(World *world, int col)

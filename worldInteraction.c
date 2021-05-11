@@ -360,6 +360,8 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     new_enemy->y = y;
     new_enemy->move = 0;
 
+    new_enemy->sprite = type;
+
     if (type < 5)
     {
         new_enemy->turret = world->enemy_configs[type].turret;

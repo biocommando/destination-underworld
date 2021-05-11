@@ -48,6 +48,7 @@ typedef struct
         int fast;
         int turret;
         int hurts_monsters;
+        int sprite;
         BodyPart bodyparts[BODYPARTCOUNT];
 } Enemy;
 

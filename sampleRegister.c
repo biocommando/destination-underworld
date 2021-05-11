@@ -1,4 +1,8 @@
 #include "sampleRegister.h"
+#include "settings.h"
+#include <stdio.h>
+
+extern GameSettings game_settings;
 
 int sample_reg_idx = 0;
 
@@ -13,7 +17,16 @@ void register_sample(int id, const char *filename)
      if (sample_reg_idx < 64)
      {
        sample_register[sample_reg_idx].id = id;
-       sample_register[sample_reg_idx].sample = load_sample(filename);
+       char sample_path[256];
+       if (game_settings.custom_resources)
+       {
+         sprintf(sample_path, ".\\dataloss\\%s\\%s", game_settings.mission_pack, filename);
+       }
+       else
+       {
+         sprintf(sample_path, ".\\dataloss\\%s", filename);
+       }
+       sample_register[sample_reg_idx].sample = load_sample(sample_path);
        sample_reg_idx++;
      }
 }

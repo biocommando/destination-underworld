@@ -67,23 +67,23 @@ int main(int argc, char **argv)
   int game_modifiers = 0;
   GameFont = load_font(FONT_FILENAME, default_palette, NULL);
 
-  register_sample(SAMPLE_SELECT, ".\\dataloss\\sel.wav");
-  register_sample(SAMPLE_WARP, ".\\dataloss\\warp.wav");
-  register_sample(SAMPLE_BOSSTALK_1, ".\\dataloss\\bt1.wav");
-  register_sample(SAMPLE_BOSSTALK_2, ".\\dataloss\\bt2.wav");
-  register_sample(SAMPLE_THROW, ".\\dataloss\\throw.wav");
-  register_sample(SAMPLE_SELECT_WEAPON, ".\\dataloss\\select_weapon.wav");
-  register_sample(SAMPLE_HEAL, ".\\dataloss\\healing.wav");
-  register_sample(SAMPLE_PROTECTION, ".\\dataloss\\rune_of_protection.wav");
-  register_sample(SAMPLE_TURRET, ".\\dataloss\\turret.wav");
-  register_sample(SAMPLE_SPAWN, ".\\dataloss\\spawn.wav");
+  register_sample(SAMPLE_SELECT, "sel.wav");
+  register_sample(SAMPLE_WARP, "warp.wav");
+  register_sample(SAMPLE_BOSSTALK_1, "bt1.wav");
+  register_sample(SAMPLE_BOSSTALK_2, "bt2.wav");
+  register_sample(SAMPLE_THROW, "throw.wav");
+  register_sample(SAMPLE_SELECT_WEAPON, "select_weapon.wav");
+  register_sample(SAMPLE_HEAL, "healing.wav");
+  register_sample(SAMPLE_PROTECTION, "rune_of_protection.wav");
+  register_sample(SAMPLE_TURRET, "turret.wav");
+  register_sample(SAMPLE_SPAWN, "spawn.wav");
 
   for (int i = 0; i < 6; i++)
   {
     char loadsamplename[100];
-    sprintf(loadsamplename, ".\\dataloss\\ex%d.wav", i + 1);
+    sprintf(loadsamplename, "ex%d.wav", i + 1);
     register_sample(SAMPLE_EXPLOSION(i), loadsamplename);
-    sprintf(loadsamplename, ".\\dataloss\\die%d.wav", i + 1);
+    sprintf(loadsamplename, "die%d.wav", i + 1);
     register_sample(SAMPLE_DEATH(i), loadsamplename);
   }
 
@@ -507,9 +507,21 @@ int game(int mission, int *game_modifiers)
   world.game_modifiers = *game_modifiers;
   memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
   world.buf = create_bitmap(480, 360);
-  world.spr = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
   world.explos_spr = load_bitmap(".\\dataloss\\explosions.bmp", default_palette);
-  BITMAP *bmp_levclear = load_bitmap(".\\dataloss\\levelclear.bmp", default_palette);
+  BITMAP *bmp_levclear;
+  if (!game_settings.custom_resources)
+  {
+    world.spr = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
+    bmp_levclear = load_bitmap(".\\dataloss\\levelclear.bmp", default_palette);
+  }
+  else
+  {
+    char path[256];
+    sprintf(path, ".\\dataloss\\%s\\sprites.bmp", game_settings.mission_pack);
+    world.spr = load_bitmap(path, default_palette);
+    sprintf(path, ".\\dataloss\\%s\\levelclear.bmp", game_settings.mission_pack);
+    bmp_levclear = load_bitmap(path, default_palette);
+  }
 
   char c;
   int vibrations = 0;
