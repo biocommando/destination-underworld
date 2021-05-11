@@ -1,6 +1,6 @@
 set health = 180
 set speed = 1
-set player_initial_gold = 13
+set player_initial_gold = 10
 
 on time_interval: ms(5000) do fire_in_circle: number_of_directions = 16, intensity = 2
 
@@ -24,6 +24,8 @@ on time_one_time: ms(9000) do spawn: 10;8
 on time_one_time: ms(9000) do spawn: 11;8
 on time_one_time: ms(9000) do spawn: 10;9
 on time_one_time: ms(9000) do spawn: 11;9
+on time_one_time: ms(9500) do spawn: 11;9
+on time_one_time: ms(9500) do spawn: 10;9
 
 on health: 0 do start_secondary_timer: time = 0
 

@@ -68,13 +68,13 @@ void move_enemy(Enemy *enm, World *world)
     }
 
     if ((enm->x >= world->buf->w || enm->x < 0 || enm->y >= world->buf->h || enm->y < 0) ||
-        (enm->id != PLAYER_ID && (check_flags_at(world, enm->x, enm->y, TILE_IS_EXIT_POINT))))
+        (enm != &world->plr && (check_flags_at(world, enm->x, enm->y, TILE_IS_EXIT_POINT))))
     {
         enm->x = ex;
         enm->y = ey;
     }
 
-    if (enm->id == PLAYER_ID && (check_flags_at(world, enm->x, enm->y, TILE_IS_CLEAR_RESTRICTION)))
+    if (enm == &world->plr && (check_flags_at(world, enm->x, enm->y, TILE_IS_CLEAR_RESTRICTION)))
     {
         clear_restricted_tiles(world, get_tile_at(world, enm->x, enm->y).data);
     }
@@ -509,7 +509,7 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
       {
           x += dx * 0.66;
           y += dy * 0.66;
-          shoot_one_shot_at_xy(x, y, dx, dy, shoot_id, shoot_id == PLAYER_ID ? 1 : 0, w);
+          shoot_one_shot_at_xy(x, y, dx, dy, shoot_id, shoot_id == w->plr.id ? 1 : 0, w);
       }
   }
 }

@@ -383,7 +383,7 @@ void bullet_logic(World *world)
               bullet->x -= 5 * bullet->dx;
               bullet->y -= 5 * bullet->dy;
           }
-          create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, PLAYER_ID);
+          create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, world->plr.id);
         }
         
         break;
@@ -394,12 +394,12 @@ void bullet_logic(World *world)
         {
             world->plr.health++;
             if (world->plr.health < 0) world->plr.health = 1;
-            world->plr.id = PLAYER_ID;
+            world->plr.id = world->plr.former_id;
             world->powerups.rune_of_protection_active = -50;
-            create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
+            create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, world->plr.id);
             if ((world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
             {
-              create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, PLAYER_ID);
+              create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, world->plr.id);
             }
         }
         if (world->playcount == 0)
@@ -440,7 +440,7 @@ void bullet_logic(World *world)
                 
             if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
             {
-                create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, PLAYER_ID);
+                create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, world->plr.id);
             }
                 
             world->playcount = PLAYDELAY;

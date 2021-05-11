@@ -162,7 +162,7 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
     if (key_f && world->plr.gold >= cost_blast && world->plr.wait == 0)
     {
       Bullet *b = get_next_available_bullet(world);
-      int did_shoot = shoot_one_shot_at_xy(world->plr.x, world->plr.y, world->plr.dx, world->plr.dy, PLAYER_ID, 1, world);
+      int did_shoot = shoot_one_shot_at_xy(world->plr.x, world->plr.y, world->plr.dx, world->plr.dy, world->plr.id, 1, world);
       if (did_shoot)
       {
           *gold_hint_amount = cost_blast;
@@ -171,7 +171,7 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
           b->dy *= 0.5;
           if (overpowered)
           {
-             create_cluster_explosion(world, world->plr.x, world->plr.y, 16, 16, PLAYER_ID);
+             create_cluster_explosion(world, world->plr.x, world->plr.y, 16, 16, world->plr.id);
           }
           world->plr.gold -= cost_blast;
           world->plr.reload = 40;
