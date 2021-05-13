@@ -173,8 +173,8 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         c = MENUOPT_RESUME;
     }
     textprintf_ex(menu_bg, menufont, 10, 384, RED, -1, "m: toggle music");
-    textprintf_ex(menu_bg, menufont, 10, 400, RED, -1, "n/p: next/previous track");
-    textprintf_ex(menu_bg, menufont, 10, 416, RED, -1, "f1: help");
+    textprintf_ex(menu_bg, menufont, 10, 410, RED, -1, "n/p: next/previous track");
+    textprintf_ex(menu_bg, menufont, 10, 436, RED, -1, "f1: help");
     blit(menu_bg, buf, 0, 0, 0, 0, 640, 480);
     stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
 
