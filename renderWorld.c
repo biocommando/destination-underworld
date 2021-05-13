@@ -252,19 +252,19 @@ int progress_and_draw_explosions(World *world)
         {
             struct explosion_circle *c = &ex->circles[j];
 
-            while (c->x + c->r > circle_max_radius * 2 - 1) c->x -= 1;
-            while (c->x - c->r < 0) c->x += 1;
-            while (c->y + c->r > circle_max_radius * 2 - 1) c->y -= 1;
-            while (c->y - c->r < 0) c->y += 1;
+            while (c->loc.x + c->r > circle_max_radius * 2 - 1) c->loc.x -= 1;
+            while (c->loc.x - c->r < 0) c->loc.x += 1;
+            while (c->loc.y + c->r > circle_max_radius * 2 - 1) c->loc.y -= 1;
+            while (c->loc.y - c->r < 0) c->loc.y += 1;
 
-            draw_explosion_circle(world, c->x + ex->x, c->y + ex->y, c->i*.9, c->r);
-            draw_explosion_circle(world, c->x + ex->x, c->y + ex->y, c->i, c->r*.8);
-            draw_explosion_circle(world, c->x + ex->x, c->y + ex->y, c->i*1.1, c->r*.7);
+            draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i * .9, c->r);
+            draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i, c->r * .8);
+            draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i * 1.1, c->r * .7);
 
             // Fade
             
-            c->x = c->x > circle_max_radius / 2 ? c->x + random() * 3 : c->x - random() * 3;
-            c->y = c->y > circle_max_radius / 2 ? c->y + random() * 3 : c->y - random() * 3;
+            c->loc.x = c->loc.x > circle_max_radius / 2 ? c->loc.x + random() * 3 : c->loc.x - random() * 3;
+            c->loc.y = c->loc.y > circle_max_radius / 2 ? c->loc.y + random() * 3 : c->loc.y - random() * 3;
             double multiplier_factor = log(sqrt(j) + 2) / 10;
             double intensity_multiplier = (1 - multiplier_factor) + random() * multiplier_factor;
             c->i *= intensity_multiplier;

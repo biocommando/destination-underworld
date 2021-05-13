@@ -108,9 +108,7 @@ Tile create_tile(int symbol);
 
 struct explosion_circle {
         // Relative position
-        double x;
-        // Relative position
-        double y;
+        Coordinates loc;
         // Intensity
         double i;
         // Radius

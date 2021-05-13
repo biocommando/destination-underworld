@@ -294,8 +294,8 @@ void create_explosion(int x, int y, World *world)
     {
         struct explosion_circle* c = &ex->circles[i];
         c->i = random() * 0.25 + 0.75;
-        c->x = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
-        c->y = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
+        c->loc.x = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
+        c->loc.y = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
         c->r = MAX(random() * circle_max_radius * scale, 5);
     }
     // Sort so that most intense are on top (last)
