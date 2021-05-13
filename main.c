@@ -135,7 +135,7 @@ void enemy_logic(World *world)
         {
           Coordinates aim_at = {world->plr.x, world->plr.y};
           int aim_window = 2 + (enm->turret || enm == world->boss ? 5 : 0);
-          int reacts_to_player = sees_each_other(world->enm + x, &world->plr, world);
+          int reacts_to_player = sees_each_other(enm, &world->plr, world);
 
           if (reacts_to_player || (is_boss && world->boss_waypoint.x >= 0))
           {
@@ -146,7 +146,7 @@ void enemy_logic(World *world)
               {
                 set_directions(enm, &aim_at, aim_window);
               }
-              int play_sample = shoot(world->enm + x, world);
+              int play_sample = shoot(enm, world);
               if (play_sample)
               {
                 trigger_sample(SAMPLE_THROW, 255);
@@ -373,7 +373,7 @@ void bullet_logic(World *world)
         if (world->playcount == 0)
             trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
         world->playcount = PLAYDELAY;
-        create_explosion(bullet->x, bullet->y, world);
+        create_explosion(bullet->x - bullet->dx * 5, bullet->y - bullet->dy * 5, world);
         if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
         {
           bullet->x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
@@ -507,7 +507,6 @@ int game(int mission, int *game_modifiers)
   world.game_modifiers = *game_modifiers;
   memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
   world.buf = create_bitmap(480, 360);
-  world.explos_spr = load_bitmap(".\\dataloss\\explosions.bmp", default_palette);
   BITMAP *bmp_levclear;
   if (!game_settings.custom_resources)
   {
@@ -913,7 +912,6 @@ int game(int mission, int *game_modifiers)
 
   destroy_bitmap(world.buf);
   destroy_bitmap(world.spr);
-  destroy_bitmap(world.explos_spr);
   destroy_bitmap(bmp_levclear);
 
   return mission;

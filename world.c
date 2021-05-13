@@ -142,33 +142,33 @@ Tile create_tile(int symbol)
     return t;
 }
 
-Tile get_tile_at(World *world, int x, int y)
+inline Tile get_tile_at(World *world, int x, int y)
 {
     return world->map[x / TILESIZE][y / TILESIZE];
 }
 
-Tile ns_get_tile_at(World *world, int x, int y)
+inline Tile ns_get_tile_at(World *world, int x, int y)
 {
     return world->map[x][y];
 }
 
-int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
+inline int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
 {
     return (world->map[x][y].flags & flags_to_check) != 0;
 }
 
-int ns_getWallTypeAt(World *world, int x, int y)
+inline int ns_getWallTypeAt(World *world, int x, int y)
 {
     Tile *t = &(world->map[x][y]);
     return ((t->flags & TILE_IS_WALL) != 0) ? t->data : 0;
 }
 
-int check_flags_at(World *world, int x, int y, int flags_to_check)
+inline int check_flags_at(World *world, int x, int y, int flags_to_check)
 {
     return ((world->map[x / TILESIZE][y / TILESIZE].flags & flags_to_check) != 0);
 }
 
-int get_wall_type_at(World *world, int x, int y)
+inline int get_wall_type_at(World *world, int x, int y)
 {
     return ns_getWallTypeAt(world, x / TILESIZE, y / TILESIZE);
 }
@@ -200,6 +200,7 @@ void init_player(World *world, Enemy *plrautosave)
   Enemy *plr = &world->plr;
   if (plrautosave->id == NO_OWNER)
   {
+    // this initializes the player the same way enemy 0 was initialized
     *plr = world->enm[0];
     plr->id = PLAYER_ID;
     plr->former_id = PLAYER_ID;

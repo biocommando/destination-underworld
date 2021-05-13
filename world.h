@@ -106,13 +106,25 @@ typedef struct
 
 Tile create_tile(int symbol);
 
+struct explosion_circle {
+        // Relative position
+        double x;
+        // Relative position
+        double y;
+        // Intensity
+        double i;
+        // Radius
+        double r;
+};
+
 typedef struct
 {
         int exists;
         int x;
         int y;
-        int sprite;
         int phase;
+        int circle_count;
+        struct explosion_circle circles[10];
 } Explosion;
 
 struct hint_text {
@@ -159,7 +171,6 @@ typedef struct
 
         BITMAP *buf;
         BITMAP *spr;
-        BITMAP *explos_spr;
 
         int boss_fight;
         int game_modifiers;

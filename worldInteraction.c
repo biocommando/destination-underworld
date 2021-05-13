@@ -265,15 +265,43 @@ void bounce_body_parts(int x, int y, World *world)
         }
 }
 
+inline double random()
+{
+    return (double)(rand() % 1000) / 1000;
+}
+
+int comp_expl_circle(const void * elem1, const void * elem2)
+{
+    if (((struct explosion_circle*)elem1)->i > ((struct explosion_circle*)elem2)->i)
+        return 1;
+    return -1;
+}
+
 void create_explosion(int x, int y, World *world)
 {
     static int explosion_counter = 0;
+    const double circle_max_radius = 17;
 
-    world->explosion[explosion_counter].x = x - 16 + pr_get_random() % 32;
-    world->explosion[explosion_counter].y = y - 16 + pr_get_random() % 32;
-    world->explosion[explosion_counter].phase = pr_get_random() % 5;
-    world->explosion[explosion_counter].sprite = pr_get_random() % 16;
-    world->explosion[explosion_counter].exists = 1;
+    Explosion *ex = &world->explosion[explosion_counter];
+
+    ex->x = x - 16 + pr_get_random() % 32;
+    ex->y = y - 16 + pr_get_random() % 32;
+    ex->phase = pr_get_random() % 5;
+
+    ex->circle_count = 5 + rand() % 6;
+    double scale = random() * 0.5 + 0.5;
+    for (int i = 0; i < ex->circle_count; i++)
+    {
+        struct explosion_circle* c = &ex->circles[i];
+        c->i = random() * 0.25 + 0.75;
+        c->x = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
+        c->y = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
+        c->r = MAX(random() * circle_max_radius * scale, 5);
+    }
+    // Sort so that most intense are on top (last)
+    qsort(ex->circles, ex->circle_count, sizeof(struct explosion_circle), comp_expl_circle);
+
+    ex->exists = 1;
     if (++explosion_counter == EXPLOSIONCOUNT)
     {
         explosion_counter = 0;

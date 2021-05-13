@@ -223,8 +223,23 @@ void move_and_draw_body_parts(World *world)
     }
 }
 
+void draw_explosion_circle(World *world, double x, double y, double intensity, double radius)
+{
+    const int red = MIN((intensity * 0.5 + 0.5) * 255, 255);
+    const double sqintens = intensity * intensity;
+    const int green = MIN((sqintens * 0.8 + 0.2) * 255, 255);
+    const int blue = MIN((sqintens * sqintens * sqintens * 0.8) * 255, 255);
+
+    const int col = makecol(red, green, blue);
+
+    circlefill(world->buf, x - TILESIZE, y - TILESIZE, radius, col);
+}
+
+extern double random();
+
 int progress_and_draw_explosions(World *world)
 {
+    const double circle_max_radius = 17;
     int vibrations = 0;
     for (int i = 0; i < EXPLOSIONCOUNT; i++)
     {
@@ -232,7 +247,30 @@ int progress_and_draw_explosions(World *world)
         if (!ex->exists)
             continue;
         vibrations++;
-        masked_blit(world->explos_spr, world->buf, (ex->sprite) * 64, (ex->phase / 10) * 64, ex->x - 32, ex->y - 32, 64, 64);
+
+        for (int j = 0; j < ex->circle_count; j++)
+        {
+            struct explosion_circle *c = &ex->circles[j];
+
+            while (c->x + c->r > circle_max_radius * 2 - 1) c->x -= 1;
+            while (c->x - c->r < 0) c->x += 1;
+            while (c->y + c->r > circle_max_radius * 2 - 1) c->y -= 1;
+            while (c->y - c->r < 0) c->y += 1;
+
+            draw_explosion_circle(world, c->x + ex->x, c->y + ex->y, c->i*.9, c->r);
+            draw_explosion_circle(world, c->x + ex->x, c->y + ex->y, c->i, c->r*.8);
+            draw_explosion_circle(world, c->x + ex->x, c->y + ex->y, c->i*1.1, c->r*.7);
+
+            // Fade
+            
+            c->x = c->x > circle_max_radius / 2 ? c->x + random() * 3 : c->x - random() * 3;
+            c->y = c->y > circle_max_radius / 2 ? c->y + random() * 3 : c->y - random() * 3;
+            double multiplier_factor = log(sqrt(j) + 2) / 10;
+            double intensity_multiplier = (1 - multiplier_factor) + random() * multiplier_factor;
+            c->i *= intensity_multiplier;
+            c->r *= intensity_multiplier;
+        }
+
         ex->phase += 8;
         if (ex->phase >= 240)
         {
