@@ -1,0 +1,102 @@
+#color 255 0 0
+Controls
+#color 127 127 255
+Arrows: move around
+Space: shoot
+X: Use large blast fire mode. Slower, deadlier, requires more mana.
+#margin 40
+This fire mode is indicated by small 'L' next to the player
+#margin 5
+Z: Use small blast fire mode. Faster, less deadly, requires less mana.
+#margin 40
+This fire mode is indicated by small 'S' next to the player
+#margin 5
+A: Activate powerup Heal
+S: Activate powerup Shield
+D: Activate powerup Turret
+F: Activate powerup Torrent of Fire
+
+#color 255 0 0
+Basic Gameplay
+#color 127 127 255
+The goal of each level is to reach the exit portal.
+Shooting at the enemies requires mana that is indicated by
+the yellow bar next to the player. Each killed enemy grants
+you a boost in mana and health. Stronger enemies (imps, aliens
+and turrets) will also give you "gold" that is indicated by a
+number below the fire mode indicator.
+
+The enemies generally don't hurt other enemies but the enemy turrets
+are an exception.
+
+When a level is changed the remaining player gold is capped at 5
+and the remainder is used for maxing the player's health (player
+health is also carried from level to another, though it's always
+at least 3).
+
+Press space to continue
+
+#image 0 0 23 30 540 230
+#image 67 0 6 3 565 230 
+#image 67 0 6 3 565 233 
+#image 67 0 6 3 565 236 
+#image 67 0 6 3 565 239
+#image 60 0 7 6 532 230
+#image 60 0 7 6 532 236
+#image 60 0 7 6 532 242
+#image 93 196 3 6 534 250
+#image 81 196 3 6 534 260
+
+#page-end
+#color 255 0 0
+Game Modes
+#color 255 127 127
+NORMAL
+#color 127 127 255
+#margin 40
+Normal gameplay.
+Power up specs:
+#margin 50
+Heal
+- cost: 1
+- effect: +3 health (capped at 6)
+Shield
+- cost: 2
+- effect: guards from one shot, releases explosion on hit
+Turret
+- cost: 3
+- effect: releases a turret that shoots fireballs into each direction
+Torrent of Fire
+- cost: 6
+- effect: shoots projectile that explodes into a torrent of fire
+#margin 5
+#color 255 127 127
+BRUTALLY HARD
+#color 127 127 255
+#margin 40
+Fire modes are a bit modified. All enemies have +1 health.
+Heal gives +2 health, Turret costs 4, Torrent of Fire costs 8.
+#margin 5
+#color 255 127 127
+EXPLOSION MADNESS
+#color 127 127 255
+#margin 40
+Every time a fireball is spawned two fireballs are spawned instead.
+#margin 5
+#color 255 127 127
+OVER POWER UP
+#color 127 127 255
+#margin 40
+Over powered and over priced power ups. All power ups are +2 in cost
+and have a vamped up effect.
+#margin 5
+#color 255 127 127
+POWER UP ONLY
+#color 127 127 255
+#margin 40
+Player does not regenerate health or mana. Player has 40 gold initially
+at the start of each level.
+#margin 5
+
+Press space to continue
+#doc-end

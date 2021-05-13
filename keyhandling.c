@@ -116,7 +116,7 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
 
     int *plr_rune_of_protection_active = &world->powerups.rune_of_protection_active;
     
-    if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < 6 && world->plr.wait == 0)
+    if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < (overpowered ? 18 : 6) && world->plr.wait == 0)
     {
       *gold_hint_amount = cost_heal;
       world->plr.gold -= cost_heal;

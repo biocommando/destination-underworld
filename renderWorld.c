@@ -40,7 +40,7 @@ void draw_map(World *world, int col)
                 {
                     shadowcolm1 = 0;
                 }
-                int wall_type = ns_getWallTypeAt(world, x, y);
+                int wall_type = ns_get_wall_type_at(world, x, y);
                 if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                 {
                     if (x > 0 && !ns_check_flags_at(world, x - 1, y, TILE_IS_EXIT_LEVEL))
@@ -113,7 +113,7 @@ void draw_map(World *world, int col)
                 }
                 for (int x = 0; x < 16; x++)
                 {
-                    int wall_type = ns_getWallTypeAt(world, x, y);
+                    int wall_type = ns_get_wall_type_at(world, x, y);
                     if (wall_type)
                     {
                         if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)

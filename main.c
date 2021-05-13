@@ -131,7 +131,7 @@ void enemy_logic(World *world)
       if (world->plr.health > 0)
       {
         int is_boss = enm == world->boss;
-        if (!enm->turret) // not a turret
+        if (enm->turret != 2) // not a (player's) turret
         {
           Coordinates aim_at = {world->plr.x, world->plr.y};
           int aim_window = 2 + (enm->turret || enm == world->boss ? 5 : 0);

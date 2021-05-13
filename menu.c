@@ -59,6 +59,66 @@ int handle_menuchoice(int menuchoice, Enemy *autosave,
     return 0;
 }
 
+void show_help(BITMAP *sprites)
+{
+    char help_path[256];
+    sprintf(help_path, ".\\dataloss\\%s\\help.txt", game_settings.mission_pack);
+    FILE *f = fopen(help_path, "r");
+    int color = makecol(255, 255, 255);
+    const int line_height = 16;
+    int line = 0;
+    int margin = 5;
+    const int y_margin = 5;
+    BITMAP *buf = create_bitmap(640, 480);
+    clear_to_color(buf, 0);
+    while (!feof(f))
+    {
+        char s[256];
+        fgets(s, 256, f);
+        if (strlen(s))
+            s[strlen(s) - 1] = 0;
+        if (s[0] == '#') // command
+        {
+            char cmd[256];
+            sscanf(s, "%s", cmd);
+            if (!strcmp(cmd, "#color"))
+            {
+                int r = 255, g = 255, b = 255;
+                sscanf(s, "%*s %d %d %d", &r, &g, &b);
+                color = makecol(r, g, b);
+            }
+            if (!strcmp(cmd, "#image"))
+            {
+                int sx = 0, sy = 0, w = 0, h = 0, x = 0, y = 0;
+                sscanf(s, "%*s %d %d %d %d %d %d", &sx, &sy, &w, &h, &x, &y);
+                masked_blit(sprites, buf, sx, sy, x, y, w, h);
+            }
+            if (!strcmp(cmd, "#margin"))
+            {
+                sscanf(s, "%*s %d", &margin);
+            }
+            if (!strcmp(cmd, "#page-end") || !strcmp(cmd, "#doc-end"))
+            {
+                stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
+                chunkrest(500);
+                while (!key[KEY_SPACE])
+                {
+                    chunkrest(50);
+                }
+                clear_to_color(buf, 0);
+                line = 0;
+                if (!strcmp(cmd, "#doc-end")) break;
+            }
+        }
+        else
+        {
+            textprintf_ex(buf, font, margin, y_margin + line * line_height, color, -1, s);
+            line++;
+        }
+    }
+    fclose(f);
+}
+
 int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
 {
     int game_mode = 0;
@@ -66,19 +126,29 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
     peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
 
-    BITMAP *menu_bg = create_bitmap(640, 480), *menupic = load_bitmap(MENU_BITMAP_FILENAME, default_palette), *buf = create_bitmap(640, 480);
-    BITMAP *help_pic = load_bitmap(HELP_BITMAP_FILENAME, default_palette);
+    BITMAP *menu_bg = create_bitmap(640, 480), *buf = create_bitmap(640, 480);
+    BITMAP *sprites;
+    if (!game_settings.custom_resources)
+    {
+        sprites = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
+    }
+    else
+    {
+        char path[256];
+        sprintf(path, ".\\dataloss\\%s\\sprites.bmp", game_settings.mission_pack);
+        sprites = load_bitmap(path, default_palette);
+    }
     SAMPLE *s_c = load_sample(MENU_SAMPLE_FILENAME), *s_s = load_sample(MENU_SELECT_SAMPLE_FILENAME), *s_ex = load_sample(MENU_EXPLODE_FILENAME);
     FONT *menufont = load_font(FONT_FILENAME, default_palette, NULL);
 
-    int c = 0, flicker = 0, wait = 0, show_help = 0;
+    int c = 0, flicker = 0, wait = 0; //, show_help = 0;
 
     // Transition animation
     clear_to_color(screen, 0);
     clear_to_color(menu_bg, 0);
     for (int i = 0; i < 10000; i++)
         putpixel(menu_bg, rand() % menu_bg->w, rand() % menu_bg->h, makecol(rand() % 20, 0, 0));
-    stretch_blit(menupic, menu_bg, 0, 0, menupic->w, menupic->h, menu_bg->w - 2 * menupic->w, menu_bg->h - 2 * menupic->h, 2 * menupic->w, 2 * menupic->h);
+    stretch_blit(sprites, menu_bg, 100, 0, 214, 107, menu_bg->w - 2 * 214, menu_bg->h - 2 * 107, 2 * 214, 2 * 107);
     for (int i = 0; i < 24; i++)
     {
         stretch_blit(menu_bg, screen, 0, 0, 26 * (i + 1), 480, 0, 0, screen->w, screen->h);
@@ -144,8 +214,8 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             flicker = -16;
         circlefill(buf, 30, c * 40 + 70, abs(flicker / 2), makecol(abs(flicker * 8) + 50, 0, 0));
         stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
-        if (show_help)
-            blit(help_pic, screen, 0, 0, screen->w - help_pic->w, screen->h - help_pic->h, help_pic->w, help_pic->h);
+        /*if (show_help)
+            blit(help_pic, screen, 0, 0, screen->w - help_pic->w, screen->h - help_pic->h, help_pic->w, help_pic->h);*/
         chunkrest(50);
         circlefill(buf, 30, c * 40 + 70, abs(flicker / 2), 0);
         if (wait == 0)
@@ -213,8 +283,10 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             }
             if (key[KEY_F1])
             {
-                show_help = !show_help;
-                wait = 3;
+                //show_help = !show_help;
+                //wait = 3;
+                show_help(sprites);
+                stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
             }
         }
         wait = imax(wait - 1, 0);
@@ -222,7 +294,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     play_sample(s_s, 255, 127, 1000, 0);
     chunkrest(500);
     destroy_bitmap(menu_bg);
-    destroy_bitmap(help_pic);
+    destroy_bitmap(sprites);
     destroy_bitmap(buf);
     destroy_sample(s_c);
     destroy_sample(s_s);

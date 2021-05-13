@@ -435,6 +435,7 @@ int read_level(World *world, const char *mission_name, int room_to)
 
     char special_filename[256];
     sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
+    //printf("trying to open %s\n", special_filename);
     FILE *f = fopen(special_filename, "r");
     if (f == NULL)
     {

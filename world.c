@@ -157,7 +157,7 @@ inline int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
     return (world->map[x][y].flags & flags_to_check) != 0;
 }
 
-inline int ns_getWallTypeAt(World *world, int x, int y)
+inline int ns_get_wall_type_at(World *world, int x, int y)
 {
     Tile *t = &(world->map[x][y]);
     return ((t->flags & TILE_IS_WALL) != 0) ? t->data : 0;
@@ -170,7 +170,7 @@ inline int check_flags_at(World *world, int x, int y, int flags_to_check)
 
 inline int get_wall_type_at(World *world, int x, int y)
 {
-    return ns_getWallTypeAt(world, x / TILESIZE, y / TILESIZE);
+    return ns_get_wall_type_at(world, x / TILESIZE, y / TILESIZE);
 }
 
 void spawn_body_parts(Enemy *enm)
