@@ -304,7 +304,7 @@ void boss_logic(World *world, int boss_died)
         break;
         case BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE:
           if (boss)
-            create_cluster_explosion(world, boss->x, boss->y, event->parameters[0], event->parameters[1], boss->id);
+            create_cluster_explosion(world, boss->x, boss->y, event->parameters[0], event->parameters[1], boss);
         break;
         case BFCONF_EVENT_TYPE_MODIFY_TERRAIN:
         {
@@ -383,7 +383,7 @@ void bullet_logic(World *world)
               bullet->x -= 5 * bullet->dx;
               bullet->y -= 5 * bullet->dy;
           }
-          create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, world->plr.id);
+          create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, &world->plr);
         }
         
         break;
@@ -396,10 +396,10 @@ void bullet_logic(World *world)
             if (world->plr.health < 0) world->plr.health = 1;
             world->plr.id = world->plr.former_id;
             world->powerups.rune_of_protection_active = -50;
-            create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, world->plr.id);
+            create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
             if ((world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
             {
-              create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, world->plr.id);
+              create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
             }
         }
         if (world->playcount == 0)
@@ -425,7 +425,7 @@ void bullet_logic(World *world)
         for (int j = 0; j < ENEMYCOUNT; j++)
         {
           Enemy *enm = &world->enm[j];
-          if (enm->id == NO_OWNER || enm->id >= 9000 || enm->roomid != world->current_room)
+          if (enm->id == NO_OWNER || enm->turret == 2 || enm->roomid != world->current_room)
             continue;
 
           if (bullet_hit(world->enm + j, world->bullets + i))
@@ -440,7 +440,7 @@ void bullet_logic(World *world)
                 
             if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
             {
-                create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, world->plr.id);
+                create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, &world->plr);
             }
                 
             world->playcount = PLAYDELAY;

@@ -134,7 +134,7 @@ Bullet *get_next_available_bullet(World *world)
     return world->bullets;
 }
 
-int shoot_one_shot_at_xy(double x, double y, double dx, double dy, int enm_id, int hurts_monsters, World *world)
+int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, int hurts_monsters, World *world)
 {
     int num_shots = (world->game_modifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? 2 : 1;
     for (int i = 0; i < num_shots; i++)
@@ -152,11 +152,11 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, int enm_id, i
         bb->x = x;
         bb->y = y;
     
-        bb->owner_id = enm_id;
+        bb->owner_id = enm->id;
     
         bb->hurts_flags = 0;
         if (hurts_monsters) bb->hurts_flags |= BULLET_HURTS_MONSTERS;
-        if (enm_id != world->plr.id && enm_id < 1000) bb->hurts_flags |= BULLET_HURTS_PLAYER;
+        if (enm != &world->plr && enm->turret < 2) bb->hurts_flags |= BULLET_HURTS_PLAYER;
         bb->bullet_type = BULLET_TYPE_NORMAL;
     }
     return 1;
@@ -173,7 +173,7 @@ int shoot_one_shot(Enemy *enm, World *world)
         enm->ammo--;
     }
 
-    return shoot_one_shot_at_xy(enm->x, enm->y, enm->dx, enm->dy, enm->id, enm->hurts_monsters, world);
+    return shoot_one_shot_at_xy(enm->x, enm->y, enm->dx, enm->dy, enm, enm->hurts_monsters, world);
 }
 
 // Returns 1 if shoot sample should be played
@@ -498,7 +498,7 @@ int read_level(World *world, const char *mission_name, int room_to)
     return 0;
 }
 
-void create_cluster_explosion(World *w, double x0, double y0, int num_directions, int intensity, int shoot_id)
+void create_cluster_explosion(World *w, double x0, double y0, int num_directions, int intensity, Enemy *enm)
 {
   double half_dirs = num_directions / 2;
   for (int i = 0; i < num_directions; i++)
@@ -511,7 +511,7 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
       {
           x += dx * 0.66;
           y += dy * 0.66;
-          shoot_one_shot_at_xy(x, y, dx, dy, shoot_id, shoot_id == w->plr.id ? 1 : 0, w);
+          shoot_one_shot_at_xy(x, y, dx, dy, enm, enm == &w->plr ? 1 : 0, w);
       }
   }
 }
