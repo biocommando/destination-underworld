@@ -507,19 +507,15 @@ int game(int mission, int *game_modifiers)
   world.game_modifiers = *game_modifiers;
   memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
   world.buf = create_bitmap(480, 360);
-  BITMAP *bmp_levclear;
   if (!game_settings.custom_resources)
   {
     world.spr = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
-    bmp_levclear = load_bitmap(".\\dataloss\\levelclear.bmp", default_palette);
   }
   else
   {
     char path[256];
     sprintf(path, ".\\dataloss\\%s\\sprites.bmp", game_settings.mission_pack);
     world.spr = load_bitmap(path, default_palette);
-    sprintf(path, ".\\dataloss\\%s\\levelclear.bmp", game_settings.mission_pack);
-    bmp_levclear = load_bitmap(path, default_palette);
   }
 
   char c;
@@ -763,7 +759,7 @@ int game(int mission, int *game_modifiers)
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, mission, game_settings.mission_count, bmp_levclear, font);
+      display_level_info(&world, mission, game_settings.mission_count, font);
 
       while (!key[KEY_ENTER])
       {
@@ -912,7 +908,6 @@ int game(int mission, int *game_modifiers)
 
   destroy_bitmap(world.buf);
   destroy_bitmap(world.spr);
-  destroy_bitmap(bmp_levclear);
 
   return mission;
 }

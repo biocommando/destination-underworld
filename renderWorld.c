@@ -302,10 +302,10 @@ void progress_and_draw_sparkles(World *world)
     }
 }
 
-void display_level_info(World *world, int mission, int mission_count, BITMAP *bmp_levclear, FONT *font)
+void display_level_info(World *world, int mission, int mission_count, FONT *font)
 {
     clear_to_color(world->buf, 0);
-    blit(bmp_levclear, world->buf, 0, 0, 0, world->buf->h - bmp_levclear->h, bmp_levclear->w, bmp_levclear->h);
+    stretch_blit(world->spr, world->buf, 100, 0, 214, 107, 0, world->buf->h - 107 * 2, 214 * 2, 107 * 2);
     textprintf_ex(world->buf, font, 5, 5, WHITE, -1, "Level cleared!");
     textprintf_ex(world->buf, font, 5, 30, WHITE, -1, "Now entering level %d / %d.", mission + 1, mission_count);
     textprintf_ex(world->buf, font, 5, 120, WHITE, -1, "Press enter to continue!");
