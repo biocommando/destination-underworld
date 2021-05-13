@@ -24,7 +24,7 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">set def on do</Keywords>
+            <Keywords name="Keywords1">set def on do set_internal</Keywords>
             <Keywords name="Keywords2">waypoint spawnpoint</Keywords>
             <Keywords name="Keywords3">time_interval time_one_time health waypoint_reached secondary_timer</Keywords>
             <Keywords name="Keywords4">spawn allow_firing disallow_firing fire_in_circle modify_terrain set_waypoint clear_waypoint start_secondary_timer stop_secondary_timer</Keywords>

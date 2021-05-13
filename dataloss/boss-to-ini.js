@@ -20,7 +20,9 @@ const fname = process.argv.find(x => x.endsWith('.boss'))
 
 const ms = a => Math.floor(Number(a) / 40 / 3)
 
-let missionpack = 'core-pack'
+const internal = {
+    filename: `core-pack/${fname.replace('.boss', '.ini')}`
+}
 
 fs
     .readFileSync(fname)
@@ -39,6 +41,8 @@ fs
         // preprocessor:
         // ms(..) = calculate boss timer value for amount of milliseconds
         // js$..$ = execute javascript
+        // internal parameters (e.g. filename):
+        // set_internal param = value
         x = x.replace(/js\$([^$]+?)\$/g, (_, a) => eval(a))
         x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => ms(a))
         if (x.startsWith('on ')) {
@@ -96,8 +100,9 @@ fs
                 enemy_4_probability: params[6],
                 value: getNextId()
             })
-        } else if (x.startsWith('missionpack:')) {
-            missionpack = x.split(':')[1]
+        } else if (x.startsWith('set_internal ')) {
+            x = x.replace('set_internal ', '').split('=').map(y => y.trim())
+            internal[x[0]] = x[1]
         }
     })
 
@@ -125,5 +130,5 @@ spawnpoints.forEach((s, i) => {
     str += objToIni(s)
 })
 
-fs.writeFileSync(missionpack + '/' + fname.replace('.boss', '.ini'), str)
+fs.writeFileSync(internal.filename, str)
 
