@@ -64,6 +64,7 @@ void init_world(World *world)
         }
     }
     world->boss = NULL;
+    world->level_read = 0;
 }
 
 Tile create_tile(int symbol)

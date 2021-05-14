@@ -191,6 +191,13 @@ typedef struct
     struct powerup_status powerups;
     int playcount;
     char mission_display_name[64];
+    int story_after_mission_lines;
+    // ~60 characters fit on the screen
+    char story_after_mission[10][61];
+    // Flag telling if the level has been read yet.
+    // (Level is read whenever room is changed but
+    // there's no point in parsing the metadata each time.)
+    int level_read;
 } World;
 
 void clear_visual_fx(World *);

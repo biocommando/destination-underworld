@@ -310,9 +310,17 @@ void display_level_info(World *world, int mission, int mission_count, FONT *font
 {
     clear_to_color(world->buf, 0);
     stretch_blit(world->spr, world->buf, 100, 0, 214, 107, 0, world->buf->h - 107 * 2, 214 * 2, 107 * 2);
-    textprintf_ex(world->buf, font, 5, 5, WHITE, -1, "Level cleared!");
-    textprintf_ex(world->buf, font, 5, 30, WHITE, -1, "Now entering level %d / %d.", mission + 1, mission_count);
-    textprintf_ex(world->buf, font, 5, 120, WHITE, -1, "Press enter to continue!");
+    int y = 5;
+    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Level '%s' cleared!", world->mission_display_name);
+    y += 15;
+    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Now entering level %d / %d.", mission + 1, mission_count);
+    for (int i = 0; i < world->story_after_mission_lines; i++)
+    {
+        y += 15;
+        textprintf_ex(world->buf, font, 5, y, GRAY(120), -1, "%s", world->story_after_mission[i]);
+    }
+    y += 15 * 3;
+    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Press enter to continue!");
     stretch_blit(world->buf, screen, 0, 0, 480, 360, 0, 0, screen->w, screen->h);
 }
 

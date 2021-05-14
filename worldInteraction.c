@@ -434,12 +434,15 @@ int read_level(World *world, int mission, int room_to)
 
     clear_map(world);
 
-    world->boss_fight = 0;
     char mission_name[256];
     sprintf(mission_name, ".\\dataloss\\%s\\mission%d", game_settings.mission_pack, mission);
 
-    sprintf(world->mission_display_name, "Mission %d", mission);
-
+    if (!world->level_read)
+    {
+        world->boss_fight = 0;
+        sprintf(world->mission_display_name, "Mission %d", mission);
+        world->story_after_mission_lines = 0;
+    }
     char special_filename[256];
     sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
     FILE *f = fopen(special_filename, "r");
@@ -501,7 +504,7 @@ int read_level(World *world, int mission, int room_to)
     int metadata_count = 0;
     fgets(buf, 256, f);
     sscanf(buf, "%d", &metadata_count);
-    while (metadata_count-- > 0)
+    while (!world->level_read && metadata_count-- > 0)
     {
         fgets(buf, 256, f);
         char read_str[64];
@@ -527,7 +530,21 @@ int read_level(World *world, int mission, int room_to)
         else if (!strcmp(read_str, "name"))
         {
             fgets(buf, 64, f);
+            buf[strlen(buf) - 1] = 0;
             strcpy(world->mission_display_name, buf);
+        }
+        else if (!strcmp(read_str, "story"))
+        {
+            world->story_after_mission_lines = 0;
+            sscanf(buf, "%*s %d", &world->story_after_mission_lines);
+            world->story_after_mission_lines =
+                world->story_after_mission_lines > 10 ? 10 : world->story_after_mission_lines;
+            for (int i = 0; i < world->story_after_mission_lines; i++)
+            {
+                fgets(buf, 61, f);
+                buf[strlen(buf) - 1] = 0;
+                strcpy(world->story_after_mission[i], buf);
+            }
         }
     }
 
@@ -540,6 +557,7 @@ int read_level(World *world, int mission, int room_to)
     }
 
     world->rooms_visited[room_to - 1] = 1;
+    world->level_read = 1;
     return 0;
 }
 
