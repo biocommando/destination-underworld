@@ -7,56 +7,56 @@
 
 struct gamedata
 {
-        char game_id[256];
-        long kills;
-        long deaths;
-        long fireballs;
-        long powerups;
+    char game_id[256];
+    long kills;
+    long deaths;
+    long fireballs;
+    long powerups;
 };
 
 typedef struct
 {
-        int exists;
-        int velocity;
-        int anim;
-        int type;
-        double x;
-        double y;
-        double dx;
-        double dy;
+    int exists;
+    int velocity;
+    int anim;
+    int type;
+    double x;
+    double y;
+    double dx;
+    double dy;
 } BodyPart;
 
 enum TurretType
 {
-        TURRET_TYPE_NONE,
-        TURRET_TYPE_ENEMY,
-        TURRET_TYPE_PLAYER
+    TURRET_TYPE_NONE,
+    TURRET_TYPE_ENEMY,
+    TURRET_TYPE_PLAYER
 };
 
 typedef struct
 {
-        int x;
-        int y;
-        int dx;
-        int dy;
-        int health;
-        int shots;
-        int reload;
-        int wait;
-        int rate;
-        int move;
-        int anim;
-        int ammo;
-        int gold;
-        int id;
-        int former_id;
-        int roomid;
-        long completetime;
-        int fast;
-        enum TurretType turret;
-        int hurts_monsters;
-        int sprite;
-        BodyPart bodyparts[BODYPARTCOUNT];
+    int x;
+    int y;
+    int dx;
+    int dy;
+    int health;
+    int shots;
+    int reload;
+    int wait;
+    int rate;
+    int move;
+    int anim;
+    int ammo;
+    int gold;
+    int id;
+    int former_id;
+    int roomid;
+    long completetime;
+    int fast;
+    enum TurretType turret;
+    int hurts_monsters;
+    int sprite;
+    BodyPart bodyparts[BODYPARTCOUNT];
 } Enemy;
 
 #define BULLET_TYPE_NORMAL 0
@@ -67,13 +67,13 @@ typedef struct
 
 typedef struct
 {
-        double x;
-        double y;
-        double dx;
-        double dy;
-        int owner_id;
-        int hurts_flags;
-        int bullet_type;
+    double x;
+    double y;
+    double dx;
+    double dy;
+    int owner_id;
+    int hurts_flags;
+    int bullet_type;
 } Bullet;
 
 #define TILE_IS_EXIT_LEVEL /*-------*/ 0x01
@@ -107,89 +107,89 @@ typedef struct
 
 typedef struct
 {
-        int flags;
-        int data;
+    int flags;
+    int data;
 } Tile;
 
 Tile create_tile(int symbol);
 
 struct explosion_circle
 {
-        // Relative position
-        Coordinates loc;
-        // Intensity
-        double i;
-        // Radius
-        double r;
+    // Relative position
+    Coordinates loc;
+    // Intensity
+    double i;
+    // Radius
+    double r;
 };
 
 typedef struct
 {
-        int exists;
-        int x;
-        int y;
-        int phase;
-        int circle_count;
-        struct explosion_circle circles[10];
+    int exists;
+    int x;
+    int y;
+    int phase;
+    int circle_count;
+    struct explosion_circle circles[10];
 } Explosion;
 
 struct hint_text
 {
-        Coordinates loc;
-        int dim;
-        int time_shows;
-        char text[256];
+    Coordinates loc;
+    int dim;
+    int time_shows;
+    char text[256];
 };
 
 struct powerup_status
 {
-        int cluster_strength;
-        int rune_of_protection_active;
+    int cluster_strength;
+    int rune_of_protection_active;
 };
 
 struct sparkle_fx
 {
-        Coordinates loc;
-        Coordinates dir;
-        int sprite;
-        int duration;
+    Coordinates loc;
+    Coordinates dir;
+    int sprite;
+    int duration;
 };
 
 struct enemy_config
 {
-        int turret;
-        int rate;
-        int health;
-        int gold;
-        int fast;
-        int hurts_monsters;
+    int turret;
+    int rate;
+    int health;
+    int gold;
+    int fast;
+    int hurts_monsters;
 };
 
 typedef struct
 {
-        Tile map[MAPMAX_X][MAPMAX_Y];
-        char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
-        char rooms_visited[ROOMCOUNT];
-        int current_room;
-        Enemy enm[ENEMYCOUNT];
-        Enemy plr;
-        Enemy *boss;
-        Bullet bullets[BULLETCOUNT];
-        Explosion explosion[EXPLOSIONCOUNT];
-        struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
-        struct enemy_config enemy_configs[5];
+    Tile map[MAPMAX_X][MAPMAX_Y];
+    char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
+    char rooms_visited[ROOMCOUNT];
+    int current_room;
+    Enemy enm[ENEMYCOUNT];
+    Enemy plr;
+    Enemy *boss;
+    Bullet bullets[BULLETCOUNT];
+    Explosion explosion[EXPLOSIONCOUNT];
+    struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
+    struct enemy_config enemy_configs[5];
 
-        BITMAP *buf;
-        BITMAP *spr;
+    BITMAP *buf;
+    BITMAP *spr;
 
-        int boss_fight;
-        int game_modifiers;
-        BossFightConfig boss_fight_config;
-        Coordinates boss_waypoint;
-        int boss_want_to_shoot;
-        struct hint_text hint;
-        struct powerup_status powerups;
-        int playcount;
+    int boss_fight;
+    int game_modifiers;
+    BossFightConfig boss_fight_config;
+    Coordinates boss_waypoint;
+    int boss_want_to_shoot;
+    struct hint_text hint;
+    struct powerup_status powerups;
+    int playcount;
 } World;
 
 void clear_visual_fx(World *);
