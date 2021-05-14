@@ -1,6 +1,6 @@
 #ifndef DUHELPERS_H
 #define DUHELPERS_H
-#include<time.h>
+#include <time.h>
 
 inline int imin(int a, int b);
 inline int imax(int a, int b);
@@ -11,7 +11,8 @@ void chunkrest(int ms);
 
 void game_loop_rest(clock_t *state);
 
-typedef struct coordinates {
+typedef struct coordinates
+{
     double x;
     double y;
 } Coordinates;

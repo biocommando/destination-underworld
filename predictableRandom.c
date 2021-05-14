@@ -1,11 +1,11 @@
-#include"predictableRandom.h"
+#include "predictableRandom.h"
 
 uint32_t pr_get_random_stateless(uint32_t state)
 {
-	state ^= state << 13;
-	state ^= state >> 17;
-	state ^= state << 5;
-	return state;
+    state ^= state << 13;
+    state ^= state >> 17;
+    state ^= state << 5;
+    return state;
 }
 
 int predictable_random_next(int reset)
@@ -19,7 +19,6 @@ int predictable_random_next(int reset)
     state = pr_get_random_stateless(state);
     return state & 0x7FFFFFFF;
 }
-
 
 int pr_get_random()
 {

@@ -1,7 +1,7 @@
 #ifndef DU_BOSS_FIGHT_CONFIG
 #define DU_BOSS_FIGHT_CONFIG
 
-#include<stdio.h>
+#include <stdio.h>
 
 #define BFCONF_MAX_EVENTS 100
 
@@ -25,13 +25,15 @@
 #define BFCONF_MODIFY_TERRAIN_WALL 2
 #define BFCONF_MODIFY_TERRAIN_EXIT 3
 
-typedef struct {
+typedef struct
+{
   int x;
   int y;
   int probability_thresholds[5][2];
 } BossFightSpawnPointConfig;
 
-typedef struct {
+typedef struct
+{
   int trigger_type;
   int trigger_value;
   int event_type;
@@ -39,8 +41,8 @@ typedef struct {
   int parameters[3];
 } BossFightEventConfig;
 
-
-typedef struct {
+typedef struct
+{
   int health;
   int previous_health;
   int timer_value;
@@ -52,7 +54,8 @@ typedef struct {
   int triggers[BFCONF_MAX_EVENTS];
 } BossFightState;
 
-typedef struct {
+typedef struct
+{
   int health;
   int fire_rate;
   int speed;

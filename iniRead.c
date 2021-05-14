@@ -13,10 +13,10 @@ void ini_read_string_value(FILE *file, char *segment, char *key, char *value)
 		int i;
 		if (s[0] == '#')
 		{
-            s[0] = 0;
-            fgets(s, 256, file);
+			s[0] = 0;
+			fgets(s, 256, file);
 			continue;
-        }
+		}
 		char *x_segment = NULL, *x_key = s, *x_value = NULL;
 		for (i = 0; i < 256; i++)
 		{

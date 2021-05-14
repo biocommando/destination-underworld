@@ -8,7 +8,6 @@
 #define MENUOPT_EXIT 3
 #define MENUOPT_RESUME 4
 
-
 int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers);
 
 #endif

@@ -26,8 +26,11 @@ typedef struct
         double dy;
 } BodyPart;
 
-enum TurretType {
-        TURRET_TYPE_NONE, TURRET_TYPE_ENEMY, TURRET_TYPE_PLAYER
+enum TurretType
+{
+        TURRET_TYPE_NONE,
+        TURRET_TYPE_ENEMY,
+        TURRET_TYPE_PLAYER
 };
 
 typedef struct
@@ -88,7 +91,7 @@ typedef struct
 #define TILE_SYM_WALL2 113
 #define TILE_SYM_LAVA 122
 #define TILE_SYM_EXIT_LEVEL 60
-#define TILE_SYM_EXIT_POINT(x) (1000+(x))
+#define TILE_SYM_EXIT_POINT(x) (1000 + (x))
 
 #define WALL_NORMAL 1
 #define WALL_PENTAGRAM 2
@@ -110,7 +113,8 @@ typedef struct
 
 Tile create_tile(int symbol);
 
-struct explosion_circle {
+struct explosion_circle
+{
         // Relative position
         Coordinates loc;
         // Intensity
@@ -129,26 +133,30 @@ typedef struct
         struct explosion_circle circles[10];
 } Explosion;
 
-struct hint_text {
+struct hint_text
+{
         Coordinates loc;
         int dim;
         int time_shows;
         char text[256];
 };
 
-struct powerup_status {
+struct powerup_status
+{
         int cluster_strength;
         int rune_of_protection_active;
 };
 
-struct sparkle_fx {
+struct sparkle_fx
+{
         Coordinates loc;
         Coordinates dir;
         int sprite;
         int duration;
 };
 
-struct enemy_config {
+struct enemy_config
+{
         int turret;
         int rate;
         int health;

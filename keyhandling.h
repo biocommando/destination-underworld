@@ -4,7 +4,6 @@
 #include "continuousData.h"
 #include "world.h"
 
-
 void get_key_presses(ContinuousData *data, void *key_press_output);
 
 int handle_direction_keys(World *world, int key_up, int key_down, int key_left, int key_right);

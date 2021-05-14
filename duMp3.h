@@ -2,10 +2,11 @@
 #define DUMP3_H
 #include "almp3.h"
 
-#define DATASZ  (1<<15) /* (32768) amount of data to read from disk each time */
-#define BUFSZ   (1<<16) /* (65536) size of audiostream buffer */
+#define DATASZ (1 << 15) /* (32768) amount of data to read from disk each time */
+#define BUFSZ (1 << 16)  /* (65536) size of audiostream buffer */
 
-typedef struct {
+typedef struct
+{
   PACKFILE *f;
   ALMP3_MP3STREAM *s;
 } MP3FILE;
@@ -19,6 +20,5 @@ int get_current_track();
 void play_mp3();
 
 void play_mp3_in_thread();
-        
-    
+
 #endif

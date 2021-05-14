@@ -1,6 +1,6 @@
 #ifndef PREDICTABLE_H
 #define PREDICTABLE_H
-#include<stdint.h>
+#include <stdint.h>
 
 #define PREDICTABLE_RANDOM_SEED 8507
 

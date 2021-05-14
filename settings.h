@@ -1,7 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-typedef struct {
+typedef struct
+{
   char name[64], filename[256];
 } NameToFilenameMapping;
 

@@ -192,33 +192,33 @@ void spawn_body_parts(Enemy *enm)
 
 void set_tile_flag(World *world, int x, int y, int flags)
 {
-     world->map[x / TILESIZE][y / TILESIZE].flags |= flags;
+    world->map[x / TILESIZE][y / TILESIZE].flags |= flags;
 }
 
 void init_player(World *world, Enemy *plrautosave)
 {
-  Enemy *plr = &world->plr;
-  if (plrautosave->id == NO_OWNER)
-  {
-    // this initializes the player the same way enemy 0 was initialized
-    *plr = world->enm[0];
-    plr->id = PLAYER_ID;
-    plr->former_id = PLAYER_ID;
-    plr->sprite = -1;
-    plr->shots = 1;
-    plr->health = 3;
-    plr->completetime = 0;
-    plr->rate = 7;
-    if ((world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
+    Enemy *plr = &world->plr;
+    if (plrautosave->id == NO_OWNER)
     {
-        plr->rate = 12;
+        // this initializes the player the same way enemy 0 was initialized
+        *plr = world->enm[0];
+        plr->id = PLAYER_ID;
+        plr->former_id = PLAYER_ID;
+        plr->sprite = -1;
+        plr->shots = 1;
+        plr->health = 3;
+        plr->completetime = 0;
+        plr->rate = 7;
+        if ((world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
+        {
+            plr->rate = 12;
+        }
+        plr->ammo = 15;
+        plr->gold = 0;
+        plr->hurts_monsters = 1;
     }
-    plr->ammo = 15;
-    plr->gold = 0;
-    plr->hurts_monsters = 1;
-  }
-  else
-  {
-    *plr = *plrautosave;
-  }
+    else
+    {
+        *plr = *plrautosave;
+    }
 }

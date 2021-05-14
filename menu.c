@@ -10,18 +10,23 @@ extern GameSettings game_settings;
 
 void init_new_game(Enemy *autosave, int *mission, int *game_modifiers, int game_mode)
 {
-    if (game_mode == 0) *game_modifiers = 0;
-    if (game_mode == 1) *game_modifiers = GAMEMODIFIER_BRUTAL;
-    if (game_mode == 2) *game_modifiers = GAMEMODIFIER_DOUBLED_SHOTS;
-    if (game_mode == 3) *game_modifiers = GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS;
-    if (game_mode == 4) *game_modifiers = GAMEMODIFIER_MULTIPLIED_GOLD;
-    
+    if (game_mode == 0)
+        *game_modifiers = 0;
+    if (game_mode == 1)
+        *game_modifiers = GAMEMODIFIER_BRUTAL;
+    if (game_mode == 2)
+        *game_modifiers = GAMEMODIFIER_DOUBLED_SHOTS;
+    if (game_mode == 3)
+        *game_modifiers = GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS;
+    if (game_mode == 4)
+        *game_modifiers = GAMEMODIFIER_MULTIPLIED_GOLD;
+
     *mission = 1;
     autosave->id = NO_OWNER;
 }
 
-int handle_menuchoice(int menuchoice, Enemy *autosave, 
-    int *mission, int *game_modifiers, int slot, int game_mode)
+int handle_menuchoice(int menuchoice, Enemy *autosave,
+                      int *mission, int *game_modifiers, int slot, int game_mode)
 {
     if (menuchoice == MENUOPT_NEW_GAME)
     {
@@ -117,7 +122,8 @@ void show_help(BITMAP *sprites)
                 }
                 clear_to_color(buf, 0);
                 line = 0;
-                if (!strcmp(cmd, "#doc-end") || key[KEY_ESC]) break;
+                if (!strcmp(cmd, "#doc-end") || key[KEY_ESC])
+                    break;
             }
         }
         else
@@ -191,35 +197,45 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     while (!key[KEY_ENTER])
     {
         rectfill(buf, 200, 62, 340, 82, RED);
-        if (game_mode == 0) textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "normal");
-        if (game_mode == 1) textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "brutally hard");
-        if (game_mode == 2) textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "explosion madness");
-        if (game_mode == 3) textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "over power up");
-        if (game_mode == 4) textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "power up only");
-        
+        if (game_mode == 0)
+            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "normal");
+        if (game_mode == 1)
+            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "brutally hard");
+        if (game_mode == 2)
+            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "explosion madness");
+        if (game_mode == 3)
+            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "over power up");
+        if (game_mode == 4)
+            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "power up only");
+
         rectfill(buf, 200, 102, 230, 122, RED);
         textprintf_ex(buf, menufont, 210, 100, WHITE, -1, "%c", 'A' + slot);
         rectfill(buf, 235, 102, screen->w, 122, 0);
         if (current_slot_has_save)
         {
-         char game_mode_str[30];
-         if (current_slot_game_modifiers == 0) strcpy(game_mode_str, "normal");
-         if (current_slot_game_modifiers == GAMEMODIFIER_BRUTAL) strcpy(game_mode_str, "brutally hard");
-         if (current_slot_game_modifiers == GAMEMODIFIER_DOUBLED_SHOTS) strcpy(game_mode_str, "explosion madness");
-         if (current_slot_game_modifiers == (GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS)) strcpy(game_mode_str, "over power up");
-         if (current_slot_game_modifiers == GAMEMODIFIER_MULTIPLIED_GOLD) strcpy(game_mode_str, "power up only");
-         textprintf_ex(buf, menufont, 240, 101, WHITE, -1, "level: %d - mode: %s", current_slot_mission, game_mode_str);
+            char game_mode_str[30];
+            if (current_slot_game_modifiers == 0)
+                strcpy(game_mode_str, "normal");
+            if (current_slot_game_modifiers == GAMEMODIFIER_BRUTAL)
+                strcpy(game_mode_str, "brutally hard");
+            if (current_slot_game_modifiers == GAMEMODIFIER_DOUBLED_SHOTS)
+                strcpy(game_mode_str, "explosion madness");
+            if (current_slot_game_modifiers == (GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS))
+                strcpy(game_mode_str, "over power up");
+            if (current_slot_game_modifiers == GAMEMODIFIER_MULTIPLIED_GOLD)
+                strcpy(game_mode_str, "power up only");
+            textprintf_ex(buf, menufont, 240, 101, WHITE, -1, "level: %d - mode: %s", current_slot_mission, game_mode_str);
         }
         else
         {
-         textprintf_ex(buf, menufont, 240, 101, WHITE, -1, "(no save)");
+            textprintf_ex(buf, menufont, 240, 101, WHITE, -1, "(no save)");
         }
         if (ingame)
         {
             rectfill(buf, 200, 142, 230, 162, RED);
             textprintf_ex(buf, menufont, 210, 140, WHITE, -1, "%c", 'A' + slot);
         }
-        
+
         if (++flicker == 16)
             flicker = -16;
         circlefill(buf, 30, c * 40 + 70, abs(flicker / 2), makecol(abs(flicker * 8) + 50, 0, 0));

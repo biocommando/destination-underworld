@@ -6,7 +6,7 @@
 #include "predictableRandom.h"
 #include "iniRead.h"
 
-extern GameSettings game_settings; 
+extern GameSettings game_settings;
 
 int is_passable(World *world, int x, int y)
 {
@@ -140,7 +140,7 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
     for (int i = 0; i < num_shots; i++)
     {
         Bullet *bb = get_next_available_bullet(world);
-    
+
         if (dx != 0 || dy != 0)
         {
             bb->dx = randomized_bullet_direction(dx);
@@ -148,15 +148,17 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
         }
         else
             return 0;
-    
+
         bb->x = x;
         bb->y = y;
-    
+
         bb->owner_id = enm->id;
-    
+
         bb->hurts_flags = 0;
-        if (hurts_monsters) bb->hurts_flags |= BULLET_HURTS_MONSTERS;
-        if (enm != &world->plr && enm->turret != TURRET_TYPE_PLAYER) bb->hurts_flags |= BULLET_HURTS_PLAYER;
+        if (hurts_monsters)
+            bb->hurts_flags |= BULLET_HURTS_MONSTERS;
+        if (enm != &world->plr && enm->turret != TURRET_TYPE_PLAYER)
+            bb->hurts_flags |= BULLET_HURTS_PLAYER;
         bb->bullet_type = BULLET_TYPE_NORMAL;
     }
     return 1;
@@ -270,9 +272,9 @@ inline double random()
     return (double)(rand() % 1000) / 1000;
 }
 
-int comp_expl_circle(const void * elem1, const void * elem2)
+int comp_expl_circle(const void *elem1, const void *elem2)
 {
-    if (((struct explosion_circle*)elem1)->i > ((struct explosion_circle*)elem2)->i)
+    if (((struct explosion_circle *)elem1)->i > ((struct explosion_circle *)elem2)->i)
         return 1;
     return -1;
 }
@@ -292,7 +294,7 @@ void create_explosion(int x, int y, World *world)
     double scale = random() * 0.5 + 0.5;
     for (int i = 0; i < ex->circle_count; i++)
     {
-        struct explosion_circle* c = &ex->circles[i];
+        struct explosion_circle *c = &ex->circles[i];
         c->i = random() * 0.25 + 0.75;
         c->loc.x = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
         c->loc.y = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
@@ -412,8 +414,9 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     }
 
     int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
-    
-    if (difficulty == DIFFICULTY_BRUTAL) new_enemy->health++; 
+
+    if (difficulty == DIFFICULTY_BRUTAL)
+        new_enemy->health++;
 
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
@@ -466,10 +469,14 @@ int read_level(World *world, const char *mission_name, int room_to)
                 {
                     world->plr.x = x * TILESIZE + 15;
                     world->plr.y = y * TILESIZE + 15;
-                    if (world->plr.x < 0) world->plr.x = 0;
-                    if (world->plr.x >= 480) world->plr.x = 480 - 1;
-                    if (world->plr.y < 0) world->plr.y = 0;
-                    if (world->plr.y >= 360) world->plr.y = 360 - 1;
+                    if (world->plr.x < 0)
+                        world->plr.x = 0;
+                    if (world->plr.x >= 480)
+                        world->plr.x = 480 - 1;
+                    if (world->plr.y < 0)
+                        world->plr.y = 0;
+                    if (world->plr.y >= 360)
+                        world->plr.y = 360 - 1;
                 }
                 if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_to) // eka huone
                 {
@@ -497,7 +504,7 @@ int read_level(World *world, const char *mission_name, int room_to)
         char read_str[64];
         sscanf(buf, "%s", read_str);
 
-        if (!strcmp(read_str, "bossfight")) 
+        if (!strcmp(read_str, "bossfight"))
         {
             sscanf(buf, "%*s %s", read_str);
             sprintf(buf, ".\\dataloss\\%s", read_str);
@@ -511,7 +518,8 @@ int read_level(World *world, const char *mission_name, int room_to)
                 world->boss_fight = 1;
                 continue;
             }
-            else printf("No such file!\n");
+            else
+                printf("No such file!\n");
         }
     }
 
@@ -529,50 +537,50 @@ int read_level(World *world, const char *mission_name, int room_to)
 
 void create_cluster_explosion(World *w, double x0, double y0, int num_directions, int intensity, Enemy *enm)
 {
-  double half_dirs = num_directions / 2;
-  for (int i = 0; i < num_directions; i++)
-  {
-      double x = x0;
-      double y = y0;
-      double dx = sin(M_PI * i / half_dirs) * 0.5;
-      double dy = cos(M_PI * i / half_dirs) * 0.5;
-      for (int bidx = 0; bidx < intensity; bidx++)
-      {
-          x += dx * 0.66;
-          y += dy * 0.66;
-          shoot_one_shot_at_xy(x, y, dx, dy, enm, enm == &w->plr ? 1 : 0, w);
-      }
-  }
+    double half_dirs = num_directions / 2;
+    for (int i = 0; i < num_directions; i++)
+    {
+        double x = x0;
+        double y = y0;
+        double dx = sin(M_PI * i / half_dirs) * 0.5;
+        double dy = cos(M_PI * i / half_dirs) * 0.5;
+        for (int bidx = 0; bidx < intensity; bidx++)
+        {
+            x += dx * 0.66;
+            y += dy * 0.66;
+            shoot_one_shot_at_xy(x, y, dx, dy, enm, enm == &w->plr ? 1 : 0, w);
+        }
+    }
 }
 
 void change_room_if_at_exit_point(World *world, int mission)
 {
     if (check_flags_at(world, world->plr.x, world->plr.y, TILE_IS_EXIT_POINT) && world->plr.health > 0)
     {
-      int to_room = get_tile_at(world, world->plr.x, world->plr.y).data;
-      if (world->plr.roomid != to_room)
-      {
-        read_level(world, game_settings.missions[mission - 1].filename, to_room);
-        world->current_room = to_room;
-        for (int i = 0; i < BULLETCOUNT; i++)
+        int to_room = get_tile_at(world, world->plr.x, world->plr.y).data;
+        if (world->plr.roomid != to_room)
         {
-          world->bullets[i].owner_id = NO_OWNER;
+            read_level(world, game_settings.missions[mission - 1].filename, to_room);
+            world->current_room = to_room;
+            for (int i = 0; i < BULLETCOUNT; i++)
+            {
+                world->bullets[i].owner_id = NO_OWNER;
+            }
+            for (int i = 0; i < ENEMYCOUNT; i++)
+            {
+                if (world->enm[i].roomid == world->current_room &&
+                    world->enm[i].id == NO_OWNER && world->enm[i].former_id != NO_OWNER)
+                {
+                    set_tile_flag(world, world->enm[i].x, world->enm[i].y, TILE_IS_BLOOD_STAINED);
+                }
+            }
+            clear_visual_fx(world);
+            stop_bodyparts(world);
         }
-        for (int i = 0; i < ENEMYCOUNT; i++)
-        {
-          if (world->enm[i].roomid == world->current_room && 
-              world->enm[i].id == NO_OWNER && world->enm[i].former_id != NO_OWNER)
-          {
-             set_tile_flag(world, world->enm[i].x, world->enm[i].y, TILE_IS_BLOOD_STAINED);
-          }
-        }
-        clear_visual_fx(world);
-        stop_bodyparts(world);
-      }
     }
     else
     {
-      world->plr.roomid = world->current_room;
+        world->plr.roomid = world->current_room;
     }
 }
 

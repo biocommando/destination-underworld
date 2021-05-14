@@ -32,8 +32,8 @@ void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifi
     FILE *f = open_file_from_slot(slot, "r");
     if (!f)
     {
-       *has_save = 0;
-       return;
+        *has_save = 0;
+        return;
     }
     *has_save = 1;
     *mission = ini_read_int_value(f, "save_game", "mission");

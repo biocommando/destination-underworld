@@ -16,7 +16,7 @@ void draw_map(World *world, int col)
 {
     const int floor_base_col = 100; // 66
     const int shadow_base_col = floor_base_col - 44;
-    
+
     static int lava_fluctuations = 0;
     if (++lava_fluctuations == 150)
         lava_fluctuations = -149;
@@ -60,24 +60,24 @@ void draw_map(World *world, int col)
                     }
                     rectfill(world->buf, (x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawn_color);
                 }
-                
+
                 if (ns_check_flags_at(world, x, y, TILE_IS_BLOOD_STAINED))
                 {
-                   for(int j = 0; j < 10; j++)
-                   {
-                       int x_pos = x * TILESIZE + HALFTILESIZE;
-                       int y_pos = y * TILESIZE + HALFTILESIZE;
-                       int dx = 3 - (x * 13 + y * 7 + j * 3 + world->current_room) % 7;
-                       int dy = 3 - (j * 13 + x * 7 + y * 3 + world->current_room) % 7;
-                       for (int i = 0; i < 4; i++)
-                       {
-                          x_pos += dx;
-                          y_pos += dy;
-                          rectfill(world->buf, x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, makecol(floorcol + 30 - i * 5, 0, 0));
-                       }
-                   }
+                    for (int j = 0; j < 10; j++)
+                    {
+                        int x_pos = x * TILESIZE + HALFTILESIZE;
+                        int y_pos = y * TILESIZE + HALFTILESIZE;
+                        int dx = 3 - (x * 13 + y * 7 + j * 3 + world->current_room) % 7;
+                        int dy = 3 - (j * 13 + x * 7 + y * 3 + world->current_room) % 7;
+                        for (int i = 0; i < 4; i++)
+                        {
+                            x_pos += dx;
+                            y_pos += dy;
+                            rectfill(world->buf, x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, makecol(floorcol + 30 - i * 5, 0, 0));
+                        }
+                    }
                 }
-                
+
                 if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_LEVEL))
                 {
                     for (int i = 0; i < 5; i++)
@@ -155,11 +155,11 @@ void draw_player_legend(World *world)
         {
             if (world->plr.reload == 0)
             {
-             masked_blit(world->spr, world->buf, 67, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
+                masked_blit(world->spr, world->buf, 67, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
             }
             else
             {
-             masked_blit(world->spr, world->buf, 73, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
+                masked_blit(world->spr, world->buf, 73, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
             }
         }
 
@@ -191,7 +191,7 @@ void move_and_draw_body_parts(World *world)
                             masked_blit(world->spr, world->buf, 334 + rand() % 18, 129 + rand() % 18,
                                         (int)bodypart->x - blood_trail_idx * bodypart->dx - 8 + rand() % 4, (int)bodypart->y - blood_trail_idx * bodypart->dx - 8 + rand() % 4, 2, 2);
                         }
-                        
+
                         bodypart->x += bodypart->dx;
                         if (get_wall_type_at(world, bodypart->x, bodypart->y))
                         {
@@ -253,17 +253,21 @@ int progress_and_draw_explosions(World *world)
         {
             struct explosion_circle *c = &ex->circles[j];
 
-            while (c->loc.x + c->r > circle_max_radius * 2 - 1) c->loc.x -= 1;
-            while (c->loc.x - c->r < 0) c->loc.x += 1;
-            while (c->loc.y + c->r > circle_max_radius * 2 - 1) c->loc.y -= 1;
-            while (c->loc.y - c->r < 0) c->loc.y += 1;
+            while (c->loc.x + c->r > circle_max_radius * 2 - 1)
+                c->loc.x -= 1;
+            while (c->loc.x - c->r < 0)
+                c->loc.x += 1;
+            while (c->loc.y + c->r > circle_max_radius * 2 - 1)
+                c->loc.y -= 1;
+            while (c->loc.y - c->r < 0)
+                c->loc.y += 1;
 
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i * .9, c->r);
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i, c->r * .8);
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i * 1.1, c->r * .7);
 
             // Fade
-            
+
             c->loc.x = c->loc.x > circle_max_radius / 2 ? c->loc.x + random() * 3 : c->loc.x - random() * 3;
             c->loc.y = c->loc.y > circle_max_radius / 2 ? c->loc.y + random() * 3 : c->loc.y - random() * 3;
             double multiplier_factor = log(sqrt(j) + 2) / 10;
@@ -280,7 +284,6 @@ int progress_and_draw_explosions(World *world)
     }
     return vibrations;
 }
-
 
 void progress_and_draw_sparkles(World *world)
 {
@@ -315,9 +318,9 @@ void display_level_info(World *world, int mission, int mission_count, FONT *font
 
 void show_gold_hint(World *world, int number)
 {
-  sprintf(world->hint.text, "- %d", number);
-  world->hint.loc.x = world->plr.x - 15;
-  world->hint.loc.y = world->plr.y - 30;
-  world->hint.dim = 4;
-  world->hint.time_shows = 60;
+    sprintf(world->hint.text, "- %d", number);
+    world->hint.loc.x = world->plr.x - 15;
+    world->hint.loc.y = world->plr.y - 30;
+    world->hint.dim = 4;
+    world->hint.time_shows = 60;
 }

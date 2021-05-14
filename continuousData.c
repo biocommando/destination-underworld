@@ -4,7 +4,7 @@ int read_continuous_data_buffer(ContinuousData *buffer, int sz, FILE *f)
 {
     char s[256];
     int i = 0;
-    while(!feof(f) && i < sz)
+    while (!feof(f) && i < sz)
     {
         fgets(s, 256, f);
         int a;
@@ -43,13 +43,14 @@ void produce_and_write_continuous_data(ContinuousData *buffer, int sz, int *idx,
     }
 }
 
-int read_and_process_continuous_data(ContinuousData *buffer, int *sz, int *idx, FILE *f, long time_stamp, 
-    void (*callback)(ContinuousData*,void*), void *callback_arg)
+int read_and_process_continuous_data(ContinuousData *buffer, int *sz, int *idx, FILE *f, long time_stamp,
+                                     void (*callback)(ContinuousData *, void *), void *callback_arg)
 {
     if (*idx == -1)
     {
         *sz = read_continuous_data_buffer(buffer, *sz, f);
-        if (*sz == 0) return 0;
+        if (*sz == 0)
+            return 0;
         *idx = 0;
     }
     while (buffer[*idx].time_stamp == time_stamp)
@@ -59,7 +60,8 @@ int read_and_process_continuous_data(ContinuousData *buffer, int *sz, int *idx, 
         if (*idx == *sz)
         {
             *sz = read_continuous_data_buffer(buffer, *sz, f);
-            if (*sz == 0) return 0;
+            if (*sz == 0)
+                return 0;
             *idx = 0;
             return read_and_process_continuous_data(buffer, sz, idx, f, time_stamp, callback, callback_arg);
         }
