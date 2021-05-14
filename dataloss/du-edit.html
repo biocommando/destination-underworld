@@ -55,6 +55,10 @@
 </head>
 
 <body>
+    <button onclick="clearMap(),renderMap()">New</button>
+    <button onclick="api('save')">Save</button>
+    <button onclick="api('load')">Load</button>
+    <hr />
     Mode:
     <select id="edit-mode">
         <option value="add">Add</option>
@@ -235,19 +239,27 @@
             renderMap();
         };
 
-        const load = () => {
+        const loadFromStr = str => {
             room = 1;
             document.getElementById('room').options[0].selected = true;
-            map = deserializeTileMap(document.getElementById('level-code').value);
+            map = deserializeTileMap(str);
             renderMap();
         };
-
-        const save = () => {
-            const el = document.getElementById('level-code');
+        
+        const load = () => {
+            loadFromStr(document.getElementById('level-code').value);
+        };
+        
+        const getSerialized = () => {
             const rooms = Array(8).fill().map((a, i) => i + 1);
             const emptyRooms = rooms.filter(roomNumber => !map.objects.some(o => o.room === roomNumber && o.id !== objectTypes[0].id));
             map.objects = map.objects.filter(o => emptyRooms.indexOf(o.room) === -1);
-            el.value = serializeTileMap(map);
+            return serializeTileMap(map);
+        }
+
+        const save = () => {
+            const el = document.getElementById('level-code');
+            el.value = getSerialized();
             el.select();
             changeRoom(room);
         };
@@ -275,6 +287,20 @@
         changeRoom(1);
         renderMap();
 
+        let mission = ''
+
+        function api(cmd) {
+            mission = prompt('Mission? (e.g. 1 or 1-mode-6)', mission)
+            if (!mission) return
+            if (cmd === 'save') {
+                fetch('/api/save/' + mission, { method: 'post', body: getSerialized().replace(/\n/g, '\r\n') })
+                    .then(() => alert('saved!'))
+            } else if (cmd === 'load') {
+                fetch('/api/load/' + mission).then(x => x.text()).then(t => {
+                    loadFromStr(t.replace(/\r\n/g, '\n'))
+                })
+            }
+        }
     </script>
 </body>
 

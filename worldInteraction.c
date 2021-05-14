@@ -257,9 +257,10 @@ void bounce_body_parts(int x, int y, World *world)
             if (distance < 8100) // 90^2
             {
                 distance = sqrt(distance) + 1; // +1 to ensure non-zero divider
-                bp->velocity = 250 / distance;
+                bp->velocity = 250 / (distance + rand() % 50);
 
-                ilimit(&bp->velocity, 30);
+                //ilimit(&bp->velocity, 30);
+                bp->velocity = bp->velocity > 30 ? 30 : bp->velocity;
 
                 bp->dx = (bp->x - x) / distance;
                 bp->dy = (bp->y - y) / distance;
@@ -529,6 +530,7 @@ int read_level(World *world, int mission, int room_to)
         }
         else if (!strcmp(read_str, "name"))
         {
+            metadata_count--;
             fgets(buf, 64, f);
             buf[strlen(buf) - 1] = 0;
             strcpy(world->mission_display_name, buf);
@@ -541,6 +543,7 @@ int read_level(World *world, int mission, int room_to)
                 world->story_after_mission_lines > 10 ? 10 : world->story_after_mission_lines;
             for (int i = 0; i < world->story_after_mission_lines; i++)
             {
+                metadata_count--;
                 fgets(buf, 61, f);
                 buf[strlen(buf) - 1] = 0;
                 strcpy(world->story_after_mission[i], buf);

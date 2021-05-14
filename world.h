@@ -17,7 +17,7 @@ struct gamedata
 typedef struct
 {
     int exists;
-    int velocity;
+    double velocity;
     int anim;
     int type;
     double x;

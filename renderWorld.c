@@ -182,14 +182,18 @@ void move_and_draw_body_parts(World *world)
             BodyPart *bodypart = &world->enm[x].bodyparts[j];
             if (bodypart->exists && world->enm[x].roomid == world->current_room)
             {
-                if (bodypart->velocity > 0)
+                if (bodypart->velocity > 0.7)
                 {
                     for (int travel_amt = bodypart->velocity; travel_amt > 0; travel_amt--)
                     {
-                        for (int blood_trail_idx = 1; blood_trail_idx <= 3; blood_trail_idx++)
+                        for (int blood_trail_idx = 0; blood_trail_idx <= 2; blood_trail_idx++)
                         {
+                            /*masked_blit(world->spr, world->buf, 336, 150 + (3 - blood_trail_idx) * 7,
+                                        bodypart->x - bodypart->dx * 4 * blood_trail_idx,
+                                        bodypart->y - bodypart->dy * 4 * blood_trail_idx,
+                                        7, 7);*/
                             masked_blit(world->spr, world->buf, 334 + rand() % 18, 129 + rand() % 18,
-                                        (int)bodypart->x - blood_trail_idx * bodypart->dx - 8 + rand() % 4, (int)bodypart->y - blood_trail_idx * bodypart->dx - 8 + rand() % 4, 2, 2);
+                                        (int)bodypart->x - 2 * blood_trail_idx * bodypart->dx, (int)bodypart->y - 2 * blood_trail_idx * bodypart->dy, 2, 2);
                         }
 
                         bodypart->x += bodypart->dx;
@@ -204,8 +208,10 @@ void move_and_draw_body_parts(World *world)
                         }
                     }
 
-                    bodypart->velocity--;
-                    bonesturn = 1;
+                    const double friction = 0.94 - (j + rand() % 5) * 0.003;
+
+                    bodypart->velocity *= friction;
+                    bonesturn = bodypart->velocity > 1;
                 }
 
                 if (bodypart->anim == 4)
@@ -276,8 +282,7 @@ int progress_and_draw_explosions(World *world)
             c->r *= intensity_multiplier;
         }
 
-        ex->phase += 8;
-        if (ex->phase >= 240)
+        if (++ex->phase >= 30)
         {
             ex->exists = 0;
         }
@@ -313,14 +318,16 @@ void display_level_info(World *world, int mission, int mission_count, FONT *font
     int y = 5;
     textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Level '%s' cleared!", world->mission_display_name);
     y += 15;
-    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Now entering level %d / %d.", mission + 1, mission_count);
+    if (mission < mission_count)
+        textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Now entering level %d / %d.", mission + 1, mission_count);
+    y += 15;
+    rectfill(world->buf, 0, y - 5, world->buf->w, y + 15 * world->story_after_mission_lines - 5, GRAY(20));
     for (int i = 0; i < world->story_after_mission_lines; i++)
     {
+        textprintf_ex(world->buf, font, 5, y, GRAY(140), -1, "%s", world->story_after_mission[i]);
         y += 15;
-        textprintf_ex(world->buf, font, 5, y, GRAY(120), -1, "%s", world->story_after_mission[i]);
     }
-    y += 15 * 3;
-    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Press enter to continue!");
+    textprintf_ex(world->buf, font, 5, world->buf->h - 15, GRAY(200), -1, "Press enter to continue!");
     stretch_blit(world->buf, screen, 0, 0, 480, 360, 0, 0, screen->w, screen->h);
 }
 
