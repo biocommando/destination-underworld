@@ -2,8 +2,15 @@
 # #color <red> <green> <blue>
 # #margin <left margin>
 # #image <sprite x> <sprite y> <width> <height> <screen x> <screen y>
+# #rect <x> <y> <width> <height> <red> <green> <blue>
 # #page-end
 # #doc-end
+# #to-line <line number 0-29>
+
+############################
+# page 1
+
+#to-line 0
 #color 255 0 0
 Controls
 #color 127 127 255
@@ -29,23 +36,22 @@ The goal of each level is to reach the exit portal.
 Shooting at the enemies requires mana that is indicated by
 the yellow bar next to the player. Each killed enemy grants
 you a boost in mana and health. Stronger enemies (imps, aliens
-and turrets) will also give you "gold" that is indicated by a
-number below the fire mode indicator.
+and turrets) will also give you a soul. The amount of souls in
+possession is indicated by a number below the fire mode indicator.
 
 The enemies generally don't hurt other enemies but the enemy turrets
 are an exception.
 
-When a level is changed the remaining player gold is capped at 5
-and the remainder is used for maxing the player's health (player
-health is also carried from level to another, though it's always
+When a level changes the remaining player souls is capped at 5
+and the remainder is used for maxing out the player's health (player
+health is also carried over from level to another, though it's always
 at least 3).
-
-
+#to-line 29
 #color 40 40 160
-Press space to continue
+Press space to continue or esc to return to menu
 
 # Draw player reference
-#image 0 0 23 30 540 230
+#image 0 0 23 29 540 230
 #image 67 0 6 3 565 230 
 #image 67 0 6 3 565 233 
 #image 67 0 6 3 565 236 
@@ -57,6 +63,11 @@ Press space to continue
 #image 81 196 3 6 534 260
 
 #page-end
+
+#################################
+#page 2
+
+#to-line 0
 #color 255 0 0
 Game Modes
 #color 255 127 127
@@ -66,18 +77,33 @@ NORMAL
 Normal gameplay.
 Power up specs:
 #margin 50
+#color 255 255 127
 Heal
-- cost: 1
-- effect: +3 health (capped at 6)
+#margin 70
+#color 127 127 255
+Cost:   1 soul
+Effect: Gives +3 health (capped at 6)
+#margin 50
+#color 255 255 127
 Shield
-- cost: 2
-- effect: guards from one shot, releases explosion on hit
+#margin 70
+#color 127 127 255
+Cost:   2 souls
+Effect: Guards from one shot, releases explosion on hit
+#margin 50
+#color 255 255 127
 Turret
-- cost: 3
-- effect: releases a turret that shoots fireballs into each direction
+#margin 70
+#color 127 127 255
+Cost:   3 souls
+Effect: Releases a turret that shoots fireballs into each direction
+#margin 50
+#color 255 255 127
 Torrent of Fire
-- cost: 6
-- effect: shoots projectile that explodes into a torrent of fire
+#margin 70
+#color 127 127 255
+Cost:   6 souls
+Effect: Shoots projectile that explodes into a torrent of fire
 #margin 5
 #color 255 127 127
 BRUTALLY HARD
@@ -107,7 +133,181 @@ POWER UP ONLY
 Player does not regenerate health or mana. Player has 40 gold initially
 at the start of each level.
 #margin 5
-
+#to-line 29
 #color 40 40 160
-Press space to continue
+Press space to continue or esc to return to menu
+#page-end
+
+########################
+# page 3
+
+#to-line 0
+#color 255 0 0
+Enemy Profiles
+#color 255 127 127
+Common Goblin (lat. Communis Lemures)
+#image 0 29 23 29 10 35
+#margin 40
+#color 255 255 127
+Health: 2, Fire rate: 1.6 / sec, Moves slow
+#color 127 127 255
+Common golbins dwell near the surface and thus sometimes make appearances
+in folklore. Relatively easy to kill. Dangerous in large groups, though.
+
+#margin 5
+#color 255 127 127
+Ancient Protector
+#image 0 58 23 29 10 115
+#margin 40
+#color 255 255 127
+Health: 3, Fire rate: 2.0 / sec, Moves slow
+#color 127 127 255
+Ancient Protectors were given the mission to protect the Ancient Evil
+Places in the Ancient Days. Some still do, others have found better
+life at protecting places like tax havens and the Vatican.
+Significantly, or slightly, more dangerous than common goblins,
+depending on your viewpoint.
+
+#margin 5
+#color 255 127 127
+Imp
+#image 0 87 23 29 10 243
+#margin 40
+#color 255 255 127
+Health: 5, Fire rate: 2.7 / sec, Moves fast, Possesses a soul
+#color 127 127 255
+In the modern godless times, imps have become more busy at boasting about
+themselves than actually protecting the core values of Hell which has also
+lead to this situation where it was possible for a common magician to
+invade Hell. Their combat skills may be rusty but they're still very much
+lethal and their fast movement speed makes their charges annoying to evade.
+
+#margin 5
+#color 255 127 127
+Extraterrestial Alien
+#image 0 116 23 29 10 371
+#margin 40
+#color 255 255 127
+Health: 6, Fire rate: 4.0 / sec, Moves fast, Possesses a soul
+#color 127 127 255
+In 1950's a specimen from the Area 51 escaped and colonialized Hell. It is
+unknown whether the aliens and other hell-dwellers are allied or if the
+aliens are just protecting their homes. Nevertheless, their position
+makes them the most motivated fighters and they should be approached with
+extreme caution.
+#to-line 29
+#margin 5
+#color 40 40 160
+Press space to continue or esc to return to menu
+#page-end
+
+########################
+# page 4
+
+#to-line 0
+#color 255 0 0
+Enemy Profiles (cont.)
+#color 255 127 127
+Alien Defensive Turret UF-0 mk II
+#rect 7 33 27 33 66 66 66
+#image 0 145 23 29 10 35
+#margin 40
+#color 255 255 127
+Health: 8, Fire rate: 8.0 / sec, Stationary, Possesses a soul
+#color 127 127 255
+The Unified Front 0 defensive turret is the aliens' latest development in
+defensive technology. The extreme rate of fire comes with an expense,
+though. The flashing of fireballs is so blinding for the shooter that they
+can't really tell the enemies apart from their own. No matter how
+furiously they try to defend their lines, the turrets often do more damage
+to their own than help them in the fight. It is rumoured that the up-coming
+UF-0 mk III will fix the flashing issue but for now, the design flaw can
+be used as a tactical advantage.
+
+#margin 5
+#color 255 127 127
+Arch Evil
+#image 0 174 23 29 10 211
+#margin 40
+#color 255 255 127
+Health: ?, Fire rate: ??? / sec
+#color 127 127 255
+The absolute evil, the most priviledged creature in the deepest depths of
+Hell is a naked white male. Who could have guessed? Not much is known
+about him. Does he even acknowledge his own priviledge? Anyway, your
+ultimate goal is to destroy him. Shouldn't be too hard to argue why
+nowadays.
+
+#to-line 29
+#margin 5
+#color 40 40 160
+Press space to continue or esc to return to menu
+
+
+#page-end
+
+########################
+# page 5
+
+#to-line 0
+#color 255 0 0
+Story
+#color 255 255 127
+Every game should have a story, right? And pretend that it's a result of
+countless sleepless nights' worth of creative struggle, and totally n o t
+just some gringy cliche-fest written in 5 minutes just before the release.
+
+Ok, well, here you'll have it:
+
+#color 127 127 255
+You are teenager from a middle-class family who has just finished watching
+the entirety of SUPERNATURAL. Inspired by the series, you think that it
+would be super cool (although just having watched the series you should
+acknowledge how b a d the idea is) to conjure the Devil.
+
+You follow one of the rituals you have found online. Against your
+exceptations the ritual actually works. Kind of. Your soul is projected
+into the mind of a cursed magician who is stuck in Hell since something
+like 1850 or whenever conjuring spirits was a cool passtime last time.
+
+You want to end the magician's torment by executing an all-out one-man
+assault into the most critical structures of Hell, through the cursed
+magician's soul, of course.
+
+But if you'd remember the show, you'd know that destroying Hell won't
+result in anything that would even remotely make sense. There's a slight
+change that the magician is freed from his pain. Most importantly though,
+you just want to have fun.
+
+Stop reading already and go kill some demons, you bastard.
+
+#to-line 29
+#margin 5
+#color 40 40 160
+Press space to continue or esc to return to menu
+#page-end
+
+
+########################
+# page 6
+
+#to-line 0
+#color 255 0 0
+Credits
+#color 127 127 255
+The game is created by ME, Joonas Salonpaa. I've been developing the game
+on and off since 2011. Not that it would show in anything but in the
+absolutely sadistic game difficulty.
+
+The game has been developed in C using the now-ancient Allegro 4.2.2
+game development library. The codebase is still, after trying to clean it
+up for release, quite messy and right out bad quality and the fact that it's
+based on even older game engine prototypes shows. Anyway, the code is
+available at https://github.com/biocommando/destination-underworld
+and is licensed with MIT license.
+
+#to-line 29
+#margin 5
+#color 40 40 160
+Press space to continue or esc to return to menu
 #doc-end

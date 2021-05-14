@@ -93,21 +93,31 @@ void show_help(BITMAP *sprites)
                 sscanf(s, "%*s %d %d %d %d %d %d", &sx, &sy, &w, &h, &x, &y);
                 masked_blit(sprites, buf, sx, sy, x, y, w, h);
             }
+            if (!strcmp(cmd, "#rect"))
+            {
+                int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0;
+                sscanf(s, "%*s %d %d %d %d %d %d %d", &x, &y, &w, &h, &r, &g, &b);
+                rectfill(buf, x, y, x + w, y + h, makecol(r, g, b));
+            }
             if (!strcmp(cmd, "#margin"))
             {
                 sscanf(s, "%*s %d", &margin);
             }
+            if (!strcmp(cmd, "#to-line"))
+            {
+                sscanf(s, "%*s %d", &line);
+            }
             if (!strcmp(cmd, "#page-end") || !strcmp(cmd, "#doc-end"))
             {
                 stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
-                chunkrest(500);
-                while (!key[KEY_SPACE])
+                chunkrest(300);
+                while (!key[KEY_SPACE] && !key[KEY_ESC])
                 {
                     chunkrest(50);
                 }
                 clear_to_color(buf, 0);
                 line = 0;
-                if (!strcmp(cmd, "#doc-end")) break;
+                if (!strcmp(cmd, "#doc-end") || key[KEY_ESC]) break;
             }
         }
         else
