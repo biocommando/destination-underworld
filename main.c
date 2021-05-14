@@ -131,7 +131,7 @@ void enemy_logic(World *world)
       if (world->plr.health > 0)
       {
         int is_boss = enm == world->boss;
-        if (enm->turret != 2) // not a (player's) turret
+        if (enm->turret != TURRET_TYPE_PLAYER) // not a (player's) turret
         {
           Coordinates aim_at = {world->plr.x, world->plr.y};
           int aim_window = 2 + (enm->turret || enm == world->boss ? 5 : 0);
@@ -188,7 +188,7 @@ void enemy_logic(World *world)
             for (int m = 0; m < world->boss_fight_config.speed; m++)
               move_enemy(enm, world);
           }
-          else if (!enm->turret)
+          else if (enm->turret == TURRET_TYPE_NONE)
           {
             if (enm->fast)
             {
@@ -425,7 +425,7 @@ void bullet_logic(World *world)
         for (int j = 0; j < ENEMYCOUNT; j++)
         {
           Enemy *enm = &world->enm[j];
-          if (enm->id == NO_OWNER || enm->turret == 2 || enm->roomid != world->current_room)
+          if (enm->id == NO_OWNER || enm->turret == TURRET_TYPE_PLAYER || enm->roomid != world->current_room)
             continue;
 
           if (bullet_hit(world->enm + j, world->bullets + i))

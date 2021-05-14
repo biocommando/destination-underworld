@@ -156,7 +156,7 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
     
         bb->hurts_flags = 0;
         if (hurts_monsters) bb->hurts_flags |= BULLET_HURTS_MONSTERS;
-        if (enm != &world->plr && enm->turret < 2) bb->hurts_flags |= BULLET_HURTS_PLAYER;
+        if (enm != &world->plr && enm->turret != TURRET_TYPE_PLAYER) bb->hurts_flags |= BULLET_HURTS_PLAYER;
         bb->bullet_type = BULLET_TYPE_NORMAL;
     }
     return 1;
@@ -394,7 +394,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
 
     if (type < 5)
     {
-        new_enemy->turret = world->enemy_configs[type].turret;
+        new_enemy->turret = world->enemy_configs[type].turret ? TURRET_TYPE_ENEMY : TURRET_TYPE_NONE;
         new_enemy->health = world->enemy_configs[type].health;
         new_enemy->rate = world->enemy_configs[type].rate;
         new_enemy->fast = world->enemy_configs[type].fast;

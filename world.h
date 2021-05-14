@@ -26,6 +26,10 @@ typedef struct
         double dy;
 } BodyPart;
 
+enum TurretType {
+        TURRET_TYPE_NONE, TURRET_TYPE_ENEMY, TURRET_TYPE_PLAYER
+};
+
 typedef struct
 {
         int x;
@@ -46,7 +50,7 @@ typedef struct
         int roomid;
         long completetime;
         int fast;
-        int turret;
+        enum TurretType turret;
         int hurts_monsters;
         int sprite;
         BodyPart bodyparts[BODYPARTCOUNT];

@@ -98,6 +98,7 @@ void draw_map(World *world, int col)
             {
                 int colcalc = lev == 0 ? 165 : (15 - lev) * 10;
                 colcalc += y * 10;
+                colcalc = colcalc > 255 ? 255 : colcalc;
                 int col_wall = 0;
                 if (col == 1)
                 {

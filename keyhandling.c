@@ -96,7 +96,7 @@ Enemy *create_turret(World *world)
   enm->dy = world->plr.dy;
   enm->health = 20;
   enm->gold = 0;
-  enm->turret = 2;
+  enm->turret = TURRET_TYPE_PLAYER;
   enm->hurts_monsters = 1;
   enm->id += 1000;
   enm->former_id += 1000;
