@@ -12,7 +12,7 @@ int bullet_hit(Enemy *enm, Bullet *bb);
 int sees_each_other(Enemy *e1, Enemy *e2, World *world);
 void create_explosion(int x, int y, World *world);
 void create_sparkles(int x, int y, int count, World *world);
-int read_level(World *world, const char *mission_name, int room_to);
+int read_level(World *world, int mission, int room_to);
 Enemy *get_next_available_enemy(World *world, int *index);
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world);
 Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world);

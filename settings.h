@@ -3,14 +3,8 @@
 
 typedef struct
 {
-  char name[64], filename[256];
-} NameToFilenameMapping;
-
-typedef struct
-{
   char mission_pack[64];
   int mission_count;
-  NameToFilenameMapping *missions;
   int screen_width;
   int screen_height;
   int screen_mode;

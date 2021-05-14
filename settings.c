@@ -10,14 +10,6 @@ void read_settings()
   FILE *f = fopen(".\\dataloss\\settings.ini", "r");
   ini_read_string_value(f, "general", "mission-pack", game_settings.mission_pack);
   game_settings.mission_count = ini_read_int_value(f, game_settings.mission_pack, "mission-count");
-  game_settings.missions = (NameToFilenameMapping *)malloc(game_settings.mission_count * sizeof(NameToFilenameMapping));
-  for (int i = 0; i < game_settings.mission_count; i++)
-  {
-    char key_to_read[64];
-    sprintf(game_settings.missions[i].filename, ".\\dataloss\\%s\\mission%d", game_settings.mission_pack, i + 1);
-    sprintf(key_to_read, "mission%d-name", i + 1);
-    ini_read_string_value(f, game_settings.mission_pack, key_to_read, game_settings.missions[i].name);
-  }
   game_settings.custom_resources = ini_read_int_value(f, game_settings.mission_pack, "custom-resources");
 
   game_settings.screen_width = ini_read_int_value(f, "graphics", "width");

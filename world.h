@@ -190,6 +190,7 @@ typedef struct
     struct hint_text hint;
     struct powerup_status powerups;
     int playcount;
+    char mission_display_name[64];
 } World;
 
 void clear_visual_fx(World *);

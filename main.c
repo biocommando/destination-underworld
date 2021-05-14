@@ -98,7 +98,6 @@ int main(int argc, char **argv)
   if (record_input_file)
     fclose(record_input_file);
 
-  free(game_settings.missions);
   close_mp3_file(mp3);
   destroy_font(GameFont);
   set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
@@ -528,8 +527,6 @@ int game(int mission, int *game_modifiers)
   int fly_in_text_x = world.buf->w;
   int boss_fight_frame_count = 0;
   world.boss_want_to_shoot = 0;
-  char fly_in_text[64];
-  strcpy(fly_in_text, game_settings.missions[mission - 1].name);
 
   world.current_room = 1;
 
@@ -563,7 +560,8 @@ int game(int mission, int *game_modifiers)
   }
   long time_stamp = 0;
 
-  read_level(&world, game_settings.missions[mission - 1].filename, 1);
+  read_level(&world, mission, 1);
+
   if (world.boss_fight)
   {
     trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
@@ -830,7 +828,7 @@ int game(int mission, int *game_modifiers)
 
     if (fly_in_text_x > -400)
     {
-      textprintf_ex(world.buf, font, fly_in_text_x, 170, GRAY(255), -1, fly_in_text);
+      textprintf_ex(world.buf, font, fly_in_text_x, 170, GRAY(255), -1, world.mission_display_name);
       if (fly_in_text_x > world.buf->w / 8 * 3 && fly_in_text_x < world.buf->w / 8 * 5)
       {
         fly_in_text_x -= 4;

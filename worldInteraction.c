@@ -426,7 +426,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     return new_enemy;
 }
 
-int read_level(World *world, const char *mission_name, int room_to)
+int read_level(World *world, int mission, int room_to)
 {
     char buf[256];
 
@@ -435,10 +435,13 @@ int read_level(World *world, const char *mission_name, int room_to)
     clear_map(world);
 
     world->boss_fight = 0;
+    char mission_name[256];
+    sprintf(mission_name, ".\\dataloss\\%s\\mission%d", game_settings.mission_pack, mission);
+
+    sprintf(world->mission_display_name, "Mission %d", mission);
 
     char special_filename[256];
     sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
-    //printf("trying to open %s\n", special_filename);
     FILE *f = fopen(special_filename, "r");
     if (f == NULL)
     {
@@ -521,6 +524,11 @@ int read_level(World *world, const char *mission_name, int room_to)
             else
                 printf("No such file!\n");
         }
+        else if (!strcmp(read_str, "name"))
+        {
+            fgets(buf, 64, f);
+            strcpy(world->mission_display_name, buf);
+        }
     }
 
     fclose(f);
@@ -560,7 +568,7 @@ void change_room_if_at_exit_point(World *world, int mission)
         int to_room = get_tile_at(world, world->plr.x, world->plr.y).data;
         if (world->plr.roomid != to_room)
         {
-            read_level(world, game_settings.missions[mission - 1].filename, to_room);
+            read_level(world, mission, to_room);
             world->current_room = to_room;
             for (int i = 0; i < BULLETCOUNT; i++)
             {
