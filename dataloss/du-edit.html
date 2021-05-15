@@ -90,12 +90,36 @@
     <textarea id="metadata" rows="5" cols="100"></textarea>
     <button onclick="storeMetadata()">Store metadata</button>
     <br />
-    <textarea id="level-code" rows="10" cols="100"></textarea>
-    <div>
-        <button onclick="save()">save</button>
-        <button onclick="load()">load</button>
-    </div>
+    <pre>
+Metadata reference:
+
+<b>Bossfight:</b>
+bossfight [ini filename]
+
+<b>Level name:</b>
+name
+[level name]
+
+<b>Story (displayed after level):</b>
+story [number of lines (1 ... 10)]
+[story line 1]
+[story line 2]
+[...]
+
+<i>Note: story lines must not exceed 60 characters!</i>
+
+<b>Par time:</b>
+par [game modifiers] [time in seconds (decimal)]
+    </pre>
     <button onclick="toggleCoordinates()">Toggle coordinates</button>
+    <br />
+    <div id="standalone-edits">
+        <textarea id="level-code" rows="10" cols="100"></textarea>
+        <div>
+            <button onclick="save()">save</button>
+            <button onclick="load()">load</button>
+        </div>
+    </div>
     <script src="tilemap-serialization.js"></script>
     <script>
         let showCoords = false
@@ -301,6 +325,11 @@
                 })
             }
         }
+        
+        // Hide standalone edit controls when server backend is used
+        fetch('/').then(x => {
+            document.getElementById('standalone-edits').innerHTML = ''
+        })
     </script>
 </body>
 
