@@ -736,7 +736,12 @@ int game(int mission, int *game_modifiers)
 
       if (record_mode == RECORD_MODE_RECORD)
       {
-        long new_key_press_mask = (key[KEY_LEFT] ? 1 : 0) | (key[KEY_RIGHT] ? 2 : 0) | (key[KEY_UP] ? 4 : 0) | (key[KEY_DOWN] ? 8 : 0) | (key[KEY_SPACE] ? 16 : 0) | (key[KEY_X] ? 32 : 0) | (key[KEY_Z] ? 64 : 0) | (key[KEY_A] ? 128 : 0) | (key[KEY_S] ? 256 : 0) | (key[KEY_D] ? 512 : 0) | (key[KEY_F] ? 1024 : 0);
+        long new_key_press_mask = (key_left ? 1 : 0) | (key_right ? 2 : 0) |
+                                  (key_up ? 4 : 0) | (key_down ? 8 : 0) |
+                                  (key_space ? 16 : 0) | (key_x ? 32 : 0) |
+                                  (key_z ? 64 : 0) | (key_a ? 128 : 0) |
+                                  (key_s ? 256 : 0) | (key_d ? 512 : 0) |
+                                  (key_f ? 1024 : 0);
         if (new_key_press_mask != key_press_mask)
         {
           key_press_mask = new_key_press_mask;
