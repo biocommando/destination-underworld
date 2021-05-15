@@ -311,12 +311,15 @@ void progress_and_draw_sparkles(World *world)
     }
 }
 
-void display_level_info(World *world, int mission, int mission_count, FONT *font)
+void display_level_info(World *world, int mission, int mission_count, FONT *font, long completetime)
 {
     clear_to_color(world->buf, 0);
     stretch_blit(world->spr, world->buf, 100, 0, 214, 107, 0, world->buf->h - 107 * 2, 214 * 2, 107 * 2);
     int y = 5;
     textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Level '%s' cleared!", world->mission_display_name);
+    y += 15;
+    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Time: %.1f secs. Par: %.1f",
+                  (double)completetime / 40, world->par_time);
     y += 15;
     if (mission < mission_count)
         textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Now entering level %d / %d.", mission + 1, mission_count);

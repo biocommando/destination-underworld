@@ -4,6 +4,7 @@
 #include "duconstants.h"
 #include "bossfightconf.h"
 #include "helpers.h"
+#include <time.h>
 
 struct gamedata
 {
@@ -198,6 +199,7 @@ typedef struct
     // (Level is read whenever room is changed but
     // there's no point in parsing the metadata each time.)
     int level_read;
+    double par_time;
 } World;
 
 void clear_visual_fx(World *);

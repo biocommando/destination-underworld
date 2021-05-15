@@ -659,7 +659,19 @@ int game(int mission, int *game_modifiers)
                                                         &key_press_buffer_sz, &key_press_buffer_idx, f_key_presses,
                                                         time_stamp, get_key_presses, &key_press_mask);
         if (!has_more)
+        {
+          world.hint.time_shows = 0;
+          trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
+
+          display_level_info(&world, mission, game_settings.mission_count, font, completetime);
+
+          while (!key[KEY_ENTER])
+          {
+            chunkrest(15);
+          }
+          chunkrest(250);
           break;
+        }
 
         key_left = key_press_mask & 1;
         key_right = key_press_mask & 2;
@@ -747,7 +759,7 @@ int game(int mission, int *game_modifiers)
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, mission, game_settings.mission_count, font);
+      display_level_info(&world, mission, game_settings.mission_count, font, completetime);
 
       while (!key[KEY_ENTER])
       {

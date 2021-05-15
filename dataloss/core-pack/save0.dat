@@ -1,9 +1,9 @@
 [save_game]
-mission=14
-health=2
+mission=16
+health=5
 shots=6
-reload=0
+reload=1
 rate=200
-ammo=8
-gold=6
-game_modifiers=0
+ammo=0
+gold=13
+game_modifiers=8
