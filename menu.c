@@ -67,7 +67,7 @@ int handle_menuchoice(int menuchoice, Enemy *autosave,
 void show_help(BITMAP *sprites)
 {
     char help_path[256];
-    sprintf(help_path, ".\\dataloss\\%s\\help.txt", game_settings.mission_pack);
+    sprintf(help_path, ".\\dataloss\\%s\\help.dat", game_settings.mission_pack);
     FILE *f = fopen(help_path, "r");
     int color = makecol(255, 255, 255);
     const int line_height = 16;
