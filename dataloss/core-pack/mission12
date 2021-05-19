@@ -656,7 +656,7 @@
 0120 0013 0011 0003
 1002 0014 0011 0003
 0120 0015 0011 0003
-0012
+0017
 name
 Microsoft Headquarters
 story 9
@@ -669,4 +669,9 @@ time. Perhaps he was negotiating a software release deal
 (not this software, unfortunately) with the Ultimate Evil.
 You could think that Bill Gates is powerful but he's mere
 pesky servant of the Truly Grand Evil.
+par 16 79.975
+par 0 39.8
+par 1 46.15
+par 6 47.325
+par 8 36.725
 ""

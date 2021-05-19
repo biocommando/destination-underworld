@@ -802,7 +802,7 @@
 0120 0013 0011 0004
 0120 0014 0011 0004
 0120 0015 0011 0004
-0013
+0018
 name
 Halls of Doom
 story 10
@@ -816,4 +816,9 @@ mind focused, it's likely that you end up just fighting
 your inner demons instead of actually taking down monsters.
 Of course, it's impossible to tell if that's happening
 already. What tells inner and outer reality apart anyway?
+par 16 25.225
+par 0 21.675
+par 1 45.075
+par 6 37.125
+par 8 17.8
 ""

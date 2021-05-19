@@ -1214,7 +1214,7 @@
 0120 0013 0011 0006
 0120 0014 0011 0006
 0120 0015 0011 0006
-0011
+0016
 name
 Defence Line
 story 8
@@ -1226,4 +1226,9 @@ by electricity but by magic. And by magic, I mean they
 consume human souls as their energy source. Actually, you'd
 be surprised to know how many other technologies are magic
 based, too.
+par 16 60.725
+par 0 34.125
+par 1 32.25
+par 6 39.2
+par 8 36.25
 ""

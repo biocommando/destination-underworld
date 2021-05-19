@@ -987,7 +987,7 @@
 0120 0013 0011 0004
 0120 0014 0011 0004
 0120 0015 0011 0004
-0010
+0015
 name
 Slaughter House
 story 7
@@ -998,4 +998,9 @@ is so oblivious. Maybe he doesn't even realize that he's
 so evil. Maybe talking sense to him would make him good
 again? You know that could be a possibility but you can't
 take the risk. You must end him, for once and for all.
+par 16 158.55
+par 0 110.55
+par 1 93.55
+par 6 88.075
+par 8 160.7
 ""

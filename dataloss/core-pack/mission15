@@ -668,7 +668,7 @@
 0120 0013 0011 0003
 0120 0014 0011 0003
 0120 0015 0011 0003
-0009
+0014
 name
 The Lair of the Evil Man
 story 6
@@ -678,4 +678,9 @@ priviledged cis-hetero male. This is it. You shall
 annihilate the Arch Evil, the archetype of white male and
 thus end the sinister reign of patriarchy. Go, do it now!
 This may be your only change!
+par 16 140.4
+par 0 87.375
+par 1 66.3
+par 6 67.325
+par 8 90.25
 ""

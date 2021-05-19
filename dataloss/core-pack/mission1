@@ -970,7 +970,7 @@
 0120 0013 0011 0005
 0120 0014 0011 0005
 0120 0015 0011 0005
-0011
+0016
 name
 Gates to Purgatory
 story 8
@@ -982,4 +982,9 @@ Did I really need to massacre all the children in the
 village? You know, everyone's equal here. Except the
 magician and the evil creatures. Since today, they will get
 to know Hell (even better)!
+par 16 26
+par 0 25.05
+par 1 25.7
+par 6 25.175
+par 8 24.4
 ""

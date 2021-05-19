@@ -607,7 +607,7 @@
 0120 0013 0011 0003
 0120 0014 0011 0003
 0120 0015 0011 0003
-0012
+0017
 name
 Paths of Gory
 story 9
@@ -620,4 +620,9 @@ terrifies you but is also kind of exciting, maybe that's
 the magician finally feeling empowered by being able to
 kick the demons' asses that tormented him for the last 200
 years.
+par 16 22.025
+par 0 22.925
+par 1 19.75
+par 6 14.7
+par 8 15.825
 ""

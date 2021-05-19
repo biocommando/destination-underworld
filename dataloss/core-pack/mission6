@@ -604,7 +604,7 @@
 0120 0013 0011 0003
 0122 0014 0011 0003
 0122 0015 0011 0003
-0010
+0015
 name
 The Temple of Gargoroth
 story 7
@@ -615,4 +615,9 @@ our world as we know it. Does that have something to do
 with the current storyline? I don't know, probably not.
 But no matter who they worship, they were on your way. And
 the only way to deal with that is total annihilation.
+par 16 65.425
+par 0 19.825
+par 1 31.475
+par 6 24.15
+par 8 15.45
 ""

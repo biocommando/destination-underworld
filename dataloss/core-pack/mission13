@@ -867,7 +867,7 @@
 0120 0013 0011 0004
 0120 0014 0011 0004
 0120 0015 0011 0004
-0011
+0016
 name
 Ancient Hallway of Doom
 story 8
@@ -879,4 +879,9 @@ tormented monsters. I believe that no being is inherently
 evil. But when you need to guard a hallway for an eternity
 without any apparent reason, in Hell of all places, it can
 really twist your mind.
+par 16 94.45
+par 0 76.025
+par 1 72.475
+par 6 66.1
+par 8 66.4
 ""

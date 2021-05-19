@@ -780,7 +780,7 @@
 0120 0013 0011 0004
 0122 0014 0011 0004
 0122 0015 0011 0004
-0013
+0018
 name
 Terrace of Gluttony
 story 10
@@ -794,4 +794,9 @@ and neither will your dad as his Tesla stocks (your college
 savings by the way) will likely plummet if you succeed. So,
 better keep it quiet what you're doing here in the
 basement.
+par 16 26.575
+par 0 22.1
+par 1 24.2
+par 6 24.475
+par 8 20.5
 ""
