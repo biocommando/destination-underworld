@@ -93,6 +93,7 @@ int main(int argc, char **argv)
   while (mission != 0)
   {
     mission = game(mission, &game_modifiers);
+    if (record_input_file) break;
   }
   destroy_registered_samples();
   if (record_input_file)
@@ -568,14 +569,27 @@ int game(int mission, int *game_modifiers)
   }
 
   int difficulty = GET_DIFFICULTY(&world); //(world.game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+  int excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 0 : 5;
+  if (world.game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
+  {
+    excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 2 : 7;
+  }
 
-  if (world.plr.gold > (difficulty == DIFFICULTY_BRUTAL ? 0 : 5))
+  if (world.plr.gold > excess_gold_limit)
   {
     int excess_gold = world.plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
+    if (world.game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
+      excess_gold /= 3; 
     world.plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
     world.plr.health = world.plr.health > 6 ? 6 : world.plr.health;
-    world.plr.gold = 5;
+    
+    if (world.game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS)
+    {
+      world.plr.health *= 3;
+    }
   }
+
+  world.plr.gold = world.plr.gold > 5 ? 5 : world.plr.gold;
 
   if (world.plr.health < 3)
     world.plr.health = 3;

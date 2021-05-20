@@ -306,6 +306,19 @@ based on even older game engine prototypes shows. Anyway, the code is
 available at https://github.com/biocommando/destination-underworld
 and is licensed with MIT license.
 
+#color 255 127 127
+Art credits:
+#color 127 127 255
+Player and enemy sprites based on templates by Charles Gabriel:
+https://opengameart.org/content/twelve-16x18-rpg-sprites-plus-base
+License CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+
+The font used in menus is the Cardinal Regular Truetype font by
+Dieter Steffmann converted into PCX. The font is free to use for non-
+commercial uses.
+
+Other art, including music and soundeffects, are created by me,
+Joonas Salonpaa, under license CC-BY 3.0 (see link above).
 #to-line 29
 #margin 5
 #color 40 40 160
