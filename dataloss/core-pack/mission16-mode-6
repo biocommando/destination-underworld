@@ -386,7 +386,16 @@
 0120 0013 0011 0002
 0120 0014 0011 0002
 0120 0015 0011 0002
-0002
+0011
 bossfight core-pack\boss_mode_6.ini
 par 6 7.65
+name
+Deepest Abyss
+story 6
+The corpse of the Arch Evil explodes into 50 shades of
+bloody mess and in the same instant all the beasts of
+Hell disappear.
+
+Congratulations! Now you're totally alone in the deepest
+abyss with no way back to the surface of Earth.
 ""

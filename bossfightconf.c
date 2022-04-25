@@ -1,26 +1,27 @@
 #include "bossfightconf.h"
 
 #include "iniRead.h"
+#include "logging.h"
 #include <stdlib.h>
 #include <string.h>
 
 void print_configs(BossFightConfig *config)
 {
-  printf("Bossfight config read:\n  Events: %d\n", config->num_events);
+  LOG("Bossfight config read:\n  Events: %d\n", config->num_events);
   for (int i = 0; i < config->num_events && i < BFCONF_MAX_EVENTS; i++)
   {
-    printf("  Event %d\n    Event type: %c\n", i, config->events[i].event_type);
-    printf("    Params: %d %d %d\n", config->events[i].parameters[0], config->events[i].parameters[1], config->events[i].parameters[2]);
-    printf("    Trigger type / value: %c / %d\n", config->events[i].trigger_type, config->events[i].trigger_value);
+    LOG("  Event %d\n    Event type: %c\n", i, config->events[i].event_type);
+    LOG("    Params: %d %d %d\n", config->events[i].parameters[0], config->events[i].parameters[1], config->events[i].parameters[2]);
+    LOG("    Trigger type / value: %c / %d\n", config->events[i].trigger_type, config->events[i].trigger_value);
     if (config->events[i].event_type == BFCONF_EVENT_TYPE_SPAWN)
     {
-      printf("    Spawn details: x %d y %d\n    ", config->events[i].spawn_point.x, config->events[i].spawn_point.y);
+      LOG("    Spawn details: x %d y %d\n    ", config->events[i].spawn_point.x, config->events[i].spawn_point.y);
       for (int j = 0; j < 5; j++)
       {
-        printf(" %d: %d - %d %%", j, config->events[i].spawn_point.probability_thresholds[j][0],
+        LOG(" %d: %d - %d %%", j, config->events[i].spawn_point.probability_thresholds[j][0],
                config->events[i].spawn_point.probability_thresholds[j][1]);
       }
-      printf("\n");
+      LOG("\n");
     }
   }
 }
@@ -32,14 +33,22 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
   config->fire_rate = ini_read_int_value(f, "main", "fire_rate");
   config->player_initial_gold = ini_read_int_value(f, "main", "player_initial_gold");
   config->num_events = ini_read_int_value(f, "main", "events");
+  if (config->num_events > BFCONF_MAX_EVENTS)
+  {
+    LOG("ERROR: too many events defined %d\n", config->num_events);
+    config->num_events = BFCONF_MAX_EVENTS;
+  }
   config->state.timer_value = ini_read_int_value(f, "main", "time_starts_at");
 
-  for (int i = 0; i < config->num_events && i < BFCONF_MAX_EVENTS; i++)
+  for (int i = 0; i < config->num_events; i++)
   {
     char event_segment[100];
     sprintf(event_segment, "event_%d", i);
     char s[256];
     ini_read_string_value(f, event_segment, "trigger_type", s);
+
+    config->events[i].enabled = !ini_read_int_value(f, event_segment, "initially_disabled");
+
     if (!strcmp(s, "time_interval"))
     {
       config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_TIME_INTERVAL;
@@ -136,6 +145,18 @@ void read_bfconfig(FILE *f, BossFightConfig *config)
     if (!strcmp(s, "stop_secondary_timer"))
     {
       config->events[i].event_type = BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER;
+    }
+    if (!strcmp(s, "toggle_event_enabled"))
+    {
+      config->events[i].event_type = BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED;
+      int event_id = ini_read_int_value(f, event_segment, "event_id");
+      if (event_id < 0 || event_id >= config->num_events)
+      {
+        LOG("Invalid event_id field %d\n", event_id);
+        event_id = 0;
+      }
+      config->events[i].parameters[0] = event_id;
+      config->events[i].parameters[1] = ini_read_int_value(f, event_segment, "enabled");
     }
   }
 

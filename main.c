@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include "logging.h"
 #include "dump3.h"
 #include "duconstants.h"
 #include "ducolors.h"
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
   record_mode = read_cmd_line_arg_int("record-mode", argv, argc);
   if (record_mode == RECORD_MODE_RECORD)
   {
-    printf("Record mode active.\n");
+    LOG("Record mode active.\n");
   }
   if (record_mode == RECORD_MODE_PLAYBACK)
   {
@@ -54,10 +55,10 @@ int main(int argc, char **argv)
     }
     if (record_input_file == NULL)
     {
-      printf("Valid input file required (--file=<filename>)!!\n");
+      LOG("Valid input file required (--file=<filename>)!!\n");
       return 0;
     }
-    printf("Playback mode active.\n");
+    LOG("Playback mode active.\n");
   }
 
   read_settings();
@@ -93,7 +94,8 @@ int main(int argc, char **argv)
   while (mission != 0)
   {
     mission = game(mission, &game_modifiers);
-    if (record_input_file) break;
+    if (record_input_file)
+      break;
   }
   destroy_registered_samples();
   if (record_input_file)
@@ -161,7 +163,7 @@ void enemy_logic(World *world)
             aim_window = 0;
             if (enm->x / TILESIZE == (int)world->boss_waypoint.x && enm->y / TILESIZE == (int)world->boss_waypoint.y)
             {
-              printf("Waypoint reached\n");
+              LOG("Waypoint reached\n");
               world->boss_waypoint.x = world->boss_waypoint.y = -1;
               world->boss_fight_config.state.waypoint_reached = 1;
             }
@@ -200,7 +202,7 @@ void enemy_logic(World *world)
         {
           enm->reload--;
         }
-        //if (enm_type != ALIEN || rand() % 32) // Alienit (muttei turretit) vilkkuvat
+        // if (enm_type != ALIEN || rand() % 32) // Alienit (muttei turretit) vilkkuvat
         //{
         draw_enemy(enm, world);
         //}
@@ -265,18 +267,23 @@ void boss_logic(World *world, int boss_died)
 {
   Enemy *boss = world->boss;
   int in_same_room = boss != NULL && boss->roomid == world->current_room;
-  if (in_same_room || boss_died)
+  if (in_same_room || boss_died || (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
   {
     world->boss_fight_config.state.health = boss_died ? 0 : boss->health;
     bossfight_process_event_triggers(&world->boss_fight_config);
-    for (int x = 0; x < BFCONF_MAX_EVENTS; x++)
+    for (int x = 0; x < world->boss_fight_config.num_events; x++)
     {
       if (!world->boss_fight_config.state.triggers[x])
         continue;
 
       BossFightEventConfig *event = &world->boss_fight_config.events[x];
 
-      printf("Trigger %c\n", event->event_type);
+      LOG("Trigger %c\n", event->event_type);
+      if (!event->enabled)
+      {
+        LOG("Event disabled\n");
+        continue;
+      }
       switch (event->event_type)
       {
       case BFCONF_EVENT_TYPE_SPAWN:
@@ -348,6 +355,9 @@ void boss_logic(World *world, int boss_died)
         break;
       case BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER:
         world->boss_fight_config.state.secondary_timer_started = 0;
+        break;
+      case BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED:
+        world->boss_fight_config.events[event->parameters[0]].enabled = event->parameters[1];
         break;
       }
     }
@@ -450,9 +460,13 @@ void bullet_logic(World *world)
               set_tile_flag(world, enm->x, enm->y, TILE_IS_BLOOD_STAINED);
               world->plr.gold += enm->gold;
 
-              if (enm->gold > 0)
+              world->kills++;
+              if (enm->gold > 0 || (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
               {
-                sprintf(world->hint.text, "+ %d", enm->gold);
+                if (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+                  sprintf(world->hint.text, "%d", world->kills);
+                else
+                  sprintf(world->hint.text, "+ %d", enm->gold);
                 world->hint.loc.x = enm->x - 15;
                 world->hint.loc.y = enm->y - 15;
                 world->hint.dim = 6;
@@ -469,7 +483,7 @@ void bullet_logic(World *world)
 
               if (enm == world->boss) // Archmage dies
               {
-                printf("boss die logic\n");
+                LOG("boss die logic\n");
                 boss_logic(world, 1);
                 chunkrest(1);
                 trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (enm->x - 240) / 8, 1000);
@@ -481,6 +495,7 @@ void bullet_logic(World *world)
                   trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
               }
               deathsample_plays = 1;
+
               spawn_body_parts(enm);
             }
             break;
@@ -507,6 +522,7 @@ int game(int mission, int *game_modifiers)
 
   World world;
   world.game_modifiers = *game_modifiers;
+  world.mission = mission;
   memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
   world.buf = create_bitmap(480, 360);
   if (!game_settings.custom_resources)
@@ -579,10 +595,10 @@ int game(int mission, int *game_modifiers)
   {
     int excess_gold = world.plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
     if (world.game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
-      excess_gold /= 3; 
+      excess_gold /= 3;
     world.plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
     world.plr.health = world.plr.health > 6 ? 6 : world.plr.health;
-    
+
     if (world.game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS)
     {
       world.plr.health *= 3;
@@ -893,7 +909,28 @@ int game(int mission, int *game_modifiers)
       stretch_blit(world.buf, screen, startx, starty, endx, endy, screen_h_offset, screen_v_offset, screen_width_scaled, screen_height_scaled);
       chunkrest(40);
       if (world.plr.reload <= 0)
+      {
+        if (world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+        {
+          ArenaHighscore highscore;
+          access_arena_highscore(&highscore, 1);
+          int arena_idx, mode_idx;
+          int highscore_kills = parse_highscore_from_world_state(&world, &highscore, &arena_idx, &mode_idx);
+          rectfill(screen, 5, 5, 340, 125, GRAY(60));
+          textprintf_ex(screen, font, 10, 10, WHITE, -1, "Arena fight over, your kill count: %d", world.kills);
+          textprintf_ex(screen, font, 10, 30, WHITE, -1, "Previous highscore: %d", highscore_kills);
+          if (highscore_kills < world.kills)
+          {
+            textprintf_ex(screen, font, 10, 50, WHITE, -1, "NEW HIGHSCORE!");
+            highscore.kills[arena_idx][mode_idx] = world.kills;
+            access_arena_highscore(&highscore, 0);
+          }
+          textprintf_ex(screen, font, 10, 100, WHITE, -1, "Press ENTER to continue...");
+          while (!key[KEY_ENTER])
+            chunkrest(40);
+        }
         break;
+      }
     }
 
     if (key[KEY_B])
@@ -950,7 +987,7 @@ void init_allegro()
   int full_screen = game_settings.screen_mode == 1;
   if (full_screen)
   {
-    printf("starting in fullscreen\n");
+    LOG("starting in fullscreen\n");
     full_screen = !set_gfx_mode(GFX_AUTODETECT_FULLSCREEN, w, h, 0, 0);
   }
   if (!full_screen)
@@ -962,5 +999,5 @@ void init_allegro()
       exit(1);
     }
   }
-  printf("allegro inited\n");
+  LOG("allegro inited\n");
 }

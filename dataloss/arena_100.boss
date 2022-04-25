@@ -1,0 +1,37 @@
+
+js$ execute(() => _spawn_interval = 5000) $
+
+def spawnpoint 2;5 = 2, 5, 0, 0, 100, 0, 0
+def spawnpoint 13;6 = 13, 6, 0, 0, 100, 0, 0
+
+def spawnpoint 6;9 = 6, 9, 70, 30, 0, 0, 0
+def spawnpoint 7;8 = 7, 8, 70, 30, 0, 0, 0
+
+// Init
+on time_one_time: 1 do start_secondary_timer: time = 0
+on time_one_time: 1 do toggle_event_enabled: event_id = SpawnB1, enabled = 0
+on time_one_time: 1 do toggle_event_enabled: event_id = SpawnB2, enabled = 0
+
+// Spawn imps
+on [SpawnA1] time_interval: ms(js$ _spawn_interval $) do spawn: 2;5
+on [SpawnA2] time_interval: ms(js$ _spawn_interval $) do spawn: 13;6
+
+// Spawn others
+on [SpawnB1] time_interval: ms(js$ _spawn_interval $) do spawn: 6;9
+on [SpawnB2] time_interval: ms(js$ _spawn_interval $) do spawn: 7;8
+
+// Enable others, disable imps
+js$ execute(() => _enable_others_at = _spawn_interval * 2) $
+on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnA1, enabled = 0
+on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnA2, enabled = 0
+on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnB1, enabled = 1
+on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnB2, enabled = 1
+
+// Enable imps, disable others
+js$ execute(() => _enable_imps_at = _enable_others_at + _spawn_interval * 3) $
+on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnA1, enabled = 1
+on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnA2, enabled = 1
+on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnB1, enabled = 0
+on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnB2, enabled = 0
+
+on secondary_timer: ms(js$ _enable_imps_at $) do start_secondary_timer: time = 0

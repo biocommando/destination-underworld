@@ -1,4 +1,6 @@
-js$ _start_time = ms(8000) , '' $
+// Boss for normal mode
+
+js$ execute(() => _start_time = ms(8000)) $
 
 set health = 40
 set fire_rate = 20

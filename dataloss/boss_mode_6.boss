@@ -1,3 +1,5 @@
+// Boss for "over powerup" mode
+
 set health = 180
 set speed = 1
 set player_initial_gold = 10

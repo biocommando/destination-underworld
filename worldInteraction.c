@@ -1,3 +1,4 @@
+#include "logging.h"
 #include "worldInteraction.h"
 #include <stdio.h>
 #include <math.h>
@@ -259,7 +260,7 @@ void bounce_body_parts(int x, int y, World *world)
                 distance = sqrt(distance) + 1; // +1 to ensure non-zero divider
                 bp->velocity = 250 / (distance + rand() % 50);
 
-                //ilimit(&bp->velocity, 30);
+                // ilimit(&bp->velocity, 30);
                 bp->velocity = bp->velocity > 30 ? 30 : bp->velocity;
 
                 bp->dx = (bp->x - x) / distance;
@@ -511,23 +512,22 @@ int read_level(World *world, int mission, int room_to)
         fgets(buf, 256, f);
         char read_str[64];
         sscanf(buf, "%s", read_str);
-
         if (!strcmp(read_str, "bossfight"))
         {
             sscanf(buf, "%*s %s", read_str);
             sprintf(buf, ".\\dataloss\\%s", read_str);
-            printf("Opening bossfight config at %s\n", buf);
+            LOG("Opening bossfight config at %s\n", buf);
             FILE *f2 = fopen(buf, "r");
             if (f2)
             {
                 read_bfconfig(f2, &world->boss_fight_config);
                 fclose(f2);
-                printf("Bossfight initiated\n");
+                LOG("Bossfight initiated\n");
                 world->boss_fight = 1;
                 continue;
             }
             else
-                printf("No such file!\n");
+                LOG("No such file!\n");
         }
         else if (!strcmp(read_str, "name"))
         {
@@ -641,4 +641,40 @@ void read_enemy_configs(World *world)
         world->enemy_configs[i].hurts_monsters = ini_read_int_value(f, section, "hurts-monsters");
     }
     fclose(f);
+}
+
+int parse_highscore_from_world_state(World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
+{
+    int arena_idx, mode_idx;
+    int mode = world->game_modifiers & (GAMEMODIFIER_DOUBLED_SHOTS | GAMEMODIFIERS_OVER_POWERUP |
+                                        GAMEMODIFIER_MULTIPLIED_GOLD | GAMEMODIFIER_BRUTAL);
+    for (arena_idx = 0; arena_idx < game_settings.arena_config.number_of_arenas; arena_idx++)
+    {
+        if (game_settings.arena_config.arenas[arena_idx].level_number == world->mission)
+            break;
+    }
+    int highscore_kills = 0;
+    for (mode_idx = 0; mode_idx < ARENACONF_HIGHSCORE_MAP_SIZE; mode_idx++)
+    {
+        if (highscore->mode[arena_idx][mode_idx] == mode)
+        {
+            highscore_kills = highscore->kills[arena_idx][mode_idx];
+            break;
+        }
+    }
+    if (mode_idx == ARENACONF_HIGHSCORE_MAP_SIZE)
+    {
+        for (mode_idx = 0; mode_idx < ARENACONF_HIGHSCORE_MAP_SIZE; mode_idx++)
+        {
+            if (highscore->mode[arena_idx][mode_idx] == -1)
+            {
+                // Reserve this index in the map for the new entry
+                highscore->mode[arena_idx][mode_idx] = mode;
+                break;
+            }
+        }
+    }
+    *hs_arena = arena_idx;
+    *hs_mode = mode_idx;
+    return highscore_kills;
 }

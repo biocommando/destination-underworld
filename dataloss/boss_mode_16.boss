@@ -1,6 +1,6 @@
-js$ _start_time = 18667 , '' $
+// Boss for "brutally hard" mode
 
-// Game mode: brutally hard
+js$ execute(() => _start_time = 18667) $
 
 set health = 15
 set player_initial_gold = 0
@@ -49,7 +49,8 @@ on time_interval: ms(26667) do spawn: se-1
 on time_interval: ms(26667) do spawn: se-2
 on time_interval: ms(26667) do spawn: se-3
 
-on time_interval: ms(15000) do spawn: ne-0
+// on time_interval: ms(15000) do spawn: ne-0
+on time_interval: ms(40000) do spawn: ne-0
 
 on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 6, y = 1, terrain_type = floor
 on time_one_time: ms(js$ _start_time + 106668$) do modify_terrain: x = 6, y = 2, terrain_type = floor

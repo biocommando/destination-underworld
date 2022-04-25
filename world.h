@@ -101,8 +101,10 @@ typedef struct
 #define GAMEMODIFIER_DOUBLED_SHOTS 0x1
 #define GAMEMODIFIER_OVERPOWERED_POWERUPS 0x2
 #define GAMEMODIFIER_OVERPRICED_POWERUPS 0x4
+#define GAMEMODIFIERS_OVER_POWERUP (GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS)
 #define GAMEMODIFIER_MULTIPLIED_GOLD 0x8
 #define GAMEMODIFIER_BRUTAL 0x10
+#define GAMEMODIFIER_ARENA_FIGHT 0x20
 
 #define GET_DIFFICULTY(world) (((world)->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : DIFFICULTY_NORMAL)
 
@@ -200,6 +202,8 @@ typedef struct
     // there's no point in parsing the metadata each time.)
     int level_read;
     double par_time;
+    int kills;
+    int mission;
 } World;
 
 void clear_visual_fx(World *);

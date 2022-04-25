@@ -31,6 +31,7 @@ void clear_visual_fx(World *world)
 
 void init_world(World *world)
 {
+    world->kills = 0;
     for (int i = 0; i < ROOMCOUNT; i++)
     {
         world->rooms_visited[i] = 0;

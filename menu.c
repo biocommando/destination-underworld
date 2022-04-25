@@ -8,29 +8,41 @@
 extern MP3FILE *mp3;
 extern GameSettings game_settings;
 
-void init_new_game(Enemy *autosave, int *mission, int *game_modifiers, int game_mode)
+int game_mode_to_modifiers(int game_mode)
 {
     if (game_mode == 0)
-        *game_modifiers = 0;
+        return 0;
     if (game_mode == 1)
-        *game_modifiers = GAMEMODIFIER_BRUTAL;
+        return GAMEMODIFIER_BRUTAL;
     if (game_mode == 2)
-        *game_modifiers = GAMEMODIFIER_DOUBLED_SHOTS;
+        return GAMEMODIFIER_DOUBLED_SHOTS;
     if (game_mode == 3)
-        *game_modifiers = GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS;
-    if (game_mode == 4)
-        *game_modifiers = GAMEMODIFIER_MULTIPLIED_GOLD;
+        return GAMEMODIFIERS_OVER_POWERUP;
+    return GAMEMODIFIER_MULTIPLIED_GOLD;
+}
 
-    *mission = 1;
+void init_new_game(Enemy *autosave, int *mission, int *game_modifiers, int game_mode, int level_set)
+{
+    *game_modifiers = game_mode_to_modifiers(game_mode);
+    
+    if (level_set == 0)
+    {
+        *mission = 1;
+    }
+    else
+    {
+        *mission = game_settings.arena_config.arenas[level_set - 1].level_number;
+        *game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
+    }
     autosave->id = NO_OWNER;
 }
 
 int handle_menuchoice(int menuchoice, Enemy *autosave,
-                      int *mission, int *game_modifiers, int slot, int game_mode)
+                      int *mission, int *game_modifiers, int slot, int game_mode, int level_set)
 {
     if (menuchoice == MENUOPT_NEW_GAME)
     {
-        init_new_game(autosave, mission, game_modifiers, game_mode);
+        init_new_game(autosave, mission, game_modifiers, game_mode, level_set);
         return 1;
     }
     if (menuchoice == MENUOPT_LOAD)
@@ -46,7 +58,7 @@ int handle_menuchoice(int menuchoice, Enemy *autosave,
         }
         else
         {
-            init_new_game(autosave, mission, game_modifiers, game_mode);
+            init_new_game(autosave, mission, game_modifiers, game_mode, 0);
         }
         if (*mission == 1)
             autosave->id = NO_OWNER;
@@ -137,7 +149,11 @@ void show_help(BITMAP *sprites)
 
 int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
 {
+    ArenaHighscore arena_highscore;
+    access_arena_highscore(&arena_highscore, 1);
+
     int game_mode = 0;
+    int level_set = 0;
     int slot = 0;
     int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
     peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
@@ -179,12 +195,14 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     textprintf_ex(menu_bg, menufont, 18, 12, RED, -1, "DESTINATION UNDERWORLD");
     textprintf_ex(menu_bg, menufont, 40, 60, WHITE, -1, "NEW GAME");
     textprintf_ex(menu_bg, menufont, 210, 40, WHITE, -1, "< mode >");
+    textprintf_ex(menu_bg, menufont, 360, 40, WHITE, -1, "level set (use space to change)");
     textprintf_ex(menu_bg, menufont, 40, 100, WHITE, -1, "LOAD GAME");
     textprintf_ex(menu_bg, menufont, 210, 80, WHITE, -1, "< slot >");
     textprintf_ex(menu_bg, menufont, 40, 180, WHITE, -1, "EXIT");
     if (ingame)
     {
-        textprintf_ex(menu_bg, menufont, 40, 140, WHITE, -1, "SAVE GAME");
+        if (!(*game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
+            textprintf_ex(menu_bg, menufont, 40, 140, WHITE, -1, "SAVE GAME");
         textprintf_ex(menu_bg, menufont, 40, 220, WHITE, -1, "RESUME");
         c = MENUOPT_RESUME;
     }
@@ -193,7 +211,6 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     textprintf_ex(menu_bg, menufont, 10, 436, RED, -1, "f1: help");
     blit(menu_bg, buf, 0, 0, 0, 0, 640, 480);
     stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
-
     while (!key[KEY_ENTER])
     {
         rectfill(buf, 200, 62, 340, 82, RED);
@@ -207,6 +224,25 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "over power up");
         if (game_mode == 4)
             textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "power up only");
+        rectfill(buf, 360, 62, 600, 82, RED);
+        if (level_set == 0)
+            textprintf_ex(buf, menufont, 370, 60, WHITE, -1, "Main game");
+            
+        rectfill(buf, 360, 82, 600, 102, 0);
+        if (level_set >= 1)
+        {
+            textprintf_ex(buf, menufont, 370, 60, WHITE, -1, "Arena: %s", game_settings.arena_config.arenas[level_set - 1].name);
+            int kills = 0;
+            for (int i = 0; i < ARENACONF_HIGHSCORE_MAP_SIZE; i++)
+            {
+                if (arena_highscore.mode[level_set - 1][i] == game_mode_to_modifiers(game_mode))
+                {
+                    kills = arena_highscore.kills[level_set - 1][i];
+                    break;
+                }
+            }
+            textprintf_ex(buf, menufont, 370, 80, WHITE, -1, "Highscore: %d", kills);
+        }
 
         rectfill(buf, 200, 102, 230, 122, RED);
         textprintf_ex(buf, menufont, 210, 100, WHITE, -1, "%c", 'A' + slot);
@@ -230,7 +266,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         {
             textprintf_ex(buf, menufont, 240, 101, WHITE, -1, "(no save)");
         }
-        if (ingame)
+        if (ingame && !(*game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
         {
             rectfill(buf, 200, 142, 230, 162, RED);
             textprintf_ex(buf, menufont, 210, 140, WHITE, -1, "%c", 'A' + slot);
@@ -258,6 +294,14 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 play_sample(s_c, 255, 127, 1000, 0);
                 wait = 3;
             }
+            if (c == MENUOPT_NEW_GAME && key[KEY_SPACE])
+            {
+                level_set++;
+                if (level_set == 1 + game_settings.arena_config.number_of_arenas)
+                    level_set = 0;
+                play_sample(s_c, 255, 127, 1000, 0);
+                wait = 3;
+            }
             if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && key[KEY_LEFT] && slot > 0)
             {
                 slot--;
@@ -276,7 +320,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             {
                 c--;
                 play_sample(s_c, 255, 127, 1000, 0);
-                if (!ingame && c == MENUOPT_SAVE)
+                if ((!ingame || (*game_modifiers & GAMEMODIFIER_ARENA_FIGHT)) && c == MENUOPT_SAVE)
                     c = MENUOPT_LOAD;
                 wait = 3;
             }
@@ -284,7 +328,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             {
                 c++;
                 play_sample(s_c, 255, 127, 1000, 0);
-                if (!ingame && c == MENUOPT_SAVE)
+                if ((!ingame || (*game_modifiers & GAMEMODIFIER_ARENA_FIGHT)) && c == MENUOPT_SAVE)
                     c = MENUOPT_EXIT;
                 chunkrest(100);
                 wait = 3;
@@ -327,5 +371,5 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     destroy_sample(s_ex);
     destroy_font(menufont);
 
-    return handle_menuchoice(c, autosave, mission, game_modifiers, slot, game_mode);
+    return handle_menuchoice(c, autosave, mission, game_modifiers, slot, game_mode, level_set);
 }

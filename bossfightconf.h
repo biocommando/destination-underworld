@@ -20,6 +20,7 @@
 #define BFCONF_EVENT_TYPE_CLEAR_WAYPOINT 'r'
 #define BFCONF_EVENT_TYPE_START_SECONDARY_TIMER '2'
 #define BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER 'S'
+#define BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED 'T'
 
 #define BFCONF_MODIFY_TERRAIN_FLOOR 1
 #define BFCONF_MODIFY_TERRAIN_WALL 2
@@ -37,6 +38,7 @@ typedef struct
   int trigger_type;
   int trigger_value;
   int event_type;
+  int enabled;
   BossFightSpawnPointConfig spawn_point;
   int parameters[3];
 } BossFightEventConfig;

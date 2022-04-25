@@ -34,6 +34,8 @@ fs
         // set param = value
         // events:
         // on <trigger_type>: <trigger_value> do <event_type>: <param_name> = <param_value>, ...
+        // Events may have name:
+        // on [EventName] <trigger_type>: ...
         // waypoints:
         // def waypoint name = x, y
         // spawnpoints:
@@ -43,11 +45,21 @@ fs
         // js$..$ = execute javascript
         // internal parameters (e.g. filename):
         // set_internal param = value
-        x = x.replace(/js\$([^$]+?)\$/g, (_, a) => eval(a))
+        x = x.replace(/js\$([^$]+?)\$/g, (_, a) => {
+            const execute = fn => {
+                fn()
+                return ''
+            }
+            return eval(a)
+        })
         x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => ms(a))
         if (x.startsWith('on ')) {
             x = x.replace('on ', '')
             let evt = {}
+            x = x.replace(/\[([a-zA-Z0-9]*)\]/, (_, name) => {
+                evt.name = name
+                return ''
+            })
             const trigger_type = x.split(':')[0].trim()
             let trigger_value = x.split(':')[1].split(' do ')[0].trim()
             if (trigger_type === 'waypoint_reached') {
@@ -118,8 +130,18 @@ main.events = events.length
 
 str += objToIni(main)
 
+events.forEach(e => {
+    if (e.event_id !== undefined) {
+        const name = e.event_id
+        e.event_id = events.findIndex(x => x.name === name)
+        if (e.event_id === -1)
+            throw 'event not found with name ' + name
+    }
+})
+
 events.forEach((e, i) => {
     str += `\r\n[event_${i}]\r\n`
+    delete e.name
     str += objToIni(e)
 })
 

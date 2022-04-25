@@ -1,3 +1,5 @@
+// Boss for "explosion madness" mode
+
 set health = 50
 set fire_rate = 10
 set speed = 2
