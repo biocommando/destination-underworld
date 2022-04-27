@@ -579,7 +579,7 @@ int game(int mission, int *game_modifiers)
 
   read_level(&world, mission, 1);
 
-  if (world.boss_fight)
+  if (world.boss_fight && !(world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
   {
     trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
   }
@@ -658,7 +658,7 @@ int game(int mission, int *game_modifiers)
     if (time_stamp % 6 == 0)
       reset_sample_triggers();
     time_stamp++;
-    draw_map(&world, -1 * vibrations); // shadows
+    draw_map(&world, 0, vibrations); // shadows
     move_and_draw_body_parts(&world);
 
     if (world.playcount > 0)
@@ -815,7 +815,7 @@ int game(int mission, int *game_modifiers)
       bullet_logic(&world);
     }
 
-    draw_map(&world, mission % 3 + 1);
+    draw_map(&world, 1, 0);
 
     draw_player_legend(&world);
 

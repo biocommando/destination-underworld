@@ -1,0 +1,24 @@
+js$ execute(() => _spawn_interval = 7000) $
+
+def spawnpoint 11;2 = 11, 2, 0, 0, 0, 100, 0
+def spawnpoint 12;2 = 12, 2, 50, 50, 0, 0, 0
+def spawnpoint 13;2 = 13, 2, 100, 0, 0, 0, 0
+
+def spawnpoint 11;9 = 11, 9, 0, 0, 0, 100, 0
+def spawnpoint 12;9 = 12, 9, 50, 50, 0, 0, 0
+def spawnpoint 13;9 = 13, 9, 100, 0, 0, 0, 0
+
+def spawnpoint 5;10 = 5, 10, 0, 100, 0, 0, 0
+
+def spawnpoint 1;5 = 1, 5, 0, 100, 0, 0, 0
+
+on time_interval: ms(js$ _spawn_interval $) do spawn: 11;2
+on time_interval: ms(js$ _spawn_interval $) do spawn: 12;2
+on time_interval: ms(js$ _spawn_interval $) do spawn: 13;2
+
+on time_interval: ms(js$ _spawn_interval $) do spawn: 11;9
+on time_interval: ms(js$ _spawn_interval $) do spawn: 12;9
+on time_interval: ms(js$ _spawn_interval $) do spawn: 13;9
+
+on time_interval: ms(js$ _spawn_interval * 2 $) do spawn: 5;10
+on time_interval: ms(js$ _spawn_interval * 2 $) do spawn: 1;5

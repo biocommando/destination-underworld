@@ -204,6 +204,7 @@ typedef struct
     double par_time;
     int kills;
     int mission;
+    float map_wall_color[3];
 } World;
 
 void clear_visual_fx(World *);

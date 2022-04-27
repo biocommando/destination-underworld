@@ -436,6 +436,26 @@ int read_level(World *world, int mission, int room_to)
 
     clear_map(world);
 
+    // Default colors
+    if (mission % 3 + 1 == 1)
+    {
+        world->map_wall_color[0] = 2.0f / 3;
+        world->map_wall_color[1] = 0;
+        world->map_wall_color[2] = 0;
+    }
+    else if (mission % 3 + 1 == 2)
+    {
+        world->map_wall_color[0] = 1 / 8.0f;
+        world->map_wall_color[1] = 1 / 2.0f;
+        world->map_wall_color[2] = 4.0f / 5;
+    }
+    else
+    {
+        world->map_wall_color[0] = 2 / 5.0f;
+        world->map_wall_color[1] = 1 / 2.0f;
+        world->map_wall_color[2] = 2.0f / 5;
+    }
+
     char mission_name[256];
     sprintf(mission_name, ".\\dataloss\\%s\\mission%d", game_settings.mission_pack, mission);
 
@@ -559,6 +579,15 @@ int read_level(World *world, int mission, int room_to)
             {
                 world->par_time = d;
             }
+        }
+        else if (!strcmp(read_str, "wall_color"))
+        {
+            float r = 0, g = 0, b = 0;
+            sscanf(buf, "%*s %f %f %f", &r, &g, &b);
+            LOG("Map color %f %f %f\n", r, g, b);
+            world->map_wall_color[0] = r;
+            world->map_wall_color[1] = g;
+            world->map_wall_color[2] = b;
         }
     }
 

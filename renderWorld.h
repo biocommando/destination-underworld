@@ -4,7 +4,7 @@
 
 void draw_enemy(Enemy *enm, World *world);
 void draw_player_legend(World *world);
-void draw_map(World *world, int col);
+void draw_map(World *world, int draw_walls, int vibration_intensity);
 void move_and_draw_body_parts(World *world);
 int progress_and_draw_explosions(World *world);
 void progress_and_draw_sparkles(World *world);

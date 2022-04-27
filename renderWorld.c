@@ -12,7 +12,7 @@ void draw_enemy(Enemy *enm, World *world)
         masked_blit(world->spr, world->buf, 23 * (enm->anim > 20), 29 * (1 + enm->sprite), enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 23, 29);
 }
 
-void draw_map(World *world, int col)
+void draw_map(World *world, int draw_walls, int vibration_intensity)
 {
     const int floor_base_col = 100; // 66
     const int shadow_base_col = floor_base_col - 44;
@@ -20,21 +20,21 @@ void draw_map(World *world, int col)
     static int lava_fluctuations = 0;
     if (++lava_fluctuations == 150)
         lava_fluctuations = -149;
-    if (col <= 0)
+    if (!draw_walls)
     {
         for (int y = 0; y < 12; y++)
         {
             for (int x = 0; x < 16; x++)
             {
                 int fshd = world->floor_shade_map[world->current_room - 1][x][y] * 5;
-                int shadowcol = shadow_base_col - 5 * col - fshd;
+                int shadowcol = shadow_base_col + 5 * vibration_intensity - fshd;
                 shadowcol = shadowcol < 0 ? 0 : shadowcol;
-                int floorcol = floor_base_col - 5 * col - fshd;
+                int floorcol = floor_base_col + 5 * vibration_intensity - fshd;
                 floorcol = floorcol < 0 ? 0 : floorcol;
                 int shadowcolm1 = 0;
                 if (x > 0)
                 {
-                    shadowcolm1 = shadow_base_col - 5 * col - world->floor_shade_map[world->current_room - 1][x - 1][y] * 5;
+                    shadowcolm1 = shadow_base_col + 5 * vibration_intensity - world->floor_shade_map[world->current_room - 1][x - 1][y] * 5;
                 }
                 if (shadowcolm1 < 0)
                 {
@@ -99,19 +99,10 @@ void draw_map(World *world, int col)
                 int colcalc = lev == 0 ? 165 : (15 - lev) * 10;
                 colcalc += y * 10;
                 colcalc = colcalc > 255 ? 255 : colcalc;
-                int col_wall = 0;
-                if (col == 1)
-                {
-                    col_wall = makecol((colcalc << 1) / 3, 0, 0);
-                }
-                else if (col == 2)
-                {
-                    col_wall = makecol(colcalc >> 3, colcalc >> 1, (colcalc << 2) / 5);
-                }
-                else if (col == 3)
-                {
-                    col_wall = makecol((colcalc << 1) / 5, colcalc >> 1, (colcalc << 1) / 5);
-                }
+                int col_wall = makecol(colcalc * world->map_wall_color[0],
+                                       colcalc * world->map_wall_color[1],
+                                       colcalc * world->map_wall_color[2]);
+
                 for (int x = 0; x < 16; x++)
                 {
                     int wall_type = ns_get_wall_type_at(world, x, y);
