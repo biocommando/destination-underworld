@@ -58,6 +58,8 @@ const set_override_main_setup = key => `set mode_override_${game_mode(key)} = ma
 
 const override_event = (name, gameMode) => `[overrides__${name}__for_mode_${game_mode(gameMode)}]`
 
+const disable_event = (name, gameMode) => `on ${override_event(name, gameMode)} never: 0 do nothing: 0`
+
 fs
     .readFileSync(fname)
     .toString().split(/\r?\n/)
@@ -160,6 +162,10 @@ fs
         } else if (x.startsWith('set_internal ')) {
             x = x.replace('set_internal ', '').split('=').map(y => y.trim())
             internal[x[0]] = x[1]
+        } else if (x.startsWith('default_disable ')) {
+            x = x.replace('default_disable ', '').trim()
+            events.filter(e => e.name && (e.name === x || e.name.startsWith('overrides__' + x + '__for_mode_')))
+                .forEach(e => e.initially_disabled = 1)
         }
     })
 
@@ -169,7 +175,7 @@ const objToIni = (obj, ignoreKeys = []) => {
 
 let str = `# Generated from ${fname}\r\n`
 
-main.events = events.length
+main.events = events.filter(e => !(e.name && e.name.startsWith('overrides__'))).length
 
 Object.keys(mainSetup).forEach(sect => {
     str += `\r\n[${sect}]\r\n${objToIni(mainSetup[sect])}`
@@ -178,7 +184,7 @@ Object.keys(mainSetup).forEach(sect => {
 events.forEach(e => {
     if (e.event_id !== undefined) {
         const name = e.event_id
-        e.event_id = events.findIndex(x => x.name === name)
+        e.event_id = events.filter(e => !(e.name && e.name.startsWith('overrides__'))).findIndex(x => x.name === name)
         if (e.event_id === -1)
             throw 'event not found with name ' + name
     }

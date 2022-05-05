@@ -270,6 +270,7 @@ void boss_logic(World *world, int boss_died)
   if (in_same_room || boss_died)
   {
     world->boss_fight_config.state.health = boss_died ? 0 : boss->health;
+    world->boss_fight_config.state.player_kills = world->kills;
     bossfight_process_event_triggers(&world->boss_fight_config);
     for (int x = 0; x < world->boss_fight_config.num_events; x++)
     {
@@ -278,7 +279,9 @@ void boss_logic(World *world, int boss_died)
 
       BossFightEventConfig *event = &world->boss_fight_config.events[x];
 
-      LOG("Trigger %c\n", event->event_type);
+      char s[100];
+      bossfight_event_type_to_str(s, event->event_type);
+      LOG("Trigger %s\n", s);
       if (!event->enabled)
       {
         LOG("Event disabled\n");
