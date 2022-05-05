@@ -436,24 +436,27 @@ int read_level(World *world, int mission, int room_to)
 
     clear_map(world);
 
-    // Default colors
-    if (mission % 3 + 1 == 1)
+    if (!world->level_read)
     {
-        world->map_wall_color[0] = 2.0f / 3;
-        world->map_wall_color[1] = 0;
-        world->map_wall_color[2] = 0;
-    }
-    else if (mission % 3 + 1 == 2)
-    {
-        world->map_wall_color[0] = 1 / 8.0f;
-        world->map_wall_color[1] = 1 / 2.0f;
-        world->map_wall_color[2] = 4.0f / 5;
-    }
-    else
-    {
-        world->map_wall_color[0] = 2 / 5.0f;
-        world->map_wall_color[1] = 1 / 2.0f;
-        world->map_wall_color[2] = 2.0f / 5;
+        // Default colors
+        if (mission % 3 + 1 == 1)
+        {
+            world->map_wall_color[0] = 2.0f / 3;
+            world->map_wall_color[1] = 0;
+            world->map_wall_color[2] = 0;
+        }
+        else if (mission % 3 + 1 == 2)
+        {
+            world->map_wall_color[0] = 1 / 8.0f;
+            world->map_wall_color[1] = 1 / 2.0f;
+            world->map_wall_color[2] = 4.0f / 5;
+        }
+        else
+        {
+            world->map_wall_color[0] = 2 / 5.0f;
+            world->map_wall_color[1] = 1 / 2.0f;
+            world->map_wall_color[2] = 2.0f / 5;
+        }
     }
 
     char mission_name[256];

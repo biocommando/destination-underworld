@@ -56,7 +56,7 @@ fs
         if (x.startsWith('on ')) {
             x = x.replace('on ', '')
             let evt = {}
-            x = x.replace(/\[([a-zA-Z0-9]*)\]/, (_, name) => {
+            x = x.replace(/\[([a-zA-Z0-9_]*)\]/, (_, name) => {
                 evt.name = name
                 return ''
             })

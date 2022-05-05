@@ -267,7 +267,7 @@ void boss_logic(World *world, int boss_died)
 {
   Enemy *boss = world->boss;
   int in_same_room = boss != NULL && boss->roomid == world->current_room;
-  if (in_same_room || boss_died || (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
+  if (in_same_room || boss_died)
   {
     world->boss_fight_config.state.health = boss_died ? 0 : boss->health;
     bossfight_process_event_triggers(&world->boss_fight_config);

@@ -1,0 +1,84 @@
+js$ execute(() => _interval = 10000) $
+js$ execute(() => _time_0 = _interval) $
+js$ execute(() => _time_1 = _time_0 + _interval) $
+js$ execute(() => _time_2 = _time_1 + _interval) $
+js$ execute(() => _time_3 = _time_2 + _interval) $
+
+
+def spawnpoint top_left_1 = 2, 3, 0, 0, 50, 0, 0
+def spawnpoint top_left_2 = 4, 3, 0, 100, 0, 0, 0
+
+def spawnpoint top_right_1 = 9, 2, 100, 0, 0, 0, 0
+def spawnpoint top_right_2 = 13, 3, 100, 0, 0, 0, 0
+
+def spawnpoint btm_right_1 = 10, 8, 50, 50, 0, 0, 0
+def spawnpoint btm_right_2 = 12, 8, 50, 50, 0, 0, 0
+
+def spawnpoint btm_left_1 = 1, 10, 0, 50, 50, 0, 0
+def spawnpoint btm_left_2 = 6, 10, 0, 50, 0, 0, 0
+
+
+
+on [evt_top_left_1] time_interval: ms(js$ _interval $) do spawn: top_left_1
+on [evt_top_left_2] time_interval: ms(js$ _interval $) do spawn: top_left_2
+on [evt_top_right_1] time_interval: ms(js$ _interval $) do spawn: top_right_1
+on [evt_top_right_2] time_interval: ms(js$ _interval $) do spawn: top_right_2
+on [evt_btm_right_1] time_interval: ms(js$ _interval $) do spawn: btm_right_1
+on [evt_btm_right_2] time_interval: ms(js$ _interval $) do spawn: btm_right_2
+on [evt_btm_left_1] time_interval: ms(js$ _interval $) do spawn: btm_left_1
+on [evt_btm_left_2] time_interval: ms(js$ _interval $) do spawn: btm_left_2
+
+on time_one_time: 1: do start_secondary_timer: time = ms(js$ _time_0 / 2 $)
+
+
+// 1
+on secondary_timer: ms(js$ _time_0 - 100 $) do toggle_event_enabled: event_id = evt_top_left_1, enabled = 1
+on secondary_timer: ms(js$ _time_0 - 100 $) do toggle_event_enabled: event_id = evt_top_left_2, enabled = 1
+on secondary_timer: ms(js$ _time_0 - 100 $) do toggle_event_enabled: event_id = evt_top_right_1, enabled = 0
+on secondary_timer: ms(js$ _time_0 - 100 $) do toggle_event_enabled: event_id = evt_top_right_2, enabled = 0
+
+on secondary_timer: ms(js$ _time_0 $) do modify_terrain: x = 7, y = 2, terrain_type = wall
+on secondary_timer: ms(js$ _time_0 $) do modify_terrain: x = 7, y = 3, terrain_type = wall
+
+on secondary_timer: ms(js$ _time_0 $) do modify_terrain: x = 10, y = 5, terrain_type = floor
+on secondary_timer: ms(js$ _time_0 $) do modify_terrain: x = 11, y = 5, terrain_type = floor
+
+// 2
+on secondary_timer: ms(js$ _time_1 - 100 $) do toggle_event_enabled: event_id = evt_top_right_1, enabled = 1
+on secondary_timer: ms(js$ _time_1 - 100 $) do toggle_event_enabled: event_id = evt_top_right_2, enabled = 1
+on secondary_timer: ms(js$ _time_1 - 100 $) do toggle_event_enabled: event_id = evt_btm_right_1, enabled = 0
+on secondary_timer: ms(js$ _time_1 - 100 $) do toggle_event_enabled: event_id = evt_btm_right_2, enabled = 0
+
+on secondary_timer: ms(js$ _time_1 $) do modify_terrain: x = 10, y = 5, terrain_type = wall
+on secondary_timer: ms(js$ _time_1 $) do modify_terrain: x = 11, y = 5, terrain_type = wall
+
+on secondary_timer: ms(js$ _time_1 $) do modify_terrain: x = 7, y = 7, terrain_type = floor
+on secondary_timer: ms(js$ _time_1 $) do modify_terrain: x = 7, y = 8, terrain_type = floor
+on secondary_timer: ms(js$ _time_1 $) do modify_terrain: x = 7, y = 9, terrain_type = floor
+
+// 3
+on secondary_timer: ms(js$ _time_2 - 100 $) do toggle_event_enabled: event_id = evt_btm_right_1, enabled = 1
+on secondary_timer: ms(js$ _time_2 - 100 $) do toggle_event_enabled: event_id = evt_btm_right_2, enabled = 1
+on secondary_timer: ms(js$ _time_2 - 100 $) do toggle_event_enabled: event_id = evt_btm_left_1, enabled = 0
+on secondary_timer: ms(js$ _time_2 - 100 $) do toggle_event_enabled: event_id = evt_btm_left_2, enabled = 0
+
+on secondary_timer: ms(js$ _time_2 $) do modify_terrain: x = 7, y = 7, terrain_type = wall
+on secondary_timer: ms(js$ _time_2 $) do modify_terrain: x = 7, y = 8, terrain_type = wall
+on secondary_timer: ms(js$ _time_2 $) do modify_terrain: x = 7, y = 9, terrain_type = wall
+
+on secondary_timer: ms(js$ _time_2 $) do modify_terrain: x = 2, y = 5, terrain_type = floor
+on secondary_timer: ms(js$ _time_2 $) do modify_terrain: x = 3, y = 5, terrain_type = floor
+
+// 4
+on secondary_timer: ms(js$ _time_3 - 100 $) do toggle_event_enabled: event_id = evt_btm_left_1, enabled = 1
+on secondary_timer: ms(js$ _time_3 - 100 $) do toggle_event_enabled: event_id = evt_btm_left_2, enabled = 1
+on secondary_timer: ms(js$ _time_3 - 100 $) do toggle_event_enabled: event_id = evt_top_left_1, enabled = 0
+on secondary_timer: ms(js$ _time_3 - 100 $) do toggle_event_enabled: event_id = evt_top_left_2, enabled = 0
+
+on secondary_timer: ms(js$ _time_3 $) do modify_terrain: x = 2, y = 5, terrain_type = wall
+on secondary_timer: ms(js$ _time_3 $) do modify_terrain: x = 3, y = 5, terrain_type = wall
+
+on secondary_timer: ms(js$ _time_3 $) do modify_terrain: x = 7, y = 2, terrain_type = floor
+on secondary_timer: ms(js$ _time_3 $) do modify_terrain: x = 7, y = 3, terrain_type = floor
+
+on secondary_timer: ms(js$ _time_3 $) do start_secondary_timer: time = 0

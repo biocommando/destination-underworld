@@ -1,0 +1,47 @@
+js$ _module = require('./arena_102_inc.js') $
+
+js$ _module.spawnpoint(0) $
+js$ _module.spawnpoint(1) $
+js$ _module.spawnpoint(2) $
+js$ _module.spawnpoint(3) $
+js$ _module.spawnpoint(4) $
+js$ _module.spawnpoint(5) $
+js$ _module.spawnpoint(6) $
+js$ _module.spawnpoint(7) $
+js$ _module.spawnpoint(8) $
+js$ _module.spawnpoint(9) $
+js$ _module.spawnpoint(10) $
+js$ _module.spawnpoint(11) $
+js$ _module.spawnpoint(12) $
+js$ _module.spawnpoint(13) $
+js$ _module.spawnpoint(14) $
+js$ _module.spawnpoint(15) $
+
+set time_starts_at = ms(7000)
+
+on time_interval: ms(10000) do spawn: #0
+on time_interval: ms(15000) do spawn: #1
+on time_interval: ms(10000) do spawn: #2
+on time_interval: ms(15000) do spawn: #3
+on time_interval: ms(10000) do spawn: #4
+on time_interval: ms(15000) do spawn: #5
+on time_interval: ms(10000) do spawn: #6
+on time_interval: ms(15000) do spawn: #7
+on time_interval: ms(10000) do spawn: #8
+on time_interval: ms(15000) do spawn: #9
+on time_interval: ms(10000) do spawn: #10
+on time_interval: ms(15000) do spawn: #11
+on time_interval: ms(10000) do spawn: #12
+on time_interval: ms(15000) do spawn: #13
+on time_interval: ms(10000) do spawn: #14
+on time_interval: ms(15000) do spawn: #15
+
+def spawnpoint top_left = 5, 3, 0, 0, 0, 0, 100
+def spawnpoint top_right = 9, 3, 0, 0, 0, 0, 100
+def spawnpoint btm_left = 5, 7, 0, 0, 0, 0, 100
+def spawnpoint btm_right = 9, 7, 0, 0, 0, 0, 100
+
+on time_one_time: ms(35000) do spawn: top_left
+on time_one_time: ms(35000) do spawn: top_right
+on time_one_time: ms(35000) do spawn: btm_left
+on time_one_time: ms(35000) do spawn: btm_right

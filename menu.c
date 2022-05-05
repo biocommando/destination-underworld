@@ -152,8 +152,9 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     ArenaHighscore arena_highscore;
     access_arena_highscore(&arena_highscore, 1);
 
-    int game_mode = 0;
-    int level_set = 0;
+    // Make these static so that entering the menu mid-game will not forget previous choises
+    static int game_mode = 0;
+    static int level_set = 0;
     int slot = 0;
     int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
     peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
@@ -241,7 +242,8 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                     break;
                 }
             }
-            textprintf_ex(buf, menufont, 370, 80, WHITE, -1, "Highscore: %d", kills);
+            textprintf_ex(buf, menufont, 370, 80, WHITE, -1, "Highscore:");
+            textprintf_ex(buf, font, 440, 90, WHITE, -1, "%d", kills);
         }
 
         rectfill(buf, 200, 102, 230, 122, RED);
