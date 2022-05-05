@@ -658,9 +658,9 @@ int game(int mission, int *game_modifiers)
 
   while (restart_requested < 2)
   {
+    cleanup_bodyparts(&world);
     if (time_stamp % 6 == 0)
     {
-      cleanup_bodyparts(&world);
       reset_sample_triggers();
     }
     time_stamp++;

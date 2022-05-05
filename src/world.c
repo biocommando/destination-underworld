@@ -1,5 +1,6 @@
 #include "world.h"
 #include "predictableRandom.h"
+#include "logging.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -197,7 +198,7 @@ void cleanup_bodyparts(World *world)
     static int x = 0;
     static int y = 0;
 
-    if (check_flags_at(world, x, y, TILE_IS_FLOOR))
+    if (ns_check_flags_at(world, x, y, TILE_IS_FLOOR | TILE_IS_EXIT_POINT | TILE_IS_EXIT_LEVEL))
     {
         int bp_count = 0;
         for (int i = 0; i < ENEMYCOUNT; i++)
@@ -206,10 +207,14 @@ void cleanup_bodyparts(World *world)
             {
                 BodyPart *bp = &world->enm[i].bodyparts[j];
                 if (bp->exists && world->enm[i].roomid == world->current_room &&
-                    bp->x / TILESIZE == x && bp->y / TILESIZE == y)
+                    bp->x > x * TILESIZE && bp->x < (x + 1) * TILESIZE &&
+                    bp->y > y * TILESIZE && bp->y < (y + 1) * TILESIZE)
                 {
-                    if (++bp_count > 5)
+                    if (++bp_count > 40)
+                    {
                         bp->exists = 0;
+                        LOG("Cleanup@%d,%d!\n", x, y);
+                    }
                 }
             }
         }
