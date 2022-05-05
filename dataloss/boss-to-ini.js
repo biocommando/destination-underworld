@@ -7,6 +7,10 @@ const main = {
     player_initial_gold: -1
 }
 
+const mainSetup = {
+    main
+}
+
 const events = []
 
 const spawnpoints = []
@@ -23,6 +27,33 @@ const ms = a => Math.floor(Number(a) / 40 / 3)
 const internal = {
     filename: `core-pack/${fname.replace('.boss', '.ini')}`
 }
+
+const GAMEMODIFIER_DOUBLED_SHOTS = 0x1
+const GAMEMODIFIER_OVERPOWERED_POWERUPS = 0x2
+const GAMEMODIFIER_OVERPRICED_POWERUPS = 0x4
+const GAMEMODIFIERS_OVER_POWERUP = (GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS)
+const GAMEMODIFIER_MULTIPLIED_GOLD = 0x8
+const GAMEMODIFIER_BRUTAL = 0x10
+const GAMEMODIFIER_ARENA_FIGHT = 0x20
+
+const game_modes = {
+    normal: 0,
+    brutal: GAMEMODIFIER_BRUTAL,
+    over_powerup: GAMEMODIFIERS_OVER_POWERUP,
+    explosion_madness: GAMEMODIFIER_DOUBLED_SHOTS,
+    powerup_only: GAMEMODIFIER_MULTIPLIED_GOLD
+}
+
+const arena_game_mode = key => game_modes[key] | GAMEMODIFIER_ARENA_FIGHT
+/*
+    Configuration example using this macro helper:
+    set player_initial_gold = 6
+    set [main__powerup_only] player_initial_gold = -1
+    js$ arena_set_override_main_setup('powerup_only') $
+*/
+const arena_set_override_main_setup = key => `set mode_override_${arena_game_mode(key)} = main__${key}`
+
+const arena_override_event = (name, gameMode) => `[overrides__${name}__for_mode_${arena_game_mode(gameMode)}]`
 
 fs
     .readFileSync(fname)
@@ -85,8 +116,10 @@ fs
                 evt.waypoint_id = wp.value
             } else if (event_type === 'spawn') {
                 const sp = spawnpoints.find(y => y.name === x.trim())
+                if (!sp)
+                    throw 'spawnpoint not found: ' + x
                 evt.spawn_point = sp.value
-            } else if (x) {
+            } else if (x && event_type !== 'nothing') {
                 const params = x.split(',').map(y => y.split('=').map(z => z.trim()))
                 params.forEach(p => {
                     evt[p[0]] = p[1]
@@ -94,8 +127,17 @@ fs
             }
             events.push(evt)
         } else if (x.startsWith('set ')) {
+            let mainName = 'main'
+            x = x.replace(/\[([a-zA-Z0-9_]*)\]/, (_, name) => {
+                mainName = name
+                return ''
+            })
+            if (mainName !== 'main' && !mainSetup[mainName])
+            {
+                mainSetup[mainName] = {...main}
+            }
             x = x.replace('set ', '').split('=').map(y => y.trim())
-            main[x[0]] = x[1]
+            mainSetup[mainName][x[0]] = x[1]
         } else if (x.startsWith('def waypoint')) {
             x = x.replace('def waypoint', '').split('=').map(y => y.trim())
             const params = x[1].split(',').map(y => y.trim())
@@ -118,17 +160,17 @@ fs
         }
     })
 
-const objToIni = obj => {
-    return Object.keys(obj).map(key => key + '=' + obj[key]).join('\r\n') + '\r\n'
+const objToIni = (obj, ignoreKeys = []) => {
+    return Object.keys(obj).filter(key => !ignoreKeys.includes(key)).map(key => key + '=' + obj[key]).join('\r\n') + '\r\n'
 }
 
-let str = `# Generated from ${fname}\r\n\r\n`
-
-str += '[main]\r\n'
+let str = `# Generated from ${fname}\r\n`
 
 main.events = events.length
 
-str += objToIni(main)
+Object.keys(mainSetup).forEach(sect => {
+    str += `\r\n[${sect}]\r\n${objToIni(mainSetup[sect])}`
+})
 
 events.forEach(e => {
     if (e.event_id !== undefined) {
@@ -139,17 +181,27 @@ events.forEach(e => {
     }
 })
 
-events.forEach((e, i) => {
+events.filter(e => e.name && e.name.startsWith('overrides__'))
+    .forEach(e => {
+        const mainevt = events.find(e2 => e2.name === e.name.replace(/overrides__(.*)__for_mode_\d*/, '$1'))
+        if (!mainevt)
+            throw 'base event not found for override ' + e.name
+        if (e.trigger_type === 'inherit') {
+            e.trigger_type = mainevt.trigger_type
+            e.trigger_value = mainevt.trigger_value
+        }
+        mainevt['mode_override_' + e.name.split('__for_mode_')[1]] = e.name
+        str += `\r\n[${e.name}]\r\n${objToIni(e, ['name'])}`
+    })
+
+events.filter(e => !(e.name && e.name.startsWith('overrides__'))).forEach((e, i) => {
     str += `\r\n[event_${i}]\r\n`
-    delete e.name
-    str += objToIni(e)
+    str += objToIni(e, ['name'])
 })
 
 spawnpoints.forEach((s, i) => {
     str += `\r\n[spawn_point_${s.value}]\r\n`
-    delete s.value
-    delete s.name
-    str += objToIni(s)
+    str += objToIni(s, ['name', 'value'])
 })
 
 fs.writeFileSync(internal.filename, str)

@@ -543,7 +543,7 @@ int read_level(World *world, int mission, int room_to)
             FILE *f2 = fopen(buf, "r");
             if (f2)
             {
-                read_bfconfig(f2, &world->boss_fight_config);
+                read_bfconfig(f2, &world->boss_fight_config, world->game_modifiers);
                 fclose(f2);
                 LOG("Bossfight initiated\n");
                 world->boss_fight = 1;

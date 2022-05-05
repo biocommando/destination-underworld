@@ -26,28 +26,40 @@ void print_configs(BossFightConfig *config)
   }
 }
 
-void read_bfconfig(FILE *f, BossFightConfig *config)
+void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
 {
-  config->health = ini_read_int_value(f, "main", "health");
-  config->speed = ini_read_int_value(f, "main", "speed");
-  config->fire_rate = ini_read_int_value(f, "main", "fire_rate");
-  config->player_initial_gold = ini_read_int_value(f, "main", "player_initial_gold");
+  char main_section[100] = "main";
+  char mode_override_key[100];
+  sprintf(mode_override_key, "mode_override_%d", game_modifiers);
+  ini_read_string_value(f, "main", mode_override_key, main_section);
+  config->health = ini_read_int_value(f, main_section, "health");
+  config->speed = ini_read_int_value(f, main_section, "speed");
+  config->fire_rate = ini_read_int_value(f, main_section, "fire_rate");
+  config->player_initial_gold = ini_read_int_value(f, main_section, "player_initial_gold");
   config->num_events = ini_read_int_value(f, "main", "events");
   if (config->num_events > BFCONF_MAX_EVENTS)
   {
     LOG("ERROR: too many events defined %d\n", config->num_events);
     config->num_events = BFCONF_MAX_EVENTS;
   }
-  config->state.timer_value = ini_read_int_value(f, "main", "time_starts_at");
+  config->state.timer_value = ini_read_int_value(f, main_section, "time_starts_at");
 
   for (int i = 0; i < config->num_events; i++)
   {
     char event_segment[100];
     sprintf(event_segment, "event_%d", i);
-    char s[256];
+    char s[256] = "";
+    ini_read_string_value(f, event_segment, mode_override_key, s);
+    if (s[0])
+    {
+      strncpy(event_segment, s, 99);
+    }
     ini_read_string_value(f, event_segment, "trigger_type", s);
 
     config->events[i].enabled = !ini_read_int_value(f, event_segment, "initially_disabled");
+
+    config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_NEVER;
+    config->events[i].event_type = BFCONF_EVENT_TYPE_NO_OP;
 
     if (!strcmp(s, "time_interval"))
     {

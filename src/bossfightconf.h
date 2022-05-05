@@ -10,7 +10,9 @@
 #define BFCONF_TRIGGER_TYPE_HEALTH 'h'
 #define BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED 'w'
 #define BFCONF_TRIGGER_TYPE_SECONDARY_TIMER 's'
+#define BFCONF_TRIGGER_TYPE_NEVER 'N'
 
+#define BFCONF_EVENT_TYPE_NO_OP '0'
 #define BFCONF_EVENT_TYPE_SPAWN 's'
 #define BFCONF_EVENT_TYPE_ALLOW_FIRING 'a'
 #define BFCONF_EVENT_TYPE_DISALLOW_FIRING 'd'
@@ -67,7 +69,7 @@ typedef struct
   BossFightState state;
 } BossFightConfig;
 
-void read_bfconfig(FILE *f, BossFightConfig *config);
+void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers);
 
 void bossfight_process_event_triggers(BossFightConfig *config);
 
