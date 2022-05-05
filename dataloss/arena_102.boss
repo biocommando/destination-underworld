@@ -1,3 +1,6 @@
+// Add a hint to the compiler that this is an arena fight
+js$ game_mode.arena = 1 $
+
 js$ _module = require('./arena_102_inc.js') $
 
 js$ _module.spawnpoint(0) $
@@ -40,8 +43,8 @@ set player_initial_gold = 5
 
 set [main__powerup_only] player_initial_gold = -1
 set [main__over_powerup] player_initial_gold = 10
-js$ arena_set_override_main_setup('powerup_only') $
-js$ arena_set_override_main_setup('over_powerup') $
+js$ set_override_main_setup('powerup_only') $
+js$ set_override_main_setup('over_powerup') $
 
 on [evt_1] time_interval: ms(10000) do spawn: #0
 on [evt_2] time_interval: ms(15000) do spawn: #1
@@ -70,19 +73,19 @@ on time_one_time: ms(35000) do spawn: top_right
 on time_one_time: ms(35000) do spawn: btm_left
 on time_one_time: ms(35000) do spawn: btm_right
 
-on js$ arena_override_event('evt_1', 'brutal') $ inherit: 0 do spawn: easy#0
-on js$ arena_override_event('evt_2', 'brutal') $ inherit: 0 do spawn: easy#1
-on js$ arena_override_event('evt_3', 'brutal') $ inherit: 0 do spawn: easy#2
-on js$ arena_override_event('evt_4', 'brutal') $ inherit: 0 do spawn: easy#3
-on js$ arena_override_event('evt_5', 'brutal') $ inherit: 0 do spawn: easy#4
-on js$ arena_override_event('evt_6', 'brutal') $ inherit: 0 do spawn: easy#5
-on js$ arena_override_event('evt_7', 'brutal') $ inherit: 0 do spawn: easy#6
-on js$ arena_override_event('evt_8', 'brutal') $ inherit: 0 do spawn: easy#7
-on js$ arena_override_event('evt_9', 'brutal') $ inherit: 0 do spawn: easy#8
-on js$ arena_override_event('evt_10', 'brutal') $ inherit: 0 do spawn: easy#9
-on js$ arena_override_event('evt_11', 'brutal') $ inherit: 0 do spawn: easy#10
-on js$ arena_override_event('evt_12', 'brutal') $ inherit: 0 do spawn: easy#11
-on js$ arena_override_event('evt_13', 'brutal') $ inherit: 0 do spawn: easy#12
-on js$ arena_override_event('evt_14', 'brutal') $ inherit: 0 do spawn: easy#13
-on js$ arena_override_event('evt_15', 'brutal') $ inherit: 0 do spawn: easy#14
-on js$ arena_override_event('evt_16', 'brutal') $ inherit: 0 do spawn: easy#15
+on js$ override_event('evt_1', 'brutal') $ inherit: 0 do spawn: easy#0
+on js$ override_event('evt_2', 'brutal') $ inherit: 0 do spawn: easy#1
+on js$ override_event('evt_3', 'brutal') $ inherit: 0 do spawn: easy#2
+on js$ override_event('evt_4', 'brutal') $ inherit: 0 do spawn: easy#3
+on js$ override_event('evt_5', 'brutal') $ inherit: 0 do spawn: easy#4
+on js$ override_event('evt_6', 'brutal') $ inherit: 0 do spawn: easy#5
+on js$ override_event('evt_7', 'brutal') $ inherit: 0 do spawn: easy#6
+on js$ override_event('evt_8', 'brutal') $ inherit: 0 do spawn: easy#7
+on js$ override_event('evt_9', 'brutal') $ inherit: 0 do spawn: easy#8
+on js$ override_event('evt_10', 'brutal') $ inherit: 0 do spawn: easy#9
+on js$ override_event('evt_11', 'brutal') $ inherit: 0 do spawn: easy#10
+on js$ override_event('evt_12', 'brutal') $ inherit: 0 do spawn: easy#11
+on js$ override_event('evt_13', 'brutal') $ inherit: 0 do spawn: easy#12
+on js$ override_event('evt_14', 'brutal') $ inherit: 0 do spawn: easy#13
+on js$ override_event('evt_15', 'brutal') $ inherit: 0 do spawn: easy#14
+on js$ override_event('evt_16', 'brutal') $ inherit: 0 do spawn: easy#15

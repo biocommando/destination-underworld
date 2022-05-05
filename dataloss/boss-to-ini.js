@@ -44,16 +44,19 @@ const game_modes = {
     powerup_only: GAMEMODIFIER_MULTIPLIED_GOLD
 }
 
-const arena_game_mode = key => game_modes[key] | GAMEMODIFIER_ARENA_FIGHT
+const game_mode = key => {
+    const arenaFlag = (key.startsWith('arena_') || game_mode.arena) ? GAMEMODIFIER_ARENA_FIGHT : 0
+    return game_modes[key.replace('arena_', '')] | arenaFlag
+}
 /*
     Configuration example using this macro helper:
     set player_initial_gold = 6
     set [main__powerup_only] player_initial_gold = -1
-    js$ arena_set_override_main_setup('powerup_only') $
+    js$ set_override_main_setup('arena_powerup_only') $
 */
-const arena_set_override_main_setup = key => `set mode_override_${arena_game_mode(key)} = main__${key}`
+const set_override_main_setup = key => `set mode_override_${game_mode(key)} = main__${key}`
 
-const arena_override_event = (name, gameMode) => `[overrides__${name}__for_mode_${arena_game_mode(gameMode)}]`
+const override_event = (name, gameMode) => `[overrides__${name}__for_mode_${game_mode(gameMode)}]`
 
 fs
     .readFileSync(fname)
