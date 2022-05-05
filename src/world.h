@@ -221,5 +221,6 @@ int ns_check_flags_at(World *world, int x, int y, int flags_to_check);
 int ns_get_wall_type_at(World *world, int x, int y);
 void set_tile_flag(World *world, int x, int y, int flags);
 void init_player(World *world, Enemy *plrautosave);
+void cleanup_bodyparts(World *world);
 
 #endif

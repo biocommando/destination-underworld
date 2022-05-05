@@ -192,6 +192,39 @@ void spawn_body_parts(Enemy *enm)
     }
 }
 
+void cleanup_bodyparts(World *world)
+{
+    static int x = 0;
+    static int y = 0;
+
+    if (check_flags_at(world, x, y, TILE_IS_FLOOR))
+    {
+        int bp_count = 0;
+        for (int i = 0; i < ENEMYCOUNT; i++)
+        {
+            for (int j = 0; j < BODYPARTCOUNT; j++)
+            {
+                BodyPart *bp = &world->enm[i].bodyparts[j];
+                if (bp->exists && world->enm[i].roomid == world->current_room &&
+                    bp->x / TILESIZE == x && bp->y / TILESIZE == y)
+                {
+                    if (++bp_count > 5)
+                        bp->exists = 0;
+                }
+            }
+        }
+    }
+
+    if (++x == MAPMAX_X)
+    {
+        x = 0;
+        if (++y == MAPMAX_Y)
+        {
+            y = 0;
+        }
+    }
+}
+
 void set_tile_flag(World *world, int x, int y, int flags)
 {
     world->map[x / TILESIZE][y / TILESIZE].flags |= flags;

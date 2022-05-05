@@ -155,11 +155,14 @@ void draw_player_legend(World *world)
         }
 
         masked_blit(world->spr, world->buf, 89 + (world->plr.shots > 1) * 4, 196, world->plr.x - 21, world->plr.y - 14 + 4 * world->plr.health, 3, 6);
-        if (world->plr.gold > 9)
+        int gold = world->plr.gold;
+        if (gold > 99)
+            gold = 99;
+        if (gold > 9)
         {
-            masked_blit(world->spr, world->buf, 49 + (world->plr.gold / 10) * 4, 196, world->plr.x - 25, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
+            masked_blit(world->spr, world->buf, 49 + (gold / 10) * 4, 196, world->plr.x - 25, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
         }
-        masked_blit(world->spr, world->buf, 49 + (world->plr.gold % 10) * 4, 196, world->plr.x - 21, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
+        masked_blit(world->spr, world->buf, 49 + (gold % 10) * 4, 196, world->plr.x - 21, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
     }
 }
 
@@ -187,6 +190,8 @@ void move_and_draw_body_parts(World *world)
                                         (int)bodypart->x - 2 * blood_trail_idx * bodypart->dx, (int)bodypart->y - 2 * blood_trail_idx * bodypart->dy, 2, 2);
                         }
 
+                        int initially_inside_wall = get_wall_type_at(world, bodypart->x, bodypart->y);
+
                         bodypart->x += bodypart->dx;
                         if (get_wall_type_at(world, bodypart->x, bodypart->y))
                         {
@@ -197,6 +202,8 @@ void move_and_draw_body_parts(World *world)
                         {
                             bodypart->dy = -bodypart->dy;
                         }
+                        if (initially_inside_wall && get_wall_type_at(world, bodypart->x, bodypart->y))
+                            bodypart->exists = 0;
                     }
 
                     const double friction = 0.94 - (j + rand() % 5) * 0.003;

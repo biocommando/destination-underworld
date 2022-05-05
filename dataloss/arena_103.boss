@@ -22,6 +22,10 @@ def spawnpoint btm_left_2 = 6, 10, 0, 50, 0, 0, 0
 
 set [main__over_powerup] player_initial_gold = 10
 js$ set_override_main_setup('over_powerup') $
+set [main__powerup_only] player_initial_gold = 80
+js$ set_override_main_setup('powerup_only') $
+set [main__explosion_madness] player_initial_gold = 5
+js$ set_override_main_setup('explosion_madness') $
 
 on [evt_top_left_1] time_interval: ms(js$ _interval $) do spawn: top_left_1
 on [evt_top_left_2] time_interval: ms(js$ _interval $) do spawn: top_left_2
@@ -96,6 +100,6 @@ on kill_count: 50 do modify_terrain: x = 7, y = 6, terrain_type = floor
 def spawnpoint middle = 7, 5, 0, 0, 100, 0, 0
 
 on [evt_middle] time_interval: ms(js$ _interval * 2 $) do spawn: middle
-default_disable evt_middle
+set_event_property evt_middle: initially_disabled = 1
 
 on kill_count: 50 do toggle_event_enabled: event_id = evt_middle, enabled = 1
