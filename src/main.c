@@ -41,13 +41,16 @@ FILE *record_input_file = NULL;
 
 int main(int argc, char **argv)
 {
-  record_mode = read_cmd_line_arg_int("record-mode", argv, argc);
-  if (record_mode == RECORD_MODE_RECORD)
+  char record_mode_str[256] = "";
+  read_cmd_line_arg_str("record-mode", argv, argc, record_mode_str);
+  if (!strcmp(record_mode_str, "record"))
   {
+    record_mode = RECORD_MODE_RECORD;
     LOG("Record mode active.\n");
   }
-  if (record_mode == RECORD_MODE_PLAYBACK)
+  else if (!strcmp(record_mode_str, "play"))
   {
+    record_mode = RECORD_MODE_PLAYBACK;
     char fname[256];
     if (read_cmd_line_arg_str("file", argv, argc, fname))
     {
@@ -924,7 +927,7 @@ int game(int mission, int *game_modifiers)
           int highscore_kills = parse_highscore_from_world_state(&world, &highscore, &arena_idx, &mode_idx);
           rectfill(screen, 5, 5, 340, 125, GRAY(60));
           textprintf_ex(screen, font, 10, 10, WHITE, -1, "Arena fight over, your kill count: %d", world.kills);
-          if (highscore_kills < world.kills)
+          if (record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
           {
             textprintf_ex(screen, font, 10, 30, WHITE, -1, "Previous highscore: %d", highscore_kills);
             textprintf_ex(screen, font, 10, 50, WHITE, -1, "NEW HIGHSCORE!");
