@@ -490,8 +490,19 @@ void bullet_logic(World *world)
               {
                 LOG_TRACE("boss die logic\n");
                 boss_logic(world, 1);
-                chunkrest(1);
                 trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (enm->x - 240) / 8, 1000);
+                for (int xx = 0; xx < 5; xx++)
+                {
+                  rectfill(screen, 0, 0, screen->w, screen->h, WHITE);
+                  chunkrest(25);
+                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(128));
+                  chunkrest(25);
+                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(64));
+                  chunkrest(25);
+                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(128));
+                  chunkrest(25);
+                }
+                create_cluster_explosion(world, enm->x, enm->y, 48, 1, &world->plr);
               }
               else
               {

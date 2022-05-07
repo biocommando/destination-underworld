@@ -40,7 +40,7 @@ void trigger_sample_with_params(int id, int volume, int pan, int pitch)
     {
       if (!sample_register[i].triggered)
         play_sample(sample_register[i].sample, volume * game_settings.sfx_vol, pan, pitch, 0);
-      sample_register[i].triggered = 0;
+      sample_register[i].triggered = 1;
       return;
     }
   }
