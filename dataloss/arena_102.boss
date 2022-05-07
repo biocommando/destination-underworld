@@ -1,41 +1,59 @@
 // Add a hint to the compiler that this is an arena fight
-js$ game_mode.arena = 1 $
+{# game_mode.arena = 1 #}
 
-js$ _module = require('./arena_102_inc.js') $
+////// SPAWN SETUP IN JAVASCRIPT /////////
 
-js$ _module.spawnpoint(0) $
-js$ _module.spawnpoint(1) $
-js$ _module.spawnpoint(2) $
-js$ _module.spawnpoint(3) $
-js$ _module.spawnpoint(4) $
-js$ _module.spawnpoint(5) $
-js$ _module.spawnpoint(6) $
-js$ _module.spawnpoint(7) $
-js$ _module.spawnpoint(8) $
-js$ _module.spawnpoint(9) $
-js$ _module.spawnpoint(10) $
-js$ _module.spawnpoint(11) $
-js$ _module.spawnpoint(12) $
-js$ _module.spawnpoint(13) $
-js$ _module.spawnpoint(14) $
-js$ _module.spawnpoint(15) $
+{#
 
-js$ _module.spawnpoint(0, 'easy') $
-js$ _module.spawnpoint(1, 'easy') $
-js$ _module.spawnpoint(2, 'easy') $
-js$ _module.spawnpoint(3, 'easy') $
-js$ _module.spawnpoint(4, 'easy') $
-js$ _module.spawnpoint(5, 'easy') $
-js$ _module.spawnpoint(6, 'easy') $
-js$ _module.spawnpoint(7, 'easy') $
-js$ _module.spawnpoint(8, 'easy') $
-js$ _module.spawnpoint(9, 'easy') $
-js$ _module.spawnpoint(10, 'easy') $
-js$ _module.spawnpoint(11, 'easy') $
-js$ _module.spawnpoint(12, 'easy') $
-js$ _module.spawnpoint(13, 'easy') $
-js$ _module.spawnpoint(14, 'easy') $
-js$ _module.spawnpoint(15, 'easy') $
+(function create_spawnpoints() {
+    const templates = {
+        normal: 'def spawnpoint N = X, Y, 50, 30, 10, 10, 0',
+        easy: 'def spawnpoint N = X, Y, 40, 20, 5, 5, 0'
+    }
+    const spawnpoints = []
+    Object.keys(templates).forEach(prefix => {
+        let i = 0
+        for (let x = 5; x <= 9; x++) {
+            for (let y = 3; y <= 7; y++) {
+                if (x === 5 || x === 9 || y === 3 || y === 7) {
+                    spawnpoints.push(templates[prefix]
+                        .replace('N', prefix + '_' + (i++))
+                        .replace('X', x)
+                        .replace('Y', y))
+                }
+            }
+        }
+    })
+    return spawnpoints
+})()
+
+#}
+
+{#
+
+(function configure_spawns() {
+    const a = []
+    for (let i = 0; i < 16; i++) {
+        a.push(`on [evt_${i + 1}] time_interval: ms(${i % 2 === 0 ? 10000 : 15000}) do spawn: normal_${i}`)
+    }
+    return a
+})()
+
+#}
+
+{#
+
+(function configure_spawn_overrides() {
+    const a = []
+    for (let i = 0; i < 16; i++) {
+        a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} inherit: 0 do spawn: easy_${i}`)
+    }
+    return a
+})()
+
+#}
+
+////// SPAWN SETUP IN JAVASCRIPT ENDS /////////
 
 set time_starts_at = ms(7000)
 
@@ -43,49 +61,10 @@ set player_initial_gold = 5
 
 set [main__powerup_only] player_initial_gold = -1
 set [main__over_powerup] player_initial_gold = 10
-js$ set_override_main_setup('powerup_only') $
-js$ set_override_main_setup('over_powerup') $
+{# set_override_main_setup('powerup_only') #}
+{# set_override_main_setup('over_powerup') #}
 
-on [evt_1] time_interval: ms(10000) do spawn: #0
-on [evt_2] time_interval: ms(15000) do spawn: #1
-on [evt_3] time_interval: ms(10000) do spawn: #2
-on [evt_4] time_interval: ms(15000) do spawn: #3
-on [evt_5] time_interval: ms(10000) do spawn: #4
-on [evt_6] time_interval: ms(15000) do spawn: #5
-on [evt_7] time_interval: ms(10000) do spawn: #6
-on [evt_8] time_interval: ms(15000) do spawn: #7
-on [evt_9] time_interval: ms(10000) do spawn: #8
-on [evt_10] time_interval: ms(15000) do spawn: #9
-on [evt_11] time_interval: ms(10000) do spawn: #10
-on [evt_12] time_interval: ms(15000) do spawn: #11
-on [evt_13] time_interval: ms(10000) do spawn: #12
-on [evt_14] time_interval: ms(15000) do spawn: #13
-on [evt_15] time_interval: ms(10000) do spawn: #14
-on [evt_16] time_interval: ms(15000) do spawn: #15
-
-def spawnpoint top_left = 5, 3, 0, 0, 0, 0, 100
-def spawnpoint top_right = 9, 3, 0, 0, 0, 0, 100
-def spawnpoint btm_left = 5, 7, 0, 0, 0, 0, 100
-def spawnpoint btm_right = 9, 7, 0, 0, 0, 0, 100
-
-on time_one_time: ms(35000) do spawn: top_left
-on time_one_time: ms(35000) do spawn: top_right
-on time_one_time: ms(35000) do spawn: btm_left
-on time_one_time: ms(35000) do spawn: btm_right
-
-on js$ override_event('evt_1', 'brutal') $ inherit: 0 do spawn: easy#0
-on js$ override_event('evt_2', 'brutal') $ inherit: 0 do spawn: easy#1
-on js$ override_event('evt_3', 'brutal') $ inherit: 0 do spawn: easy#2
-on js$ override_event('evt_4', 'brutal') $ inherit: 0 do spawn: easy#3
-on js$ override_event('evt_5', 'brutal') $ inherit: 0 do spawn: easy#4
-on js$ override_event('evt_6', 'brutal') $ inherit: 0 do spawn: easy#5
-on js$ override_event('evt_7', 'brutal') $ inherit: 0 do spawn: easy#6
-on js$ override_event('evt_8', 'brutal') $ inherit: 0 do spawn: easy#7
-on js$ override_event('evt_9', 'brutal') $ inherit: 0 do spawn: easy#8
-on js$ override_event('evt_10', 'brutal') $ inherit: 0 do spawn: easy#9
-on js$ override_event('evt_11', 'brutal') $ inherit: 0 do spawn: easy#10
-on js$ override_event('evt_12', 'brutal') $ inherit: 0 do spawn: easy#11
-on js$ override_event('evt_13', 'brutal') $ inherit: 0 do spawn: easy#12
-on js$ override_event('evt_14', 'brutal') $ inherit: 0 do spawn: easy#13
-on js$ override_event('evt_15', 'brutal') $ inherit: 0 do spawn: easy#14
-on js$ override_event('evt_16', 'brutal') $ inherit: 0 do spawn: easy#15
+on time_one_time: ms(35000) do spawn: (5, 3, 0, 0, 0, 0, 100)
+on time_one_time: ms(35000) do spawn: (9, 3, 0, 0, 0, 0, 100)
+on time_one_time: ms(35000) do spawn: (5, 7, 0, 0, 0, 0, 100)
+on time_one_time: ms(35000) do spawn: (9, 7, 0, 0, 0, 0, 100)

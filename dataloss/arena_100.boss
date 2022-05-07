@@ -1,54 +1,51 @@
 // Add a hint to the compiler that this is an arena fight
-js$ game_mode.arena = 1 $
+{# game_mode.arena = 1 #}
 
-js$ execute(() => _spawn_interval = 5000) $
-
-def spawnpoint 2;5 = 2, 5, 0, 0, 100, 0, 0
-def spawnpoint 13;6 = 13, 6, 0, 0, 100, 0, 0
+{# _spawn_interval = 5000 #}
 
 // Init
 on time_one_time: 1 do start_secondary_timer: time = 0
 
 on [DisableExtraEnemy] time_one_time: 1 do toggle_event_enabled: event_id = SpawnC1, enabled = 0
 
-js$ disable_event('DisableExtraEnemy', 'brutal') $
+{# disable_event('DisableExtraEnemy', 'brutal') #}
 
 // Spawn imps
-on [SpawnA1] time_interval: ms(js$ _spawn_interval $) do spawn: 2;5
-on [SpawnA2] time_interval: ms(js$ _spawn_interval $) do spawn: 13;6
+on [SpawnA1] time_interval: ms({# _spawn_interval #}) do spawn: (2, 5, 0, 0, 100, 0, 0)
+on [SpawnA2] time_interval: ms({# _spawn_interval #}) do spawn: (13, 6, 0, 0, 100, 0, 0)
 
-on js$ override_event('SpawnA1', 'brutal') $ time_interval: ms(js$ _spawn_interval * 1.5 $) do spawn: 2;5
-on js$ override_event('SpawnA2', 'brutal') $ time_interval: ms(js$ _spawn_interval * 1.5 $) do spawn: 13;6
+on {# override_event('SpawnA1', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do inherit: 0
+on {# override_event('SpawnA2', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do inherit: 0
 
 // Spawn others
-on [SpawnB1] time_interval: ms(js$ _spawn_interval $) do spawn: (6, 9, 70, 30, 0, 0, 0)
-on [SpawnB2] time_interval: ms(js$ _spawn_interval $) do spawn: (7, 8, 70, 30, 0, 0, 0)
+on [SpawnB1] time_interval: ms({# _spawn_interval #}) do spawn: (6, 9, 70, 30, 0, 0, 0)
+on [SpawnB2] time_interval: ms({# _spawn_interval #}) do spawn: (7, 8, 70, 30, 0, 0, 0)
 
 set_event_property SpawnB1: initially_disabled = 1
 set_event_property SpawnB2: initially_disabled = 1
 
-on [SpawnC1] time_interval: ms(js$ _spawn_interval $) do spawn: (7, 3, 40, 50, 10, 0, 0)
+on [SpawnC1] time_interval: ms({# _spawn_interval #}) do spawn: (7, 3, 40, 50, 10, 0, 0)
 
 // Enable others, disable imps
-js$ execute(() => _enable_others_at = _spawn_interval * 2) $
-on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnA1, enabled = 0
-on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnA2, enabled = 0
-on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnB1, enabled = 1
-on secondary_timer: ms(js$ _enable_others_at $) do toggle_event_enabled: event_id = SpawnB2, enabled = 1
+{# _enable_others_at = _spawn_interval * 2 #}
+on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnA1, enabled = 0
+on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnA2, enabled = 0
+on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnB1, enabled = 1
+on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnB2, enabled = 1
 
 // Enable imps, disable others
-js$ execute(() => _enable_imps_at = _enable_others_at + _spawn_interval * 3) $
-on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnA1, enabled = 1
-on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnA2, enabled = 1
-on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnB1, enabled = 0
-on secondary_timer: ms(js$ _enable_imps_at $) do toggle_event_enabled: event_id = SpawnB2, enabled = 0
+{# _enable_imps_at = _enable_others_at + _spawn_interval * 3 #}
+on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnA1, enabled = 1
+on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnA2, enabled = 1
+on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnB1, enabled = 0
+on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnB2, enabled = 0
 
-on secondary_timer: ms(js$ _enable_imps_at $) do start_secondary_timer: time = 0
+on secondary_timer: ms({# _enable_imps_at #}) do start_secondary_timer: time = 0
 
 // Let's enable delayed spawns after score has reached certain value
 
-on [SpawnDelayed1] time_interval: ms(js$ _spawn_interval $) do spawn: (4, 10, 50, 50, 0, 0, 0)
-on [SpawnDelayed2] time_interval: ms(js$ _spawn_interval $) do spawn: (10, 10, 50, 50, 0, 0, 0)
+on [SpawnDelayed1] time_interval: ms({# _spawn_interval #}) do spawn: (4, 10, 50, 50, 0, 0, 0)
+on [SpawnDelayed2] time_interval: ms({# _spawn_interval #}) do spawn: (10, 10, 50, 50, 0, 0, 0)
 
 set_event_property SpawnDelayed1: initially_disabled = 1
 set_event_property SpawnDelayed2: initially_disabled = 1

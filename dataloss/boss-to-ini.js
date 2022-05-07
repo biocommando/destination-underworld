@@ -78,6 +78,7 @@ fs
     }).split(/\r?\n/)
     .map(x => x.trim())
     .filter(x => x[0] !== '/')
+    .filter(x => !Number(x))
     .forEach(x => {
         // main:
         // set param = value
