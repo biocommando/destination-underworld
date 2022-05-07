@@ -6,25 +6,22 @@
 {#
 
 (function create_spawnpoints() {
+    _spawnpoints = {}
     const templates = {
-        normal: 'def spawnpoint N = X, Y, 50, 30, 10, 10, 0',
-        easy: 'def spawnpoint N = X, Y, 40, 20, 5, 5, 0'
+        normal: '50, 30, 10, 10, 0',
+        easy: '40, 20, 5, 5, 0'
     }
-    const spawnpoints = []
     Object.keys(templates).forEach(prefix => {
-        let i = 0
+        _spawnpoints[prefix] = []
         for (let x = 5; x <= 9; x++) {
             for (let y = 3; y <= 7; y++) {
                 if (x === 5 || x === 9 || y === 3 || y === 7) {
-                    spawnpoints.push(templates[prefix]
-                        .replace('N', prefix + '_' + (i++))
-                        .replace('X', x)
-                        .replace('Y', y))
+                    _spawnpoints[prefix].push(x + ',' + y + ',' + templates[prefix])
                 }
             }
         }
     })
-    return spawnpoints
+    return ''
 })()
 
 #}
@@ -34,7 +31,7 @@
 (function configure_spawns() {
     const a = []
     for (let i = 0; i < 16; i++) {
-        a.push(`on [evt_${i + 1}] time_interval: ms(${i % 2 === 0 ? 10000 : 15000}) do spawn: normal_${i}`)
+        a.push(`on [evt_${i + 1}] time_interval: ms(${i % 2 === 0 ? 10000 : 15000}) do spawn: (${_spawnpoints.normal[i]})`)
     }
     return a
 })()
@@ -46,7 +43,7 @@
 (function configure_spawn_overrides() {
     const a = []
     for (let i = 0; i < 16; i++) {
-        a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} inherit: 0 do spawn: easy_${i}`)
+        a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} inherit: 0 do spawn: (${_spawnpoints.easy[i]})`)
     }
     return a
 })()
