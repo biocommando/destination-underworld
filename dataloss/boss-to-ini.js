@@ -60,9 +60,22 @@ const override_event = (name, gameMode) => `[overrides__${name}__for_mode_${game
 
 const disable_event = (name, gameMode) => `on ${override_event(name, gameMode)} never: 0 do nothing: 0`
 
+const script_execute = fn => {
+    fn()
+    return ''
+}
+
+const intermediateBossFileForDebug = []
+
 fs
     .readFileSync(fname)
-    .toString().split(/\r?\n/)
+    .toString().replace(/\{#([^#]*)#\}/gm, (_, a) => {
+        const execute = script_execute
+        const result = eval(a)
+        if (result.map)
+            return result.join('\n')
+        return result
+    }).split(/\r?\n/)
     .map(x => x.trim())
     .filter(x => x[0] !== '/')
     .forEach(x => {
@@ -82,13 +95,11 @@ fs
         // internal parameters (e.g. filename):
         // set_internal param = value
         x = x.replace(/js\$([^$]+?)\$/g, (_, a) => {
-            const execute = fn => {
-                fn()
-                return ''
-            }
+            const execute = script_execute
             return eval(a)
         })
         x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => ms(a))
+        intermediateBossFileForDebug.push(x)
         if (x.startsWith('on ')) {
             x = x.replace('on ', '')
             let evt = {}
@@ -151,6 +162,8 @@ fs
                         throw 'spawnpoint not found: ' + x
                     evt.spawn_point = sp.value
                 }
+            } else if (event_type === 'inherit') {
+                evt.inheritAction = true
             } else if (x && event_type !== 'nothing') {
                 const params = x.split(',').map(y => y.split('=').map(z => z.trim()))
                 params.forEach(p => {
@@ -199,7 +212,11 @@ fs
     })
 
 const objToIni = (obj, ignoreKeys = []) => {
-    return Object.keys(obj).filter(key => !ignoreKeys.includes(key)).map(key => key + '=' + obj[key]).join('\r\n') + '\r\n'
+    return Object
+        .keys(obj)
+        .filter(key => !ignoreKeys.includes(key))
+        .map(key => key + '=' + obj[key])
+        .join('\r\n') + '\r\n'
 }
 
 let str = `# Generated from ${fname}\r\n`
@@ -229,6 +246,13 @@ events.filter(e => e.name && e.name.startsWith('overrides__'))
             e.trigger_value = mainevt.trigger_value
         }
         mainevt['mode_override_' + e.name.split('__for_mode_')[1]] = e.name
+        if (e.inheritAction) {
+            e = {...mainevt, name: e.name, trigger_type: e.trigger_type, trigger_value: e.trigger_value}
+        }
+        Object.keys(e).forEach(key => {
+            if (key.startsWith('mode_override'))
+                delete e[key]
+        })
         str += `\r\n[${e.name}]\r\n${objToIni(e, ['name'])}`
     })
 
@@ -244,3 +268,4 @@ spawnpoints.forEach((s, i) => {
 
 fs.writeFileSync(internal.filename, str)
 
+fs.writeFileSync('intermediate_debug.boss', intermediateBossFileForDebug.join('\r\n'))
