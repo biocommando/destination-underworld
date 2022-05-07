@@ -73,16 +73,22 @@ const script_execute = fn => {
 }
 
 const intermediateBossFileForDebug = []
+let lineProcessingDone = false
 
 try {
     fs
         .readFileSync(fname)
-        .toString().replace(/\{#([^#]*)#\}/gm, (_, a) => {
+        .toString().replace(/\{#([^#]*)#\}/gm, (whole, a) => {
             const execute = script_execute
-            const result = eval(a)
-            if (result.map)
-                return result.join('\n')
-            return result
+            try {
+                const result = eval(a)
+                if (result.map)
+                    return result.join('\n')
+                return result
+            } catch (e) {
+                console.log('Error while executing code snippet:', whole)
+                throw e
+            }
         }).split(/\r?\n/)
         .map(x => x.trim())
         .filter(x => x[0] !== '/')
@@ -138,6 +144,7 @@ try {
                     evt.waypoint_id = wp.value
                 } else if (event_type === 'spawn') {
                     const params = x.split(',').map(y => y.trim())
+                    if (params.length !== 7 || params.some(isNaN)) throw 'Unable to parse spawn parameters'
                     const sp = {
                         x: params[0], y: params[1],
                         enemy_0_probability: params[2],
@@ -185,6 +192,7 @@ try {
                     .forEach(e => e[prop[0]] = prop[1])
             }
         })
+    lineProcessingDone = true
 
     const objToIni = (obj, ignoreKeys = []) => {
         return Object
@@ -242,6 +250,14 @@ try {
     })
 
     fs.writeFileSync(output_filename, str)
+} catch (e) {
+    if (intermediateBossFileForDebug.length === 0)
+        console.log('Error while running preprocessor:', e)
+    else if (lineProcessingDone)
+        console.log('Error while compiling to INI format:', e)
+    else
+        console.log('Error while processing line "%s":',
+            intermediateBossFileForDebug[intermediateBossFileForDebug.length - 1], e)
 } finally {
     fs.writeFileSync('intermediate_debug.boss', intermediateBossFileForDebug.join('\r\n'))
 }
