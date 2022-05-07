@@ -67,11 +67,6 @@ const set_waypoint_sequence = seq => {
     return result
 }
 
-const script_execute = fn => {
-    fn()
-    return ''
-}
-
 const intermediateBossFileForDebug = []
 let lineProcessingDone = false
 
@@ -79,7 +74,6 @@ try {
     fs
         .readFileSync(fname)
         .toString().replace(/\{#([^#]*)#\}/gm, (whole, a) => {
-            const execute = script_execute
             try {
                 const result = eval(a)
                 if (result.map)
