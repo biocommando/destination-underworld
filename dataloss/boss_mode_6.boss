@@ -5,9 +5,7 @@ set speed = 1
 set player_initial_gold = 10
 
 on time_interval: ms(5000) do fire_in_circle: number_of_directions = 16, intensity = 2
-
 on time_interval: ms(1777) do fire_in_circle: number_of_directions = 6, intensity = 1
-
 on time_interval: ms(1100) do fire_in_circle: number_of_directions = 4, intensity = 1
 
 on time_one_time: 1 do modify_terrain: x = 14, y = 3, terrain_type = floor
@@ -17,17 +15,12 @@ on time_one_time: ms(8250) do modify_terrain: x = 11, y = 8, terrain_type = floo
 on time_one_time: ms(8500) do modify_terrain: x = 10, y = 9, terrain_type = floor
 on time_one_time: ms(8750) do modify_terrain: x = 11, y = 9, terrain_type = floor
 
-def spawnpoint 10;8 = 10, 8, 0, 0, 100, 0, 0
-def spawnpoint 11;8 = 11, 8, 0, 0, 100, 0, 0
-def spawnpoint 10;9 = 10, 9, 0, 0, 100, 0, 0
-def spawnpoint 11;9 = 11, 9, 0, 0, 100, 0, 0
-
-on time_one_time: ms(9000) do spawn: 10;8
-on time_one_time: ms(9000) do spawn: 11;8
-on time_one_time: ms(9000) do spawn: 10;9
-on time_one_time: ms(9000) do spawn: 11;9
-on time_one_time: ms(9500) do spawn: 11;9
-on time_one_time: ms(9500) do spawn: 10;9
+on time_one_time: ms(9000) do spawn: (10, 8, 0, 0, 100, 0, 0)
+on time_one_time: ms(9000) do spawn: (11, 8, 0, 0, 100, 0, 0)
+on time_one_time: ms(9000) do spawn: (10, 9, 0, 0, 100, 0, 0, sp1)
+on time_one_time: ms(9000) do spawn: (11, 9, 0, 0, 100, 0, 0, sp2)
+on time_one_time: ms(9500) do spawn: sp2
+on time_one_time: ms(9500) do spawn: sp1
 
 on health: 0 do start_secondary_timer: time = 0
 
