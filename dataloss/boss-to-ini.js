@@ -57,7 +57,7 @@ const set_override_main_setup = key => `set mode_override_${game_mode(key)} = ma
 
 const override_event = (name, gameMode) => `[overrides__${name}__for_mode_${game_mode(gameMode)}]`
 
-const disable_event = (name, gameMode) => `on ${override_event(name, gameMode)} never: 0 do nothing: 0`
+const disable_event = (name, gameMode) => `on ${override_event(name, gameMode)} @never do @nothing`
 
 const set_waypoint_sequence = seq => {
     const result = []
@@ -104,7 +104,7 @@ try {
             // ms(..) = calculate boss timer value for amount of milliseconds
             // {#..#} = execute javascript
             x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => ms(a))
-            x = x.replace(/@inherit/g, 'inherit: 0')
+            x = x.replace(/@([a-z_]*)/g, '$1: 0')
             intermediateBossFileForDebug.push(x)
             if (x.startsWith('on ')) {
                 x = x.replace('on ', '')
