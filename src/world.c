@@ -213,7 +213,7 @@ void cleanup_bodyparts(World *world)
                     if (++bp_count > 40)
                     {
                         bp->exists = 0;
-                        LOG("Cleanup@%d,%d!\n", x, y);
+                        LOG_TRACE("Cleanup@%d,%d!\n", x, y);
                     }
                 }
             }

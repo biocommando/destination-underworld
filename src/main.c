@@ -25,7 +25,6 @@ extern MP3FILE *mp3;
 
 void init_allegro();
 int game(int mission, int *game_modifiers);
-void read_settings();
 
 SAMPLE *s_throw;
 
@@ -64,7 +63,7 @@ int main(int argc, char **argv)
     LOG("Playback mode active.\n");
   }
 
-  read_settings();
+  read_settings(argv, argc);
   init_allegro();
   srand((int)time(NULL));
   int mission = 1;
@@ -166,7 +165,7 @@ void enemy_logic(World *world)
             aim_window = 0;
             if (enm->x / TILESIZE == (int)world->boss_waypoint.x && enm->y / TILESIZE == (int)world->boss_waypoint.y)
             {
-              LOG("Waypoint reached\n");
+              LOG_TRACE("Waypoint reached\n");
               world->boss_waypoint.x = world->boss_waypoint.y = -1;
               world->boss_fight_config.state.waypoint_reached = 1;
             }
@@ -284,10 +283,10 @@ void boss_logic(World *world, int boss_died)
 
       char s[100];
       bossfight_event_type_to_str(s, event->event_type);
-      LOG("Trigger %s\n", s);
+      LOG_TRACE("Trigger %s\n", s);
       if (!event->enabled)
       {
-        LOG("Event disabled\n");
+        LOG_TRACE("Event disabled\n");
         continue;
       }
       switch (event->event_type)
@@ -489,7 +488,7 @@ void bullet_logic(World *world)
 
               if (enm == world->boss) // Archmage dies
               {
-                LOG("boss die logic\n");
+                LOG_TRACE("boss die logic\n");
                 boss_logic(world, 1);
                 chunkrest(1);
                 trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (enm->x - 240) / 8, 1000);

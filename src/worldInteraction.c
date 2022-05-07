@@ -587,7 +587,7 @@ int read_level(World *world, int mission, int room_to)
         {
             float r = 0, g = 0, b = 0;
             sscanf(buf, "%*s %f %f %f", &r, &g, &b);
-            LOG("Map color %f %f %f\n", r, g, b);
+            LOG_TRACE("Map color %f %f %f\n", r, g, b);
             world->map_wall_color[0] = r;
             world->map_wall_color[1] = g;
             world->map_wall_color[2] = b;

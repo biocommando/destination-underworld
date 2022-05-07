@@ -1,24 +1,56 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "logging.h"
 #include "settings.h"
 #include "iniRead.h"
 
 extern GameSettings game_settings;
 
-void read_settings()
+static void read_setting(FILE *f, char **argv, int argc, char *result, const char *segment, const char *key)
 {
-  FILE *f = fopen(".\\dataloss\\settings.ini", "r");
-  ini_read_string_value(f, "general", "mission-pack", game_settings.mission_pack);
-  game_settings.mission_count = ini_read_int_value(f, game_settings.mission_pack, "mission-count");
-  game_settings.custom_resources = ini_read_int_value(f, game_settings.mission_pack, "custom-resources");
+  char cmd_line_arg[256];
+  sprintf(cmd_line_arg, "%s--%s", segment, key);
 
-  game_settings.screen_width = ini_read_int_value(f, "graphics", "width");
-  game_settings.screen_height = ini_read_int_value(f, "graphics", "height");
-  game_settings.screen_mode = ini_read_int_value(f, "graphics", "screen");
-  game_settings.vibration_mode = ini_read_int_value(f, "graphics", "vibration-mode");
-  game_settings.music_on = ini_read_int_value(f, "audio", "music-on");
-  game_settings.num_music_tracks = ini_read_int_value(f, "audio", "music-track-count");
+  result[0] = 0;
+
+  if (!read_cmd_line_arg_str(cmd_line_arg, argv, argc, result) && f)
+  {
+    ini_read_string_value(f, segment, key, result);
+  }
+  LOG("Setting %s = %s\n", cmd_line_arg, result);
+}
+
+#define READ_SETTING(result_var, format_str, segment, key) do{ \
+  read_setting(f, argv, argc, buf, segment, key); \
+  if (!buf[0] || sscanf(buf, format_str, &result_var) == 0) \
+     LOG("Read error\n"); \
+   \
+} while(0)
+
+void read_settings(char **argv, int argc)
+{
+  char buf[256], file_name[256] = ".\\dataloss\\settings.ini";
+
+  read_cmd_line_arg_str("settings-ini", argv, argc, file_name);
+
+  LOG("Settings file: %s\n", file_name);
+  FILE *f = fopen(file_name, "r");
+
+  READ_SETTING(game_settings.mission_pack, "%s", "general", "mission-pack");
+  READ_SETTING(game_settings.mission_count, "%d", game_settings.mission_pack, "mission-count");
+  READ_SETTING(game_settings.custom_resources, "%d", game_settings.mission_pack, "custom-resources");
+
+  READ_SETTING(game_settings.screen_width, "%d", "graphics", "width");
+  READ_SETTING(game_settings.screen_height, "%d", "graphics", "height");
+  READ_SETTING(game_settings.screen_mode, "%d", "graphics", "screen");
+  READ_SETTING(game_settings.vibration_mode, "%d", "graphics", "vibration-mode");
+
+  READ_SETTING(game_settings.music_on, "%d", "audio", "music-on");
+  READ_SETTING(game_settings.music_vol, "%f", "audio", "music-vol");
+  READ_SETTING(game_settings.sfx_vol, "%f", "audio", "sfx-vol");
+
+  READ_SETTING(game_settings.num_music_tracks, "%d", "audio", "music-track-count");
 
   fclose(f);
 

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "iniRead.h"
 
-void ini_read_string_value(FILE *file, char *segment, char *key, char *value)
+void ini_read_string_value(FILE *file, const char *segment, const char *key, char *value)
 {
 	fseek(file, SEEK_SET, 0);
 	char s[256] = "";
@@ -62,7 +62,7 @@ void ini_read_string_value(FILE *file, char *segment, char *key, char *value)
 	}
 }
 
-int ini_read_int_value(FILE *file, char *segment, char *key)
+int ini_read_int_value(FILE *file, const char *segment, const char *key)
 {
 	char value[256] = "";
 	ini_read_string_value(file, segment, key, value);
@@ -71,11 +71,11 @@ int ini_read_int_value(FILE *file, char *segment, char *key)
 	return i_value;
 }
 
-double ini_read_double_value(FILE *file, char *segment, char *key)
+double ini_read_double_value(FILE *file, const char *segment, const char *key)
 {
 	char value[256] = "";
 	ini_read_string_value(file, segment, key, value);
-	int d_value = 0;
+	double d_value = 0;
 	sscanf(value, "%lf", &d_value);
 	return d_value;
 }

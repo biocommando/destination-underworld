@@ -12,11 +12,13 @@ typedef struct
   int screen_mode;
   int vibration_mode;
   int music_on;
+  float music_vol;
+  float sfx_vol;
   int num_music_tracks;
   int custom_resources;
   ArenaConfigs arena_config;
 } GameSettings;
-void read_settings();
+void read_settings(char **argv, int argc);
 int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
 int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output);
 

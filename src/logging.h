@@ -7,3 +7,9 @@
 #define LOG(...)
 #endif
 #endif
+
+#ifdef TRACE_LOG
+#define LOG_TRACE LOG
+#else
+#define LOG_TRACE(...)
+#endif

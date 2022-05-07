@@ -28,7 +28,7 @@ void play_track(int track_number)
   sprintf(filename, ".\\dataloss\\music%d.mp3", current_track);
   close_mp3_file(mp3);
   mp3 = open_mp3_file(filename);
-  play_mp3_file(mp3, BUFSZ, 255, 127);
+  play_mp3_file(mp3, BUFSZ, game_settings.music_vol * 255, 127);
 }
 
 void play_mp3()
@@ -39,14 +39,14 @@ void play_mp3()
     if (!game_settings.music_on)
       almp3_stop_mp3stream(mp3->s);
     else
-      play_mp3_file(mp3, BUFSZ, 255, 127);
+      play_mp3_file(mp3, BUFSZ, game_settings.music_vol * 255, 127);
   }
   if (game_settings.music_on)
   {
     if (mp3 && poll_mp3_file(mp3) != ALMP3_OK)
     {
       play_track(current_track + 1);
-      play_mp3_file(mp3, BUFSZ, 255, 127);
+      play_mp3_file(mp3, BUFSZ, game_settings.music_vol * 255, 127);
     }
   }
   music_on_status = game_settings.music_on;

@@ -1,5 +1,5 @@
 [Project]
-FileName=los.dev
+FileName=destination_underworld.dev
 Name=Destination Underworld
 UnitCount=34
 Type=1
@@ -14,11 +14,11 @@ Compiler=-std=gnu99_@@_-fgnu89-inline_@@_-DENABLE_LOGGING_@@_
 CppCompiler=
 Linker=../lib/libalmp3.a_@@_../lib/liballeg.a_@@_
 IsCpp=0
-Icon=los.ico
+Icon=destination_underworld.ico
 ExeOutput=
 ObjectOutput=
 OverrideOutput=1
-OverrideOutputName=destination underworld.exe
+OverrideOutputName=destination_underworld.exe
 HostApplication=
 Folders=
 CommandLine=
