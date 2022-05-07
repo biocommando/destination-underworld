@@ -22,7 +22,8 @@ const getNextId = () => ++idCounter
 
 const fname = process.argv.find(x => x.endsWith('.boss'))
 
-const ms = a => Math.floor(Number(a) / 40 / 3)
+const ms_delta = 40 * 3
+const ms = a => Math.floor(Number(a) / ms_delta)
 
 const internal = {
     filename: `core-pack/${fname.replace('.boss', '.ini')}`
@@ -154,6 +155,8 @@ fs
                     } else {
                         sp.value = getNextId()
                         delete sp.name
+                        if (params[7])
+                            sp.name = params[7]
                         evt.spawn_point = sp.value
                         spawnpoints.push(sp)
                     }
