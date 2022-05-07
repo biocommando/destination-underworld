@@ -25,9 +25,7 @@ const fname = process.argv.find(x => x.endsWith('.boss'))
 const ms_delta = 40 * 3
 const ms = a => Math.floor(Number(a) / ms_delta)
 
-const internal = {
-    filename: `core-pack/${fname.replace('.boss', '.ini')}`
-}
+let output_filename = `core-pack/${fname.replace('.boss', '.ini')}`
 
 const GAMEMODIFIER_DOUBLED_SHOTS = 0x1
 const GAMEMODIFIER_OVERPOWERED_POWERUPS = 0x2
@@ -53,7 +51,7 @@ const game_mode = key => {
     Configuration example using this macro helper:
     set player_initial_gold = 6
     set [main__powerup_only] player_initial_gold = -1
-    js$ set_override_main_setup('arena_powerup_only') $
+    {# set_override_main_setup('arena_powerup_only') #}
 */
 const set_override_main_setup = key => `set mode_override_${game_mode(key)} = main__${key}`
 
@@ -92,23 +90,19 @@ try {
         .forEach(x => {
             // main:
             // set param = value
+            // For overriding main settings for different game modes:
+            // set [override_config_name] param = value
+            // These overrides must be taken into use by setting mode_override_X
+            // property to <override_config_name> for the main settings (X = mode code)
             // events:
             // on <trigger_type>: <trigger_value> do <event_type>: <param_name> = <param_value>, ...
             // Events may have name:
             // on [EventName] <trigger_type>: ...
-            // waypoints:
-            // def waypoint name = x, y
-            // spawnpoints:
-            // def spawnpoint name = x, y, probs
+            // Set event properties for spawn and waypoint events:
+            // set_event_property event_name: prop1 = val1, prop2 = val2, ...
             // preprocessor:
             // ms(..) = calculate boss timer value for amount of milliseconds
-            // js$..$ = execute javascript
-            // internal parameters (e.g. filename):
-            // set_internal param = value
-            x = x.replace(/js\$([^$]+?)\$/g, (_, a) => {
-                const execute = script_execute
-                return eval(a)
-            })
+            // {#..#} = execute javascript
             x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => ms(a))
             intermediateBossFileForDebug.push(x)
             if (x.startsWith('on ')) {
@@ -195,25 +189,6 @@ try {
                 }
                 x = x.replace('set ', '').split('=').map(y => y.trim())
                 mainSetup[mainName][x[0]] = x[1]
-            } else if (x.startsWith('def waypoint')) {
-                x = x.replace('def waypoint', '').split('=').map(y => y.trim())
-                const params = x[1].split(',').map(y => y.trim())
-                waypoints.push({ name: x[0], x: params[0], y: params[1], value: getNextId() })
-            } else if (x.startsWith('def spawnpoint')) {
-                x = x.replace('def spawnpoint', '').split('=').map(y => y.trim())
-                const params = x[1].split(',').map(y => y.trim())
-                spawnpoints.push({
-                    name: x[0], x: params[0], y: params[1],
-                    enemy_0_probability: params[2],
-                    enemy_1_probability: params[3],
-                    enemy_2_probability: params[4],
-                    enemy_3_probability: params[5],
-                    enemy_4_probability: params[6],
-                    value: getNextId()
-                })
-            } else if (x.startsWith('set_internal ')) {
-                x = x.replace('set_internal ', '').split('=').map(y => y.trim())
-                internal[x[0]] = x[1]
             } else if (x.startsWith('set_event_property ')) {
                 x = x.replace('set_event_property ', '')
                 const prop = x.split(':')[1].split('=').map(z => z.trim())
@@ -278,7 +253,7 @@ try {
         str += objToIni(s, ['name', 'value'])
     })
 
-    fs.writeFileSync(internal.filename, str)
+    fs.writeFileSync(output_filename, str)
 } finally {
     fs.writeFileSync('intermediate_debug.boss', intermediateBossFileForDebug.join('\r\n'))
 }
