@@ -21,8 +21,8 @@ on time_interval: ms({# _spawn_interval #}) do spawn: 13, 9, 100, 0, 0, 0, 0
 on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 5, 10, 0, 100, 0, 0, 0
 on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 1, 5, 0, 100, 0, 0, 0
 
-on {# override_event('evt_alien_spawn_1', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do inherit: 0
-on {# override_event('evt_alien_spawn_2', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do inherit: 0
+on {# override_event('evt_alien_spawn_1', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do @inherit
+on {# override_event('evt_alien_spawn_2', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do @inherit
 
 on kill_count: 50 do modify_terrain: x = 4, y = 8, terrain_type = floor
 on kill_count: 50 do modify_terrain: x = 5, y = 8, terrain_type = floor

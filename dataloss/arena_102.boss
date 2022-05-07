@@ -43,7 +43,7 @@
 (function configure_spawn_overrides() {
     const a = []
     for (let i = 0; i < 16; i++) {
-        a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} inherit: 0 do spawn: ${_spawnpoints.easy[i]}`)
+        a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} @inherit do spawn: ${_spawnpoints.easy[i]}`)
     }
     return a
 })()

@@ -104,6 +104,7 @@ try {
             // ms(..) = calculate boss timer value for amount of milliseconds
             // {#..#} = execute javascript
             x = x.replace(/ms\(([\d]+?)\)/g, (_, a) => ms(a))
+            x = x.replace(/@inherit/g, 'inherit: 0')
             intermediateBossFileForDebug.push(x)
             if (x.startsWith('on ')) {
                 x = x.replace('on ', '')

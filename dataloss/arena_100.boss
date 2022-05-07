@@ -14,8 +14,8 @@ on [DisableExtraEnemy] time_one_time: 1 do toggle_event_enabled: event_id = Spaw
 on [SpawnA1] time_interval: ms({# _spawn_interval #}) do spawn: 2, 5, 0, 0, 100, 0, 0
 on [SpawnA2] time_interval: ms({# _spawn_interval #}) do spawn: 13, 6, 0, 0, 100, 0, 0
 
-on {# override_event('SpawnA1', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do inherit: 0
-on {# override_event('SpawnA2', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do inherit: 0
+on {# override_event('SpawnA1', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do @inherit
+on {# override_event('SpawnA2', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do @inherit
 
 // Spawn others
 on [SpawnB1] time_interval: ms({# _spawn_interval #}) do spawn: 6, 9, 70, 30, 0, 0, 0
