@@ -12,8 +12,8 @@ on time_one_time: 1 do set_waypoint: 2;1
 
 on time_one_time: 1 do start_secondary_timer: time = 0
 
-on secondary_timer: ms(5333) do spawn: (3, 3, 50, 50, 0, 0, 0)
-on secondary_timer: ms(5333) do spawn: (3, 8, 50, 50, 0, 0, 0)
+on secondary_timer: ms(5333) do spawn: 3, 3, 50, 50, 0, 0, 0
+on secondary_timer: ms(5333) do spawn: 3, 8, 50, 50, 0, 0, 0
 on secondary_timer: ms(5333) do start_secondary_timer: time = 0
 
 // Death

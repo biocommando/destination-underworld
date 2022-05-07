@@ -136,7 +136,6 @@ try {
                     evt.y = wp.y
                     evt.waypoint_id = wp.value
                 } else if (event_type === 'spawn') {
-                    x = x.replace('(', '').replace(')', '')
                     const params = x.split(',').map(y => y.trim())
                     const sp = {
                         x: params[0], y: params[1],

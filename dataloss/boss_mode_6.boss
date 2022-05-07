@@ -15,12 +15,12 @@ on time_one_time: ms(8250) do modify_terrain: x = 11, y = 8, terrain_type = floo
 on time_one_time: ms(8500) do modify_terrain: x = 10, y = 9, terrain_type = floor
 on time_one_time: ms(8750) do modify_terrain: x = 11, y = 9, terrain_type = floor
 
-on time_one_time: ms(9000) do spawn: (10, 8, 0, 0, 100, 0, 0)
-on time_one_time: ms(9000) do spawn: (11, 8, 0, 0, 100, 0, 0)
-on time_one_time: ms(9000) do spawn: (10, 9, 0, 0, 100, 0, 0)
-on time_one_time: ms(9000) do spawn: (11, 9, 0, 0, 100, 0, 0)
-on time_one_time: ms(9500) do spawn: (11, 9, 0, 0, 100, 0, 0)
-on time_one_time: ms(9500) do spawn: (10, 9, 0, 0, 100, 0, 0)
+on time_one_time: ms(9000) do spawn: 10, 8, 0, 0, 100, 0, 0
+on time_one_time: ms(9000) do spawn: 11, 8, 0, 0, 100, 0, 0
+on time_one_time: ms(9000) do spawn: 10, 9, 0, 0, 100, 0, 0
+on time_one_time: ms(9000) do spawn: 11, 9, 0, 0, 100, 0, 0
+on time_one_time: ms(9500) do spawn: 11, 9, 0, 0, 100, 0, 0
+on time_one_time: ms(9500) do spawn: 10, 9, 0, 0, 100, 0, 0
 
 on health: 0 do start_secondary_timer: time = 0
 

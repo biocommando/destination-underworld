@@ -21,12 +21,12 @@ on time_one_time: {# _start_time #} do modify_terrain: x = 9, y = 1, terrain_typ
 
 // Spawn enemies
 
-on time_interval: ms(18667) do spawn: (9, 7, 0, 0, 100, 0, 0)
+on time_interval: ms(18667) do spawn: 9, 7, 0, 0, 100, 0, 0
 
-on waypoint_reached: 6;5 do spawn: (13, 5, 80, 20, 0, 0, 0)
-on waypoint_reached: 12;5 do spawn: (4, 5, 80, 20, 0, 0, 0)
-on waypoint_reached: 6;9 do spawn: (3, 10, 100, 0, 0, 0, 0)
-on waypoint_reached: 12;5 do spawn: (14, 10, 100, 0, 0, 0, 0)
+on waypoint_reached: 6;5 do spawn: 13, 5, 80, 20, 0, 0, 0
+on waypoint_reached: 12;5 do spawn: 4, 5, 80, 20, 0, 0, 0
+on waypoint_reached: 6;9 do spawn: 3, 10, 100, 0, 0, 0, 0
+on waypoint_reached: 12;5 do spawn: 14, 10, 100, 0, 0, 0, 0
 
 // Firing
 

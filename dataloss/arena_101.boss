@@ -10,16 +10,16 @@ set [main__over_powerup] player_initial_gold = 10
 
 {# _spawn_interval = 7000 #}
 
-on [evt_alien_spawn_1] time_interval: ms({# _spawn_interval #}) do spawn: (11, 2, 0, 0, 0, 100, 0)
-on time_interval: ms({#_spawn_interval#}) do spawn: (12, 2, 50, 50, 0, 0, 0)
-on time_interval: ms({#_spawn_interval#}) do spawn: (13, 2, 100, 0, 0, 0, 0)
+on [evt_alien_spawn_1] time_interval: ms({# _spawn_interval #}) do spawn: 11, 2, 0, 0, 0, 100, 0
+on time_interval: ms({#_spawn_interval#}) do spawn: 12, 2, 50, 50, 0, 0, 0
+on time_interval: ms({#_spawn_interval#}) do spawn: 13, 2, 100, 0, 0, 0, 0
 
-on [evt_alien_spawn_2] time_interval: ms({# _spawn_interval #}) do spawn: (11, 9, 0, 0, 0, 100, 0)
-on time_interval: ms({# _spawn_interval #}) do spawn: (12, 9, 50, 50, 0, 0, 0)
-on time_interval: ms({# _spawn_interval #}) do spawn: (13, 9, 100, 0, 0, 0, 0)
+on [evt_alien_spawn_2] time_interval: ms({# _spawn_interval #}) do spawn: 11, 9, 0, 0, 0, 100, 0
+on time_interval: ms({# _spawn_interval #}) do spawn: 12, 9, 50, 50, 0, 0, 0
+on time_interval: ms({# _spawn_interval #}) do spawn: 13, 9, 100, 0, 0, 0, 0
 
-on time_interval: ms({# _spawn_interval * 2 #}) do spawn: (5, 10, 0, 100, 0, 0, 0)
-on time_interval: ms({# _spawn_interval * 2 #}) do spawn: (1, 5, 0, 100, 0, 0, 0)
+on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 5, 10, 0, 100, 0, 0, 0
+on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 1, 5, 0, 100, 0, 0, 0
 
 on {# override_event('evt_alien_spawn_1', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do inherit: 0
 on {# override_event('evt_alien_spawn_2', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do inherit: 0

@@ -16,14 +16,14 @@ set [main__powerup_only] player_initial_gold = 80
 set [main__explosion_madness] player_initial_gold = 5
 {# set_override_main_setup('explosion_madness') #}
 
-on [evt_top_left_1] time_interval: ms({# _interval #}) do spawn: (2, 3, 0, 0, 50, 0, 0)
-on [evt_top_left_2] time_interval: ms({# _interval #}) do spawn: (4, 3, 0, 100, 0, 0, 0)
-on [evt_top_right_1] time_interval: ms({# _interval #}) do spawn: (9, 2, 100, 0, 0, 0, 0)
-on [evt_top_right_2] time_interval: ms({# _interval #}) do spawn: (13, 3, 100, 0, 0, 0, 0)
-on [evt_btm_right_1] time_interval: ms({# _interval #}) do spawn: (10, 8, 50, 50, 0, 0, 0)
-on [evt_btm_right_2] time_interval: ms({# _interval #}) do spawn: (12, 8, 50, 50, 0, 0, 0)
-on [evt_btm_left_1] time_interval: ms({# _interval #}) do spawn: (1, 10, 0, 50, 50, 0, 0)
-on [evt_btm_left_2] time_interval: ms({# _interval #}) do spawn: (6, 10, 0, 50, 0, 0, 0)
+on [evt_top_left_1] time_interval: ms({# _interval #}) do spawn: 2, 3, 0, 0, 50, 0, 0
+on [evt_top_left_2] time_interval: ms({# _interval #}) do spawn: 4, 3, 0, 100, 0, 0, 0
+on [evt_top_right_1] time_interval: ms({# _interval #}) do spawn: 9, 2, 100, 0, 0, 0, 0
+on [evt_top_right_2] time_interval: ms({# _interval #}) do spawn: 13, 3, 100, 0, 0, 0, 0
+on [evt_btm_right_1] time_interval: ms({# _interval #}) do spawn: 10, 8, 50, 50, 0, 0, 0
+on [evt_btm_right_2] time_interval: ms({# _interval #}) do spawn: 12, 8, 50, 50, 0, 0, 0
+on [evt_btm_left_1] time_interval: ms({# _interval #}) do spawn: 1, 10, 0, 50, 50, 0, 0
+on [evt_btm_left_2] time_interval: ms({# _interval #}) do spawn: 6, 10, 0, 50, 0, 0, 0
 
 on time_one_time: 1: do start_secondary_timer: time = ms({# _time_0 / 2 #})
 
@@ -85,7 +85,7 @@ on kill_count: 50 do modify_terrain: x = 7, y = 5, terrain_type = floor
 on kill_count: 50 do modify_terrain: x = 8, y = 5, terrain_type = floor
 on kill_count: 50 do modify_terrain: x = 7, y = 6, terrain_type = floor
 
-on [evt_middle] time_interval: ms({# _interval * 2 #}) do spawn: (7, 5, 0, 0, 100, 0, 0)
+on [evt_middle] time_interval: ms({# _interval * 2 #}) do spawn: 7, 5, 0, 0, 100, 0, 0
 set_event_property evt_middle: initially_disabled = 1
 
 on kill_count: 50 do toggle_event_enabled: event_id = evt_middle, enabled = 1

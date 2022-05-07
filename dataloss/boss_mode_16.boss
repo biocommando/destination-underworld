@@ -10,25 +10,25 @@ set time_starts_at = ms({# _start_time #})
 // This is the initial room for the player.
 // After a short while spawns turrets in each cornet with one-time trigger.
 // Same room will eventually have entrance to the boss room.
-on time_one_time: ms({#_start_time + 2667#}) do spawn: (1, 1, 0, 0, 0, 0, 100)
-on time_one_time: ms({#_start_time + 2667#}) do spawn: (5, 1, 0, 0, 0, 0, 100)
-on time_one_time: ms({#_start_time + 2667#}) do spawn: (1, 5, 0, 0, 0, 0, 100)
-on time_one_time: ms({#_start_time + 2667#}) do spawn: (5, 5, 0, 0, 0, 0, 100)
+on time_one_time: ms({#_start_time + 2667#}) do spawn: 1, 1, 0, 0, 0, 0, 100
+on time_one_time: ms({#_start_time + 2667#}) do spawn: 5, 1, 0, 0, 0, 0, 100
+on time_one_time: ms({#_start_time + 2667#}) do spawn: 1, 5, 0, 0, 0, 0, 100
+on time_one_time: ms({#_start_time + 2667#}) do spawn: 5, 5, 0, 0, 0, 0, 100
 
 // South-West room, has moderately difficult enemies
-on time_interval: ms(40000) do spawn: (1, 7, 0, 100, 0, 0, 0)
-on time_interval: ms(40000) do spawn: (5, 7, 0, 100, 0, 0, 0)
-on time_interval: ms(40000) do spawn: (1, 10, 0, 100, 0, 0, 0)
-on time_interval: ms(40000) do spawn: (5, 10, 0, 100, 0, 0, 0)
+on time_interval: ms(40000) do spawn: 1, 7, 0, 100, 0, 0, 0
+on time_interval: ms(40000) do spawn: 5, 7, 0, 100, 0, 0, 0
+on time_interval: ms(40000) do spawn: 1, 10, 0, 100, 0, 0, 0
+on time_interval: ms(40000) do spawn: 5, 10, 0, 100, 0, 0, 0
 
 // South-East room, has easy enemies
-on time_interval: ms(26667) do spawn: (7, 5, 100, 0, 0, 0, 0)
-on time_interval: ms(26667) do spawn: (14, 5, 100, 0, 0, 0, 0)
-on time_interval: ms(26667) do spawn: (7, 10, 100, 0, 0, 0, 0)
-on time_interval: ms(26667) do spawn: (14, 10, 100, 0, 0, 0, 0)
+on time_interval: ms(26667) do spawn: 7, 5, 100, 0, 0, 0, 0
+on time_interval: ms(26667) do spawn: 14, 5, 100, 0, 0, 0, 0
+on time_interval: ms(26667) do spawn: 7, 10, 100, 0, 0, 0, 0
+on time_interval: ms(26667) do spawn: 14, 10, 100, 0, 0, 0, 0
 
 // North-East room, always spawns an imp in the middle
-on time_interval: ms(40000) do spawn: (13, 2, 0, 0, 100, 0, 0)
+on time_interval: ms(40000) do spawn: 13, 2, 0, 0, 100, 0, 0
 
 {# _destroy_wall_time = _start_time + 106668 #}
 

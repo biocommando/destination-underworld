@@ -31,7 +31,7 @@
 (function configure_spawns() {
     const a = []
     for (let i = 0; i < 16; i++) {
-        a.push(`on [evt_${i + 1}] time_interval: ms(${i % 2 === 0 ? 10000 : 15000}) do spawn: (${_spawnpoints.normal[i]})`)
+        a.push(`on [evt_${i + 1}] time_interval: ms(${i % 2 === 0 ? 10000 : 15000}) do spawn: ${_spawnpoints.normal[i]}`)
     }
     return a
 })()
@@ -43,7 +43,7 @@
 (function configure_spawn_overrides() {
     const a = []
     for (let i = 0; i < 16; i++) {
-        a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} inherit: 0 do spawn: (${_spawnpoints.easy[i]})`)
+        a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} inherit: 0 do spawn: ${_spawnpoints.easy[i]}`)
     }
     return a
 })()
@@ -61,7 +61,7 @@ set [main__over_powerup] player_initial_gold = 10
 {# set_override_main_setup('powerup_only') #}
 {# set_override_main_setup('over_powerup') #}
 
-on time_one_time: ms(35000) do spawn: (5, 3, 0, 0, 0, 0, 100)
-on time_one_time: ms(35000) do spawn: (9, 3, 0, 0, 0, 0, 100)
-on time_one_time: ms(35000) do spawn: (5, 7, 0, 0, 0, 0, 100)
-on time_one_time: ms(35000) do spawn: (9, 7, 0, 0, 0, 0, 100)
+on time_one_time: ms(35000) do spawn: 5, 3, 0, 0, 0, 0, 100
+on time_one_time: ms(35000) do spawn: 9, 3, 0, 0, 0, 0, 100
+on time_one_time: ms(35000) do spawn: 5, 7, 0, 0, 0, 0, 100
+on time_one_time: ms(35000) do spawn: 9, 7, 0, 0, 0, 0, 100
