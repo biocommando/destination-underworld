@@ -136,38 +136,26 @@ try {
                     evt.y = wp.y
                     evt.waypoint_id = wp.value
                 } else if (event_type === 'spawn') {
-                    // Defining spawnpoint on the fly
-                    if (x.trim().startsWith('(')) {
-                        x = x.replace('(', '').replace(')', '')
-                        const params = x.split(',').map(y => y.trim())
-                        const sp = {
-                            x: params[0], y: params[1],
-                            enemy_0_probability: params[2],
-                            enemy_1_probability: params[3],
-                            enemy_2_probability: params[4],
-                            enemy_3_probability: params[5],
-                            enemy_4_probability: params[6]
-                        }
-                        const existingSp = spawnpoints.find(sp2 => {
-                            sp.value = sp2.value
-                            sp.name = sp2.name
-                            return JSON.stringify(sp) === JSON.stringify(sp2)
-                        })
-                        if (existingSp) {
-                            evt.spawn_point = existingSp.value
-                        } else {
-                            sp.value = getNextId()
-                            delete sp.name
-                            if (params[7])
-                                sp.name = params[7]
-                            evt.spawn_point = sp.value
-                            spawnpoints.push(sp)
-                        }
+                    x = x.replace('(', '').replace(')', '')
+                    const params = x.split(',').map(y => y.trim())
+                    const sp = {
+                        x: params[0], y: params[1],
+                        enemy_0_probability: params[2],
+                        enemy_1_probability: params[3],
+                        enemy_2_probability: params[4],
+                        enemy_3_probability: params[5],
+                        enemy_4_probability: params[6]
+                    }
+                    const existingSp = spawnpoints.find(sp2 => {
+                        sp.value = sp2.value
+                        return JSON.stringify(sp) === JSON.stringify(sp2)
+                    })
+                    if (existingSp) {
+                        evt.spawn_point = existingSp.value
                     } else {
-                        const sp = spawnpoints.find(y => y.name === x.trim())
-                        if (!sp)
-                            throw 'spawnpoint not found: ' + x
+                        sp.value = getNextId()
                         evt.spawn_point = sp.value
+                        spawnpoints.push(sp)
                     }
                 } else if (event_type === 'inherit') {
                     evt.inheritAction = true
