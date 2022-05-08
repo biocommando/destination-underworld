@@ -4,6 +4,7 @@
 #include "logging.h"
 #include "settings.h"
 #include "iniRead.h"
+#include "duConstants.h"
 
 extern GameSettings game_settings;
 
@@ -30,7 +31,7 @@ static void read_setting(FILE *f, char **argv, int argc, char *result, const cha
 
 void read_settings(char **argv, int argc)
 {
-  char buf[256], file_name[256] = ".\\dataloss\\settings.ini";
+  char buf[256], file_name[256] = DATADIR "settings.ini";
 
   read_cmd_line_arg_str("settings-ini", argv, argc, file_name);
 
@@ -55,7 +56,7 @@ void read_settings(char **argv, int argc)
   fclose(f);
 
   char arena_config_file[256];
-  sprintf(arena_config_file, ".\\dataloss\\%s\\arenas.ini", game_settings.mission_pack);
+  sprintf(arena_config_file, DATADIR "%s\\arenas.ini", game_settings.mission_pack);
   f = fopen(arena_config_file, "r");
   read_arena_configs(f, &game_settings.arena_config);
   fclose(f);
@@ -91,7 +92,7 @@ int read_cmd_line_arg_int(const char *arg, char **argv, int argc)
 void access_arena_highscore(ArenaHighscore *arena_highscore, int load)
 {
   char path[256];
-  sprintf(path, ".\\dataloss\\%s\\arena_highscores.dat", game_settings.mission_pack);
+  sprintf(path, DATADIR "%s\\arena_highscores.dat", game_settings.mission_pack);
   FILE *f;
   if (!load)
   {

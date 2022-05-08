@@ -460,7 +460,7 @@ int read_level(World *world, int mission, int room_to)
     }
 
     char mission_name[256];
-    sprintf(mission_name, ".\\dataloss\\%s\\mission%d", game_settings.mission_pack, mission);
+    sprintf(mission_name, DATADIR "%s\\mission%d", game_settings.mission_pack, mission);
 
     if (!world->level_read)
     {
@@ -538,7 +538,7 @@ int read_level(World *world, int mission, int room_to)
         if (!strcmp(read_str, "bossfight"))
         {
             sscanf(buf, "%*s %s", read_str);
-            sprintf(buf, ".\\dataloss\\%s", read_str);
+            sprintf(buf, DATADIR "%s", read_str);
             LOG("Opening bossfight config at %s\n", buf);
             FILE *f2 = fopen(buf, "r");
             if (f2)
@@ -659,7 +659,7 @@ void change_room_if_at_exit_point(World *world, int mission)
 void read_enemy_configs(World *world)
 {
     char fname[256];
-    sprintf(fname, ".\\dataloss\\%s\\enemy-properties.ini", game_settings.mission_pack);
+    sprintf(fname, DATADIR "%s\\enemy-properties.ini", game_settings.mission_pack);
     FILE *f = fopen(fname, "r");
     for (int i = 0; i < 5; i++)
     {

@@ -1,5 +1,7 @@
 #include "sampleRegister.h"
 #include "settings.h"
+#include "duConstants.h"
+#include "logging.h"
 #include <stdio.h>
 
 extern GameSettings game_settings;
@@ -11,24 +13,34 @@ struct
   int id;
   int triggered;
   SAMPLE *sample;
-} sample_register[64];
+} sample_register[MAX_NUM_SAMPLES];
 
-void register_sample(int id, const char *filename)
+void register_sample(int id, const char *filename, int priority)
 {
-  if (sample_reg_idx < 64)
+  if (sample_reg_idx < MAX_NUM_SAMPLES)
   {
     sample_register[sample_reg_idx].id = id;
     char sample_path[256];
     if (game_settings.custom_resources)
     {
-      sprintf(sample_path, ".\\dataloss\\%s\\%s", game_settings.mission_pack, filename);
+      sprintf(sample_path, DATADIR "%s\\%s", game_settings.mission_pack, filename);
     }
     else
     {
-      sprintf(sample_path, ".\\dataloss\\%s", filename);
+      sprintf(sample_path, DATADIR "%s", filename);
     }
-    sample_register[sample_reg_idx].sample = load_sample(sample_path);
+    SAMPLE *sample = load_sample(sample_path);
+    sample_register[sample_reg_idx].sample = sample;
+    sample->priority = priority;
     sample_reg_idx++;
+  }
+}
+
+void stop_all_samples()
+{
+  for (int i = sample_reg_idx - 1; i >= 0; i--)
+  {
+    stop_sample(sample_register[i].sample);
   }
 }
 
@@ -60,5 +72,7 @@ void reset_sample_triggers()
 void destroy_registered_samples()
 {
   for (int i = sample_reg_idx - 1; i >= 0; i--)
+  {
     destroy_sample(sample_register[i].sample);
+  }
 }

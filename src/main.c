@@ -32,7 +32,6 @@ GameSettings game_settings;
 
 Enemy plrautosave;
 
-FONT *GameFont;
 int fname_counter = 0;
 
 int record_mode = RECORD_MODE_NONE;
@@ -68,26 +67,25 @@ int main(int argc, char **argv)
   srand((int)time(NULL));
   int mission = 1;
   int game_modifiers = 0;
-  GameFont = load_font(FONT_FILENAME, default_palette, NULL);
 
-  register_sample(SAMPLE_SELECT, "sel.wav");
-  register_sample(SAMPLE_WARP, "warp.wav");
-  register_sample(SAMPLE_BOSSTALK_1, "bt1.wav");
-  register_sample(SAMPLE_BOSSTALK_2, "bt2.wav");
-  register_sample(SAMPLE_THROW, "throw.wav");
-  register_sample(SAMPLE_SELECT_WEAPON, "select_weapon.wav");
-  register_sample(SAMPLE_HEAL, "healing.wav");
-  register_sample(SAMPLE_PROTECTION, "rune_of_protection.wav");
-  register_sample(SAMPLE_TURRET, "turret.wav");
-  register_sample(SAMPLE_SPAWN, "spawn.wav");
+  register_sample(SAMPLE_SELECT, "sel.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_WARP, "warp.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_BOSSTALK_1, "bt1.wav", SAMPLE_PRIORITY(HIGH, 2));
+  register_sample(SAMPLE_BOSSTALK_2, "bt2.wav", SAMPLE_PRIORITY(HIGH, 2));
+  register_sample(SAMPLE_THROW, "throw.wav", SAMPLE_PRIORITY(LOW, 0));
+  register_sample(SAMPLE_SELECT_WEAPON, "select_weapon.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_HEAL, "healing.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_PROTECTION, "rune_of_protection.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_TURRET, "turret.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_SPAWN, "spawn.wav", SAMPLE_PRIORITY(HIGH, 0));
 
   for (int i = 0; i < 6; i++)
   {
     char loadsamplename[100];
     sprintf(loadsamplename, "ex%d.wav", i + 1);
-    register_sample(SAMPLE_EXPLOSION(i), loadsamplename);
+    register_sample(SAMPLE_EXPLOSION(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, i / 2));
     sprintf(loadsamplename, "die%d.wav", i + 1);
-    register_sample(SAMPLE_DEATH(i), loadsamplename);
+    register_sample(SAMPLE_DEATH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, i));
   }
 
   play_track(1);
@@ -104,7 +102,6 @@ int main(int argc, char **argv)
     fclose(record_input_file);
 
   close_mp3_file(mp3);
-  destroy_font(GameFont);
   set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   remove_keyboard();
   remove_mouse();
@@ -490,16 +487,13 @@ void bullet_logic(World *world)
               {
                 LOG_TRACE("boss die logic\n");
                 boss_logic(world, 1);
+                stop_all_samples();
                 trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (enm->x - 240) / 8, 1000);
-                for (int xx = 0; xx < 5; xx++)
+                for (int xx = 0; xx < 40; xx++)
                 {
-                  rectfill(screen, 0, 0, screen->w, screen->h, WHITE);
-                  chunkrest(25);
-                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(128));
-                  chunkrest(25);
-                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(64));
-                  chunkrest(25);
-                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(128));
+                  int col = xx % 4;
+                  col = col == 0 ? 255 : (col == 2 ? 64 : 128);
+                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(col));
                   chunkrest(25);
                 }
                 create_cluster_explosion(world, enm->x, enm->y, 48, 1, &world->plr);
@@ -543,12 +537,12 @@ int game(int mission, int *game_modifiers)
   world.buf = create_bitmap(480, 360);
   if (!game_settings.custom_resources)
   {
-    world.spr = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
+    world.spr = load_bitmap(DATADIR "sprites.bmp", default_palette);
   }
   else
   {
     char path[256];
-    sprintf(path, ".\\dataloss\\%s\\sprites.bmp", game_settings.mission_pack);
+    sprintf(path, DATADIR "\\%s\\sprites.bmp", game_settings.mission_pack);
     world.spr = load_bitmap(path, default_palette);
   }
 

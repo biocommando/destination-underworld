@@ -20,13 +20,14 @@
 
 #define PLR_DIR_HELPER_INITIAL_INTENSITY 100
 
-#define SAVE_FILENAME ".\\dataloss\\%s\\save%d.dat"
-#define MENU_BITMAP_FILENAME ".\\dataloss\\menu.bmp"
-#define HELP_BITMAP_FILENAME ".\\dataloss\\reference_full.bmp"
-#define MENU_SAMPLE_FILENAME ".\\dataloss\\menuchg.wav"
-#define MENU_SELECT_SAMPLE_FILENAME ".\\dataloss\\menusel.wav"
-#define MENU_EXPLODE_FILENAME ".\\dataloss\\ex4.wav"
-#define FONT_FILENAME ".\\dataloss\\gamefont.pcx"
+#define DATADIR ".\\dataloss\\"
+#define SAVE_FILENAME DATADIR "%s\\save%d.dat"
+#define MENU_BITMAP_FILENAME DATADIR "menu.bmp"
+#define HELP_BITMAP_FILENAME DATADIR "reference_full.bmp"
+#define MENU_SAMPLE_FILENAME DATADIR "menuchg.wav"
+#define MENU_SELECT_SAMPLE_FILENAME DATADIR "menusel.wav"
+#define MENU_EXPLODE_FILENAME DATADIR "ex4.wav"
+#define FONT_FILENAME DATADIR "calibri.pcx"
 
 #define DIFFICULTY_NORMAL 0
 #define DIFFICULTY_BRUTAL 1

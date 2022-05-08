@@ -7,6 +7,7 @@
 
 extern MP3FILE *mp3;
 extern GameSettings game_settings;
+extern int record_mode;
 
 int game_mode_to_modifiers(int game_mode)
 {
@@ -79,7 +80,7 @@ int handle_menuchoice(int menuchoice, Enemy *autosave,
 void show_help(BITMAP *sprites)
 {
     char help_path[256];
-    sprintf(help_path, ".\\dataloss\\%s\\help.dat", game_settings.mission_pack);
+    sprintf(help_path, DATADIR "%s\\help.dat", game_settings.mission_pack);
     FILE *f = fopen(help_path, "r");
     int color = makecol(255, 255, 255);
     const int line_height = 16;
@@ -163,12 +164,12 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     BITMAP *sprites;
     if (!game_settings.custom_resources)
     {
-        sprites = load_bitmap(".\\dataloss\\sprites.bmp", default_palette);
+        sprites = load_bitmap(DATADIR "sprites.bmp", default_palette);
     }
     else
     {
         char path[256];
-        sprintf(path, ".\\dataloss\\%s\\sprites.bmp", game_settings.mission_pack);
+        sprintf(path, DATADIR "%s\\sprites.bmp", game_settings.mission_pack);
         sprites = load_bitmap(path, default_palette);
     }
     SAMPLE *s_c = load_sample(MENU_SAMPLE_FILENAME), *s_s = load_sample(MENU_SELECT_SAMPLE_FILENAME), *s_ex = load_sample(MENU_EXPLODE_FILENAME);
@@ -192,6 +193,12 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     chunkrest(500);
     // Animation ends
 
+    if (record_mode == RECORD_MODE_PLAYBACK)
+    {
+        textprintf_centre_ex(screen, font, screen->w / 2, screen->h / 2, 0, -1, "Press enter to start demo playback");
+        while (!key[KEY_ENTER]) chunkrest(10);
+    }
+
     textprintf_ex(menu_bg, menufont, 20, 10, DARK_RED, -1, "DESTINATION UNDERWORLD");
     textprintf_ex(menu_bg, menufont, 18, 12, RED, -1, "DESTINATION UNDERWORLD");
     textprintf_ex(menu_bg, menufont, 40, 60, WHITE, -1, "NEW GAME");
@@ -212,7 +219,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     textprintf_ex(menu_bg, menufont, 10, 436, RED, -1, "f1: help");
     blit(menu_bg, buf, 0, 0, 0, 0, 640, 480);
     stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
-    while (!key[KEY_ENTER])
+    while (!key[KEY_ENTER] && record_mode != RECORD_MODE_PLAYBACK)
     {
         rectfill(buf, 200, 62, 340, 82, RED);
         if (game_mode == 0)
@@ -242,8 +249,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                     break;
                 }
             }
-            textprintf_ex(buf, menufont, 370, 80, WHITE, -1, "Highscore:");
-            textprintf_ex(buf, font, 440, 90, WHITE, -1, "%d", kills);
+            textprintf_ex(buf, menufont, 370, 80, WHITE, -1, "Highscore: %d", kills);
         }
 
         rectfill(buf, 200, 102, 230, 122, RED);
@@ -363,8 +369,11 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         }
         wait = imax(wait - 1, 0);
     }
-    play_sample(s_s, 255, 127, 1000, 0);
-    chunkrest(500);
+    if (record_mode != RECORD_MODE_PLAYBACK)
+    {
+        play_sample(s_s, 255, 127, 1000, 0);
+        chunkrest(500);
+    }
     destroy_bitmap(menu_bg);
     destroy_bitmap(sprites);
     destroy_bitmap(buf);

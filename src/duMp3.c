@@ -3,6 +3,7 @@
 #include "allegro.h"
 #include "dump3.h"
 #include "settings.h"
+#include "duConstants.h"
 
 extern GameSettings game_settings;
 
@@ -25,7 +26,7 @@ void play_track(int track_number)
   current_track = track_number;
 
   char filename[32];
-  sprintf(filename, ".\\dataloss\\music%d.mp3", current_track);
+  sprintf(filename, DATADIR "music%d.mp3", current_track);
   close_mp3_file(mp3);
   mp3 = open_mp3_file(filename);
   play_mp3_file(mp3, BUFSZ, game_settings.music_vol * 255, 127);
