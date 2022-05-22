@@ -83,9 +83,9 @@ int main(int argc, char **argv)
   {
     char loadsamplename[100];
     sprintf(loadsamplename, "ex%d.wav", i + 1);
-    register_sample(SAMPLE_EXPLOSION(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, i / 2));
+    register_sample(SAMPLE_EXPLOSION(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
     sprintf(loadsamplename, "die%d.wav", i + 1);
-    register_sample(SAMPLE_DEATH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, i));
+    register_sample(SAMPLE_DEATH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
   }
 
   play_track(1);

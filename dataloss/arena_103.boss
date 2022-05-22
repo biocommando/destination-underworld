@@ -15,6 +15,8 @@ set [main__powerup_only] player_initial_gold = 80
 {# set_override_main_setup('powerup_only') #}
 set [main__explosion_madness] player_initial_gold = 5
 {# set_override_main_setup('explosion_madness') #}
+set [main__normal] player_initial_gold = 5
+{# set_override_main_setup('normal') #}
 
 on [evt_top_left_1] time_interval: ms({# _interval #}) do spawn: 2, 3, 0, 0, 50, 0, 0
 on [evt_top_left_2] time_interval: ms({# _interval #}) do spawn: 4, 3, 0, 100, 0, 0, 0
