@@ -53,4 +53,7 @@
 #define SAMPLE_EXPLOSION(x) (1000 + (x))
 #define SAMPLE_DEATH(x) (2000 + (x))
 
+#define SCREEN_W 480
+#define SCREEN_H 360
+
 #endif

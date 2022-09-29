@@ -1,6 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
-#include "allegro.h"
+#include "allegro42_compat.h"
 #include "duconstants.h"
 #include "bossfightconf.h"
 #include "helpers.h"
@@ -182,7 +182,6 @@ typedef struct
     struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
     struct enemy_config enemy_configs[5];
 
-    BITMAP *buf;
     BITMAP *spr;
 
     int boss_fight;

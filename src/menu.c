@@ -5,7 +5,6 @@
 #include "helpers.h"
 #include "settings.h"
 
-extern MP3FILE *mp3;
 extern GameSettings game_settings;
 extern int record_mode;
 
@@ -82,13 +81,12 @@ void show_help(BITMAP *sprites)
     char help_path[256];
     sprintf(help_path, DATADIR "%s\\help.dat", game_settings.mission_pack);
     FILE *f = fopen(help_path, "r");
-    int color = makecol(255, 255, 255);
+    ALLEGRO_COLOR color = makecol(255, 255, 255);
     const int line_height = 16;
     int line = 0;
     int margin = 5;
     const int y_margin = 5;
-    BITMAP *buf = create_bitmap(640, 480);
-    clear_to_color(buf, 0);
+    clear_to_color(BLACK);
     while (!feof(f))
     {
         char s[256];
@@ -109,13 +107,13 @@ void show_help(BITMAP *sprites)
             {
                 int sx = 0, sy = 0, w = 0, h = 0, x = 0, y = 0;
                 sscanf(s, "%*s %d %d %d %d %d %d", &sx, &sy, &w, &h, &x, &y);
-                masked_blit(sprites, buf, sx, sy, x, y, w, h);
+                masked_blit(sprites, sx, sy, x, y, w, h);
             }
             if (!strcmp(cmd, "#rect"))
             {
                 int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0;
                 sscanf(s, "%*s %d %d %d %d %d %d %d", &x, &y, &w, &h, &r, &g, &b);
-                rectfill(buf, x, y, x + w, y + h, makecol(r, g, b));
+                rectfill(x, y, x + w, y + h, makecol(r, g, b));
             }
             if (!strcmp(cmd, "#margin"))
             {
@@ -127,21 +125,22 @@ void show_help(BITMAP *sprites)
             }
             if (!strcmp(cmd, "#page-end") || !strcmp(cmd, "#doc-end"))
             {
-                stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
+                //stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, SCREEN_W, SCREEN_H); TODO
+                al_flip_display();
                 chunkrest(300);
-                while (!key[KEY_SPACE] && !key[KEY_ESC])
+                while (!check_key(ALLEGRO_KEY_SPACE) && !check_key(ALLEGRO_KEY_ESCAPE))
                 {
                     chunkrest(50);
                 }
-                clear_to_color(buf, 0);
+                clear_to_color(BLACK);
                 line = 0;
-                if (!strcmp(cmd, "#doc-end") || key[KEY_ESC])
+                if (!strcmp(cmd, "#doc-end") || check_key(ALLEGRO_KEY_ESCAPE))
                     break;
             }
         }
         else
         {
-            textprintf_ex(buf, font, margin, y_margin + line * line_height, color, -1, s);
+            al_draw_textf(get_font(), color, margin, y_margin + line * line_height, 0, s);
             line++;
         }
     }
@@ -160,86 +159,93 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
     peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
 
-    BITMAP *menu_bg = create_bitmap(640, 480), *buf = create_bitmap(640, 480);
     BITMAP *sprites;
     if (!game_settings.custom_resources)
     {
-        sprites = load_bitmap(DATADIR "sprites.bmp", default_palette);
+        sprites = load_bitmap(DATADIR "sprites.bmp");
     }
     else
     {
         char path[256];
         sprintf(path, DATADIR "%s\\sprites.bmp", game_settings.mission_pack);
-        sprites = load_bitmap(path, default_palette);
+        sprites = load_bitmap(path);
     }
+    MASKED_BITMAP(sprites);
     SAMPLE *s_c = load_sample(MENU_SAMPLE_FILENAME), *s_s = load_sample(MENU_SELECT_SAMPLE_FILENAME), *s_ex = load_sample(MENU_EXPLODE_FILENAME);
-    FONT *menufont = load_font(FONT_FILENAME, default_palette, NULL);
 
+    ALLEGRO_TRANSFORM transform;
+    al_identity_transform(&transform);
+    al_scale_transform(&transform, 2, 2);
+    al_use_transform(&transform);
     int c = 0, flicker = 0, wait = 0; //, show_help = 0;
+    ALLEGRO_SAMPLE_ID id;
 
     // Transition animation
-    clear_to_color(screen, 0);
+    // TODO
+    /*clear_to_color(screen, 0);
     clear_to_color(menu_bg, 0);
     for (int i = 0; i < 10000; i++)
         putpixel(menu_bg, rand() % menu_bg->w, rand() % menu_bg->h, makecol(rand() % 20, 0, 0));
     stretch_blit(sprites, menu_bg, 100, 0, 214, 107, menu_bg->w - 2 * 214, menu_bg->h - 2 * 107, 2 * 214, 2 * 107);
     for (int i = 0; i < 24; i++)
     {
-        stretch_blit(menu_bg, screen, 0, 0, 26 * (i + 1), 480, 0, 0, screen->w, screen->h);
+        stretch_blit(menu_bg, screen, 0, 0, 26 * (i + 1), 480, 0, 0, SCREEN_W, SCREEN_H);
         chunkrest(20);
     }
-    clear_to_color(screen, WHITE);
-    play_sample(s_ex, 255, 127, 1000, 0);
-    chunkrest(500);
+    clear_to_color(WHITE);
+    play_sample(s_ex, 255, 127, 1000, 0, &id);
+    chunkrest(500);*/
     // Animation ends
 
     if (record_mode == RECORD_MODE_PLAYBACK)
     {
-        textprintf_centre_ex(screen, font, screen->w / 2, screen->h / 2, 0, -1, "Press enter to start demo playback");
-        while (!key[KEY_ENTER]) chunkrest(10);
+        clear_to_color(BLACK);
+        al_draw_textf(get_font(), BLACK, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
+        while (!check_key(ALLEGRO_KEY_ENTER)) chunkrest(10);
     }
-
-    textprintf_ex(menu_bg, menufont, 20, 10, DARK_RED, -1, "DESTINATION UNDERWORLD");
-    textprintf_ex(menu_bg, menufont, 18, 12, RED, -1, "DESTINATION UNDERWORLD");
-    textprintf_ex(menu_bg, menufont, 40, 60, WHITE, -1, "NEW GAME");
-    textprintf_ex(menu_bg, menufont, 210, 40, WHITE, -1, "< mode >");
-    textprintf_ex(menu_bg, menufont, 360, 40, WHITE, -1, "level set (use space to change)");
-    textprintf_ex(menu_bg, menufont, 40, 100, WHITE, -1, "LOAD GAME");
-    textprintf_ex(menu_bg, menufont, 210, 80, WHITE, -1, "< slot >");
-    textprintf_ex(menu_bg, menufont, 40, 180, WHITE, -1, "EXIT");
     if (ingame)
     {
-        if (!(*game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
-            textprintf_ex(menu_bg, menufont, 40, 140, WHITE, -1, "SAVE GAME");
-        textprintf_ex(menu_bg, menufont, 40, 220, WHITE, -1, "RESUME");
         c = MENUOPT_RESUME;
     }
-    textprintf_ex(menu_bg, menufont, 10, 384, RED, -1, "m: toggle music");
-    textprintf_ex(menu_bg, menufont, 10, 410, RED, -1, "n/p: next/previous track");
-    textprintf_ex(menu_bg, menufont, 10, 436, RED, -1, "f1: help");
-    blit(menu_bg, buf, 0, 0, 0, 0, 640, 480);
-    stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
-    while (!key[KEY_ENTER] && record_mode != RECORD_MODE_PLAYBACK)
+    while (!check_key(ALLEGRO_KEY_ENTER) && record_mode != RECORD_MODE_PLAYBACK)
     {
-        rectfill(buf, 200, 62, 340, 82, RED);
+        clear_to_color(BLACK);
+        al_draw_textf(get_font(), DARK_RED, 20, 10, 0, "DESTINATION UNDERWORLD");
+        al_draw_textf(get_font(), RED, 18, 12, 0, "DESTINATION UNDERWORLD");
+        al_draw_textf(get_font(), WHITE, 40, 60, 0, "NEW GAME");
+        al_draw_textf(get_font(), WHITE, 210, 40, 0, "< mode >");
+        al_draw_textf(get_font(), WHITE, 360, 40, 0, "level set (use space to change)");
+        al_draw_textf(get_font(), WHITE, 40, 100, 0, "LOAD GAME");
+        al_draw_textf(get_font(), WHITE, 210, 80, 0, "< slot >");
+        al_draw_textf(get_font(), WHITE, 40, 180, 0, "EXIT");
+        if (ingame)
+        {
+            if (!(*game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
+                al_draw_textf(get_font(), WHITE, 40, 140, 0, "SAVE GAME");
+            al_draw_textf(get_font(), WHITE, 40, 220, 0, "RESUME");
+        }
+        al_draw_textf(get_font(), RED, 10, 384, 0, "m: toggle music");
+        al_draw_textf(get_font(), RED, 10, 410, 0, "n/p: next/previous track");
+        al_draw_textf(get_font(), RED, 10, 436, 0, "f1: help");
+        rectfill(200, 52, 345, 72, RED);
         if (game_mode == 0)
-            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "normal");
+            al_draw_textf(get_font(), WHITE, 210, 60, 0, "normal");
         if (game_mode == 1)
-            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "brutally hard");
+            al_draw_textf(get_font(), WHITE, 210, 60, 0, "brutally hard");
         if (game_mode == 2)
-            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "explosion madness");
+            al_draw_textf(get_font(), WHITE, 210, 60, 0, "explosion madness");
         if (game_mode == 3)
-            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "over power up");
+            al_draw_textf(get_font(), WHITE, 210, 60, 0, "over power up");
         if (game_mode == 4)
-            textprintf_ex(buf, menufont, 210, 60, WHITE, -1, "power up only");
-        rectfill(buf, 360, 62, 600, 82, RED);
+            al_draw_textf(get_font(), WHITE, 210, 60, 0, "power up only");
+        rectfill(360, 52, 600, 72, RED);
         if (level_set == 0)
-            textprintf_ex(buf, menufont, 370, 60, WHITE, -1, "Main game");
+            al_draw_textf(get_font(), WHITE, 370, 60, 0, "Main game");
             
-        rectfill(buf, 360, 82, 600, 102, 0);
+        rectfill(360, 82, 600, 102, BLACK);
         if (level_set >= 1)
         {
-            textprintf_ex(buf, menufont, 370, 60, WHITE, -1, "Arena: %s", game_settings.arena_config.arenas[level_set - 1].name);
+            al_draw_textf(get_font(), WHITE, 370, 60, 0, "Arena: %s", game_settings.arena_config.arenas[level_set - 1].name);
             int kills = 0;
             for (int i = 0; i < ARENACONF_HIGHSCORE_MAP_SIZE; i++)
             {
@@ -249,12 +255,12 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                     break;
                 }
             }
-            textprintf_ex(buf, menufont, 370, 80, WHITE, -1, "Highscore: %d", kills);
+            al_draw_textf(get_font(), WHITE, 370, 80, 0, "Highscore: %d", kills);
         }
 
-        rectfill(buf, 200, 102, 230, 122, RED);
-        textprintf_ex(buf, menufont, 210, 100, WHITE, -1, "%c", 'A' + slot);
-        rectfill(buf, 235, 102, screen->w, 122, 0);
+        rectfill(200, 92, 220, 112, RED);
+        al_draw_textf(get_font(), WHITE, 210, 100, 0, "%c", 'A' + slot);
+        rectfill(235, 102, SCREEN_W, 122, BLACK);
         if (current_slot_has_save)
         {
             char game_mode_str[30];
@@ -268,119 +274,114 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 strcpy(game_mode_str, "over power up");
             if (current_slot_game_modifiers == GAMEMODIFIER_MULTIPLIED_GOLD)
                 strcpy(game_mode_str, "power up only");
-            textprintf_ex(buf, menufont, 240, 101, WHITE, -1, "level: %d - mode: %s", current_slot_mission, game_mode_str);
+            al_draw_textf(get_font(), WHITE, 240, 101, 0, "level: %d - mode: %s", current_slot_mission, game_mode_str);
         }
         else
         {
-            textprintf_ex(buf, menufont, 240, 101, WHITE, -1, "(no save)");
+            al_draw_textf(get_font(), WHITE, 240, 101, 0, "(no save)");
         }
         if (ingame && !(*game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
         {
-            rectfill(buf, 200, 142, 230, 162, RED);
-            textprintf_ex(buf, menufont, 210, 140, WHITE, -1, "%c", 'A' + slot);
+            rectfill(200, 132, 220, 152, RED);
+            al_draw_textf(get_font(), WHITE, 210, 140, 0, "%c", 'A' + slot);
         }
 
         if (++flicker == 16)
             flicker = -16;
-        circlefill(buf, 30, c * 40 + 70, abs(flicker / 2), makecol(abs(flicker * 8) + 50, 0, 0));
-        stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
+        circlefill(30, c * 40 + 65, abs(flicker / 2), makecol(abs(flicker * 8) + 50, 0, 0));
+        al_flip_display();
+        //stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, SCREEN_W, SCREEN_H);
         /*if (show_help)
-            blit(help_pic, screen, 0, 0, screen->w - help_pic->w, screen->h - help_pic->h, help_pic->w, help_pic->h);*/
+            blit(help_pic, screen, 0, 0, SCREEN_W - help_pic->w, SCREEN_H - help_pic->h, help_pic->w, help_pic->h);*/
         chunkrest(50);
-        circlefill(buf, 30, c * 40 + 70, abs(flicker / 2), 0);
+        circlefill(30, c * 40 + 65, abs(flicker / 2), BLACK);
         if (wait == 0)
         {
-            if (c == MENUOPT_NEW_GAME && key[KEY_LEFT] && game_mode > 0)
+            if (c == MENUOPT_NEW_GAME && check_key(ALLEGRO_KEY_LEFT) && game_mode > 0)
             {
                 game_mode--;
-                play_sample(s_c, 255, 127, 1000, 0);
+                play_sample(s_c, 1, 0, 1, 0, &id);
                 wait = 3;
             }
-            if (c == MENUOPT_NEW_GAME && key[KEY_RIGHT] && game_mode < 4)
+            if (c == MENUOPT_NEW_GAME && check_key(ALLEGRO_KEY_RIGHT) && game_mode < 4)
             {
                 game_mode++;
-                play_sample(s_c, 255, 127, 1000, 0);
+                play_sample(s_c, 1, 0, 1, 0, &id);
                 wait = 3;
             }
-            if (c == MENUOPT_NEW_GAME && key[KEY_SPACE])
+            if (c == MENUOPT_NEW_GAME && check_key(ALLEGRO_KEY_SPACE))
             {
                 level_set++;
                 if (level_set == 1 + game_settings.arena_config.number_of_arenas)
                     level_set = 0;
-                play_sample(s_c, 255, 127, 1000, 0);
+                play_sample(s_c, 1, 0, 1, 0, &id);
                 wait = 3;
             }
-            if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && key[KEY_LEFT] && slot > 0)
+            if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && check_key(ALLEGRO_KEY_LEFT) && slot > 0)
             {
                 slot--;
                 peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
-                play_sample(s_c, 255, 127, 1000, 0);
+                play_sample(s_c, 1, 0, 1, 0, &id);
                 wait = 3;
             }
-            if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && key[KEY_RIGHT] && slot < 9)
+            if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && check_key(ALLEGRO_KEY_RIGHT) && slot < 9)
             {
                 slot++;
                 peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
-                play_sample(s_c, 255, 127, 1000, 0);
+                play_sample(s_c, 1, 0, 1, 0, &id);
                 wait = 3;
             }
-            if (key[KEY_UP] && c > MENUOPT_NEW_GAME)
+            if (check_key(ALLEGRO_KEY_UP) && c > MENUOPT_NEW_GAME)
             {
                 c--;
-                play_sample(s_c, 255, 127, 1000, 0);
+                play_sample(s_c, 1, 0, 1, 0, &id);
                 if ((!ingame || (*game_modifiers & GAMEMODIFIER_ARENA_FIGHT)) && c == MENUOPT_SAVE)
                     c = MENUOPT_LOAD;
                 wait = 3;
             }
-            if (key[KEY_DOWN] && c < (ingame ? MENUOPT_RESUME : MENUOPT_EXIT))
+            if (check_key(ALLEGRO_KEY_DOWN) && c < (ingame ? MENUOPT_RESUME : MENUOPT_EXIT))
             {
                 c++;
-                play_sample(s_c, 255, 127, 1000, 0);
+                play_sample(s_c, 1, 0, 1, 0, &id);
                 if ((!ingame || (*game_modifiers & GAMEMODIFIER_ARENA_FIGHT)) && c == MENUOPT_SAVE)
                     c = MENUOPT_EXIT;
                 chunkrest(100);
                 wait = 3;
             }
-            if (key[KEY_M])
+            if (check_key(ALLEGRO_KEY_M))
             {
                 game_settings.music_on = !game_settings.music_on;
                 chunkrest(100);
                 wait = 3;
             }
-            if (key[KEY_N])
+            if (check_key(ALLEGRO_KEY_N))
             {
                 play_track(get_current_track() + 1);
                 chunkrest(100);
                 wait = 3;
             }
-            if (key[KEY_P])
+            if (check_key(ALLEGRO_KEY_P))
             {
                 play_track(get_current_track() - 1);
                 chunkrest(100);
                 wait = 3;
             }
-            if (key[KEY_F1])
+            if (check_key(ALLEGRO_KEY_F1))
             {
-                //show_help = !show_help;
-                //wait = 3;
                 show_help(sprites);
-                stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, screen->w, screen->h);
             }
         }
         wait = imax(wait - 1, 0);
     }
     if (record_mode != RECORD_MODE_PLAYBACK)
     {
-        play_sample(s_s, 255, 127, 1000, 0);
+        play_sample(s_s, 1, 0, 1, 0, &id);
         chunkrest(500);
     }
-    destroy_bitmap(menu_bg);
     destroy_bitmap(sprites);
-    destroy_bitmap(buf);
     destroy_sample(s_c);
     destroy_sample(s_s);
     destroy_sample(s_ex);
-    destroy_font(menufont);
 
     return handle_menuchoice(c, autosave, mission, game_modifiers, slot, game_mode, level_set);
 }

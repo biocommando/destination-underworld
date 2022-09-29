@@ -21,9 +21,6 @@
 #include "sampleRegister.h"
 #include "helpers.h"
 
-extern MP3FILE *mp3;
-
-void init_allegro();
 int game(int mission, int *game_modifiers);
 
 SAMPLE *s_throw;
@@ -101,13 +98,12 @@ int main(int argc, char **argv)
   if (record_input_file)
     fclose(record_input_file);
 
-  close_mp3_file(mp3);
-  set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+  close_mp3_file();
+  /*set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   remove_keyboard();
-  remove_mouse();
+  remove_mouse();*/
   return 0;
 }
-END_OF_MAIN();
 
 void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
 {
@@ -250,15 +246,14 @@ void enemy_logic(World *world)
 
 void draw_static_background()
 {
-  rectfill(screen, 0, 0, screen->w, screen->h, 0);
-  int maxsz = screen->h > screen->w ? screen->h : screen->w;
+  rectfill(0, 0, SCREEN_W, SCREEN_H, BLACK);
+  int maxsz = SCREEN_H > SCREEN_W ? SCREEN_H : SCREEN_W;
   for (int i = 0; i < maxsz / 2; i += maxsz / 80)
   {
-    circle(screen,
-           screen->w / 2,
-           screen->h / 2,
-           i,
-           makecol(33, 33, 33));
+    al_draw_circle(SCREEN_W / 2,
+                   SCREEN_H / 2,
+                   i,
+                   makecol(33, 33, 33), 1);
   }
 }
 
@@ -493,7 +488,7 @@ void bullet_logic(World *world)
                 {
                   int col = xx % 4;
                   col = col == 0 ? 255 : (col == 2 ? 64 : 128);
-                  rectfill(screen, 0, 0, screen->w, screen->h, GRAY(col));
+                  rectfill(0, 0, SCREEN_W, SCREEN_H, GRAY(col));
                   chunkrest(25);
                 }
                 create_cluster_explosion(world, enm->x, enm->y, 48, 1, &world->plr);
@@ -515,11 +510,11 @@ void bullet_logic(World *world)
     if (bullet->bullet_type == BULLET_TYPE_NORMAL)
     {
       int bullet_sprite = ((int)(bullet->x + bullet->y) / 30) % 4;
-      masked_blit(world->spr, world->buf, 140 + bullet_sprite * 10, 140, bullet->x - 5, bullet->y - 5, 10, 10);
+      masked_blit(world->spr, 140 + bullet_sprite * 10, 140, bullet->x - 5, bullet->y - 5, 10, 10);
     }
     else if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
     {
-      masked_blit(world->spr, world->buf, 140, 150, bullet->x - 6, bullet->y - 6, 13, 12);
+      masked_blit(world->spr, 140, 150, bullet->x - 6, bullet->y - 6, 13, 12);
     }
   }
 }
@@ -534,24 +529,24 @@ int game(int mission, int *game_modifiers)
   world.game_modifiers = *game_modifiers;
   world.mission = mission;
   memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
-  world.buf = create_bitmap(480, 360);
   if (!game_settings.custom_resources)
   {
-    world.spr = load_bitmap(DATADIR "sprites.bmp", default_palette);
+    world.spr = load_bitmap(DATADIR "sprites.bmp");
   }
   else
   {
     char path[256];
     sprintf(path, DATADIR "\\%s\\sprites.bmp", game_settings.mission_pack);
-    world.spr = load_bitmap(path, default_palette);
+    world.spr = load_bitmap(path);
   }
+  MASKED_BITMAP(world.spr);
 
   char c;
   int vibrations = 0;
   int x, y, i, additt_anim = 0;
   world.playcount = 0;
 
-  int fly_in_text_x = world.buf->w;
+  int fly_in_text_x = SCREEN_W;
   int boss_fight_frame_count = 0;
   world.boss_want_to_shoot = 0;
 
@@ -646,15 +641,15 @@ int game(int mission, int *game_modifiers)
   int screen_width_scaled, screen_h_offset, screen_v_offset, screen_height_scaled;
   {
     double screen_ratio = 480.0 / 360.0;
-    screen_width_scaled = screen->h * screen_ratio;
-    screen_height_scaled = screen->h;
-    if (screen_width_scaled > screen->w)
+    screen_width_scaled = SCREEN_H * screen_ratio;
+    screen_height_scaled = SCREEN_H;
+    if (screen_width_scaled > SCREEN_W)
     {
-      screen_width_scaled = screen->w;
-      screen_height_scaled = screen->w / screen_ratio;
+      screen_width_scaled = SCREEN_W;
+      screen_height_scaled = SCREEN_W / screen_ratio;
     }
-    screen_h_offset = (screen->w - screen_width_scaled) / 2;
-    screen_v_offset = (screen->h - screen_height_scaled) / 2;
+    screen_h_offset = (SCREEN_W - screen_width_scaled) / 2;
+    screen_v_offset = (SCREEN_H - screen_height_scaled) / 2;
   }
 
   draw_static_background();
@@ -665,6 +660,11 @@ int game(int mission, int *game_modifiers)
 
   while (restart_requested < 2)
   {
+    if (world.plr.health <= 0)
+    {
+      // Draw well outside of screen so that the zoom in transformation would not look like ass
+      rectfill(0, 0, SCREEN_W * 2, SCREEN_H * 2, BLACK);
+    }
     cleanup_bodyparts(&world);
     if (time_stamp % 6 == 0)
     {
@@ -706,9 +706,9 @@ int game(int mission, int *game_modifiers)
           world.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-          display_level_info(&world, mission, game_settings.mission_count, font, completetime);
+          display_level_info(&world, mission, game_settings.mission_count, completetime);
 
-          while (!key[KEY_ENTER])
+          while (!check_key(ALLEGRO_KEY_ENTER))
           {
             chunkrest(15);
           }
@@ -730,17 +730,17 @@ int game(int mission, int *game_modifiers)
       }
       else
       {
-        key_left = key[KEY_LEFT];
-        key_right = key[KEY_RIGHT];
-        key_up = key[KEY_UP];
-        key_down = key[KEY_DOWN];
-        key_space = key[KEY_SPACE];
-        key_x = key[KEY_X];
-        key_z = key[KEY_Z];
-        key_a = key[KEY_A];
-        key_s = key[KEY_S];
-        key_d = key[KEY_D];
-        key_f = key[KEY_F];
+        key_left = check_key(ALLEGRO_KEY_LEFT);
+        key_right = check_key(ALLEGRO_KEY_RIGHT);
+        key_up = check_key(ALLEGRO_KEY_UP);
+        key_down = check_key(ALLEGRO_KEY_DOWN);
+        key_space = check_key(ALLEGRO_KEY_SPACE);
+        key_x = check_key(ALLEGRO_KEY_X);
+        key_z = check_key(ALLEGRO_KEY_Z);
+        key_a = check_key(ALLEGRO_KEY_A);
+        key_s = check_key(ALLEGRO_KEY_S);
+        key_d = check_key(ALLEGRO_KEY_D);
+        key_f = check_key(ALLEGRO_KEY_F);
       }
 
       int player_did_change_dir = handle_direction_keys(&world, key_up, key_down, key_left, key_right);
@@ -770,7 +770,7 @@ int game(int mission, int *game_modifiers)
         show_gold_hint(&world, gold_hint_amount);
       }
 
-      if (key[KEY_R])
+      if (check_key(ALLEGRO_KEY_R))
       {
         restart_requested = 1;
       }
@@ -807,9 +807,9 @@ int game(int mission, int *game_modifiers)
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, mission, game_settings.mission_count, font, completetime);
+      display_level_info(&world, mission, game_settings.mission_count, completetime);
 
-      while (!key[KEY_ENTER])
+      while (!check_key(ALLEGRO_KEY_ENTER))
       {
         chunkrest(15);
       }
@@ -840,7 +840,7 @@ int game(int mission, int *game_modifiers)
     {
       world.hint.time_shows--;
       int hint_col = world.hint.time_shows * world.hint.dim;
-      textprintf_ex(world.buf, font, world.hint.loc.x, world.hint.loc.y, GRAY(hint_col), -1, world.hint.text);
+      al_draw_textf(get_font(), GRAY(hint_col), world.hint.loc.x, world.hint.loc.y, -1, world.hint.text);
     }
     if (world.boss_fight && ++boss_fight_frame_count >= 3)
     {
@@ -853,17 +853,16 @@ int game(int mission, int *game_modifiers)
       for (int i = 0; i < 6; i++)
       {
         if (world.boss->health >= (world.boss_fight_config.health * (i + 1) / 6))
-          masked_blit(world.spr, world.buf, 60, 0, world.boss->x - 23, world.boss->y - 18 + 4 * i, 7, 6);
+          masked_blit(world.spr, 60, 0, world.boss->x - 23, world.boss->y - 18 + 4 * i, 7, 6);
       }
     }
 
     if (plr_dir_helper_intensity > 0)
     {
-      circle(world.buf,
-             world.plr.x + world.plr.dx * TILESIZE * 3 / 2,
-             world.plr.y + world.plr.dy * TILESIZE * 3 / 2,
-             plr_dir_helper_intensity * TILESIZE / 600,
-             makecol(2 * plr_dir_helper_intensity, 0, 0));
+      al_draw_circle(world.plr.x + world.plr.dx * TILESIZE * 3 / 2,
+                     world.plr.y + world.plr.dy * TILESIZE * 3 / 2,
+                     plr_dir_helper_intensity * TILESIZE / 600,
+                     makecol(2 * plr_dir_helper_intensity, 0, 0), 1);
       plr_dir_helper_intensity -= 3;
     }
 
@@ -872,13 +871,13 @@ int game(int mission, int *game_modifiers)
       if (world.powerups.rune_of_protection_active < 0)
       {
         world.powerups.rune_of_protection_active++;
-        masked_blit(world.spr, world.buf, 140, 165,
+        masked_blit(world.spr, 140, 165,
                     world.plr.x + world.powerups.rune_of_protection_active * sin(completetime * 0.15) - 7,
                     world.plr.y + world.powerups.rune_of_protection_active * cos(completetime * 0.15) - 7,
                     13, 13);
       }
       else
-        masked_blit(world.spr, world.buf, 140, 165,
+        masked_blit(world.spr, 140, 165,
                     world.plr.x - TILESIZE * sin(completetime * 0.15) - 7,
                     world.plr.y - TILESIZE * cos(completetime * 0.15) - 7,
                     13, 13);
@@ -888,8 +887,8 @@ int game(int mission, int *game_modifiers)
 
     if (fly_in_text_x > -400)
     {
-      textprintf_ex(world.buf, font, fly_in_text_x, 170, GRAY(255), -1, world.mission_display_name);
-      if (fly_in_text_x > world.buf->w / 8 * 3 && fly_in_text_x < world.buf->w / 8 * 5)
+      al_draw_textf(get_font(), WHITE, fly_in_text_x, 170, -1, world.mission_display_name);
+      if (fly_in_text_x > SCREEN_W / 8 * 3 && fly_in_text_x < SCREEN_W / 8 * 5)
       {
         fly_in_text_x -= 4;
       }
@@ -899,67 +898,79 @@ int game(int mission, int *game_modifiers)
       }
     }
 
-    int offset = 2 * vibrations - rand() % (1 + 2 * vibrations);
     if (world.plr.health > 0)
     {
-      stretch_blit(world.buf, screen, 0, 0, 480, 360, offset + screen_h_offset, offset + screen_v_offset, screen_width_scaled, screen_height_scaled);
+      int offset_x = 2 * vibrations - rand() % (1 + 2 * vibrations);
+      int offset_y = 2 * vibrations - rand() % (1 + 2 * vibrations);
+      ALLEGRO_TRANSFORM transform;
+      al_identity_transform(&transform);
+      
+      al_translate_transform(&transform, offset_x, offset_y);
+      al_scale_transform(&transform, 3, 3);
+      al_use_transform(&transform);
+      al_flip_display();
     }
     else
     {
-      int startx, starty, endx, endy;
+      int startx, starty;
       startx = world.plr.x - world.plr.reload;
       if (startx < 0)
         startx = 0;
       starty = world.plr.y - world.plr.reload * 0.75;
       if (starty < 0)
         starty = 0;
-      endx = world.plr.reload * 2;
-      if (startx + endx > 480)
-        endx = 480 - startx;
-      endy = world.plr.reload * 2 * 0.75;
-      if (starty + endy > 360)
-        endy = 360 - starty;
-      stretch_blit(world.buf, screen, startx, starty, endx, endy, screen_h_offset, screen_v_offset, screen_width_scaled, screen_height_scaled);
+      double scale = 1 + (100 - world.plr.reload) / 20.0;
+      ALLEGRO_TRANSFORM transform;
+      al_identity_transform(&transform);
+      al_translate_transform(&transform, -startx, -starty);
+      al_scale_transform(&transform, 3 * scale, 3 * scale);
+      al_use_transform(&transform);
+      al_flip_display();
+      // TODO?
       chunkrest(40);
       if (world.plr.reload <= 0)
       {
+        al_identity_transform(&transform);
+        al_use_transform(&transform);
         if (world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
         {
           ArenaHighscore highscore;
           access_arena_highscore(&highscore, 1);
           int arena_idx, mode_idx;
           int highscore_kills = parse_highscore_from_world_state(&world, &highscore, &arena_idx, &mode_idx);
-          rectfill(screen, 5, 5, 340, 125, GRAY(60));
-          textprintf_ex(screen, font, 10, 10, WHITE, -1, "Arena fight over, your kill count: %d", world.kills);
+          rectfill(5, 5, 340, 125, GRAY(60));
+          al_draw_textf(get_font(), WHITE, 10, 10, -1, "Arena fight over, your kill count: %d", world.kills);
           if (record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
           {
-            textprintf_ex(screen, font, 10, 30, WHITE, -1, "Previous highscore: %d", highscore_kills);
-            textprintf_ex(screen, font, 10, 50, WHITE, -1, "NEW HIGHSCORE!");
+            al_draw_textf(get_font(), WHITE, 10, 30, -1, "Previous highscore: %d", highscore_kills);
+            al_draw_textf(get_font(), WHITE, 10, 50, -1, "NEW HIGHSCORE!");
             highscore.kills[arena_idx][mode_idx] = world.kills;
             access_arena_highscore(&highscore, 0);
           }
           else
           {
-            textprintf_ex(screen, font, 10, 30, WHITE, -1, "Highscore: %d", highscore_kills);
+            al_draw_textf(get_font(), WHITE, 10, 30, -1, "Highscore: %d", highscore_kills);
           }
-          textprintf_ex(screen, font, 10, 100, WHITE, -1, "Press ENTER to continue...");
-          while (!key[KEY_ENTER])
+          al_draw_textf(get_font(), WHITE, 10, 100, -1, "Press ENTER to continue...");
+          al_flip_display();
+          while (!check_key(ALLEGRO_KEY_ENTER))
             chunkrest(40);
         }
         break;
       }
     }
 
-    if (key[KEY_B])
+    if (check_key(ALLEGRO_KEY_B))
     {
       char fname[123];
       sprintf(fname, "screenshot%d.bmp", fname_counter++);
-      save_bitmap(fname, world.buf, default_palette);
+      // save_bitmap(fname, world.buf, default_palette);
+      //  TODO
       chunkrest(500);
     }
     game_loop_rest(&game_loop_clk);
 
-    if (key[KEY_ESC])
+    if (check_key(ALLEGRO_KEY_ESCAPE))
     {
 
       world.hint.time_shows = 0;
@@ -978,13 +989,17 @@ int game(int mission, int *game_modifiers)
     fclose(f_key_presses);
   }
 
-  destroy_bitmap(world.buf);
   destroy_bitmap(world.spr);
 
+  {
+    ALLEGRO_TRANSFORM transform;
+    al_identity_transform(&transform);
+    al_use_transform(&transform);
+  }
   return mission;
 }
 
-void init_allegro()
+/*void init_allegro()
 {
   srand((int)time(NULL));
   allegro_init();
@@ -1017,4 +1032,4 @@ void init_allegro()
     }
   }
   LOG("allegro inited\n");
-}
+}*/

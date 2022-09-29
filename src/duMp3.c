@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "allegro.h"
+#include "allegro42_compat.h"
 #include "dump3.h"
 #include "settings.h"
 #include "duConstants.h"
 
 extern GameSettings game_settings;
 
-MP3FILE *mp3 = NULL;
+ALLEGRO_SAMPLE *sample = NULL;
+ALLEGRO_SAMPLE_INSTANCE *sample_instance = NULL;
 
 int current_track = 1;
 
@@ -27,27 +28,27 @@ void play_track(int track_number)
 
   char filename[32];
   sprintf(filename, DATADIR "music%d.mp3", current_track);
-  close_mp3_file(mp3);
-  mp3 = open_mp3_file(filename);
-  play_mp3_file(mp3, BUFSZ, game_settings.music_vol * 255, 127);
+  open_mp3_file(filename);
 }
 
 void play_mp3()
 {
-  static int music_on_status = 0;
+  static int music_on_status = -1;
   if (music_on_status != game_settings.music_on)
   {
     if (!game_settings.music_on)
-      almp3_stop_mp3stream(mp3->s);
+    {
+      if (sample_instance)
+        al_stop_sample_instance(sample_instance);
+    }
     else
-      play_mp3_file(mp3, BUFSZ, game_settings.music_vol * 255, 127);
+      play_track(current_track);
   }
   if (game_settings.music_on)
   {
-    if (mp3 && poll_mp3_file(mp3) != ALMP3_OK)
+    if (sample_instance && !al_get_sample_instance_playing(sample_instance))
     {
       play_track(current_track + 1);
-      play_mp3_file(mp3, BUFSZ, game_settings.music_vol * 255, 127);
     }
   }
   music_on_status = game_settings.music_on;
@@ -57,72 +58,27 @@ void play_mp3()
 
 /*MP3-rutiinit*/
 
-MP3FILE *open_mp3_file(char *filename)
+void open_mp3_file(char *filename)
 {
-  MP3FILE *p = NULL;
-  PACKFILE *f = NULL;
-  ALMP3_MP3STREAM *s = NULL;
-  char data[DATASZ];
-  int len;
-
-  if (!(p = (MP3FILE *)malloc(sizeof(MP3FILE))))
-    goto error;
-  if (!(f = pack_fopen(filename, F_READ)))
-    goto error;
-  if ((len = pack_fread(data, DATASZ, f)) <= 0)
-    goto error;
-  if (len < DATASZ)
-  {
-    if (!(s = almp3_create_mp3stream(data, len, TRUE)))
-      goto error;
-  }
-  else
-  {
-    if (!(s = almp3_create_mp3stream(data, DATASZ, FALSE)))
-      goto error;
-  }
-  p->f = f;
-  p->s = s;
-  return p;
-
-error:
-  pack_fclose(f);
-  free(p);
-  return NULL;
+  close_mp3_file();
+  sample = al_load_sample(filename);
+  sample_instance = al_create_sample_instance(sample);
+  al_attach_sample_instance_to_mixer(sample_instance, al_get_default_mixer());
+  al_play_sample_instance(sample_instance);
 }
 
-int play_mp3_file(MP3FILE *mp3, int buflen, int vol, int pan)
+void close_mp3_file()
 {
-  return almp3_play_mp3stream(mp3->s, buflen, vol, pan);
-}
-
-void close_mp3_file(MP3FILE *mp3)
-{
-  if (mp3)
+  if (sample)
   {
-    pack_fclose(mp3->f);
+    /*pack_fclose(mp3->f);
     almp3_destroy_mp3stream(mp3->s);
-    free(mp3);
-    mp3 = NULL;
+    free(mp3);*/
+    al_destroy_sample(sample);
+    al_destroy_sample_instance(sample_instance);
+    sample = NULL;
+    sample_instance = NULL;
   }
-}
-
-int poll_mp3_file(MP3FILE *mp3)
-{
-  char *data;
-  long len;
-
-  data = (char *)almp3_get_mp3stream_buffer(mp3->s);
-  if (data)
-  {
-    len = pack_fread(data, DATASZ, mp3->f);
-    if (len < DATASZ)
-      almp3_free_mp3stream_buffer(mp3->s, len);
-    else
-      almp3_free_mp3stream_buffer(mp3->s, -1);
-  }
-
-  return almp3_poll_mp3stream(mp3->s);
 }
 
 /****************MP3MP3MP3MP3MP3*******************/

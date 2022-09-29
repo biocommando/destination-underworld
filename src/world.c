@@ -155,23 +155,23 @@ inline Tile ns_get_tile_at(World *world, int x, int y)
     return world->map[x][y];
 }
 
-inline int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
+int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
 {
     return (world->map[x][y].flags & flags_to_check) != 0;
 }
 
-inline int ns_get_wall_type_at(World *world, int x, int y)
+int ns_get_wall_type_at(World *world, int x, int y)
 {
     Tile *t = &(world->map[x][y]);
     return ((t->flags & TILE_IS_WALL) != 0) ? t->data : 0;
 }
 
-inline int check_flags_at(World *world, int x, int y, int flags_to_check)
+int check_flags_at(World *world, int x, int y, int flags_to_check)
 {
     return ((world->map[x / TILESIZE][y / TILESIZE].flags & flags_to_check) != 0);
 }
 
-inline int get_wall_type_at(World *world, int x, int y)
+int get_wall_type_at(World *world, int x, int y)
 {
     return ns_get_wall_type_at(world, x / TILESIZE, y / TILESIZE);
 }

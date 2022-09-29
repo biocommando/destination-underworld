@@ -29,10 +29,12 @@ void clear_restricted_tiles(World *world, int id)
     }
 }
 
-inline double calc_sqr_distance(double x1, double y1, double x2, double y2)
+#define calc_sqr_distance(x1, y1, x2, y2) (((x1) - (x2)) * ((x1) - (x2)) + ((y1) - (y2)) * ((y1) - (y2)))
+
+/*inline double calc_sqr_distance(double x1, double y1, double x2, double y2)
 {
     return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-}
+}*/
 
 void move_enemy(Enemy *enm, World *world)
 {
@@ -68,7 +70,7 @@ void move_enemy(Enemy *enm, World *world)
         enm->anim = 0;
     }
 
-    if ((enm->x >= world->buf->w || enm->x < 0 || enm->y >= world->buf->h || enm->y < 0) ||
+    if ((enm->x >= SCREEN_W || enm->x < 0 || enm->y >= SCREEN_H || enm->y < 0) ||
         (enm != &world->plr && (check_flags_at(world, enm->x, enm->y, TILE_IS_EXIT_POINT))))
     {
         enm->x = ex;
@@ -269,7 +271,7 @@ void bounce_body_parts(int x, int y, World *world)
         }
 }
 
-inline double random()
+double random()
 {
     return (double)(rand() % 1000) / 1000;
 }

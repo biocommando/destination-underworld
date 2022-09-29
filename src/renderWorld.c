@@ -7,9 +7,9 @@
 void draw_enemy(Enemy *enm, World *world)
 {
     if (enm->sprite == 9)
-        masked_blit(world->spr, world->buf, 47, 117, enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 24, 28);
+        masked_blit(world->spr, 47, 117, enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 24, 28);
     else
-        masked_blit(world->spr, world->buf, 23 * (enm->anim > 20), 29 * (1 + enm->sprite), enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 23, 29);
+        masked_blit(world->spr, 23 * (enm->anim > 20), 29 * (1 + enm->sprite), enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 23, 29);
 }
 
 void draw_map(World *world, int draw_walls, int vibration_intensity)
@@ -44,11 +44,11 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                 if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                 {
                     if (x > 0 && !ns_check_flags_at(world, x - 1, y, TILE_IS_EXIT_LEVEL))
-                        rectfill(world->buf, (x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE, (y + 1) * TILESIZE - 1, GRAY(shadowcolm1));
+                        rectfill((x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE, (y + 1) * TILESIZE - 1, GRAY(shadowcolm1));
                 }
                 if (ns_check_flags_at(world, x, y, TILE_IS_FLOOR | TILE_IS_EXIT_POINT | TILE_IS_EXIT_LEVEL))
                 {
-                    int drawn_color = GRAY(floorcol);
+                    ALLEGRO_COLOR drawn_color = GRAY(floorcol);
 
                     if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_POINT))
                     {
@@ -58,7 +58,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     {
                         drawn_color = makecol(0, 0, abs(lava_fluctuations) + 100);
                     }
-                    rectfill(world->buf, (x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawn_color);
+                    rectfill((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawn_color);
                 }
 
                 if (ns_check_flags_at(world, x, y, TILE_IS_BLOOD_STAINED))
@@ -73,7 +73,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                         {
                             x_pos += dx;
                             y_pos += dy;
-                            rectfill(world->buf, x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, makecol(floorcol + 30 - i * 5, 0, 0));
+                            rectfill(x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, makecol(floorcol + 30 - i * 5, 0, 0));
                         }
                     }
                 }
@@ -83,7 +83,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     for (int i = 0; i < 5; i++)
                     {
                         double angle = (lava_fluctuations + i * 20) * AL_PI / 50;
-                        masked_blit(world->spr, world->buf, 160 + (rand() % 4) * 5, 150, x * TILESIZE + HALFTILESIZE + sin(angle) * 10 - 3, y * TILESIZE + HALFTILESIZE + cos(angle) * 10 - 3, 5, 5);
+                        masked_blit(world->spr, 160 + (rand() % 4) * 5, 150, x * TILESIZE + HALFTILESIZE + sin(angle) * 10 - 3, y * TILESIZE + HALFTILESIZE + cos(angle) * 10 - 3, 5, 5);
                     }
                 }
             }
@@ -99,7 +99,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                 int colcalc = lev == 0 ? 165 : (15 - lev) * 10;
                 colcalc += y * 10;
                 colcalc = colcalc > 255 ? 255 : colcalc;
-                int col_wall = makecol(colcalc * world->map_wall_color[0],
+                ALLEGRO_COLOR col_wall = makecol(colcalc * world->map_wall_color[0],
                                        colcalc * world->map_wall_color[1],
                                        colcalc * world->map_wall_color[2]);
 
@@ -110,24 +110,24 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     {
                         if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                         {
-                            rectfill(world->buf, x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, col_wall);
+                            rectfill(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, col_wall);
                         }
                         if (wall_type == WALL_LAVA && (((int)abs(lava_fluctuations) / 5 + (y & x) * (y | x)) % 15 == lev || lev == 15))
                         {
-                            rectfill(world->buf, x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, makecol(colcalc, colcalc >> 1, colcalc >> 2));
+                            rectfill(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, makecol(colcalc, colcalc >> 1, colcalc >> 2));
                         }
                     }
                     if (lev == 0)
                     {
                         if (wall_type == WALL_PENTAGRAM)
                         {
-                            masked_blit(world->spr, world->buf, 47, 145, x * TILESIZE - 15, y * TILESIZE - 15, 30, 30);
+                            masked_blit(world->spr, 47, 145, x * TILESIZE - 15, y * TILESIZE - 15, 30, 30);
                         }
                         else if (ns_check_flags_at(world, x, y, TILE_IS_EXIT_POINT))
                         {
-                            rectfill(world->buf, x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 14, y * TILESIZE + 14, GRAY(100));
-                            rectfill(world->buf, x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 9, y * TILESIZE + 9, GRAY(90));
-                            rectfill(world->buf, x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 4, y * TILESIZE + 4, GRAY(80));
+                            rectfill(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 14, y * TILESIZE + 14, GRAY(100));
+                            rectfill(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 9, y * TILESIZE + 9, GRAY(90));
+                            rectfill(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 4, y * TILESIZE + 4, GRAY(80));
                         }
                     }
                 }
@@ -141,28 +141,28 @@ void draw_player_legend(World *world)
     if (world->plr.health > 0)
     {
         for (int x = 0; x < world->plr.health; x++)
-            masked_blit(world->spr, world->buf, 60, 0, world->plr.x - 23, world->plr.y - 18 + 4 * x, 7, 6);
+            masked_blit(world->spr, 60, 0, world->plr.x - 23, world->plr.y - 18 + 4 * x, 7, 6);
         for (int x = 0; x < world->plr.ammo; x++)
         {
             if (world->plr.reload == 0)
             {
-                masked_blit(world->spr, world->buf, 67, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
+                masked_blit(world->spr, 67, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
             }
             else
             {
-                masked_blit(world->spr, world->buf, 73, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
+                masked_blit(world->spr, 73, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
             }
         }
 
-        masked_blit(world->spr, world->buf, 89 + (world->plr.shots > 1) * 4, 196, world->plr.x - 21, world->plr.y - 14 + 4 * world->plr.health, 3, 6);
+        masked_blit(world->spr, 89 + (world->plr.shots > 1) * 4, 196, world->plr.x - 21, world->plr.y - 14 + 4 * world->plr.health, 3, 6);
         int gold = world->plr.gold;
         if (gold > 99)
             gold = 99;
         if (gold > 9)
         {
-            masked_blit(world->spr, world->buf, 49 + (gold / 10) * 4, 196, world->plr.x - 25, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
+            masked_blit(world->spr, 49 + (gold / 10) * 4, 196, world->plr.x - 25, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
         }
-        masked_blit(world->spr, world->buf, 49 + (gold % 10) * 4, 196, world->plr.x - 21, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
+        masked_blit(world->spr, 49 + (gold % 10) * 4, 196, world->plr.x - 21, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
     }
 }
 
@@ -182,11 +182,11 @@ void move_and_draw_body_parts(World *world)
                     {
                         for (int blood_trail_idx = 0; blood_trail_idx <= 2; blood_trail_idx++)
                         {
-                            /*masked_blit(world->spr, world->buf, 336, 150 + (3 - blood_trail_idx) * 7,
+                            /*masked_blit(world->spr, 336, 150 + (3 - blood_trail_idx) * 7,
                                         bodypart->x - bodypart->dx * 4 * blood_trail_idx,
                                         bodypart->y - bodypart->dy * 4 * blood_trail_idx,
                                         7, 7);*/
-                            masked_blit(world->spr, world->buf, 334 + rand() % 18, 129 + rand() % 18,
+                            masked_blit(world->spr, 334 + rand() % 18, 129 + rand() % 18,
                                         (int)bodypart->x - 2 * blood_trail_idx * bodypart->dx, (int)bodypart->y - 2 * blood_trail_idx * bodypart->dy, 2, 2);
                         }
 
@@ -221,7 +221,7 @@ void move_and_draw_body_parts(World *world)
                     bodypart->anim++;
                 }
 
-                masked_blit(world->spr, world->buf, 311 + 11 * (bodypart->anim > 1),
+                masked_blit(world->spr, 311 + 11 * (bodypart->anim > 1),
                             129 + 11 * (bodypart->type - 1), (int)bodypart->x - 5, (int)bodypart->y - 5, 11, 11);
             }
         }
@@ -235,9 +235,9 @@ void draw_explosion_circle(World *world, double x, double y, double intensity, d
     const int green = MIN((sqintens * 0.8 + 0.2) * 255, 255);
     const int blue = MIN((sqintens * sqintens * sqintens * 0.8) * 255, 255);
 
-    const int col = makecol(red, green, blue);
+    const ALLEGRO_COLOR col = makecol(red, green, blue);
 
-    circlefill(world->buf, x - TILESIZE, y - TILESIZE, radius, col);
+    circlefill(x - TILESIZE, y - TILESIZE, radius, col);
 }
 
 extern double random();
@@ -296,10 +296,10 @@ void progress_and_draw_sparkles(World *world)
         if (fx->duration > 0)
         {
             int trail_sprite = (fx->sprite + 1) % 4;
-            masked_blit(world->spr, world->buf, 160 + trail_sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
+            masked_blit(world->spr, 160 + trail_sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
             fx->loc.x += fx->dir.x;
             fx->loc.y += fx->dir.y;
-            masked_blit(world->spr, world->buf, 160 + fx->sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
+            masked_blit(world->spr, 160 + fx->sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
             fx->duration--;
             if (fx->duration % 3 == 0)
             {
@@ -309,27 +309,28 @@ void progress_and_draw_sparkles(World *world)
     }
 }
 
-void display_level_info(World *world, int mission, int mission_count, FONT *font, long completetime)
+void display_level_info(World *world, int mission, int mission_count, long completetime)
 {
-    clear_to_color(world->buf, 0);
-    stretch_blit(world->spr, world->buf, 100, 0, 214, 107, 0, world->buf->h - 107 * 2, 214 * 2, 107 * 2);
+    clear_to_color(BLACK);
+    al_draw_scaled_bitmap(world->spr, 100, 0, 214, 107, 0, SCREEN_H - 107 * 2, 214 * 2, 107 * 2, 0);
     int y = 5;
-    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Level '%s' cleared!", world->mission_display_name);
+    al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Level '%s' cleared!", world->mission_display_name);
     y += 15;
-    textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Time: %.1f secs. Par: %.1f",
+    al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Time: %.1f secs. Par: %.1f",
                   (double)completetime / 40, world->par_time);
     y += 15;
     if (mission < mission_count)
-        textprintf_ex(world->buf, font, 5, y, GRAY(200), -1, "Now entering level %d / %d.", mission + 1, mission_count);
+        al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Now entering level %d / %d.", mission + 1, mission_count);
     y += 15;
-    rectfill(world->buf, 0, y - 5, world->buf->w, y + 15 * world->story_after_mission_lines - 5, GRAY(20));
+    rectfill(0, y - 5, SCREEN_W, y + 15 * world->story_after_mission_lines - 5, GRAY(20));
     for (int i = 0; i < world->story_after_mission_lines; i++)
     {
-        textprintf_ex(world->buf, font, 5, y, GRAY(140), -1, "%s", world->story_after_mission[i]);
+        al_draw_textf(get_font(), GRAY(140), 5, y, 0, "%s", world->story_after_mission[i]);
         y += 15;
     }
-    textprintf_ex(world->buf, font, 5, world->buf->h - 15, GRAY(200), -1, "Press enter to continue!");
-    stretch_blit(world->buf, screen, 0, 0, 480, 360, 0, 0, screen->w, screen->h);
+    al_draw_textf(get_font(), GRAY(200), 5, SCREEN_H - 15, 0, "Press enter to continue!");
+    //stretch_blit(world->buf, screen, 0, 0, 480, 360, 0, 0, screen->w, screen->h);
+    al_flip_display();
 }
 
 void show_gold_hint(World *world, int number)

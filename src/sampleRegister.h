@@ -1,6 +1,6 @@
 #ifndef SAMPLEREGISTER_H
 #define SAMPLEREGISTER_H
-#include "allegro.h"
+#include "allegro42_compat.h"
 
 #define MAX_NUM_SAMPLES 64
 

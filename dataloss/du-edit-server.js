@@ -20,7 +20,7 @@ http.createServer((req,res) => {
             if (cmd === 'load') {
                 url = '/' + missionPack + '/mission' + param
             }
-            if (cmd === 'save') {
+            else if (cmd === 'save') {
                 let body = ''
                 req.on('data', data => body += data)
                 req.on('end', () => {
@@ -28,6 +28,10 @@ http.createServer((req,res) => {
                     res.end('ok')
                 })
                 return
+            }
+            else
+            {
+                res.end('unknown command')
             }
         }
         if (url === '/') url = '/du-edit.html'

@@ -2,10 +2,10 @@
 #define DUHELPERS_H
 #include <time.h>
 
-inline int imin(int a, int b);
-inline int imax(int a, int b);
-inline void ilimit(int *v, int limit);
-inline void climit(char *v, char limit);
+int imin(int a, int b);
+int imax(int a, int b);
+void ilimit(int *v, int limit);
+void climit(char *v, char limit);
 
 void chunkrest(int ms);
 
