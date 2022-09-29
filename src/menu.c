@@ -180,23 +180,6 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     int c = 0, flicker = 0, wait = 0; //, show_help = 0;
     ALLEGRO_SAMPLE_ID id;
 
-    // Transition animation
-    // TODO
-    /*clear_to_color(screen, 0);
-    clear_to_color(menu_bg, 0);
-    for (int i = 0; i < 10000; i++)
-        putpixel(menu_bg, rand() % menu_bg->w, rand() % menu_bg->h, makecol(rand() % 20, 0, 0));
-    stretch_blit(sprites, menu_bg, 100, 0, 214, 107, menu_bg->w - 2 * 214, menu_bg->h - 2 * 107, 2 * 214, 2 * 107);
-    for (int i = 0; i < 24; i++)
-    {
-        stretch_blit(menu_bg, screen, 0, 0, 26 * (i + 1), 480, 0, 0, SCREEN_W, SCREEN_H);
-        chunkrest(20);
-    }
-    clear_to_color(WHITE);
-    play_sample(s_ex, 255, 127, 1000, 0, &id);
-    chunkrest(500);*/
-    // Animation ends
-
     if (record_mode == RECORD_MODE_PLAYBACK)
     {
         clear_to_color(BLACK);

@@ -960,14 +960,6 @@ int game(int mission, int *game_modifiers)
       }
     }
 
-    if (check_key(ALLEGRO_KEY_B))
-    {
-      char fname[123];
-      sprintf(fname, "screenshot%d.bmp", fname_counter++);
-      // save_bitmap(fname, world.buf, default_palette);
-      //  TODO
-      chunkrest(500);
-    }
     game_loop_rest(&game_loop_clk);
 
     if (check_key(ALLEGRO_KEY_ESCAPE))
