@@ -909,6 +909,7 @@ int game(int mission, int *game_modifiers)
       al_scale_transform(&transform, 3, 3);
       al_use_transform(&transform);
       al_flip_display();
+      play_mp3();
     }
     else
     {
