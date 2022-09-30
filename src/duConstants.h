@@ -22,8 +22,7 @@
 
 #define DATADIR ".\\dataloss\\"
 #define SAVE_FILENAME DATADIR "%s\\save%d.dat"
-#define MENU_BITMAP_FILENAME DATADIR "menu.bmp"
-#define HELP_BITMAP_FILENAME DATADIR "reference_full.bmp"
+#define MENU_BITMAP_FILENAME DATADIR "hell.jpg"
 #define MENU_SAMPLE_FILENAME DATADIR "menuchg.wav"
 #define MENU_SELECT_SAMPLE_FILENAME DATADIR "menusel.wav"
 #define MENU_EXPLODE_FILENAME DATADIR "ex4.wav"

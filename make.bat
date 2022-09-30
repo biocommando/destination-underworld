@@ -1,4 +1,3 @@
-set curdir=D:\Dev-Cpp\Dev-Cpp\load_of_shit
 gcc src/arenaconf.c ^
 src/bossfightconf.c ^
 src/continuousData.c ^

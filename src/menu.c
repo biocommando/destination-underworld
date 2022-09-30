@@ -1,3 +1,4 @@
+#include <math.h>
 #include "menu.h"
 #include "dump3.h"
 #include "gamePersistence.h"
@@ -158,16 +159,17 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     int slot = 0;
     int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
     peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
+    BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
 
     BITMAP *sprites;
     if (!game_settings.custom_resources)
     {
-        sprites = load_bitmap(DATADIR "sprites.bmp");
+        sprites = load_bitmap(DATADIR "sprites.png");
     }
     else
     {
         char path[256];
-        sprintf(path, DATADIR "%s\\sprites.bmp", game_settings.mission_pack);
+        sprintf(path, DATADIR "%s\\sprites.png", game_settings.mission_pack);
         sprites = load_bitmap(path);
     }
     MASKED_BITMAP(sprites);
@@ -190,9 +192,12 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     {
         c = MENUOPT_RESUME;
     }
+    double bgtint = 0;
     while (!check_key(ALLEGRO_KEY_ENTER) && record_mode != RECORD_MODE_PLAYBACK)
     {
-        clear_to_color(BLACK);
+        //clear_to_color(BLACK);
+        al_draw_tinted_scaled_bitmap(menubg, GRAY(50 + 20 * sin(bgtint)), 0, 0, 480, 360, 0, 0, 480 * 2, 360 * 2, 0);
+        bgtint += 0.03;
         al_draw_textf(get_font(), DARK_RED, 20, 10, 0, "DESTINATION UNDERWORLD");
         al_draw_textf(get_font(), RED, 18, 12, 0, "DESTINATION UNDERWORLD");
         al_draw_textf(get_font(), WHITE, 40, 60, 0, "NEW GAME");
@@ -207,9 +212,9 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 al_draw_textf(get_font(), WHITE, 40, 140, 0, "SAVE GAME");
             al_draw_textf(get_font(), WHITE, 40, 220, 0, "RESUME");
         }
-        al_draw_textf(get_font(), RED, 10, 384, 0, "m: toggle music");
-        al_draw_textf(get_font(), RED, 10, 410, 0, "n/p: next/previous track");
-        al_draw_textf(get_font(), RED, 10, 436, 0, "f1: help");
+        al_draw_textf(get_font(), BLUE, 10, 384, 0, "m: toggle music");
+        al_draw_textf(get_font(), BLUE, 10, 410, 0, "n/p: next/previous track");
+        al_draw_textf(get_font(), BLUE, 10, 436, 0, "f1: help");
         rectfill(200, 52, 345, 72, RED);
         if (game_mode == 0)
             al_draw_textf(get_font(), WHITE, 210, 60, 0, "normal");
@@ -361,10 +366,11 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         play_sample(s_s, 1, 0, 1, 0, &id);
         chunkrest(500);
     }
-    destroy_bitmap(sprites);
-    destroy_sample(s_c);
-    destroy_sample(s_s);
-    destroy_sample(s_ex);
+    al_destroy_bitmap(sprites);
+    al_destroy_bitmap(menubg);
+    al_destroy_sample(s_c);
+    al_destroy_sample(s_s);
+    al_destroy_sample(s_ex);
 
     return handle_menuchoice(c, autosave, mission, game_modifiers, slot, game_mode, level_set);
 }

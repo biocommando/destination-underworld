@@ -531,12 +531,12 @@ int game(int mission, int *game_modifiers)
   memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
   if (!game_settings.custom_resources)
   {
-    world.spr = load_bitmap(DATADIR "sprites.bmp");
+    world.spr = load_bitmap(DATADIR "sprites.png");
   }
   else
   {
     char path[256];
-    sprintf(path, DATADIR "\\%s\\sprites.bmp", game_settings.mission_pack);
+    sprintf(path, DATADIR "\\%s\\sprites.png", game_settings.mission_pack);
     world.spr = load_bitmap(path);
   }
   MASKED_BITMAP(world.spr);
