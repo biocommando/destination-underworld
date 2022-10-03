@@ -914,10 +914,10 @@ int game(int mission, int *game_modifiers)
     else
     {
       int startx, starty;
-      startx = world.plr.x - world.plr.reload;
+      startx = world.plr.x - TILESIZE * 3 / 2 - world.plr.reload;
       if (startx < 0)
         startx = 0;
-      starty = world.plr.y - world.plr.reload * 0.75;
+      starty = world.plr.y - TILESIZE - world.plr.reload * 0.75;
       if (starty < 0)
         starty = 0;
       double scale = 1 + (100 - world.plr.reload) / 20.0;
@@ -927,7 +927,6 @@ int game(int mission, int *game_modifiers)
       al_scale_transform(&transform, 3 * scale, 3 * scale);
       al_use_transform(&transform);
       al_flip_display();
-      // TODO?
       chunkrest(40);
       if (world.plr.reload <= 0)
       {
@@ -940,19 +939,19 @@ int game(int mission, int *game_modifiers)
           int arena_idx, mode_idx;
           int highscore_kills = parse_highscore_from_world_state(&world, &highscore, &arena_idx, &mode_idx);
           rectfill(5, 5, 340, 125, GRAY(60));
-          al_draw_textf(get_font(), WHITE, 10, 10, -1, "Arena fight over, your kill count: %d", world.kills);
+          al_draw_textf(get_font(), WHITE, 10, 10, ALLEGRO_ALIGN_LEFT, "Arena fight over, your kill count: %d", world.kills);
           if (record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
           {
-            al_draw_textf(get_font(), WHITE, 10, 30, -1, "Previous highscore: %d", highscore_kills);
-            al_draw_textf(get_font(), WHITE, 10, 50, -1, "NEW HIGHSCORE!");
+            al_draw_textf(get_font(), WHITE, 10, 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
+            al_draw_textf(get_font(), WHITE, 10, 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
             highscore.kills[arena_idx][mode_idx] = world.kills;
             access_arena_highscore(&highscore, 0);
           }
           else
           {
-            al_draw_textf(get_font(), WHITE, 10, 30, -1, "Highscore: %d", highscore_kills);
+            al_draw_textf(get_font(), WHITE, 10, 30, ALLEGRO_ALIGN_LEFT, "Highscore: %d", highscore_kills);
           }
-          al_draw_textf(get_font(), WHITE, 10, 100, -1, "Press ENTER to continue...");
+          al_draw_textf(get_font(), WHITE, 10, 100, ALLEGRO_ALIGN_LEFT, "Press ENTER to continue...");
           al_flip_display();
           while (!check_key(ALLEGRO_KEY_ENTER))
             chunkrest(40);
