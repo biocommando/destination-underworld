@@ -79,3 +79,27 @@ double ini_read_double_value(FILE *file, const char *segment, const char *key)
 	sscanf(value, "%lf", &d_value);
 	return d_value;
 }
+
+// ++
+// function for reading an array of integers from ini file where every element of array is suffixed with the index starting from 0
+// example: key0=1, key1=2, key2=3, key3=4, key4=5
+// will be read as: {1, 2, 3, 4, 5}
+// Returns FixedSizeArray struct containing the size of the array and the array itself
+FixedSizeArray ini_read_int_array_value(FILE *file, const char *segment, const char *key)
+{
+	FixedSizeArray array = {0, {0}};
+	int i = 0;
+	while (i < 256)
+	{
+		char key_index[256] = "";
+		sprintf(key_index, "%s%d", key, i);
+		char value[256] = "";
+		ini_read_string_value(file, segment, key_index, value);
+		if (strlen(value) == 0)
+			break;
+		sscanf(value, "%d", &array.array[i]);
+		i++;
+	}
+	array.size = i;
+	return array;
+}
