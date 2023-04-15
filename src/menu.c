@@ -344,13 +344,13 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             }
             if (check_key(ALLEGRO_KEY_N))
             {
-                play_track(get_current_track() + 1);
+                switch_track(get_current_track() + 1);
                 chunkrest(100);
                 wait = 3;
             }
             if (check_key(ALLEGRO_KEY_P))
             {
-                play_track(get_current_track() - 1);
+                switch_track(get_current_track() - 1);
                 chunkrest(100);
                 wait = 3;
             }

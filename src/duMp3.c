@@ -2,13 +2,12 @@
 #include <stdlib.h>
 #include "allegro42_compat.h"
 #include "dump3.h"
+#include "musicTrack.h"
 #include "settings.h"
 #include "duConstants.h"
+#include "loadindicator.h"
 
 extern GameSettings game_settings;
-
-ALLEGRO_SAMPLE *sample = NULL;
-ALLEGRO_SAMPLE_INSTANCE *sample_instance = NULL;
 
 int current_track = 1;
 
@@ -17,7 +16,7 @@ int get_current_track()
   return current_track;
 }
 
-void play_track(int track_number)
+void switch_track(int track_number)
 {
   while (track_number <= 0)
     track_number += game_settings.num_music_tracks;
@@ -25,10 +24,6 @@ void play_track(int track_number)
     track_number -= game_settings.num_music_tracks;
 
   current_track = track_number;
-
-  char filename[32];
-  sprintf(filename, DATADIR "music%d.mp3", current_track);
-  open_mp3_file(filename);
 }
 
 void play_mp3()
@@ -38,47 +33,37 @@ void play_mp3()
   {
     if (!game_settings.music_on)
     {
-      if (sample_instance)
-        al_stop_sample_instance(sample_instance);
+      music_track_stop();
     }
     else
-      play_track(current_track);
+      switch_track(current_track);
   }
   if (game_settings.music_on)
   {
-    if (sample_instance && !al_get_sample_instance_playing(sample_instance))
+    if (music_track_play(current_track - 1) == 1)
     {
-      play_track(current_track + 1);
+      switch_track(current_track + 1);
     }
   }
   music_on_status = game_settings.music_on;
 }
 
-/****************MP3MP3MP3MP3**********************/
-
-/*MP3-rutiinit*/
-
-void open_mp3_file(char *filename)
+void preload_mp3s()
 {
-  close_mp3_file();
-  sample = al_load_sample(filename);
-  sample_instance = al_create_sample_instance(sample);
-  al_attach_sample_instance_to_mixer(sample_instance, al_get_default_mixer());
-  al_play_sample_instance(sample_instance);
-}
-
-void close_mp3_file()
-{
-  if (sample)
+  int i;
+  char filename[32];
+  for (i = 1; i <= game_settings.num_music_tracks; i++)
   {
-    /*pack_fclose(mp3->f);
-    almp3_destroy_mp3stream(mp3->s);
-    free(mp3);*/
-    al_destroy_sample(sample);
-    al_destroy_sample_instance(sample_instance);
-    sample = NULL;
-    sample_instance = NULL;
+    sprintf(filename, DATADIR "music%d.mp3", i);
+    progress_load_state(filename, 1);
+    if (preload_music_track(filename) < 0)
+    {
+      printf("Error loading music track %d\n", i);
+    }
   }
 }
 
-/****************MP3MP3MP3MP3MP3*******************/
+void destroy_mp3s()
+{
+  destroy_music_tracks();
+}

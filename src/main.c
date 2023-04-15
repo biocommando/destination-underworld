@@ -20,6 +20,7 @@
 #include "keyhandling.h"
 #include "sampleRegister.h"
 #include "helpers.h"
+#include "loadindicator.h"
 
 int game(int mission, int *game_modifiers);
 
@@ -61,10 +62,13 @@ int main(int argc, char **argv)
 
   read_settings(argv, argc);
   init_allegro();
+  progress_load_state("Loading game...", 1);
+  preload_mp3s();
   srand((int)time(NULL));
   int mission = 1;
   int game_modifiers = 0;
 
+  progress_load_state("Loading samples...", 1);
   register_sample(SAMPLE_SELECT, "sel.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_WARP, "warp.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_BOSSTALK_1, "bt1.wav", SAMPLE_PRIORITY(HIGH, 2));
@@ -85,7 +89,8 @@ int main(int argc, char **argv)
     register_sample(SAMPLE_DEATH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
   }
 
-  play_track(1);
+  switch_track(1);
+  progress_load_state("Loading menu...", 1);
   menu(0, &plrautosave, &mission, &game_modifiers);
 
   while (mission != 0)
@@ -94,11 +99,12 @@ int main(int argc, char **argv)
     if (record_input_file)
       break;
   }
+  progress_load_state("Exiting game...", 0);
   destroy_registered_samples();
   if (record_input_file)
     fclose(record_input_file);
 
-  close_mp3_file();
+  destroy_mp3s();
   /*set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   remove_keyboard();
   remove_mouse();*/
@@ -904,7 +910,7 @@ int game(int mission, int *game_modifiers)
       int offset_y = 2 * vibrations - rand() % (1 + 2 * vibrations);
       ALLEGRO_TRANSFORM transform;
       al_identity_transform(&transform);
-      
+
       al_translate_transform(&transform, offset_x, offset_y);
       al_scale_transform(&transform, 3, 3);
       al_use_transform(&transform);
