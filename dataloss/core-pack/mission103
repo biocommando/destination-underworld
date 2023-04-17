@@ -199,9 +199,10 @@
 0120 0013 0011 0001
 0120 0014 0011 0001
 0120 0015 0011 0001
-0004
+0005
 name
 Mage's Maze
 bossfight core-pack\arena_103.ini
+mute_bosstalk
 wall_color 0.5 0.2 0
 ""

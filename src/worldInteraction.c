@@ -539,7 +539,7 @@ int read_level(World *world, int mission, int room_to)
         sscanf(buf, "%s", read_str);
         if (!strcmp(read_str, "bossfight"))
         {
-            sscanf(buf, "%*s %s", read_str);
+            sscanf(buf, "%*s %s %d", read_str);
             sprintf(buf, DATADIR "%s", read_str);
             LOG("Opening bossfight config at %s\n", buf);
             FILE *f2 = fopen(buf, "r");
@@ -553,6 +553,10 @@ int read_level(World *world, int mission, int room_to)
             }
             else
                 LOG("No such file!\n");
+        }
+        else if (!strcmp(read_str, "mute_bosstalk"))
+        {
+            world->play_boss_sound = 0;
         }
         else if (!strcmp(read_str, "name"))
         {
@@ -593,6 +597,10 @@ int read_level(World *world, int mission, int room_to)
             world->map_wall_color[0] = r;
             world->map_wall_color[1] = g;
             world->map_wall_color[2] = b;
+        }
+        else if (!strcmp(read_str, "no_more_levels"))
+        {
+            world->final_level = 1;
         }
     }
 

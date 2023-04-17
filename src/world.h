@@ -185,6 +185,7 @@ typedef struct
     BITMAP *spr;
 
     int boss_fight;
+    int play_boss_sound;
     int game_modifiers;
     BossFightConfig boss_fight_config;
     Coordinates boss_waypoint;
@@ -203,6 +204,7 @@ typedef struct
     double par_time;
     int kills;
     int mission;
+    int final_level;
     float map_wall_color[3];
 } World;
 

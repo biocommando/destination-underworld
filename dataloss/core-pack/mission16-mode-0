@@ -391,7 +391,7 @@
 0120 0013 0011 0002
 0120 0014 0011 0002
 0120 0015 0011 0002
-0011
+0012
 bossfight core-pack\boss_mode_0.ini
 par 0 21.925
 name
@@ -403,4 +403,5 @@ Hell disappear.
 
 Congratulations! Now you're totally alone in the deepest
 abyss with no way back to the surface of Earth.
+no_more_levels
 ""

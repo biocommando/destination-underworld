@@ -91,13 +91,16 @@ int main(int argc, char **argv)
 
   switch_track(1);
   progress_load_state("Loading menu...", 1);
-  menu(0, &plrautosave, &mission, &game_modifiers);
 
   while (mission != 0)
   {
-    mission = game(mission, &game_modifiers);
-    if (record_input_file)
-      break;
+    menu(0, &plrautosave, &mission, &game_modifiers);
+    while (mission > 0)
+    {
+      mission = game(mission, &game_modifiers);
+      if (record_input_file)
+        break;
+    }
   }
   progress_load_state("Exiting game...", 0);
   destroy_registered_samples();
@@ -590,7 +593,7 @@ int game(int mission, int *game_modifiers)
 
   read_level(&world, mission, 1);
 
-  if (world.boss_fight && !(world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
+  if (world.boss_fight && world.play_boss_sound)
   {
     trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
   }
@@ -820,6 +823,13 @@ int game(int mission, int *game_modifiers)
         chunkrest(15);
       }
       chunkrest(250);
+
+      if (world.final_level)
+      {
+        mission = -1;
+        break;
+      }
+
       mission++;
       plrautosave = world.plr;
       break;

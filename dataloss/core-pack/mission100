@@ -194,9 +194,10 @@
 0120 0013 0011 0001
 0120 0014 0011 0001
 0120 0015 0011 0001
-0004
+0005
 name
 Arena -- Imp Pit
 bossfight core-pack\arena_100.ini
+mute_bosstalk
 wall_color 0.7 0 0.3
 ""
