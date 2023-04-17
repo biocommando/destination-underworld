@@ -251,7 +251,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         rectfill(235, 102, SCREEN_W, 122, BLACK);
         if (current_slot_has_save)
         {
-            char game_mode_str[30];
+            char game_mode_str[30] = "unknown";
             if (current_slot_game_modifiers == 0)
                 strcpy(game_mode_str, "normal");
             if (current_slot_game_modifiers == GAMEMODIFIER_BRUTAL)
