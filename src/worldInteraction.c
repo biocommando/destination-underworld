@@ -539,7 +539,7 @@ int read_level(World *world, int mission, int room_to)
         sscanf(buf, "%s", read_str);
         if (!strcmp(read_str, "bossfight"))
         {
-            sscanf(buf, "%*s %s %d", read_str);
+            sscanf(buf, "%*s %s", read_str);
             sprintf(buf, DATADIR "%s", read_str);
             LOG("Opening bossfight config at %s\n", buf);
             FILE *f2 = fopen(buf, "r");
