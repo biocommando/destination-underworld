@@ -34,17 +34,25 @@ int fname_counter = 0;
 
 int record_mode = RECORD_MODE_NONE;
 FILE *record_input_file = NULL;
+int no_player_damage = 0;
 
 int main(int argc, char **argv)
 {
-  char record_mode_str[256] = "";
-  read_cmd_line_arg_str("record-mode", argv, argc, record_mode_str);
-  if (!strcmp(record_mode_str, "record"))
+  char read_arg[256] = "";
+  read_cmd_line_arg_str("player-damage", argv, argc, read_arg);
+  if (!strcmp(read_arg, "off"))
+  {
+    no_player_damage = 1;
+  }
+  read_arg[0] = 0;
+
+  read_cmd_line_arg_str("record-mode", argv, argc, read_arg);
+  if (!strcmp(read_arg, "record"))
   {
     record_mode = RECORD_MODE_RECORD;
     LOG("Record mode active.\n");
   }
-  else if (!strcmp(record_mode_str, "play"))
+  else if (!strcmp(read_arg, "play"))
   {
     record_mode = RECORD_MODE_PLAYBACK;
     char fname[256];
@@ -406,6 +414,8 @@ void bullet_logic(World *world)
       }
       if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
       {
+        if (no_player_damage)
+          world->plr.health++;
         if (world->powerups.rune_of_protection_active == 1)
         {
           world->plr.health++;
@@ -504,7 +514,6 @@ void bullet_logic(World *world)
               }
               else
               {
-                chunkrest(1); // The death sample won't play else
                 if (!deathsample_plays)
                   trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
               }
@@ -961,7 +970,11 @@ int game(int mission, int *game_modifiers)
             al_draw_textf(get_font(), WHITE, 10, 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
             al_draw_textf(get_font(), WHITE, 10, 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
             highscore.kills[arena_idx][mode_idx] = world.kills;
-            access_arena_highscore(&highscore, 0);
+            if (!no_player_damage)
+            {
+              LOG("Not saving highscore, no damage mode active");
+              access_arena_highscore(&highscore, 0);
+            }
           }
           else
           {

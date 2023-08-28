@@ -267,6 +267,11 @@ void bounce_body_parts(int x, int y, World *world)
 
                 bp->dx = (bp->x - x) / distance;
                 bp->dy = (bp->y - y) / distance;
+                // Prevent body parts from piling up in the same spot
+                if (rand() % 10 == 0)
+                    bp->dx = -bp->dx;
+                if (rand() % 10 == 0)
+                    bp->dy = -bp->dy;
             }
         }
 }

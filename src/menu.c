@@ -148,6 +148,13 @@ void show_help(BITMAP *sprites)
     fclose(f);
 }
 
+void menu_play_sample(SAMPLE *s, ALLEGRO_SAMPLE_ID *id)
+{
+    if (game_settings.sfx_vol == 0)
+        return;
+    play_sample(s, game_settings.sfx_vol, 0, 1, 0, id);
+}
+
 int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
 {
     ArenaHighscore arena_highscore;
@@ -288,13 +295,13 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             if (c == MENUOPT_NEW_GAME && check_key(ALLEGRO_KEY_LEFT) && game_mode > 0)
             {
                 game_mode--;
-                play_sample(s_c, 1, 0, 1, 0, &id);
+                menu_play_sample(s_c, &id);
                 wait = 3;
             }
             if (c == MENUOPT_NEW_GAME && check_key(ALLEGRO_KEY_RIGHT) && game_mode < 4)
             {
                 game_mode++;
-                play_sample(s_c, 1, 0, 1, 0, &id);
+                menu_play_sample(s_c, &id);
                 wait = 3;
             }
             if (c == MENUOPT_NEW_GAME && check_key(ALLEGRO_KEY_SPACE))
@@ -302,27 +309,27 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 level_set++;
                 if (level_set == 1 + game_settings.arena_config.number_of_arenas)
                     level_set = 0;
-                play_sample(s_c, 1, 0, 1, 0, &id);
+                menu_play_sample(s_c, &id);
                 wait = 3;
             }
             if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && check_key(ALLEGRO_KEY_LEFT) && slot > 0)
             {
                 slot--;
                 peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
-                play_sample(s_c, 1, 0, 1, 0, &id);
+                menu_play_sample(s_c, &id);
                 wait = 3;
             }
             if ((c == MENUOPT_LOAD || c == MENUOPT_SAVE) && check_key(ALLEGRO_KEY_RIGHT) && slot < 9)
             {
                 slot++;
                 peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
-                play_sample(s_c, 1, 0, 1, 0, &id);
+                menu_play_sample(s_c, &id);
                 wait = 3;
             }
             if (check_key(ALLEGRO_KEY_UP) && c > MENUOPT_NEW_GAME)
             {
                 c--;
-                play_sample(s_c, 1, 0, 1, 0, &id);
+                menu_play_sample(s_c, &id);
                 if ((!ingame || (*game_modifiers & GAMEMODIFIER_ARENA_FIGHT)) && c == MENUOPT_SAVE)
                     c = MENUOPT_LOAD;
                 wait = 3;
@@ -330,7 +337,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             if (check_key(ALLEGRO_KEY_DOWN) && c < (ingame ? MENUOPT_RESUME : MENUOPT_EXIT))
             {
                 c++;
-                play_sample(s_c, 1, 0, 1, 0, &id);
+                menu_play_sample(s_c, &id);
                 if ((!ingame || (*game_modifiers & GAMEMODIFIER_ARENA_FIGHT)) && c == MENUOPT_SAVE)
                     c = MENUOPT_EXIT;
                 chunkrest(100);
@@ -363,7 +370,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     }
     if (record_mode != RECORD_MODE_PLAYBACK)
     {
-        play_sample(s_s, 1, 0, 1, 0, &id);
+        menu_play_sample(s_s, &id);
         chunkrest(500);
     }
     al_destroy_bitmap(sprites);

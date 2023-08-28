@@ -178,18 +178,10 @@ void move_and_draw_body_parts(World *world)
             {
                 if (bodypart->velocity > 0.7)
                 {
+                    double bp_orig_x = bodypart->x;
+                    double bp_orig_y = bodypart->y;
                     for (int travel_amt = bodypart->velocity; travel_amt > 0; travel_amt--)
                     {
-                        for (int blood_trail_idx = 0; blood_trail_idx <= 2; blood_trail_idx++)
-                        {
-                            /*masked_blit(world->spr, 336, 150 + (3 - blood_trail_idx) * 7,
-                                        bodypart->x - bodypart->dx * 4 * blood_trail_idx,
-                                        bodypart->y - bodypart->dy * 4 * blood_trail_idx,
-                                        7, 7);*/
-                            masked_blit(world->spr, 334 + rand() % 18, 129 + rand() % 18,
-                                        (int)bodypart->x - 2 * blood_trail_idx * bodypart->dx, (int)bodypart->y - 2 * blood_trail_idx * bodypart->dy, 2, 2);
-                        }
-
                         int initially_inside_wall = get_wall_type_at(world, bodypart->x, bodypart->y);
 
                         bodypart->x += bodypart->dx;
@@ -210,6 +202,9 @@ void move_and_draw_body_parts(World *world)
 
                     bodypart->velocity *= friction;
                     bonesturn = bodypart->velocity > 1;
+
+                    ALLEGRO_COLOR blood_col = al_map_rgb(170 + rand() % 20, 10 + rand() % 8, 17 + rand() % 10);
+                    al_draw_line(bp_orig_x, bp_orig_y, bodypart->x, bodypart->y, blood_col, 3);
                 }
 
                 if (bodypart->anim == 4)

@@ -50,6 +50,8 @@ void stop_all_samples()
 
 void trigger_sample_with_params(int id, int volume, int pan, int pitch)
 {
+  if (game_settings.sfx_vol == 0)
+    return;
   double gain = volume / 255.0 * game_settings.sfx_vol;
   double normpan = (pan - 127) / 128.0;
   double normpitch = pitch / 1000.0;
