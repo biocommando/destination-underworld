@@ -156,10 +156,10 @@ void enemy_logic(World *world)
         int aim_window = 2 + (enm->turret || enm == world->boss ? 5 : 0);
         int reacts_to_player = sees_each_other(enm, &world->plr, world);
 
-        if (reacts_to_player || (is_boss && world->boss_waypoint.x >= 0))
+        if (reacts_to_player || (is_boss && world->boss_fight_config->state.boss_waypoint.x >= 0))
         {
           enm->move = 1;
-          if (!is_boss || (world->boss_want_to_shoot && reacts_to_player))
+          if (!is_boss || (world->boss_fight_config->state.boss_want_to_shoot && reacts_to_player))
           {
             if (is_boss)
             {
@@ -176,16 +176,16 @@ void enemy_logic(World *world)
           }
 
           enm->dx = enm->dy = 0;
-          if (is_boss && world->boss_waypoint.x >= 0)
+          if (is_boss && world->boss_fight_config->state.boss_waypoint.x >= 0)
           {
-            aim_at.x = world->boss_waypoint.x * TILESIZE + HALFTILESIZE;
-            aim_at.y = world->boss_waypoint.y * TILESIZE + HALFTILESIZE;
+            aim_at.x = world->boss_fight_config->state.boss_waypoint.x * TILESIZE + HALFTILESIZE;
+            aim_at.y = world->boss_fight_config->state.boss_waypoint.y * TILESIZE + HALFTILESIZE;
             aim_window = 0;
-            if (enm->x / TILESIZE == (int)world->boss_waypoint.x && enm->y / TILESIZE == (int)world->boss_waypoint.y)
+            if (enm->x / TILESIZE == (int)world->boss_fight_config->state.boss_waypoint.x && enm->y / TILESIZE == (int)world->boss_fight_config->state.boss_waypoint.y)
             {
               LOG_TRACE("Waypoint reached\n");
-              world->boss_waypoint.x = world->boss_waypoint.y = -1;
-              world->boss_fight_config.state.waypoint_reached = 1;
+              world->boss_fight_config->state.boss_waypoint.x = world->boss_fight_config->state.boss_waypoint.y = -1;
+              world->boss_fight_config->state.waypoint_reached = 1;
             }
           }
           set_directions(enm, &aim_at, aim_window);
@@ -207,7 +207,7 @@ void enemy_logic(World *world)
         }
         if (is_boss)
         {
-          for (int m = 0; m < world->boss_fight_config.speed; m++)
+          for (int m = 0; m < world->boss_fight_config->speed; m++)
             move_enemy(enm, world);
         }
         else if (enm->turret == TURRET_TYPE_NONE)
@@ -286,17 +286,18 @@ void boss_logic(World *world, int boss_died)
 {
   Enemy *boss = world->boss;
   int in_same_room = boss != NULL && boss->roomid == world->current_room;
-  if (in_same_room || boss_died)
+  if (/*in_same_room || boss_died*/1)
   {
-    world->boss_fight_config.state.health = boss_died ? 0 : boss->health;
-    world->boss_fight_config.state.player_kills = world->kills;
-    bossfight_process_event_triggers(&world->boss_fight_config);
-    for (int x = 0; x < world->boss_fight_config.num_events; x++)
+    if (boss)
+      world->boss_fight_config->state.health = boss_died ? 0 : boss->health;
+    world->boss_fight_config->state.player_kills = world->kills;
+    bossfight_process_event_triggers(world->boss_fight_config);
+    for (int x = 0; x < world->boss_fight_config->num_events; x++)
     {
-      if (!world->boss_fight_config.state.triggers[x])
+      if (!world->boss_fight_config->state.triggers[x])
         continue;
 
-      BossFightEventConfig *event = &world->boss_fight_config.events[x];
+      BossFightEventConfig *event = &world->boss_fight_config->events[x];
 
       char s[100];
       bossfight_event_type_to_str(s, event->event_type);
@@ -326,13 +327,13 @@ void boss_logic(World *world, int boss_died)
       }
       break;
       case BFCONF_EVENT_TYPE_ALLOW_FIRING:
-        world->boss_want_to_shoot = 1;
+        world->boss_fight_config->state.boss_want_to_shoot = 1;
         break;
       case BFCONF_EVENT_TYPE_DISALLOW_FIRING:
-        world->boss_want_to_shoot = 0;
+        world->boss_fight_config->state.boss_want_to_shoot = 0;
         break;
       case BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE:
-        if (boss)
+        if (in_same_room)
           create_cluster_explosion(world, boss->x, boss->y, event->parameters[0], event->parameters[1], boss);
         break;
       case BFCONF_EVENT_TYPE_MODIFY_TERRAIN:
@@ -360,26 +361,26 @@ void boss_logic(World *world, int boss_died)
       }
       break;
       case BFCONF_EVENT_TYPE_SET_WAYPOINT:
-        world->boss_waypoint.x = event->parameters[0];
-        world->boss_waypoint.y = event->parameters[1];
-        world->boss_fight_config.state.waypoint = event->parameters[2];
-        world->boss_fight_config.state.waypoint_reached = 0;
+        world->boss_fight_config->state.boss_waypoint.x = event->parameters[0];
+        world->boss_fight_config->state.boss_waypoint.y = event->parameters[1];
+        world->boss_fight_config->state.waypoint = event->parameters[2];
+        world->boss_fight_config->state.waypoint_reached = 0;
         break;
       case BFCONF_EVENT_TYPE_CLEAR_WAYPOINT:
-        world->boss_waypoint.x = -1;
-        world->boss_waypoint.y = -1;
-        world->boss_fight_config.state.waypoint = 0;
+        world->boss_fight_config->state.boss_waypoint.x = -1;
+        world->boss_fight_config->state.boss_waypoint.y = -1;
+        world->boss_fight_config->state.waypoint = 0;
         break;
       case BFCONF_EVENT_TYPE_START_SECONDARY_TIMER:
-        world->boss_fight_config.state.secondary_timer_started = 1;
+        world->boss_fight_config->state.secondary_timer_started = 1;
         if (event->parameters[0] >= 0)
-          world->boss_fight_config.state.secondary_timer_value = event->parameters[0];
+          world->boss_fight_config->state.secondary_timer_value = event->parameters[0];
         break;
       case BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER:
-        world->boss_fight_config.state.secondary_timer_started = 0;
+        world->boss_fight_config->state.secondary_timer_started = 0;
         break;
       case BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED:
-        world->boss_fight_config.events[event->parameters[0]].enabled = event->parameters[1];
+        world->boss_fight_config->events[event->parameters[0]].enabled = event->parameters[1];
         break;
       case BFCONF_EVENT_TYPE_SPAWN_POTION:
         spawn_potion(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE,
@@ -610,7 +611,8 @@ int game(int mission, int *game_modifiers)
   World world;
   world.game_modifiers = *game_modifiers;
   world.mission = mission;
-  memset(&world.boss_fight_config, 0, sizeof(BossFightConfig));
+  memset(&world.boss_fight_configs, 0, sizeof(world.boss_fight_configs));
+  world.boss_fight_config = world.boss_fight_configs;
   if (!game_settings.custom_resources)
   {
     world.spr = load_bitmap(DATADIR "sprites.png");
@@ -632,7 +634,7 @@ int game(int mission, int *game_modifiers)
   char fly_in_text[64];
   strcpy(fly_in_text, world.mission_display_name);
   int boss_fight_frame_count = 0;
-  world.boss_want_to_shoot = 0;
+  //world.boss_want_to_shoot = 0;
 
   world.current_room = 1;
 
@@ -646,7 +648,7 @@ int game(int mission, int *game_modifiers)
   int key_press_buffer_idx = 0;
   long key_press_mask = 0;
 
-  world.boss_waypoint.x = world.boss_waypoint.y = -1;
+  //world.boss_waypoint.x = world.boss_waypoint.y = -1;
   world.hint.time_shows = 0;
 
   if (record_mode == RECORD_MODE_RECORD)
@@ -719,9 +721,9 @@ int game(int mission, int *game_modifiers)
   else if (difficulty == DIFFICULTY_BRUTAL)
     world.plr.gold = 0;
 
-  if (world.boss_fight && world.boss_fight_config.player_initial_gold >= 0)
+  if (world.boss_fight && world.boss_fight_config->player_initial_gold >= 0)
   {
-    world.plr.gold = world.boss_fight_config.player_initial_gold;
+    world.plr.gold = world.boss_fight_config->player_initial_gold;
   }
 
   world.powerups.rune_of_protection_active = 0;
@@ -961,7 +963,7 @@ int game(int mission, int *game_modifiers)
     {
       for (int i = 0; i < 6; i++)
       {
-        if (world.boss->health >= (world.boss_fight_config.health * (i + 1) / 6))
+        if (world.boss->health >= (world.boss_fight_config->health * (i + 1) / 6))
           masked_blit(world.spr, 60, 0, world.boss->x - 23, world.boss->y - 18 + 4 * i, 7, 6);
       }
     }

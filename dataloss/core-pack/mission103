@@ -201,7 +201,7 @@ X(duedit_compatible)
 *?level_read = 1 +end
 *@metadata
 *=name"Arena -- Mage's Maze"
-*=bossfight"core-pack\arena_103.ini"
+*=script1"core-pack\arena_103.ini"
 *=mute_bosstalk"1"
 *=wall_color"0.5 0.2 0"
 *@+end

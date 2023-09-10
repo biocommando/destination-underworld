@@ -196,7 +196,7 @@ X(duedit_compatible)
 *?level_read = 1 +end
 *@metadata
 *=name"Arena -- Slaughterhouse"
-*=bossfight"core-pack\arena_104.ini"
+*=script1"core-pack\arena_104.ini"
 *=mute_bosstalk"1"
 *=wall_color"0 0.2 0.4"
 *@+end

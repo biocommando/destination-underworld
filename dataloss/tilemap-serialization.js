@@ -25,7 +25,8 @@ function deserializeTileMap(fileAsString) {
         else {
             if (section === 'tiles') {
                 const [id, x, y, room] = line.split(' ').map(x => Number(x))
-                data.objects.push({ id, x, y, room })
+                if (!isNaN(id))
+                    data.objects.push({ id, x, y, room })
             }
             if (section === 'conditions' && line[1] === '?') {
                 const s = line.split(' ')
@@ -35,7 +36,8 @@ function deserializeTileMap(fileAsString) {
             }
             if (section === 'condition') {
                 const [id, x, y, room] = line.split(' ').map(x => Number(x))
-                data.objects.push({ id, x, y, room, condition: conditionName })
+                if (!isNaN(id))
+                    data.objects.push({ id, x, y, room, condition: conditionName })
             }
             if (section === 'metadata' && line.startsWith('*')) {
                 const s = line.substring(2).split('"')

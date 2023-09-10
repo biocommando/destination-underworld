@@ -206,9 +206,8 @@ typedef struct
     int boss_fight;
     int play_boss_sound;
     int game_modifiers;
-    BossFightConfig boss_fight_config;
-    Coordinates boss_waypoint;
-    int boss_want_to_shoot;
+    BossFightConfig *boss_fight_config;
+    BossFightConfig boss_fight_configs[ROOMCOUNT];
     struct hint_text hint;
     struct powerup_status powerups;
     int playcount;

@@ -205,7 +205,7 @@ void bossfight_process_event_triggers(BossFightConfig *config)
   }
   state->timer_value++;
   int tv = state->timer_value;
-  for (int i = 0; i < BFCONF_MAX_EVENTS; i++)
+  for (int i = 0; i < config->num_events; i++)
   {
     BossFightEventConfig *econf = &config->events[i];
     int *trig = &state->triggers[i];

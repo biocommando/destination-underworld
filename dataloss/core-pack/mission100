@@ -201,7 +201,7 @@ X(duedit_compatible)
 *?level_read = 1 +end
 *@metadata
 *=name"Arena -- Imp Pit"
-*=bossfight"core-pack\arena_100.ini"
+*=script1"core-pack\arena_100.ini"
 *=mute_bosstalk"1"
 *=wall_color"0.7 0 0.3"
 *@+end

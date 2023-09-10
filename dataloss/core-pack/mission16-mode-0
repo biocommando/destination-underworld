@@ -392,7 +392,8 @@ X(duedit_compatible)
 120 15 11 2
 *?level_read = 1 +end
 *@metadata
-*=bossfight"core-pack\boss_mode_0.ini"
+*=script1"core-pack\boss_mode_0_room1.ini"
+*=script2"core-pack\boss_mode_0.ini"
 *=par0"21.925"
 *=name"Deepest Abyss"
 *=story1"The corpse of the Arch Evil explodes into 50 shades of"

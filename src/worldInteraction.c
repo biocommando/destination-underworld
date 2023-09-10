@@ -523,6 +523,7 @@ void place_lev_object(World *world, int x, int y, int id, int room_from, int roo
 
 void level_read_new_format(World *world, int room_to, FILE *f)
 {
+    world->boss_fight_config = &world->boss_fight_configs[room_to - 1];
     DuScriptVariable *var;
     int file_start = ftell(f);
     DuScriptState state = du_script_init();
@@ -566,22 +567,27 @@ void level_read_new_format(World *world, int room_to, FILE *f)
     fclose(f);
     if (!world->level_read)
     {
-        var = du_script_variable(&state, "bossfight");
-        if (*var->value)
+        for (int i = 1; i <= ROOMCOUNT; i++)
         {
-            char buf[256];
-            sprintf(buf, DATADIR "%s", var->value);
-            LOG("Opening bossfight config at %s\n", buf);
-            FILE *f2 = fopen(buf, "r");
-            if (f2)
+            char script_var[16];
+            sprintf(script_var, "script%d", i);
+            var = du_script_variable(&state, script_var);
+            if (*var->value)
             {
-                read_bfconfig(f2, &world->boss_fight_config, world->game_modifiers);
-                fclose(f2);
-                LOG("Bossfight initiated\n");
-                world->boss_fight = 1;
+                char buf[256];
+                sprintf(buf, DATADIR "%s", var->value);
+                LOG("Opening bossfight config at %s\n", buf);
+                FILE *f2 = fopen(buf, "r");
+                if (f2)
+                {
+                    read_bfconfig(f2, &world->boss_fight_configs[i - 1], world->game_modifiers);
+                    fclose(f2);
+                    LOG("Bossfight initiated\n");
+                    world->boss_fight = 1;
+                }
+                else
+                    LOG("No such file!\n");
             }
-            else
-                LOG("No such file!\n");
         }
         var = du_script_variable(&state, "name");
         if (strlen(var->value) < 64)
@@ -622,8 +628,8 @@ void level_read_new_format(World *world, int room_to, FILE *f)
 
     if (world->boss && !boss_exists)
     {
-        world->boss->rate = world->boss_fight_config.fire_rate;
-        world->boss->health = world->boss_fight_config.health;
+        world->boss->rate = world->boss_fight_config->fire_rate;
+        world->boss->health = world->boss_fight_config->health;
     }
 
     world->rooms_visited[room_to - 1] = 1;
@@ -685,6 +691,7 @@ int read_level(World *world, int mission, int room_to)
     if (buf[0] != 'X')
     {
         printf("ERROR: legacy format file!\n");
+        fclose(f);
         return -1;
     }
     level_read_new_format(world, room_to, f);

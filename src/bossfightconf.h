@@ -2,6 +2,7 @@
 #define DU_BOSS_FIGHT_CONFIG
 
 #include <stdio.h>
+#include "helpers.h"
 
 #define BFCONF_MAX_EVENTS 100
 
@@ -60,6 +61,8 @@ typedef struct
   int player_kills;
   int player_previous_kills;
   int triggers[BFCONF_MAX_EVENTS];
+  Coordinates boss_waypoint;
+  int boss_want_to_shoot;
 } BossFightState;
 
 typedef struct

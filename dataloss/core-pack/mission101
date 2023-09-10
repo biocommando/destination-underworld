@@ -198,7 +198,7 @@ X(duedit_compatible)
 *?level_read = 1 +end
 *@metadata
 *=name"Arena -- Area 51"
-*=bossfight"core-pack\arena_101.ini"
+*=script1"core-pack\arena_101.ini"
 *=mute_bosstalk"1"
 *=wall_color"0.1 0.1 0.5"
 *@+end

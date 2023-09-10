@@ -197,6 +197,6 @@ X(duedit_compatible)
 *@metadata
 *=name"Arena -- Dungeon"
 *=wall_color"1 1 0.5"
-*=bossfight"core-pack\arena_102.ini"
+*=script1"core-pack\arena_102.ini"
 *=mute_bosstalk"1"
 *@+end
