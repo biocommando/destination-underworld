@@ -6,6 +6,7 @@
 #include "helpers.h"
 #include "predictableRandom.h"
 #include "iniRead.h"
+#include "duscript.h"
 
 extern GameSettings game_settings;
 
@@ -140,6 +141,14 @@ Bullet *get_next_available_bullet(World *world)
 int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, int hurts_monsters, World *world)
 {
     int num_shots = (world->game_modifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? 2 : 1;
+    if (enm == &world->plr && check_potion_effect(world, POTION_EFFECT_BOOSTED_SHOTS))
+    {
+        num_shots *= 2;
+    }
+    if (check_potion_effect(world, POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS))
+    {
+        hurts_monsters = 1;
+    }
     for (int i = 0; i < num_shots; i++)
     {
         Bullet *bb = get_next_available_bullet(world);
@@ -189,6 +198,10 @@ int shoot(Enemy *enm, World *world)
         return 0;
 
     enm->reload = enm->rate;
+    if (enm == &world->plr && check_potion_effect(world, POTION_EFFECT_FAST_PLAYER))
+    {
+        enm->reload /= 2;
+    }
     int sample_plays = 0;
     for (int i = 0; i < enm->shots; i++)
     {
@@ -435,6 +448,188 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     return new_enemy;
 }
 
+Potion *get_next_available_potion(World *world)
+{
+    for (int i = 0; i < POTION_COUNT; i++)
+    {
+        if (!world->potions[i].exists)
+            return &world->potions[i];
+    }
+    return NULL;
+}
+
+Potion *spawn_potion(int x, int y, int type, int room_id, World *world)
+{
+    Potion *p = get_next_available_potion(world);
+    if (!p)
+        return NULL;
+    p->location.x = x;
+    p->location.y = y;
+    p->duration_boost = 250;
+    if (type == 0)
+        p->effects = POTION_EFFECT_SHIELD_OF_FIRE | POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS;
+    else if (type == 1)
+        p->effects = POTION_EFFECT_STOP_ENEMIES;
+    else if (type == 2)
+        p->effects = POTION_EFFECT_FAST_PLAYER;
+    else if (type == 3)
+        p->effects = POTION_EFFECT_BOOSTED_SHOTS;
+    else
+        p->effects = POTION_EFFECT_HEALING;
+    p->sprite = type;
+    p->sample = SAMPLE_POTION(type);
+    p->room_id = room_id;
+    p->exists = 1;
+    return p;
+}
+
+void place_lev_object(World *world, int x, int y, int id, int room_from, int room_to)
+{
+    Tile tile = create_tile(id);
+    if (!(tile.flags & TILE_UNRECOGNIZED))
+    {
+        if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_from)
+        {
+            world->plr.x = x * TILESIZE + 15;
+            world->plr.y = y * TILESIZE + 15;
+            if (world->plr.x < 0)
+                world->plr.x = 0;
+            if (world->plr.x >= 480)
+                world->plr.x = 480 - 1;
+            if (world->plr.y < 0)
+                world->plr.y = 0;
+            if (world->plr.y >= 360)
+                world->plr.y = 360 - 1;
+        }
+        if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_to) // eka huone
+        {
+            tile = create_tile(TILE_SYM_FLOOR);
+        }
+        world->map[x][y].flags |= tile.flags;
+        if (tile.data != 0)
+        {
+            world->map[x][y].data = tile.data;
+        }
+    }
+    else if (id >= 200 && id <= 205 && !world->rooms_visited[room_to - 1])
+    {
+        spawn_enemy(x, y, id - 200, room_to, world);
+    }
+    else if (id >= 300 && id <= 305 && !world->rooms_visited[room_to - 1])
+    {
+        spawn_potion(x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, id - 300, room_to, world);
+    }
+}
+
+void level_read_new_format(World *world, int room_to, FILE *f)
+{
+    DuScriptVariable *var;
+    int file_start = ftell(f);
+    DuScriptState state = du_script_init();
+    int boss_exists = world->boss != NULL;
+
+    var = du_script_variable(&state, "level_read");
+    strcpy(var->value, world->level_read ? "1" : "0");
+    var->read_only = 1;
+    var = du_script_variable(&state, "game_modifiers");
+    sprintf(var->value, "%d", world->game_modifiers);
+    var->read_only = 1;
+
+    while (!feof(f))
+    {
+        char buf[DU_SCRIPT_MAX_STR_LEN];
+        fgets(buf, sizeof(buf), f);
+        if (feof(f))
+            break;
+        // level editor metadata
+        if (*buf == '#')
+        {
+            continue;
+        }
+        int ret = du_script_execute_line(&state, buf);
+        if (ret == 0)
+        {
+            continue;
+        }
+        else if (ret == 1)
+        {
+            fseek(f, file_start, SEEK_SET);
+            continue;
+        }
+        int id = -1, x = -1, y = -1, room = -1;
+        sscanf(buf, "%d %d %d %d", &id, &x, &y, &room);
+        if (room_to == room)
+        {
+            place_lev_object(world, x, y, id, world->current_room, room_to);
+        }
+    }
+    fclose(f);
+    if (!world->level_read)
+    {
+        var = du_script_variable(&state, "bossfight");
+        if (*var->value)
+        {
+            char buf[256];
+            sprintf(buf, DATADIR "%s", var->value);
+            LOG("Opening bossfight config at %s\n", buf);
+            FILE *f2 = fopen(buf, "r");
+            if (f2)
+            {
+                read_bfconfig(f2, &world->boss_fight_config, world->game_modifiers);
+                fclose(f2);
+                LOG("Bossfight initiated\n");
+                world->boss_fight = 1;
+            }
+            else
+                LOG("No such file!\n");
+        }
+        var = du_script_variable(&state, "name");
+        if (strlen(var->value) < 64)
+        {
+            strcpy(world->mission_display_name, var->value);
+        }
+        for (int i = 1; i <= 10; i++)
+        {
+            char story_var[16];
+            sprintf(story_var, "story%d", i);
+            var = du_script_variable(&state, story_var);
+            if (*var->value && strlen(var->value) < 61)
+            {
+                strcpy(world->story_after_mission[i - 1], var->value);
+                world->story_after_mission_lines = i;
+            }
+        }
+        char par_var[16];
+        sprintf(par_var, "par%d", world->game_modifiers);
+        var = du_script_variable(&state, par_var);
+        sscanf(var->value, "%lf", &world->par_time);
+
+        var = du_script_variable(&state, "wall_color");
+        if (*var->value)
+        {
+            float r = 0, g = 0, b = 0;
+            sscanf(var->value, "%f %f %f", &r, &g, &b);
+            LOG_TRACE("Map color %f %f %f\n", r, g, b);
+            world->map_wall_color[0] = r;
+            world->map_wall_color[1] = g;
+            world->map_wall_color[2] = b;
+        }
+        var = du_script_variable(&state, "no_more_levels");
+        world->final_level = *var->value ? 1 : 0;
+        var = du_script_variable(&state, "mute_bosstalk");
+        world->play_boss_sound = *var->value ? 0 : 1;
+    }
+
+    if (world->boss && !boss_exists)
+    {
+        world->boss->rate = world->boss_fight_config.fire_rate;
+        world->boss->health = world->boss_fight_config.health;
+    }
+
+    world->rooms_visited[room_to - 1] = 1;
+    world->level_read = 1;
+}
+
 int read_level(World *world, int mission, int room_to)
 {
     char buf[256];
@@ -487,138 +682,12 @@ int read_level(World *world, int mission, int room_to)
     }
 
     fgets(buf, 256, f); // version
-    fgets(buf, 256, f); // dimensions
-    fgets(buf, 256, f);
-    int object_count = 0;
-    sscanf(buf, "%d", &object_count);
-
-    int boss_exists = world->boss != NULL;
-
-    while (object_count-- > 0)
+    if (buf[0] != 'X')
     {
-        fgets(buf, 256, f);
-        int id, x, y, room;
-        sscanf(buf, "%d %d %d %d", &id, &x, &y, &room);
-        if (room == room_to)
-        {
-            Tile tile = create_tile(id);
-            if (!(tile.flags & TILE_UNRECOGNIZED))
-            {
-                if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_from)
-                {
-                    world->plr.x = x * TILESIZE + 15;
-                    world->plr.y = y * TILESIZE + 15;
-                    if (world->plr.x < 0)
-                        world->plr.x = 0;
-                    if (world->plr.x >= 480)
-                        world->plr.x = 480 - 1;
-                    if (world->plr.y < 0)
-                        world->plr.y = 0;
-                    if (world->plr.y >= 360)
-                        world->plr.y = 360 - 1;
-                }
-                if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_to) // eka huone
-                {
-                    tile = create_tile(TILE_SYM_FLOOR);
-                }
-                world->map[x][y].flags |= tile.flags;
-                if (tile.data != 0)
-                {
-                    world->map[x][y].data = tile.data;
-                }
-            }
-            else if (id >= 200 && id <= 205 && !world->rooms_visited[room_to - 1])
-            {
-                spawn_enemy(x, y, id - 200, room_to, world);
-            }
-        }
+        printf("ERROR: legacy format file!\n");
+        return -1;
     }
-
-    int metadata_count = 0;
-    fgets(buf, 256, f);
-    sscanf(buf, "%d", &metadata_count);
-    while (!world->level_read && metadata_count-- > 0)
-    {
-        fgets(buf, 256, f);
-        char read_str[64];
-        sscanf(buf, "%s", read_str);
-        if (!strcmp(read_str, "bossfight"))
-        {
-            sscanf(buf, "%*s %s", read_str);
-            sprintf(buf, DATADIR "%s", read_str);
-            LOG("Opening bossfight config at %s\n", buf);
-            FILE *f2 = fopen(buf, "r");
-            if (f2)
-            {
-                read_bfconfig(f2, &world->boss_fight_config, world->game_modifiers);
-                fclose(f2);
-                LOG("Bossfight initiated\n");
-                world->boss_fight = 1;
-                continue;
-            }
-            else
-                LOG("No such file!\n");
-        }
-        else if (!strcmp(read_str, "mute_bosstalk"))
-        {
-            world->play_boss_sound = 0;
-        }
-        else if (!strcmp(read_str, "name"))
-        {
-            metadata_count--;
-            fgets(buf, 64, f);
-            buf[strlen(buf) - 1] = 0;
-            strcpy(world->mission_display_name, buf);
-        }
-        else if (!strcmp(read_str, "story"))
-        {
-            world->story_after_mission_lines = 0;
-            sscanf(buf, "%*s %d", &world->story_after_mission_lines);
-            world->story_after_mission_lines =
-                world->story_after_mission_lines > 10 ? 10 : world->story_after_mission_lines;
-            for (int i = 0; i < world->story_after_mission_lines; i++)
-            {
-                metadata_count--;
-                fgets(buf, 61, f);
-                buf[strlen(buf) - 1] = 0;
-                strcpy(world->story_after_mission[i], buf);
-            }
-        }
-        else if (!strcmp(read_str, "par"))
-        {
-            double d;
-            int modifiers;
-            sscanf(buf, "%*s %d %lf", &modifiers, &d);
-            if (modifiers == world->game_modifiers)
-            {
-                world->par_time = d;
-            }
-        }
-        else if (!strcmp(read_str, "wall_color"))
-        {
-            float r = 0, g = 0, b = 0;
-            sscanf(buf, "%*s %f %f %f", &r, &g, &b);
-            LOG_TRACE("Map color %f %f %f\n", r, g, b);
-            world->map_wall_color[0] = r;
-            world->map_wall_color[1] = g;
-            world->map_wall_color[2] = b;
-        }
-        else if (!strcmp(read_str, "no_more_levels"))
-        {
-            world->final_level = 1;
-        }
-    }
-
-    fclose(f);
-
-    if (world->boss && !boss_exists)
-    {
-        world->boss->rate = world->boss_fight_config.fire_rate;
-        world->boss->health = world->boss_fight_config.health;
-    }
-
-    world->rooms_visited[room_to - 1] = 1;
-    world->level_read = 1;
+    level_read_new_format(world, room_to, f);
     return 0;
 }
 

@@ -1,5 +1,6 @@
 #include "allegro42_compat.h"
 #include "allegro5/allegro_acodec.h"
+#include "duConstants.h"
 #include <stdio.h>
 
 char keybuffer[ALLEGRO_KEY_MAX];
@@ -98,7 +99,7 @@ int init_allegro()
     al_set_new_display_refresh_rate(60);
     al_set_new_display_flags(ALLEGRO_OPENGL);
     font = al_create_builtin_font();
-    display = al_create_display(480 * 3, 360 * 3);
+    display = al_create_display(DISPLAY_W, DISPLAY_H);
     if (!display)
     {
         return 1;

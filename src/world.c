@@ -69,6 +69,13 @@ void init_world(World *world)
     }
     world->boss = NULL;
     world->level_read = 0;
+
+    world->potion_duration = 0;
+    world->potion_effect_flags = 0;
+    for (int i = 0; i < POTION_COUNT; i++)
+    {
+        world->potions[i].exists = 0;
+    }
 }
 
 Tile create_tile(int symbol)
@@ -263,4 +270,9 @@ void init_player(World *world, Enemy *plrautosave)
     {
         *plr = *plrautosave;
     }
+}
+
+int check_potion_effect(World *w, int effect_id)
+{
+    return w->potion_duration > 0 && ((w->potion_effect_flags & effect_id) != 0);
 }

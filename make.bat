@@ -17,6 +17,8 @@ src/world.c ^
 src/worldInteraction.c ^
 src/allegro42_compat.c ^
 src/loadindicator.c ^
+src/duscript.c ^
+-DENABLE_LOGGING ^
 -Iallegro\include ^
 allegro\lib\liballegro_monolith.dll.a ^
 -o DestinationUnderworld.exe

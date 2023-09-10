@@ -47,6 +47,11 @@
             background-repeat: no-repeat;
         }
 
+        .potion {
+            background-image: url(./edit-res/potion.png);
+            background-repeat: no-repeat;
+        }
+
         .cursor {
             border-style: dashed;
         }
@@ -83,6 +88,7 @@
         <option value="8">8</option>
     </select>
     Number of enemies: <span id="numEnemies"></span>
+    Condition: <input id="condition" value="" />
     <hr />
     <div id="container"></div>
     metadata
@@ -164,10 +170,15 @@ no_more_levels
             { name: 'restrict-trigger2', id: 511, css: 'restrict-trig' },
             { name: 'enm-restrict3', id: 502, css: 'restrict' },
             { name: 'restrict-trigger3', id: 512, css: 'restrict-trig' },
+            { name: 'P_shield', id: 300, css: 'potion'},
+            { name: 'P_stop', id: 301, css: 'potion'},
+            { name: 'P_fast', id: 302, css: 'potion'},
+            { name: 'P_boost', id: 303, css: 'potion'},
+            { name: 'P_heal', id: 304, css: 'potion'}
         ];
         let map = { version: 0, width, height, objects: [], metadata: [], levelMetadata: '' };
         let room;
-        const addTile = (id, x, y, room) => map.objects.push({ id, x, y, room });
+        const addTile = (id, x, y, room, condition) => map.objects.push({ id, x, y, room, condition });
         const deleteTile = (id, x, y, room) => {
             const sameLocation = o => o.x === x && o.y === y && o.room === room;
             map.objects = map.objects
@@ -175,9 +186,9 @@ no_more_levels
                     ((!sameLocation(o) || o.id !== id) && id !== undefined) ||
                     (!sameLocation(o) && id === undefined));
         };
-        const replaceTile = (oldId, newId, x, y, room) => {
+        const replaceTile = (oldId, newId, x, y, room, condition) => {
             deleteTile(oldId, x, y, room);
-            addTile(newId, x, y, room);
+            addTile(newId, x, y, room, condition);
         };
         const fill = (id, x1, y1, x2, y2, aRoom, replacing = true) => {
             aRoom = aRoom !== undefined ? aRoom : room;
@@ -195,9 +206,9 @@ no_more_levels
                 let y = y1;
                 while (y !== y2 + 1) {
                     if (replacing) {
-                        replaceTile(undefined, id, x1, y, aRoom);
+                        replaceTile(undefined, id, x1, y, aRoom, '');
                     } else {
-                        addTile(undefined, id, x1, y, aRoom);
+                        addTile(undefined, id, x1, y, aRoom, '');
                     }
                     y++;
                 }
@@ -216,6 +227,7 @@ no_more_levels
         const renderMap = () => {
             const xhtml = Array(map.height).fill().map(() => Array(map.width).fill().map(() => []));
             map.objects.filter(o => o.room === room).sort(idSorter).forEach(o => xhtml[o.y][o.x].push(o.id));
+            const tilesWithCondition = map.objects.filter(o => o.room === room && o.condition)
             let html = '';
             xhtml.forEach((row, y) => {
                 html += '<div class="row">'
@@ -224,6 +236,9 @@ no_more_levels
                     cell.forEach(id => {
                         const type = objectTypes.find(t => t.id === id);
                         cellHtml += `${type ? type.name : id} `;
+                        const withCondition = tilesWithCondition.find(o => o.x === x && o.y === y && o.id === id)
+                        if (withCondition)
+                            cellHtml += withCondition.condition
                         if (type && type.css) {
                             cellHtml = cellHtml.replace('__addclass', ` ${type.css}__addclass`);
                         }
@@ -243,9 +258,10 @@ no_more_levels
             const tile = map.objects.filter(o => o.x === x && o.y === y && o.room === room);
             const topObject = tile.sort(reverseIdSorter)[0].id;
             const mode = document.getElementById('edit-mode').value;
+            const condition = document.getElementById('condition').value
             switch (mode) {
                 case 'add':
-                    addTile(cursor.paintId, x, y, room);
+                    addTile(cursor.paintId, x, y, room, condition);
                     break;
                 case 'delete':
                     if (tile.length > 1) {
@@ -253,7 +269,7 @@ no_more_levels
                     }
                     break;
                 case 'replace':
-                    replaceTile(undefined, cursor.paintId, x, y, room);
+                    replaceTile(undefined, cursor.paintId, x, y, room, condition);
                     break;
                 case 'fill':
                     fill(cursor.paintId, cursor.x, cursor.y, x, y);

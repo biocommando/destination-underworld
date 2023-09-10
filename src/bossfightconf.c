@@ -111,6 +111,7 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
       config->events[i].spawn_point.x = ini_read_int_value(f, spawn_segment, "x");
       config->events[i].spawn_point.y = ini_read_int_value(f, spawn_segment, "y");
     }
+
     if (!strcmp(s, "allow_firing"))
     {
       config->events[i].event_type = BFCONF_EVENT_TYPE_ALLOW_FIRING;
@@ -177,6 +178,14 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
       }
       config->events[i].parameters[0] = event_id;
       config->events[i].parameters[1] = ini_read_int_value(f, event_segment, "enabled");
+    }
+
+    if (!strcmp(s, "spawn_potion"))
+    {
+      config->events[i].event_type = BFCONF_EVENT_TYPE_SPAWN_POTION;
+      config->events[i].parameters[0] = ini_read_int_value(f, event_segment, "x");
+      config->events[i].parameters[1] = ini_read_int_value(f, event_segment, "y");
+      config->events[i].parameters[2] = ini_read_int_value(f, event_segment, "type");
     }
   }
 

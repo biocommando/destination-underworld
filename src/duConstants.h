@@ -17,6 +17,7 @@
 #define EXPLOSIONCOUNT 16
 #define BULLETCOUNT 400
 #define SPARKLE_FX_COUNT 60
+#define POTION_COUNT 16
 
 #define PLR_DIR_HELPER_INITIAL_INTENSITY 100
 
@@ -52,7 +53,12 @@
 #define SAMPLE_EXPLOSION(x) (1000 + (x))
 #define SAMPLE_DEATH(x) (2000 + (x))
 
+#define SAMPLE_POTION(x) (3000 + (x))
+
 #define SCREEN_W 480
 #define SCREEN_H 360
+
+#define DISPLAY_W (SCREEN_W * 3)
+#define DISPLAY_H (SCREEN_H * 3)
 
 #endif

@@ -10,7 +10,7 @@ void read_arena_configs(FILE *f, ArenaConfigs *config)
 {
     int num = ini_read_int_value(f, "arenas", "number_of_arenas");
 
-    if (num > ARENACONF_MAX_NUMBER_OF_ARENAS)
+    if (num < 0 || num > ARENACONF_MAX_NUMBER_OF_ARENAS)
     {
         LOG("Invalid number of arenas %d\n", num);
         num = ARENACONF_MAX_NUMBER_OF_ARENAS;

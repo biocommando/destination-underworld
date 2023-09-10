@@ -163,6 +163,12 @@ void draw_player_legend(World *world)
             masked_blit(world->spr, 49 + (gold / 10) * 4, 196, world->plr.x - 25, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
         }
         masked_blit(world->spr, 49 + (gold % 10) * 4, 196, world->plr.x - 21, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
+
+        if (world->potion_duration > 0)
+        {
+            int sprite = 8 * world->potion_duration / (POTION_DURATION_CAP + 1);
+            masked_blit(world->spr, 48 + sprite * 7, 186, world->plr.x - 32, world->plr.y - 18, 7, 9);
+        }
     }
 }
 

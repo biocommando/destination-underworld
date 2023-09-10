@@ -168,6 +168,25 @@ struct enemy_config
     int hurts_monsters;
 };
 
+#define POTION_EFFECT_SHIELD_OF_FIRE 1
+#define POTION_EFFECT_STOP_ENEMIES 2
+#define POTION_EFFECT_FAST_PLAYER 4
+#define POTION_EFFECT_BOOSTED_SHOTS 8
+#define POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS 16
+#define POTION_EFFECT_HEALING 32
+#define POTION_DURATION_CAP 400
+
+typedef struct potion
+{
+    Coordinates location;
+    int room_id;
+    int duration_boost;
+    int effects;
+    int exists;
+    int sprite;
+    int sample;
+} Potion;
+
 typedef struct
 {
     Tile map[MAPMAX_X][MAPMAX_Y];
@@ -206,7 +225,13 @@ typedef struct
     int mission;
     int final_level;
     float map_wall_color[3];
+
+    int potion_duration;
+    int potion_effect_flags;
+    Potion potions[POTION_COUNT];
 } World;
+
+int check_potion_effect(World *w, int effect_id);
 
 void clear_visual_fx(World *);
 void stop_bodyparts(World *);

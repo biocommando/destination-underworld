@@ -87,6 +87,11 @@ int main(int argc, char **argv)
   register_sample(SAMPLE_PROTECTION, "rune_of_protection.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_TURRET, "turret.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_SPAWN, "spawn.wav", SAMPLE_PRIORITY(HIGH, 0));
+  register_sample(SAMPLE_POTION(0), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(1), "potion_stop.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(2), "potion_fast.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(3), "potion_boost.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(4), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
 
   for (int i = 0; i < 6; i++)
   {
@@ -135,7 +140,7 @@ void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
 }
 
 void enemy_logic(World *world)
-{ // Viholliset
+{
   for (int x = 0; x < ENEMYCOUNT; x++)
   {
     Enemy *enm = &world->enm[x];
@@ -160,10 +165,13 @@ void enemy_logic(World *world)
             {
               set_directions(enm, &aim_at, aim_window);
             }
-            int play_sample = shoot(enm, world);
-            if (play_sample)
+            if (!check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
             {
-              trigger_sample(SAMPLE_THROW, 255);
+              int play_sample = shoot(enm, world);
+              if (play_sample)
+              {
+                trigger_sample(SAMPLE_THROW, 255);
+              }
             }
           }
 
@@ -204,20 +212,20 @@ void enemy_logic(World *world)
         }
         else if (enm->turret == TURRET_TYPE_NONE)
         {
-          if (enm->fast)
+          if (!check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
           {
+            if (enm->fast)
+            {
+              move_enemy(enm, world);
+            }
             move_enemy(enm, world);
           }
-          move_enemy(enm, world);
         }
         else if (enm->reload > 0)
         {
           enm->reload--;
         }
-        // if (enm_type != ALIEN || rand() % 32) // Alienit (muttei turretit) vilkkuvat
-        //{
         draw_enemy(enm, world);
-        //}
       }
       else // turret
       {
@@ -373,6 +381,10 @@ void boss_logic(World *world, int boss_died)
       case BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED:
         world->boss_fight_config.events[event->parameters[0]].enabled = event->parameters[1];
         break;
+      case BFCONF_EVENT_TYPE_SPAWN_POTION:
+        spawn_potion(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE,
+                     event->parameters[2], world->current_room, world);
+        break;
       }
     }
   }
@@ -449,6 +461,7 @@ void bullet_logic(World *world)
       }
       int deathsample_plays = 0;
       if (bullet->hurts_flags & BULLET_HURTS_MONSTERS)
+      {
         for (int j = 0; j < ENEMYCOUNT; j++)
         {
           Enemy *enm = &world->enm[j];
@@ -473,6 +486,14 @@ void bullet_logic(World *world)
             world->playcount = PLAYDELAY;
             if (enm->id == NO_OWNER) // enemy was killed (bullet_hit has side effects)
             {
+              
+              if (check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
+              {
+                world->potion_effect_flags &= ~POTION_EFFECT_STOP_ENEMIES;
+                if (!world->potion_effect_flags)
+                  world->potion_duration = 0;
+              }
+
               set_tile_flag(world, enm->x, enm->y, TILE_IS_BLOOD_STAINED);
               world->plr.gold += enm->gold;
 
@@ -524,6 +545,7 @@ void bullet_logic(World *world)
             break;
           }
         }
+      }
     }
     if (bullet->bullet_type == BULLET_TYPE_NORMAL)
     {
@@ -534,6 +556,48 @@ void bullet_logic(World *world)
     {
       masked_blit(world->spr, 140, 150, bullet->x - 6, bullet->y - 6, 13, 12);
     }
+  }
+}
+
+void potion_logic(World *w)
+{
+  static unsigned potion_anim_phase = 0;
+  for (int i = 0; i < POTION_COUNT; i++)
+  {
+    Potion *p = &w->potions[i];
+    if (p->exists && p->room_id == w->current_room)
+    {
+      if (w->plr.x > p->location.x - 20 && w->plr.x < p->location.x + 20 &&
+          w->plr.y > p->location.y - 20 && w->plr.y < p->location.y + 20)
+      {
+        p->exists = 0;
+        w->potion_duration += p->duration_boost;
+        if (w->potion_duration > POTION_DURATION_CAP)
+          w->potion_duration = POTION_DURATION_CAP;
+        w->potion_effect_flags |= p->effects;
+        trigger_sample(p->sample, 255);
+        create_sparkles(p->location.x, p->location.y, 12, w);
+      }
+
+      unsigned anim_phase = (potion_anim_phase + i * 1337) % 200;
+      if (anim_phase < 30)
+      {
+        int bubble_y = anim_phase / 5;
+        int bubble_x = 4 * sin(bubble_y);
+        int pop_spr = anim_phase > 25;
+        masked_blit(w->spr, 153 + p->sprite * 10 + 6 * pop_spr, 176, p->location.x - 2 + bubble_x, p->location.y - 15 - bubble_y, 4, 5);
+      }
+      masked_blit(w->spr, 142 + p->sprite * 18, 182, p->location.x - 9, p->location.y - 10, 18, 20);
+    }
+  }
+  potion_anim_phase++;
+  if (w->potion_duration > 0)
+  {
+    w->potion_duration--;
+  }
+  else
+  {
+    w->potion_effect_flags = 0;
   }
 }
 
@@ -565,6 +629,8 @@ int game(int mission, int *game_modifiers)
   world.playcount = 0;
 
   int fly_in_text_x = SCREEN_W;
+  char fly_in_text[64];
+  strcpy(fly_in_text, world.mission_display_name);
   int boss_fight_frame_count = 0;
   world.boss_want_to_shoot = 0;
 
@@ -607,16 +673,24 @@ int game(int mission, int *game_modifiers)
     trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
   }
 
-  int difficulty = GET_DIFFICULTY(&world); //(world.game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+  int difficulty = GET_DIFFICULTY(&world);
   int excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 0 : 5;
   if (world.game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
   {
     excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 2 : 7;
   }
+  if (world.game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
+  {
+    excess_gold_limit = 0;
+  }
 
   if (world.plr.gold > excess_gold_limit)
   {
     int excess_gold = world.plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
+    if (world.game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
+    {
+      excess_gold = world.plr.gold;
+    }
     if (world.game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
       excess_gold /= 3;
     world.plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
@@ -640,7 +714,7 @@ int game(int mission, int *game_modifiers)
   if ((world.game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
   {
     world.powerups.cluster_strength = 5;
-    world.plr.gold = 40;
+    world.plr.gold = 20;
   }
   else if (difficulty == DIFFICULTY_BRUTAL)
     world.plr.gold = 0;
@@ -814,9 +888,10 @@ int game(int mission, int *game_modifiers)
     {
       world.plr.move = 0;
     }
-    move_enemy(&world.plr, &world);
-    move_enemy(&world.plr, &world);
-    move_enemy(&world.plr, &world);
+    for (int plr_speed = check_potion_effect(&world, POTION_EFFECT_FAST_PLAYER) ? 4 : 3; plr_speed >= 0; plr_speed--)
+    {
+      move_enemy(&world.plr, &world);
+    }
 
     change_room_if_at_exit_point(&world, mission);
 
@@ -844,13 +919,22 @@ int game(int mission, int *game_modifiers)
       break;
     }
 
-    enemy_logic(&world);
+    if (world.plr.health > 0 && world.plr.health < 6 && check_potion_effect(&world, POTION_EFFECT_HEALING) && completetime % 25 == 0)
+    {
+      world.plr.health++;
+    }
 
-    // ammukset
+    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_SHIELD_OF_FIRE) && completetime % 15 == 0)
+    {
+      create_cluster_explosion(&world, world.plr.x, world.plr.y, 4, 1, &world.plr);
+    }
+
+    enemy_logic(&world);
 
     if (world.plr.health > 0)
     {
       bullet_logic(&world);
+      potion_logic(&world);
     }
 
     draw_map(&world, 1, 0);
@@ -960,15 +1044,21 @@ int game(int mission, int *game_modifiers)
         if (world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
         {
           ArenaHighscore highscore;
+          memset(&highscore, 0, sizeof(highscore));
           access_arena_highscore(&highscore, 1);
           int arena_idx, mode_idx;
           int highscore_kills = parse_highscore_from_world_state(&world, &highscore, &arena_idx, &mode_idx);
-          rectfill(5, 5, 340, 125, GRAY(60));
-          al_draw_textf(get_font(), WHITE, 10, 10, ALLEGRO_ALIGN_LEFT, "Arena fight over, your kill count: %d", world.kills);
+          int offx = (DISPLAY_W - 340) / 2, offy = (DISPLAY_H - 125) / 2;
+          for (int grayscale = 0; grayscale < 5; grayscale++)
+          {
+            rectfill(offx + grayscale, offy + grayscale, offx + 345 - grayscale, offy + 130 - grayscale, GRAY(255 - grayscale * 40));
+          }
+          rectfill(offx + 5, offy + 5, offx + 340, offy + 125, GRAY(60));
+          al_draw_textf(get_font(), WHITE, offx + 10, offy + 10, ALLEGRO_ALIGN_LEFT, "Arena fight over, your kill count: %d", world.kills);
           if (record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
           {
-            al_draw_textf(get_font(), WHITE, 10, 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
-            al_draw_textf(get_font(), WHITE, 10, 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
+            al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
+            al_draw_textf(get_font(), WHITE, offx + 10, offy + 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
             highscore.kills[arena_idx][mode_idx] = world.kills;
             if (!no_player_damage)
             {
@@ -978,12 +1068,18 @@ int game(int mission, int *game_modifiers)
           }
           else
           {
-            al_draw_textf(get_font(), WHITE, 10, 30, ALLEGRO_ALIGN_LEFT, "Highscore: %d", highscore_kills);
+            al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Highscore: %d", highscore_kills);
           }
-          al_draw_textf(get_font(), WHITE, 10, 100, ALLEGRO_ALIGN_LEFT, "Press ENTER to continue...");
+          al_draw_textf(get_font(), WHITE, offx + 10, offy + 100, ALLEGRO_ALIGN_LEFT, "Press ENTER to continue...");
           al_flip_display();
-          while (!check_key(ALLEGRO_KEY_ENTER))
+          while (!check_key(ALLEGRO_KEY_ENTER) && !check_key(ALLEGRO_KEY_ESCAPE))
+          {
             chunkrest(40);
+          }
+          if (check_key(ALLEGRO_KEY_ESCAPE))
+          {
+            menu(0, &plrautosave, &mission, game_modifiers);
+          }
         }
         break;
       }
