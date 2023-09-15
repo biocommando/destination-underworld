@@ -77,19 +77,24 @@ typedef struct
     int bullet_type;
 } Bullet;
 
-#define TILE_IS_EXIT_LEVEL /*-------*/ 0x01
-#define TILE_IS_FLOOR /*------------*/ 0x02
-#define TILE_IS_BLOCKER /*----------*/ 0x04
-#define TILE_IS_RESTRICTED /*-------*/ 0x08
-#define TILE_IS_CLEAR_RESTRICTION /**/ 0x10
-#define TILE_IS_EXIT_POINT /*-------*/ 0x20
-#define TILE_UNRECOGNIZED /*--------*/ 0x40
-#define TILE_IS_WALL /*-------------*/ 0x80
-#define TILE_IS_BLOOD_STAINED /*----*/ 0x100
+#define TILE_IS_EXIT_LEVEL 0x01
+#define TILE_IS_FLOOR 0x02
+#define TILE_IS_BLOCKER 0x04
+#define TILE_IS_RESTRICTED 0x08
+#define TILE_IS_CLEAR_RESTRICTION 0x10
+#define TILE_IS_EXIT_POINT 0x20
+#define TILE_UNRECOGNIZED 0x40
+#define TILE_IS_WALL 0x80
+#define TILE_IS_BLOOD_STAINED 0x100
+#define TILE_DURABILITY_MASK 0xF000
+#define TILE_DURABILITY_OFFSET 12
+#define GET_DURABILITY(flags) (((flags)&TILE_DURABILITY_MASK) >> TILE_DURABILITY_OFFSET)
+#define SET_DURABILITY(flags, value) (((flags) & ~TILE_DURABILITY_MASK) | (((value) << TILE_DURABILITY_OFFSET) & TILE_DURABILITY_MASK))
 
 #define TILE_SYM_FLOOR 46
 #define TILE_SYM_WALL1 120
 #define TILE_SYM_WALL2 113
+#define TILE_SYM_BREAKABLE_WALL 100
 #define TILE_SYM_LAVA 122
 #define TILE_SYM_EXIT_LEVEL 60
 #define TILE_SYM_EXIT_POINT(x) (1000 + (x))

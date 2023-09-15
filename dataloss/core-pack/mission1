@@ -120,7 +120,6 @@ X(duedit_compatible)
 120 5 7 1
 120 6 7 1
 120 7 7 1
-120 8 7 1
 120 9 7 1
 46 10 7 1
 46 11 7 1
@@ -969,6 +968,7 @@ X(duedit_compatible)
 120 13 11 5
 120 14 11 5
 120 15 11 5
+100 8 7 1
 #conditions
 *?game_modifiers = 16 COND_1
 *>+SKIP_COND_1

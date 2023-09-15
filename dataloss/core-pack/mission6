@@ -607,13 +607,13 @@ X(duedit_compatible)
 *?level_read = 1 +end
 *@metadata
 *=name"The Temple of Gargoroth"
-*=story1"You have slain the worshippers of the Great Evil Beast
-*=story2"Gargoroth. Before they died you could hear them mumble
-*=story3"something about His Second Coming and the destruction of
-*=story4"our world as we know it. Does that have something to do
-*=story5"with the current storyline? I don't know, probably not.
-*=story6"But no matter who they worship, they were on your way. And
-*=story7"the only way to deal with that is total annihilation.
+*=story1"You have slain the worshippers of the Great Evil Beast"
+*=story2"Gargoroth. Before they died you could hear them mumble"
+*=story3"something about His Second Coming and the destruction of"
+*=story4"our world as we know it. Does that have something to do"
+*=story5"with the current storyline? I don't know, probably not."
+*=story6"But no matter who they worship, they were on your way. And"
+*=story7"the only way to deal with that is total annihilation."
 *=par16"65.425"
 *=par0"19.825"
 *=par1"31.475"

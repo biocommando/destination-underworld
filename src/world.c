@@ -112,7 +112,7 @@ Tile create_tile(int symbol)
         t.data = symbol - sym_restrcitionClearsStart;
     }
     if ((symbol == TILE_SYM_WALL1) || (symbol == TILE_SYM_LAVA) || (symbol == TILE_SYM_WALL2) || (symbol == sym_legacy_restriction) ||
-        (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions))
+        (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions) || symbol == TILE_SYM_BREAKABLE_WALL)
     {
         t.flags |= TILE_IS_BLOCKER;
         t.flags &= ~TILE_UNRECOGNIZED;
@@ -125,6 +125,11 @@ Tile create_tile(int symbol)
     {
         t.flags |= TILE_IS_RESTRICTED;
         t.data = symbol - sym_restrcitions_start;
+    }
+    if (symbol == TILE_SYM_BREAKABLE_WALL)
+    {
+        t.data = WALL_NORMAL;
+        t.flags |= TILE_DURABILITY_MASK | TILE_IS_WALL;
     }
     if (symbol == TILE_SYM_WALL1)
     {

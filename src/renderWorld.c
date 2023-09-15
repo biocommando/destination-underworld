@@ -129,6 +129,10 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                             rectfill(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 9, y * TILESIZE + 9, GRAY(90));
                             rectfill(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 4, y * TILESIZE + 4, GRAY(80));
                         }
+                        if (ns_check_flags_at(world, x, y, TILE_DURABILITY_MASK))
+                        {
+                            masked_blit(world->spr, 80, 145, x * TILESIZE - 15, y * TILESIZE - 15, 30, 30);
+                        }
                     }
                 }
             }

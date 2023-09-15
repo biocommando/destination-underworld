@@ -101,14 +101,35 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world)
     }
 }
 
+int tile_check_bullet_hit_wall(World *world, int x, int y)
+{
+    Tile *tile = &world->map[x / TILESIZE][y / TILESIZE];
+    int *flags = &tile->flags;
+    if (*flags & TILE_IS_WALL)
+    {
+        if (*flags & TILE_DURABILITY_MASK)
+        {
+            int durability = GET_DURABILITY(*flags);
+            durability--;
+            *flags = SET_DURABILITY(*flags, durability);
+            if (durability == 0)
+            {
+                *tile = create_tile(TILE_SYM_FLOOR);
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
 void move_bullet(Bullet *bb, World *world)
 {
     if (bb->owner_id == NO_OWNER)
         return;
     // Enemy restricts are blockers but not walls, also allows adding e.g. shoot through walls
-    if (!check_flags_at(world, (int)bb->x + (int)bb->dx, (int)bb->y, TILE_IS_WALL) &&
-        !check_flags_at(world, (int)bb->x, (int)bb->y + (int)bb->dy, TILE_IS_WALL) &&
-        !check_flags_at(world, (int)bb->x + (int)bb->dx, (int)bb->y + (int)bb->dy, TILE_IS_WALL) &&
+    if (!tile_check_bullet_hit_wall(world, bb->x + (int)bb->dx, (int)bb->y) &&
+        !tile_check_bullet_hit_wall(world, bb->x, bb->y + bb->dy) &&
+        !tile_check_bullet_hit_wall(world, bb->x + (int)bb->dx, (int)bb->y + (int)bb->dy) &&
         bb->x < 480 && bb->x > 0 && bb->y < 360 && bb->y > 0)
     {
         bb->x += bb->dx;
