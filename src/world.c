@@ -89,72 +89,85 @@ Tile create_tile(int symbol)
     int sym_exit_points_start = TILE_SYM_EXIT_POINT(0);
 
     Tile t;
-    t.flags = TILE_UNRECOGNIZED;
-    t.data = 0;
+    memset(&t, 0, sizeof(t));
+    int tile_properties_set = 0;
     if (symbol == TILE_SYM_EXIT_LEVEL)
     {
-        t.flags |= TILE_IS_EXIT_LEVEL;
-        t.flags &= ~TILE_UNRECOGNIZED;
+        t.is_exit_level = 1;
+        t.valid = 1;
+        tile_properties_set = 1;
     }
     if ((symbol == TILE_SYM_FLOOR) || (symbol == sym_legacy_restriction) || (symbol == sym_legacy_restriction_clear) ||
         (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + 2 * max_restrictions))
     {
-        t.flags |= TILE_IS_FLOOR;
-        t.flags &= ~TILE_UNRECOGNIZED;
+        t.is_floor = 1;
+        t.valid = 1;
+        tile_properties_set = 1;
     }
     if (symbol == sym_legacy_restriction_clear) // legacy support
     {
-        t.flags |= TILE_IS_CLEAR_RESTRICTION;
+        t.is_clear_restriction = 1;
+        tile_properties_set = 1;
     }
     if (symbol >= sym_restrcitionClearsStart && symbol < sym_restrcitionClearsStart + max_restrictions)
     {
-        t.flags |= TILE_IS_CLEAR_RESTRICTION;
+        t.is_clear_restriction = 1;
         t.data = symbol - sym_restrcitionClearsStart;
+        tile_properties_set = 1;
     }
     if ((symbol == TILE_SYM_WALL1) || (symbol == TILE_SYM_LAVA) || (symbol == TILE_SYM_WALL2) || (symbol == sym_legacy_restriction) ||
         (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions) || symbol == TILE_SYM_BREAKABLE_WALL)
     {
-        t.flags |= TILE_IS_BLOCKER;
-        t.flags &= ~TILE_UNRECOGNIZED;
+        t.is_blocker = 1;
+        t.valid = 1;
+        tile_properties_set = 1;
     }
     if (symbol == sym_legacy_restriction) // legacy support
     {
-        t.flags |= TILE_IS_RESTRICTED;
+        t.is_restricted = 1;
+        tile_properties_set = 1;
     }
     if (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions)
     {
-        t.flags |= TILE_IS_RESTRICTED;
+        t.is_restricted = 1;
         t.data = symbol - sym_restrcitions_start;
+        tile_properties_set = 1;
     }
     if (symbol == TILE_SYM_BREAKABLE_WALL)
     {
         t.data = WALL_NORMAL;
-        t.flags |= TILE_DURABILITY_MASK | TILE_IS_WALL;
+        t.durability = 15;
+        t.is_wall = 1;
+        tile_properties_set = 1;
     }
     if (symbol == TILE_SYM_WALL1)
     {
         t.data = WALL_NORMAL;
-        t.flags |= TILE_IS_WALL;
+        t.is_wall = 1;
+        tile_properties_set = 1;
     }
     if (symbol == TILE_SYM_LAVA)
     {
         t.data = WALL_LAVA;
-        t.flags |= TILE_IS_WALL;
+        t.is_wall = 1;
+        tile_properties_set = 1;
     }
     if (symbol == TILE_SYM_WALL2)
     {
         t.data = WALL_PENTAGRAM;
-        t.flags |= TILE_IS_WALL;
+        t.is_wall = 1;
+        tile_properties_set = 1;
     }
     if (symbol > sym_exit_points_start)
     {
-        t.flags |= TILE_IS_EXIT_POINT;
-        t.flags &= ~TILE_UNRECOGNIZED;
+        t.is_exit_point = 1;
+        t.valid = 1;
         t.data = symbol - sym_exit_points_start;
+        tile_properties_set = 1;
     }
-    if (!t.flags)
+    if (!tile_properties_set)
     {
-        t.flags = TILE_IS_FLOOR;
+        t.is_floor = 1;
     }
     return t;
 }
@@ -169,20 +182,10 @@ inline Tile *ns_get_tile_at(World *world, int x, int y)
     return &world->map[x][y];
 }
 
-int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
-{
-    return (world->map[x][y].flags & flags_to_check) != 0;
-}
-
 int ns_get_wall_type_at(World *world, int x, int y)
 {
     Tile *t = &(world->map[x][y]);
-    return ((t->flags & TILE_IS_WALL) != 0) ? t->data : 0;
-}
-
-int check_flags_at(World *world, int x, int y, int flags_to_check)
-{
-    return ((world->map[x / TILESIZE][y / TILESIZE].flags & flags_to_check) != 0);
+    return t->is_wall ? t->data : 0;
 }
 
 int get_wall_type_at(World *world, int x, int y)
@@ -212,7 +215,8 @@ void cleanup_bodyparts(World *world)
     static int x = 0;
     static int y = 0;
 
-    if (ns_check_flags_at(world, x, y, TILE_IS_FLOOR | TILE_IS_EXIT_POINT | TILE_IS_EXIT_LEVEL))
+    Tile *tile = ns_get_tile_at(world, x, y);
+    if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
     {
         int bp_count = 0;
         for (int i = 0; i < ENEMYCOUNT; i++)
@@ -242,11 +246,6 @@ void cleanup_bodyparts(World *world)
             y = 0;
         }
     }
-}
-
-void set_tile_flag(World *world, int x, int y, int flags)
-{
-    world->map[x / TILESIZE][y / TILESIZE].flags |= flags;
 }
 
 void init_player(World *world, Enemy *plrautosave)

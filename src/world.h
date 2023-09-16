@@ -77,20 +77,6 @@ typedef struct
     int bullet_type;
 } Bullet;
 
-#define TILE_IS_EXIT_LEVEL 0x01
-#define TILE_IS_FLOOR 0x02
-#define TILE_IS_BLOCKER 0x04
-#define TILE_IS_RESTRICTED 0x08
-#define TILE_IS_CLEAR_RESTRICTION 0x10
-#define TILE_IS_EXIT_POINT 0x20
-#define TILE_UNRECOGNIZED 0x40
-#define TILE_IS_WALL 0x80
-#define TILE_IS_BLOOD_STAINED 0x100
-#define TILE_DURABILITY_MASK 0xF000
-#define TILE_DURABILITY_OFFSET 12
-#define GET_DURABILITY(flags) (((flags)&TILE_DURABILITY_MASK) >> TILE_DURABILITY_OFFSET)
-#define SET_DURABILITY(flags, value) (((flags) & ~TILE_DURABILITY_MASK) | (((value) << TILE_DURABILITY_OFFSET) & TILE_DURABILITY_MASK))
-
 #define TILE_SYM_FLOOR 46
 #define TILE_SYM_WALL1 120
 #define TILE_SYM_WALL2 113
@@ -115,8 +101,18 @@ typedef struct
 
 typedef struct
 {
-    int flags;
     int data;
+    // Flags
+    int is_exit_level;
+    int is_floor;
+    int is_blocker;
+    int is_restricted;
+    int is_clear_restriction;
+    int is_exit_point;
+    int is_wall;
+    int is_blood_stained;
+    int durability;
+    int valid;
 } Tile;
 
 Tile create_tile(int symbol);
@@ -243,13 +239,10 @@ void init_world(World *world);
 void spawn_body_parts(Enemy *enm);
 
 Tile *get_tile_at(World *world, int x, int y);
-int check_flags_at(World *world, int x, int y, int flags_to_check);
 int get_wall_type_at(World *world, int x, int y);
 // no scale versions
 Tile *ns_get_tile_at(World *world, int x, int y);
-int ns_check_flags_at(World *world, int x, int y, int flags_to_check);
 int ns_get_wall_type_at(World *world, int x, int y);
-void set_tile_flag(World *world, int x, int y, int flags);
 void init_player(World *world, Enemy *plrautosave);
 void cleanup_bodyparts(World *world);
 

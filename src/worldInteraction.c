@@ -12,7 +12,7 @@ extern GameSettings game_settings;
 
 int is_passable(World *world, int x, int y)
 {
-    return !check_flags_at(world, x, y, TILE_IS_BLOCKER);
+    return !get_tile_at(world, x, y)->is_blocker;
 }
 
 void clear_restricted_tiles(World *world, int id)
@@ -21,10 +21,13 @@ void clear_restricted_tiles(World *world, int id)
     {
         for (int y = 0; y < MAPMAX_Y; y++)
         {
-            if (ns_check_flags_at(world, x, y, TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION) && ns_get_tile_at(world, x, y)->data == id)
+            Tile *tile = ns_get_tile_at(world, x, y);
+            if ((tile->is_restricted || tile->is_clear_restriction) && tile->data == id)
             {
-                world->map[x][y].flags &= ~(TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION | TILE_IS_BLOCKER);
-                world->map[x][y].flags |= TILE_IS_FLOOR;
+                tile->is_restricted = 0;
+                tile->is_clear_restriction = 0;
+                tile->is_blocker = 0;
+                tile->is_floor = 1;
             }
         }
     }
@@ -72,15 +75,16 @@ void move_enemy(Enemy *enm, World *world)
     }
 
     if ((enm->x >= SCREEN_W || enm->x < 0 || enm->y >= SCREEN_H || enm->y < 0) ||
-        (enm != &world->plr && (check_flags_at(world, enm->x, enm->y, TILE_IS_EXIT_POINT))))
+        (enm != &world->plr && (get_tile_at(world, enm->x, enm->y)->is_exit_point)))
     {
         enm->x = ex;
         enm->y = ey;
     }
 
-    if (enm == &world->plr && (check_flags_at(world, enm->x, enm->y, TILE_IS_CLEAR_RESTRICTION)))
+    Tile *t = get_tile_at(world, enm->x, enm->y);
+    if (enm == &world->plr && t->is_clear_restriction)
     {
-        clear_restricted_tiles(world, get_tile_at(world, enm->x, enm->y)->data);
+        clear_restricted_tiles(world, t->data);
     }
 }
 
@@ -103,16 +107,13 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world)
 
 int tile_check_bullet_hit_wall(World *world, int x, int y)
 {
-    Tile *tile = &world->map[x / TILESIZE][y / TILESIZE];
-    int *flags = &tile->flags;
-    if (*flags & TILE_IS_WALL)
+    Tile *tile = get_tile_at(world, x, y);
+    if (tile->is_wall)
     {
-        if (*flags & TILE_DURABILITY_MASK)
+        if (tile->durability > 0)
         {
-            int durability = GET_DURABILITY(*flags);
-            durability--;
-            *flags = SET_DURABILITY(*flags, durability);
-            if (durability == 0)
+            tile->durability--;
+            if (tile->durability == 0)
             {
                 *tile = create_tile(TILE_SYM_FLOOR);
             }
@@ -411,8 +412,7 @@ void clear_map(World *world)
     {
         for (int y = 0; y < MAPMAX_Y; y++)
         {
-            world->map[x][y].flags = 0;
-            world->map[x][y].data = 0;
+            memset(&world->map[x][y], 0, sizeof(Tile));
         }
     }
 }
@@ -504,12 +504,34 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world)
     return p;
 }
 
+void combine_tile_properties(Tile *dst, Tile *other)
+{
+    if (dst->is_exit_level == 0)
+        dst->is_exit_level = other->is_exit_level;
+    if (dst->is_floor == 0)
+        dst->is_floor = other->is_floor;
+    if (dst->is_blocker == 0)
+        dst->is_blocker = other->is_blocker;
+    if (dst->is_restricted == 0)
+        dst->is_restricted = other->is_restricted;
+    if (dst->is_clear_restriction == 0)
+        dst->is_clear_restriction = other->is_clear_restriction;
+    if (dst->is_exit_point == 0)
+        dst->is_exit_point = other->is_exit_point;
+    if (dst->is_wall == 0)
+        dst->is_wall = other->is_wall;
+    if (dst->is_blood_stained == 0)
+        dst->is_blood_stained = other->is_blood_stained;
+    if (dst->durability == 0)
+        dst->durability = other->durability;
+}
+
 void place_lev_object(World *world, int x, int y, int id, int room_from, int room_to)
 {
     Tile tile = create_tile(id);
-    if (!(tile.flags & TILE_UNRECOGNIZED))
+    if (tile.valid)
     {
-        if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_from)
+        if (tile.is_exit_point && tile.data == room_from)
         {
             world->plr.x = x * TILESIZE + 15;
             world->plr.y = y * TILESIZE + 15;
@@ -522,11 +544,11 @@ void place_lev_object(World *world, int x, int y, int id, int room_from, int roo
             if (world->plr.y >= 360)
                 world->plr.y = 360 - 1;
         }
-        if (tile.flags & TILE_IS_EXIT_POINT && tile.data == room_to) // eka huone
+        if (tile.is_exit_point && tile.data == room_to) // eka huone
         {
             tile = create_tile(TILE_SYM_FLOOR);
         }
-        world->map[x][y].flags |= tile.flags;
+        combine_tile_properties(&world->map[x][y], &tile);
         if (tile.data != 0)
         {
             world->map[x][y].data = tile.data;
@@ -739,7 +761,7 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
 
 void change_room_if_at_exit_point(World *world, int mission)
 {
-    if (check_flags_at(world, world->plr.x, world->plr.y, TILE_IS_EXIT_POINT) && world->plr.health > 0)
+    if (get_tile_at(world, world->plr.x, world->plr.y)->is_exit_point && world->plr.health > 0)
     {
         int to_room = get_tile_at(world, world->plr.x, world->plr.y)->data;
         if (world->plr.roomid != to_room)
@@ -755,7 +777,7 @@ void change_room_if_at_exit_point(World *world, int mission)
                 if (world->enm[i].roomid == world->current_room &&
                     world->enm[i].id == NO_OWNER && world->enm[i].former_id != NO_OWNER)
                 {
-                    set_tile_flag(world, world->enm[i].x, world->enm[i].y, TILE_IS_BLOOD_STAINED);
+                    get_tile_at(world, world->enm[i].x, world->enm[i].y)->is_blood_stained = 1;
                 }
             }
             clear_visual_fx(world);

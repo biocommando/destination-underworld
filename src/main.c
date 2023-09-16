@@ -415,7 +415,7 @@ void bullet_logic(World *world)
         {
           bullet->x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
           bullet->y = ((int)(bullet_orig_y / TILESIZE)) * TILESIZE + HALFTILESIZE;
-          while (check_flags_at(world, (int)bullet->x, (int)bullet->y, TILE_IS_WALL))
+          while (get_tile_at(world, (int)bullet->x, (int)bullet->y)->is_wall)
           {
             bullet->x -= 5 * bullet->dx;
             bullet->y -= 5 * bullet->dy;
@@ -495,7 +495,7 @@ void bullet_logic(World *world)
                   world->potion_duration = 0;
               }
 
-              set_tile_flag(world, enm->x, enm->y, TILE_IS_BLOOD_STAINED);
+              get_tile_at(world, enm->x, enm->y)->is_blood_stained = 1;
               world->plr.gold += enm->gold;
 
               world->kills++;
@@ -897,7 +897,7 @@ int game(int mission, int *game_modifiers)
 
     change_room_if_at_exit_point(&world, mission);
 
-    if (get_tile_at(&world, world.plr.x, world.plr.y)->flags & TILE_IS_EXIT_LEVEL && world.plr.health > 0)
+    if (get_tile_at(&world, world.plr.x, world.plr.y)->is_exit_level && world.plr.health > 0)
     {
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
