@@ -1,5 +1,5 @@
-#ifndef SAMPLEREGISTER_H
-#define SAMPLEREGISTER_H
+#pragma once
+
 #include "allegro42_compat.h"
 
 #define MAX_NUM_SAMPLES 64
@@ -23,5 +23,3 @@ void reset_sample_triggers();
 void destroy_registered_samples();
 
 void stop_all_samples();
-
-#endif

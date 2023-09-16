@@ -1,5 +1,5 @@
-#ifndef DU_MENU_H
-#define DU_MENU_H
+#pragma once
+
 #include "world.h"
 
 #define MENUOPT_NEW_GAME 0
@@ -9,5 +9,3 @@
 #define MENUOPT_RESUME 4
 
 int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers);
-
-#endif

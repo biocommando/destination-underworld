@@ -1,5 +1,5 @@
-#ifndef WORLD_H
-#define WORLD_H
+#pragma once
+
 #include "allegro42_compat.h"
 #include "duconstants.h"
 #include "bossfightconf.h"
@@ -246,5 +246,3 @@ Tile *ns_get_tile_at(World *world, int x, int y);
 int ns_get_wall_type_at(World *world, int x, int y);
 void init_player(World *world, Enemy *plrautosave);
 void cleanup_bodyparts(World *world);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef DUCONSTANTS_H
-#define DUCONSTANTS_H
+#pragma once
 
 #define NO_OWNER 0
 #define PLAYER_ID 9999
@@ -60,5 +59,3 @@
 
 #define DISPLAY_W (SCREEN_W * 3)
 #define DISPLAY_H (SCREEN_H * 3)
-
-#endif
