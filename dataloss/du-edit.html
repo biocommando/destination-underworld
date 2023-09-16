@@ -2,6 +2,7 @@
 
 <head>
     <style>
+        body { font-family: sans-serif; }
         .cell {
             width: 80px;
             height: 80px;
@@ -98,10 +99,14 @@
     <div id="container"></div>
     metadata
     <br />
-    <textarea id="metadata" rows="5" cols="100"></textarea>
+    <textarea id="metadata" rows="5" cols="100" spellcheck="false"></textarea>
     <button onclick="storeMetadata()">Store metadata</button>
     <br />
-    <pre>
+    script <span id="boss-script-file"></span>
+    <br />
+    <textarea id="boss-script" rows="5" cols="100" spellcheck="false"></textarea>
+    <button onclick="saveAndCompileScript()">Save and compile</button>
+<!--    <pre>
 Metadata reference:
 
 <b>Bossfight:</b>
@@ -130,8 +135,9 @@ wall_color [red] [green] [blue]
 Note: colors are multipliers that should be between 0 and 1
 
 <b>Marking final level:</b>
-no_more_levels
+no_more_levels  -->
     </pre>
+    <br />
     <button onclick="toggleCoordinates()">Toggle coordinates</button>
     <br />
     <div id="standalone-edits">
@@ -233,6 +239,27 @@ no_more_levels
         const idSorter = (a, b) => a.id - b.id;
         const reverseIdSorter = (a, b) => b.id - a.id;
 
+        const getBossScriptFileName = () => {
+            const scriptline = map.metadata.find(x => x.split('=')[0].trim() === 'script' + room)
+            if (scriptline)
+                return scriptline.split('=')[1].split('"')[1].replace(/^.*\\(.*)\.ini/, (_, c) => c) + '.boss'
+        }
+
+        const fetchBossScript = () => {
+            const file = getBossScriptFileName()
+            if (file) {
+                document.getElementById('boss-script-file').innerText = file
+                fetch('/' + file)
+                    .then(x => x.text())
+                    .then(x => document.getElementById('boss-script').value = x)
+                    .catch(x => document.getElementById('boss-script').value = `// file ${file} not found!`)
+            } else {
+                document.getElementById('boss-script').value = '// script not defined for this room\n'
+                    + `// To create a new script, add script${room} = "mission-pack\\<new_script>.ini" line to metadata`
+                document.getElementById('boss-script-file').innerText = ''
+            }
+        }
+
         const renderMap = () => {
             const xhtml = Array(map.height).fill().map(() => Array(map.width).fill().map(() => []));
             map.objects.filter(o => o.room === room).sort(idSorter).forEach(o => xhtml[o.y][o.x].push(o.id));
@@ -260,6 +287,7 @@ no_more_levels
             });
             document.getElementById('container').innerHTML = html;
             document.getElementById('metadata').value = map.metadata.join('\n');
+            fetchBossScript()
             document.getElementById('numEnemies').innerText = map.objects.filter(o => o.id >= 200 && o.id <= 210).length;
         };
 
@@ -325,6 +353,7 @@ no_more_levels
 
         const storeMetadata = () => {
             map.metadata = document.getElementById('metadata').value.split('\n');
+            fetchBossScript()
         };
 
         const changeRoom = toRoom => {
@@ -338,6 +367,16 @@ no_more_levels
         const toggleCoordinates = () => {
             showCoords = !showCoords
             renderMap()
+        }
+
+        const saveAndCompileScript = () => {
+            fetch('/api/save/script', {
+                method: 'post',
+                body: JSON.stringify({
+                    fileName: getBossScriptFileName(),
+                    contents: document.getElementById('boss-script').value
+                })
+            }).then(x => alert('done!'))
         }
 
         document.getElementById('paint').innerHTML =

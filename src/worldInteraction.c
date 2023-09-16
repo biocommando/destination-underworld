@@ -557,13 +557,19 @@ void place_lev_object(World *world, int x, int y, int id, int room_from, int roo
             world->map[x][y].data = tile.data;
         }
     }
-    else if (id >= 200 && id <= 205 && !world->rooms_visited[room_to - 1])
+    else if (id >= 200 && id <= 205)
     {
-        spawn_enemy(x, y, id - 200, room_to, world);
+        if (!world->rooms_visited[room_to - 1])
+        {
+            spawn_enemy(x, y, id - 200, room_to, world);
+        }
     }
-    else if (id >= 300 && id <= 305 && !world->rooms_visited[room_to - 1])
+    else if (id >= 300 && id <= 305)
     {
-        spawn_potion(x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, id - 300, room_to, world);
+        if (!world->rooms_visited[room_to - 1])
+        {
+            spawn_potion(x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, id - 300, room_to, world);
+        }
     }
     else
     {

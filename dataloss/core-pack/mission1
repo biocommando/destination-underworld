@@ -1002,4 +1002,5 @@ X(duedit_compatible)
 *=par6"25.175"
 *=par8"24.4"
 *=script1"core-pack\test.ini"
+*=mute_bosstalk"1"
 *@+end

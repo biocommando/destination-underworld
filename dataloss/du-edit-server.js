@@ -1,5 +1,6 @@
 const http = require('http')
 const fs = require('fs')
+const {bossToIni} = require('./boss-to-ini-lib')
 
 const port = 3000
 
@@ -24,7 +25,13 @@ http.createServer((req,res) => {
                 let body = ''
                 req.on('data', data => body += data)
                 req.on('end', () => {
-                    fs.writeFileSync(missionPack + '/mission' + param, body)
+                    if (param === 'script') {
+                        const json = JSON.parse(body)
+                        fs.writeFileSync(json.fileName, json.contents)
+                        bossToIni(json.fileName)
+                    } else {
+                        fs.writeFileSync(missionPack + '/mission' + param, body)
+                    }
                     res.end('ok')
                 })
                 return
@@ -39,7 +46,7 @@ http.createServer((req,res) => {
         let mimeType = mimeTypeMap[extension]
         if (!mimeType) mimeType = 'text/plain'
         res.writeHead(200, {'Content-Type': mimeType})
-        res.end(fs.readFileSync(url.substr(1)))
+        res.end(fs.readFileSync(url.substring(1)))
     } catch(e) {
         console.log('error', e)
         res.end()
