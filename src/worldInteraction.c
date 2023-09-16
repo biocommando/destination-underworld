@@ -562,6 +562,10 @@ void place_lev_object(World *world, int x, int y, int id, int room_from, int roo
     {
         spawn_potion(x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, id - 300, room_to, world);
     }
+    else
+    {
+        LOG("ERROR: map object id '%d' not recognized\n", id);
+    }
 }
 
 void level_read_new_format(World *world, int room_to, FILE *f)

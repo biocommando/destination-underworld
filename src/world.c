@@ -80,8 +80,6 @@ void init_world(World *world)
 
 Tile create_tile(int symbol)
 {
-    const int sym_legacy_restriction = 44;
-    const int sym_legacy_restriction_clear = 59;
     const int sym_restrcitions_start = 500;
     const int sym_restrcitionClearsStart = 510;
     const int max_restrictions = 10;
@@ -97,16 +95,11 @@ Tile create_tile(int symbol)
         t.valid = 1;
         tile_properties_set = 1;
     }
-    if ((symbol == TILE_SYM_FLOOR) || (symbol == sym_legacy_restriction) || (symbol == sym_legacy_restriction_clear) ||
+    if ((symbol == TILE_SYM_FLOOR) ||
         (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + 2 * max_restrictions))
     {
         t.is_floor = 1;
         t.valid = 1;
-        tile_properties_set = 1;
-    }
-    if (symbol == sym_legacy_restriction_clear) // legacy support
-    {
-        t.is_clear_restriction = 1;
         tile_properties_set = 1;
     }
     if (symbol >= sym_restrcitionClearsStart && symbol < sym_restrcitionClearsStart + max_restrictions)
@@ -115,16 +108,11 @@ Tile create_tile(int symbol)
         t.data = symbol - sym_restrcitionClearsStart;
         tile_properties_set = 1;
     }
-    if ((symbol == TILE_SYM_WALL1) || (symbol == TILE_SYM_LAVA) || (symbol == TILE_SYM_WALL2) || (symbol == sym_legacy_restriction) ||
+    if ((symbol == TILE_SYM_WALL1) || (symbol == TILE_SYM_LAVA) || (symbol == TILE_SYM_WALL2) ||
         (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions) || symbol == TILE_SYM_BREAKABLE_WALL)
     {
         t.is_blocker = 1;
         t.valid = 1;
-        tile_properties_set = 1;
-    }
-    if (symbol == sym_legacy_restriction) // legacy support
-    {
-        t.is_restricted = 1;
         tile_properties_set = 1;
     }
     if (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions)
