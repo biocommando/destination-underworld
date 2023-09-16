@@ -98,8 +98,9 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world)
             if (sqr_dist < spread)
             {
                 int shade_diff = 4 - sqrt(sqr_dist);
-                world->floor_shade_map[world->current_room - 1][xx][yy] += imax(shade_diff, 1);
-                climit(&world->floor_shade_map[world->current_room - 1][xx][yy], 9);
+                char *tile_shade = &world->floor_shade_map[world->current_room - 1][xx][yy];
+                *tile_shade += shade_diff > 1 ? shade_diff : 1;
+                *tile_shade = *tile_shade > 9 ? 9 : *tile_shade;
             }
         }
     }
@@ -297,7 +298,6 @@ void bounce_body_parts(int x, int y, World *world)
                 distance = sqrt(distance) + 1; // +1 to ensure non-zero divider
                 bp->velocity = 250 / (distance + rand() % 50);
 
-                // ilimit(&bp->velocity, 30);
                 bp->velocity = bp->velocity > 30 ? 30 : bp->velocity;
 
                 bp->dx = (bp->x - x) / distance;

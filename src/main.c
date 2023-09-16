@@ -460,7 +460,7 @@ void bullet_logic(World *world)
           create_explosion(world->plr.x - 20, world->plr.y + 20, world);
           create_explosion(world->plr.x + 20, world->plr.y - 20, world);
 
-          chunkrest(1); // The death sample won't play else
+          wait_delay_ms(1); // The death sample won't play else
           trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world->plr.x - 240) / 8, 900 + rand() % 200);
           world->plr.reload = 100;
           break;
@@ -536,7 +536,7 @@ void bullet_logic(World *world)
                   int col = xx % 4;
                   col = col == 0 ? 255 : (col == 2 ? 64 : 128);
                   rectfill(0, 0, SCREEN_W, SCREEN_H, GRAY(col));
-                  chunkrest(25);
+                  wait_delay_ms(25);
                 }
                 create_cluster_explosion(world, enm->x, enm->y, 48, 1, &world->plr);
               }
@@ -813,11 +813,7 @@ int game(int mission, int *game_modifiers)
 
           display_level_info(&world, mission, game_settings.mission_count, completetime);
 
-          while (!check_key(ALLEGRO_KEY_ENTER))
-          {
-            chunkrest(15);
-          }
-          chunkrest(250);
+          wait_key_press(ALLEGRO_KEY_ENTER);
           break;
         }
 
@@ -915,11 +911,7 @@ int game(int mission, int *game_modifiers)
 
       display_level_info(&world, mission, game_settings.mission_count, completetime);
 
-      while (!check_key(ALLEGRO_KEY_ENTER))
-      {
-        chunkrest(15);
-      }
-      chunkrest(250);
+      wait_key_press(ALLEGRO_KEY_ENTER);
 
       if (world.final_level)
       {
@@ -1049,7 +1041,7 @@ int game(int mission, int *game_modifiers)
       al_scale_transform(&transform, 3 * scale, 3 * scale);
       al_use_transform(&transform);
       al_flip_display();
-      chunkrest(40);
+      wait_delay_ms(40);
       if (world.plr.reload <= 0)
       {
         al_identity_transform(&transform);
@@ -1085,11 +1077,9 @@ int game(int mission, int *game_modifiers)
           }
           al_draw_textf(get_font(), WHITE, offx + 10, offy + 100, ALLEGRO_ALIGN_LEFT, "Press ENTER to continue...");
           al_flip_display();
-          while (!check_key(ALLEGRO_KEY_ENTER) && !check_key(ALLEGRO_KEY_ESCAPE))
-          {
-            chunkrest(40);
-          }
-          if (check_key(ALLEGRO_KEY_ESCAPE))
+          int wait_keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_ESCAPE};
+          int key = wait_key_presses(wait_keys, 2);
+          if (key == ALLEGRO_KEY_ESCAPE)
           {
             menu(0, &plrautosave, &mission, game_modifiers);
           }

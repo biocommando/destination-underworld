@@ -19,6 +19,7 @@ int init_allegro();
 void wait_delay(int v);
 void wait_delay_ms(int ms);
 void wait_key_press(int key);
+int wait_key_presses(int *keys, int num_keys);
 int check_key(int key);
 
 ALLEGRO_FONT *get_font();

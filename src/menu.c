@@ -142,14 +142,11 @@ void show_help(ALLEGRO_BITMAP *sprites)
             {
                 //stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, SCREEN_W, SCREEN_H); TODO
                 al_flip_display();
-                chunkrest(300);
-                while (!check_key(ALLEGRO_KEY_SPACE) && !check_key(ALLEGRO_KEY_ESCAPE))
-                {
-                    chunkrest(50);
-                }
+                int keys[] = {ALLEGRO_KEY_SPACE, ALLEGRO_KEY_ESCAPE};
+                int key = wait_key_presses(keys, 2);
                 al_clear_to_color(BLACK);
                 line = 0;
-                if (!strcmp(cmd, "#doc-end") || check_key(ALLEGRO_KEY_ESCAPE))
+                if (!strcmp(cmd, "#doc-end") || key == ALLEGRO_KEY_ESCAPE)
                     break;
             }
         }
@@ -209,7 +206,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     {
         al_clear_to_color(BLACK);
         al_draw_textf(get_font(), BLACK, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
-        while (!check_key(ALLEGRO_KEY_ENTER)) chunkrest(10);
+        wait_key_press(ALLEGRO_KEY_ENTER);
     }
     if (ingame)
     {
@@ -303,7 +300,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         //stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, SCREEN_W, SCREEN_H);
         /*if (show_help)
             blit(help_pic, screen, 0, 0, SCREEN_W - help_pic->w, SCREEN_H - help_pic->h, help_pic->w, help_pic->h);*/
-        chunkrest(50);
+        wait_delay_ms(50);
         al_draw_filled_circle(30, c * 40 + 65, abs(flicker / 2), BLACK);
         if (wait == 0)
         {
@@ -355,25 +352,25 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 menu_play_sample(s_c, &id);
                 if ((!ingame || (*game_modifiers & GAMEMODIFIER_ARENA_FIGHT)) && c == MENUOPT_SAVE)
                     c = MENUOPT_EXIT;
-                chunkrest(100);
+                wait_delay_ms(100);
                 wait = 3;
             }
             if (check_key(ALLEGRO_KEY_M))
             {
                 game_settings.music_on = !game_settings.music_on;
-                chunkrest(100);
+                wait_delay_ms(100);
                 wait = 3;
             }
             if (check_key(ALLEGRO_KEY_N))
             {
                 switch_track(get_current_track() + 1);
-                chunkrest(100);
+                wait_delay_ms(100);
                 wait = 3;
             }
             if (check_key(ALLEGRO_KEY_P))
             {
                 switch_track(get_current_track() - 1);
-                chunkrest(100);
+                wait_delay_ms(100);
                 wait = 3;
             }
             if (check_key(ALLEGRO_KEY_F1))
@@ -381,12 +378,12 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 show_help(sprites);
             }
         }
-        wait = imax(wait - 1, 0);
+        wait = wait > 0 ? wait : 0;
     }
     if (record_mode != RECORD_MODE_PLAYBACK)
     {
         menu_play_sample(s_s, &id);
-        chunkrest(500);
+        wait_delay_ms(500);
     }
     al_destroy_bitmap(sprites);
     al_destroy_bitmap(menubg);

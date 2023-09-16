@@ -1,6 +1,7 @@
 #include "allegro42_compat.h"
 #include "allegro5/allegro_acodec.h"
 #include "duConstants.h"
+#include "duMp3.h"
 #include <stdio.h>
 
 char keybuffer[ALLEGRO_KEY_MAX];
@@ -24,6 +25,9 @@ int check_key(int key)
 
 int wait_event()
 {
+    // Ensure that track is switched if track is played to the end while
+    // waiting
+    play_mp3();
     ALLEGRO_TIMEOUT tmo;
     al_init_timeout(&tmo, 0.1);
     int res = al_wait_for_event_until(queue, &event, &tmo);
@@ -70,14 +74,31 @@ void wait_delay_ms(int ms)
 
 void wait_key_press(int key)
 {
-	while (!keybuffer[key])
-	{
-		wait_event();
-	}
+	wait_key_presses(&key, 1);
+}
+
+int wait_key_presses(int *keys, int num_keys)
+{
+    int key = -1;
+    while (key == -1)
+    {
+        for (int i = 0; i < num_keys; i++)
+        {
+            if (check_key(keys[i]))
+            {
+                key = keys[i];
+            }
+        }
+        if (key == -1)
+        {
+            wait_event();
+        }
+    }
 	while (keybuffer[key])
 	{
 		wait_event();
 	}
+    return key;
 }
 
 
