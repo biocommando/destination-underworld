@@ -5,6 +5,7 @@
 #include "duColors.h"
 #include "helpers.h"
 #include "settings.h"
+#include "sprites.h"
 
 extern GameSettings game_settings;
 extern int record_mode;
@@ -83,6 +84,8 @@ void show_help(BITMAP *sprites)
     sprintf(help_path, DATADIR "%s\\help.dat", game_settings.mission_pack);
     FILE *f = fopen(help_path, "r");
     ALLEGRO_COLOR color = makecol(255, 255, 255);
+    ALLEGRO_COLOR saved_colors[10];
+    memset(saved_colors, 0, sizeof(saved_colors));
     const int line_height = 16;
     int line = 0;
     int margin = 5;
@@ -100,15 +103,26 @@ void show_help(BITMAP *sprites)
             sscanf(s, "%s", cmd);
             if (!strcmp(cmd, "#color"))
             {
-                int r = 255, g = 255, b = 255;
-                sscanf(s, "%*s %d %d %d", &r, &g, &b);
-                color = makecol(r, g, b);
+                int r = 255, g = 255, b = 255, colorref = -1;
+                int n = sscanf(s, "%*s %d %d %d %d", &r, &g, &b, &colorref);
+                if (n == 1 && r >= 0 && r < 10)
+                {
+                    color = saved_colors[r];
+                }
+                else
+                {
+                    color = makecol(r, g, b);
+                    if (colorref >= 0 && colorref < 10)
+                    {
+                        saved_colors[colorref] = color;
+                    }
+                }
             }
-            if (!strcmp(cmd, "#image"))
+            if (!strcmp(cmd, "#sprite"))
             {
-                int sx = 0, sy = 0, w = 0, h = 0, x = 0, y = 0;
-                sscanf(s, "%*s %d %d %d %d %d %d", &sx, &sy, &w, &h, &x, &y);
-                masked_blit(sprites, sx, sy, x, y, w, h);
+                int id = -1, x = 0, y = 0, dx = 0, dy = 0;
+                sscanf(s, "%*s %d %d %d %d %d", &id, &x, &y, &dx, &dy);
+                draw_sprite_animated(sprites, id, x, y, dx, dy);
             }
             if (!strcmp(cmd, "#rect"))
             {

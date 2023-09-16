@@ -120,3 +120,15 @@ void access_arena_highscore(ArenaHighscore *arena_highscore, int load)
   read_arena_highscores(f, arena_highscore);
   fclose(f);
 }
+
+void get_data_filename(char *dst, const char *file)
+{
+    if (game_settings.custom_resources)
+    {
+      sprintf(dst, DATADIR "%s\\%s", game_settings.mission_pack, file);
+    }
+    else
+    {
+      sprintf(dst, DATADIR "%s", file);
+    }
+}

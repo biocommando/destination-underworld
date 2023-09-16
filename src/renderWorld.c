@@ -3,13 +3,14 @@
 #include "renderWorld.h"
 #include "ducolors.h"
 #include "predictableRandom.h"
+#include "sprites.h"
 
 void draw_enemy(Enemy *enm, World *world)
 {
     if (enm->sprite == 9)
-        masked_blit(world->spr, 47, 117, enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 24, 28);
+        draw_sprite_centered(world->spr, SPRITE_ID_TURRET, enm->x, enm->y);
     else
-        masked_blit(world->spr, 23 * (enm->anim > 20), 29 * (1 + enm->sprite), enm->x - TILESIZE / 2, enm->y - TILESIZE / 2, 23, 29);
+        draw_sprite_animated_centered(world->spr, SPRITE_ID_ENEMY, enm->x, enm->y, enm->anim > 20, enm->sprite);
 }
 
 void draw_map(World *world, int draw_walls, int vibration_intensity)
@@ -84,7 +85,9 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     for (int i = 0; i < 5; i++)
                     {
                         double angle = (lava_fluctuations + i * 20) * AL_PI / 50;
-                        masked_blit(world->spr, 160 + (rand() % 4) * 5, 150, x * TILESIZE + HALFTILESIZE + sin(angle) * 10 - 3, y * TILESIZE + HALFTILESIZE + cos(angle) * 10 - 3, 5, 5);
+                        draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES,
+                            x * TILESIZE + HALFTILESIZE + sin(angle) * 10,
+                            y * TILESIZE + HALFTILESIZE + cos(angle) * 10, (rand() % 4), 0);
                     }
                 }
             }
@@ -122,7 +125,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     {
                         if (wall_type == WALL_PENTAGRAM)
                         {
-                            masked_blit(world->spr, 47, 145, x * TILESIZE - 15, y * TILESIZE - 15, 30, 30);
+                            draw_sprite_centered(world->spr, SPRITE_ID_PENTAGRAM_WALL, x * TILESIZE, y * TILESIZE);
                         }
                         else
                         {
@@ -135,7 +138,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                             }
                             if (tile->durability > 0)
                             {
-                                masked_blit(world->spr, 80, 145, x * TILESIZE - 15, y * TILESIZE - 15, 30, 30);
+                                draw_sprite_centered(world->spr, SPRITE_ID_CRACKED_WALL, x * TILESIZE, y * TILESIZE);
                             }
                         }
                     }
@@ -145,38 +148,32 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
     }
 }
 
-void draw_player_legend(World *world)
+void draw_player_legend(World *world, int x, int y)
 {
     if (world->plr.health > 0)
     {
-        for (int x = 0; x < world->plr.health; x++)
-            masked_blit(world->spr, 60, 0, world->plr.x - 23, world->plr.y - 18 + 4 * x, 7, 6);
-        for (int x = 0; x < world->plr.ammo; x++)
+        for (int n = 0; n < world->plr.health; n++)
+            draw_sprite(world->spr, SPRITE_ID_HEALTH, x - 23, y - 18 + 4 * n);
+        for (int n = 0; n < world->plr.ammo; n++)
         {
-            if (world->plr.reload == 0)
-            {
-                masked_blit(world->spr, 67, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
-            }
-            else
-            {
-                masked_blit(world->spr, 73, 0, world->plr.x + 10, world->plr.y - 18 + 2 * x, 6, 3);
-            }
+            draw_sprite_animated(world->spr, SPRITE_ID_AMMO, x + 17, y - 18 + 2 * n, world->plr.reload != 0, 0);
         }
 
-        masked_blit(world->spr, 89 + (world->plr.shots > 1) * 4, 196, world->plr.x - 21, world->plr.y - 14 + 4 * world->plr.health, 3, 6);
+        // 'S' or 'L'
+        draw_sprite_animated(world->spr, SPRITE_ID_PLR_LEGEND_FONT, x - 21, y - 14 + 4 * world->plr.health, 10 + (world->plr.shots > 1), 0);
         int gold = world->plr.gold;
         if (gold > 99)
             gold = 99;
         if (gold > 9)
         {
-            masked_blit(world->spr, 49 + (gold / 10) * 4, 196, world->plr.x - 25, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
+            draw_sprite_animated(world->spr, SPRITE_ID_PLR_LEGEND_FONT, x - 25, y - 5 + 4 * world->plr.health, gold / 10, 0);
         }
-        masked_blit(world->spr, 49 + (gold % 10) * 4, 196, world->plr.x - 21, world->plr.y - 5 + 4 * world->plr.health, 3, 6);
+        draw_sprite_animated(world->spr, SPRITE_ID_PLR_LEGEND_FONT, x - 21, y - 5 + 4 * world->plr.health, gold % 10, 0);
 
         if (world->potion_duration > 0)
         {
             int sprite = 8 * world->potion_duration / (POTION_DURATION_CAP + 1);
-            masked_blit(world->spr, 48 + sprite * 7, 186, world->plr.x - 32, world->plr.y - 18, 7, 9);
+            draw_sprite_animated(world->spr, SPRITE_ID_POTION_DURATION, x - 32, y - 18, sprite, 0);
         }
     }
 }
@@ -231,8 +228,8 @@ void move_and_draw_body_parts(World *world)
                     bodypart->anim++;
                 }
 
-                masked_blit(world->spr, 311 + 11 * (bodypart->anim > 1),
-                            129 + 11 * (bodypart->type - 1), (int)bodypart->x - 5, (int)bodypart->y - 5, 11, 11);
+                draw_sprite_animated_centered(world->spr, SPRITE_ID_BODY_PART, (int)bodypart->x, (int)bodypart->y,
+                    bodypart->anim > 1, bodypart->type - 1);
             }
         }
     }
@@ -305,11 +302,16 @@ void progress_and_draw_sparkles(World *world)
         struct sparkle_fx *fx = &world->sparkle_fx[i];
         if (fx->duration > 0)
         {
+            int color = fx->color;
+            if (color == -1)
+            {
+                color = rand() % 3;
+            }
             int trail_sprite = (fx->sprite + 1) % 4;
-            masked_blit(world->spr, 160 + trail_sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
+            draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES, fx->loc.x, fx->loc.y, trail_sprite, color);
             fx->loc.x += fx->dir.x;
             fx->loc.y += fx->dir.y;
-            masked_blit(world->spr, 160 + fx->sprite * 5, 150, fx->loc.x - 3, fx->loc.y - 3, 5, 5);
+            draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES, fx->loc.x, fx->loc.y, fx->sprite, color);
             fx->duration--;
             if (fx->duration % 3 == 0)
             {

@@ -26,7 +26,6 @@
 #define BITMAP ALLEGRO_BITMAP
 #define load_bitmap al_load_bitmap
 #define destroy_bitmap al_destroy_bitmap
-#define masked_blit(bitmap, sx, sy, dx, dy, w, h) al_draw_bitmap_region(bitmap, sx, sy, w, h, dx, dy, 0)
 #define MASKED_BITMAP(x) al_convert_mask_to_alpha(x, al_map_rgb(255, 0, 255))
 
 int wait_event();

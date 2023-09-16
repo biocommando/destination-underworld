@@ -157,6 +157,7 @@ struct sparkle_fx
     Coordinates dir;
     int sprite;
     int duration;
+    int color;
 };
 
 struct enemy_config

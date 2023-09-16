@@ -23,14 +23,7 @@ void register_sample(int id, const char *filename, int priority)
   {
     sample_register[sample_reg_idx].id = id;
     char sample_path[256];
-    if (game_settings.custom_resources)
-    {
-      sprintf(sample_path, DATADIR "%s\\%s", game_settings.mission_pack, filename);
-    }
-    else
-    {
-      sprintf(sample_path, DATADIR "%s", filename);
-    }
+    get_data_filename(sample_path, filename);
     SAMPLE *sample = load_sample(sample_path);
     sample_register[sample_reg_idx].sample = sample;
     sample_register[sample_reg_idx].priority = priority;

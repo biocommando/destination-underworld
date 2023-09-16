@@ -355,7 +355,7 @@ void create_explosion(int x, int y, World *world)
     bounce_body_parts(x, y, world);
 }
 
-void create_sparkles(int x, int y, int count, World *world)
+void create_sparkles(int x, int y, int count, int color, World *world)
 {
     static int sparkle_counter = 0;
     for (int i = 0; i < count; i++)
@@ -374,6 +374,7 @@ void create_sparkles(int x, int y, int count, World *world)
 
         fx->sprite = rand() % 4;
         fx->duration = 10 + rand() % 10;
+        fx->color = color;
         if (++sparkle_counter == SPARKLE_FX_COUNT)
         {
             sparkle_counter = 0;

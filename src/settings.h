@@ -23,5 +23,7 @@ int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
 int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output);
 
 void access_arena_highscore(ArenaHighscore *arena_highscore, int load);
+// Destination is expected to be at least 256 characters
+void get_data_filename(char *dst, const char *file);
 
 #endif

@@ -21,6 +21,7 @@
 #include "sampleRegister.h"
 #include "helpers.h"
 #include "loadindicator.h"
+#include "sprites.h"
 
 int game(int mission, int *game_modifiers);
 
@@ -100,6 +101,13 @@ int main(int argc, char **argv)
     register_sample(SAMPLE_EXPLOSION(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
     sprintf(loadsamplename, "die%d.wav", i + 1);
     register_sample(SAMPLE_DEATH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
+  }
+
+  progress_load_state("Loading sprites...", 1);
+  {
+    char path[256];
+    get_data_filename(path, "sprites.ini");
+    read_sprites_from_file(path, SPRITE_ID_MIN, SPRITE_ID_MAX);
   }
 
   switch_track(1);
@@ -318,7 +326,7 @@ void boss_logic(World *world, int boss_died)
           if (random_num >= spawn_point->probability_thresholds[spawn_type][0] && random_num < spawn_point->probability_thresholds[spawn_type][1])
           {
             spawn_enemy(spawn_point->x, spawn_point->y, spawn_type, world->current_room, world);
-            create_sparkles(spawn_point->x * TILESIZE + HALFTILESIZE, spawn_point->y * TILESIZE + HALFTILESIZE, 15, world);
+            create_sparkles(spawn_point->x * TILESIZE + HALFTILESIZE, spawn_point->y * TILESIZE + HALFTILESIZE, 15, 2, world);
 
             trigger_sample(SAMPLE_SPAWN, 255);
             break;
@@ -551,11 +559,11 @@ void bullet_logic(World *world)
     if (bullet->bullet_type == BULLET_TYPE_NORMAL)
     {
       int bullet_sprite = ((int)(bullet->x + bullet->y) / 30) % 4;
-      masked_blit(world->spr, 140 + bullet_sprite * 10, 140, bullet->x - 5, bullet->y - 5, 10, 10);
+      draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET, bullet->x, bullet->y, bullet_sprite, 0);
     }
     else if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
     {
-      masked_blit(world->spr, 140, 150, bullet->x - 6, bullet->y - 6, 13, 12);
+      draw_sprite_centered(world->spr, SPRITE_ID_CLUSTER, bullet->x, bullet->y);
     }
   }
 }
@@ -577,7 +585,7 @@ void potion_logic(World *w)
           w->potion_duration = POTION_DURATION_CAP;
         w->potion_effect_flags |= p->effects;
         trigger_sample(p->sample, 255);
-        create_sparkles(p->location.x, p->location.y, 12, w);
+        create_sparkles(p->location.x, p->location.y, 12, 1, w);
       }
 
       unsigned anim_phase = (potion_anim_phase + i * 1337) % 200;
@@ -586,9 +594,9 @@ void potion_logic(World *w)
         int bubble_y = anim_phase / 5;
         int bubble_x = 4 * sin(bubble_y);
         int pop_spr = anim_phase > 25;
-        masked_blit(w->spr, 153 + p->sprite * 10 + 6 * pop_spr, 176, p->location.x - 2 + bubble_x, p->location.y - 15 - bubble_y, 4, 5);
+        draw_sprite_animated_centered(w->spr, SPRITE_ID_POTION_BUBBLE, p->location.x + bubble_x, p->location.y - 13 - bubble_y, p->sprite * 2 + pop_spr, 0);
       }
-      masked_blit(w->spr, 142 + p->sprite * 18, 182, p->location.x - 9, p->location.y - 10, 18, 20);
+      draw_sprite_animated_centered(w->spr, SPRITE_ID_POTION, p->location.x, p->location.y, p->sprite, 0);
     }
   }
   potion_anim_phase++;
@@ -748,7 +756,7 @@ int game(int mission, int *game_modifiers)
 
   draw_static_background();
 
-  create_sparkles(world.plr.x, world.plr.y, 30, &world);
+  create_sparkles(world.plr.x, world.plr.y, 30, -1, &world);
 
   clock_t game_loop_clk = clock();
 
@@ -784,6 +792,11 @@ int game(int mission, int *game_modifiers)
       }
     }
 
+    // Draw legend to same position as player
+    // Legend cannot be drawn here or it would get obscured
+    // by walls etc.
+    int legend_x = world.plr.x;
+    int legend_y = world.plr.y;
     if (world.plr.health > 0)
     {
       draw_enemy(&world.plr, &world);
@@ -941,7 +954,7 @@ int game(int mission, int *game_modifiers)
 
     draw_map(&world, 1, 0);
 
-    draw_player_legend(&world);
+    draw_player_legend(&world, legend_x, legend_y);
 
     completetime++;
 
@@ -964,7 +977,7 @@ int game(int mission, int *game_modifiers)
       for (int i = 0; i < 6; i++)
       {
         if (world.boss->health >= (world.boss_fight_config->health * (i + 1) / 6))
-          masked_blit(world.spr, 60, 0, world.boss->x - 23, world.boss->y - 18 + 4 * i, 7, 6);
+          draw_sprite(world.spr, SPRITE_ID_HEALTH, world.boss->x - 23, world.boss->y - 18 + 4 * i);
       }
     }
 
@@ -982,16 +995,16 @@ int game(int mission, int *game_modifiers)
       if (world.powerups.rune_of_protection_active < 0)
       {
         world.powerups.rune_of_protection_active++;
-        masked_blit(world.spr, 140, 165,
-                    world.plr.x + world.powerups.rune_of_protection_active * sin(completetime * 0.15) - 7,
-                    world.plr.y + world.powerups.rune_of_protection_active * cos(completetime * 0.15) - 7,
-                    13, 13);
+        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION, 
+          world.plr.x + world.powerups.rune_of_protection_active * sin(completetime * 0.15),
+          world.plr.y + world.powerups.rune_of_protection_active * cos(completetime * 0.15));
       }
       else
-        masked_blit(world.spr, 140, 165,
-                    world.plr.x - TILESIZE * sin(completetime * 0.15) - 7,
-                    world.plr.y - TILESIZE * cos(completetime * 0.15) - 7,
-                    13, 13);
+      {
+        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION, 
+          world.plr.x - TILESIZE * sin(completetime * 0.15),
+          world.plr.y - TILESIZE * cos(completetime * 0.15));
+      }
     }
 
     progress_and_draw_sparkles(&world);

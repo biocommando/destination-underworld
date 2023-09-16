@@ -18,6 +18,7 @@ src/worldInteraction.c ^
 src/allegro42_compat.c ^
 src/loadindicator.c ^
 src/duscript.c ^
+src/sprites.c ^
 -DENABLE_LOGGING ^
 -Iallegro\include ^
 allegro\lib\liballegro_monolith.dll.a ^
