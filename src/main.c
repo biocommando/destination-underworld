@@ -897,7 +897,7 @@ int game(int mission, int *game_modifiers)
 
     change_room_if_at_exit_point(&world, mission);
 
-    if (get_tile_at(&world, world.plr.x, world.plr.y).flags & TILE_IS_EXIT_LEVEL && world.plr.health > 0)
+    if (get_tile_at(&world, world.plr.x, world.plr.y)->flags & TILE_IS_EXIT_LEVEL && world.plr.health > 0)
     {
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);

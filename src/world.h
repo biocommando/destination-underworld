@@ -242,11 +242,11 @@ void stop_bodyparts(World *);
 void init_world(World *world);
 void spawn_body_parts(Enemy *enm);
 
-Tile get_tile_at(World *world, int x, int y);
+Tile *get_tile_at(World *world, int x, int y);
 int check_flags_at(World *world, int x, int y, int flags_to_check);
 int get_wall_type_at(World *world, int x, int y);
 // no scale versions
-Tile ns_get_tile_at(World *world, int x, int y);
+Tile *ns_get_tile_at(World *world, int x, int y);
 int ns_check_flags_at(World *world, int x, int y, int flags_to_check);
 int ns_get_wall_type_at(World *world, int x, int y);
 void set_tile_flag(World *world, int x, int y, int flags);

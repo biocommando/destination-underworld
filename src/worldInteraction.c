@@ -21,7 +21,7 @@ void clear_restricted_tiles(World *world, int id)
     {
         for (int y = 0; y < MAPMAX_Y; y++)
         {
-            if (ns_check_flags_at(world, x, y, TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION) && ns_get_tile_at(world, x, y).data == id)
+            if (ns_check_flags_at(world, x, y, TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION) && ns_get_tile_at(world, x, y)->data == id)
             {
                 world->map[x][y].flags &= ~(TILE_IS_RESTRICTED | TILE_IS_CLEAR_RESTRICTION | TILE_IS_BLOCKER);
                 world->map[x][y].flags |= TILE_IS_FLOOR;
@@ -80,7 +80,7 @@ void move_enemy(Enemy *enm, World *world)
 
     if (enm == &world->plr && (check_flags_at(world, enm->x, enm->y, TILE_IS_CLEAR_RESTRICTION)))
     {
-        clear_restricted_tiles(world, get_tile_at(world, enm->x, enm->y).data);
+        clear_restricted_tiles(world, get_tile_at(world, enm->x, enm->y)->data);
     }
 }
 
@@ -741,7 +741,7 @@ void change_room_if_at_exit_point(World *world, int mission)
 {
     if (check_flags_at(world, world->plr.x, world->plr.y, TILE_IS_EXIT_POINT) && world->plr.health > 0)
     {
-        int to_room = get_tile_at(world, world->plr.x, world->plr.y).data;
+        int to_room = get_tile_at(world, world->plr.x, world->plr.y)->data;
         if (world->plr.roomid != to_room)
         {
             read_level(world, mission, to_room);

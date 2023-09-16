@@ -159,14 +159,14 @@ Tile create_tile(int symbol)
     return t;
 }
 
-inline Tile get_tile_at(World *world, int x, int y)
+inline Tile *get_tile_at(World *world, int x, int y)
 {
-    return world->map[x / TILESIZE][y / TILESIZE];
+    return &world->map[x / TILESIZE][y / TILESIZE];
 }
 
-inline Tile ns_get_tile_at(World *world, int x, int y)
+inline Tile *ns_get_tile_at(World *world, int x, int y)
 {
-    return world->map[x][y];
+    return &world->map[x][y];
 }
 
 int ns_check_flags_at(World *world, int x, int y, int flags_to_check)
