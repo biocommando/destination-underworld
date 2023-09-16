@@ -23,6 +23,10 @@
 #include "loadindicator.h"
 #include "sprites.h"
 
+#ifdef ENABLE_LOGGING
+int logging_enabled = 0;
+#endif
+
 int game(int mission, int *game_modifiers);
 
 GameSettings game_settings;
@@ -38,6 +42,9 @@ int no_player_damage = 0;
 int main(int argc, char **argv)
 {
   char read_arg[256] = "";
+#ifdef ENABLE_LOGGING
+  logging_enabled = read_cmd_line_arg_int("logging", argv, argc);
+#endif
   read_cmd_line_arg_str("player-damage", argv, argc, read_arg);
   if (!strcmp(read_arg, "off"))
   {

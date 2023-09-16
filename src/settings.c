@@ -34,6 +34,7 @@ void read_settings(char **argv, int argc)
   char buf[256], file_name[256] = DATADIR "settings.ini";
 
   read_cmd_line_arg_str("settings-ini", argv, argc, file_name);
+  strcpy(game_settings.settings_file, file_name);
 
   LOG("Settings file: %s\n", file_name);
   FILE *f = fopen(file_name, "r");
@@ -42,9 +43,6 @@ void read_settings(char **argv, int argc)
   READ_SETTING(game_settings.mission_count, "%d", game_settings.mission_pack, "mission-count");
   READ_SETTING(game_settings.custom_resources, "%d", game_settings.mission_pack, "custom-resources");
 
-  READ_SETTING(game_settings.screen_width, "%d", "graphics", "width");
-  READ_SETTING(game_settings.screen_height, "%d", "graphics", "height");
-  READ_SETTING(game_settings.screen_mode, "%d", "graphics", "screen");
   READ_SETTING(game_settings.vibration_mode, "%d", "graphics", "vibration-mode");
 
   READ_SETTING(game_settings.music_on, "%d", "audio", "music-on");
@@ -131,4 +129,22 @@ void get_data_filename(char *dst, const char *file)
     {
       sprintf(dst, DATADIR "%s", file);
     }
+}
+
+void save_settings()
+{
+  FILE *f = fopen(game_settings.settings_file, "w");
+
+  fprintf(f, "[general]\nmission-pack=%s\n", game_settings.mission_pack);
+  
+  fprintf(f, "[graphics]\nvibration-mode=%d\n", game_settings.vibration_mode);
+
+  fprintf(f, "[audio]\nmusic-on=%d\nmusic-vol=%lf\nsfx-vol=%lf\nmusic-track-count=%d\n",
+    game_settings.music_on, game_settings.music_vol, game_settings.sfx_vol, game_settings.num_music_tracks);
+  
+  fprintf(f, "[%s]\nmission-count=%d\ncustom-resources=%d\n",
+    game_settings.mission_pack, game_settings.mission_count, game_settings.custom_resources);
+  
+  fclose(f);
+
 }

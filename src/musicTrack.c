@@ -9,6 +9,7 @@ struct MusicTrackState
     ALLEGRO_SAMPLE_INSTANCE *sample_instance;
     int sample_count;
     int current_music_track;
+    float volume;
 };
 
 struct MusicTrackState *get_music_track_state()
@@ -20,6 +21,7 @@ struct MusicTrackState *get_music_track_state()
         init_state = 1;
         memset(&music_track_state, 0, sizeof(struct MusicTrackState));
         music_track_state.current_music_track = -1;
+        music_track_state.volume = 1;
     }
     return &music_track_state;
 }
@@ -61,9 +63,20 @@ int music_track_play(int idx)
         state->sample_instance = al_create_sample_instance(state->sample);
         al_attach_sample_instance_to_mixer(state->sample_instance, al_get_default_mixer());
         al_play_sample_instance(state->sample_instance);
+        al_set_sample_instance_gain(state->sample_instance, state->volume);
         state->current_music_track = idx;
     }
     return al_get_sample_instance_playing(state->sample_instance) ? 0 : 1;
+}
+
+void music_track_set_volume(float v)
+{
+    struct MusicTrackState *s = get_music_track_state();
+    s->volume = v;
+    if (s->sample_instance)
+    {
+        al_set_sample_instance_gain(s->sample_instance, v);
+    }
 }
 
 void music_track_stop()

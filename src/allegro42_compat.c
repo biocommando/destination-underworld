@@ -94,13 +94,17 @@ int wait_key_presses(int *keys, int num_keys)
             wait_event();
         }
     }
+    wait_key_release(key);
+    return key;
+}
+
+void wait_key_release(int key)
+{
 	while (keybuffer[key])
 	{
 		wait_event();
 	}
-    return key;
 }
-
 
 int init_allegro()
 {

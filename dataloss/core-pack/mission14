@@ -992,6 +992,7 @@ X(duedit_compatible)
 303 12 6 2
 300 13 6 2
 301 11 2 4
+300 8 9 3
 *@+SKIP_COND_+PWUP
 #conditions
 *?game_modifiers ! 8 COND_-PWUP

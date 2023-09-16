@@ -29,3 +29,8 @@ int music_track_play(int index);
  * 
  */
 void music_track_stop();
+
+/**
+ * @brief Set volume to current music track (0...1)
+ */
+void music_track_set_volume(float v);

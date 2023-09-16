@@ -10,6 +10,7 @@
 extern GameSettings game_settings;
 
 int current_track = 1;
+float mp3_volume = 1;
 
 int get_current_track()
 {
@@ -43,6 +44,11 @@ void play_mp3()
     if (music_track_play(current_track - 1) == 1)
     {
       switch_track(current_track + 1);
+    }
+    if (game_settings.music_vol != mp3_volume)
+    {
+      mp3_volume = game_settings.music_vol;
+      music_track_set_volume(mp3_volume);
     }
   }
   music_on_status = game_settings.music_on;

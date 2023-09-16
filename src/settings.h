@@ -4,11 +4,9 @@
 
 typedef struct
 {
+  char settings_file[256];
   char mission_pack[64];
   int mission_count;
-  int screen_width;
-  int screen_height;
-  int screen_mode;
   int vibration_mode;
   int music_on;
   float music_vol;
@@ -18,6 +16,7 @@ typedef struct
   ArenaConfigs arena_config;
 } GameSettings;
 void read_settings(char **argv, int argc);
+void save_settings();
 int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
 int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output);
 
