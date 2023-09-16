@@ -25,8 +25,6 @@
 
 int game(int mission, int *game_modifiers);
 
-SAMPLE *s_throw;
-
 GameSettings game_settings;
 
 Enemy plrautosave;
@@ -286,7 +284,7 @@ void draw_static_background()
     al_draw_circle(SCREEN_W / 2,
                    SCREEN_H / 2,
                    i,
-                   makecol(33, 33, 33), 1);
+                   al_map_rgb(33, 33, 33), 1);
   }
 }
 
@@ -623,15 +621,15 @@ int game(int mission, int *game_modifiers)
   world.boss_fight_config = world.boss_fight_configs;
   if (!game_settings.custom_resources)
   {
-    world.spr = load_bitmap(DATADIR "sprites.png");
+    world.spr = al_load_bitmap(DATADIR "sprites.png");
   }
   else
   {
     char path[256];
     sprintf(path, DATADIR "\\%s\\sprites.png", game_settings.mission_pack);
-    world.spr = load_bitmap(path);
+    world.spr = al_load_bitmap(path);
   }
-  MASKED_BITMAP(world.spr);
+  al_convert_mask_to_alpha(world.spr, al_map_rgb(255, 0, 255));
 
   char c;
   int vibrations = 0;
@@ -986,7 +984,7 @@ int game(int mission, int *game_modifiers)
       al_draw_circle(world.plr.x + world.plr.dx * TILESIZE * 3 / 2,
                      world.plr.y + world.plr.dy * TILESIZE * 3 / 2,
                      plr_dir_helper_intensity * TILESIZE / 600,
-                     makecol(2 * plr_dir_helper_intensity, 0, 0), 1);
+                     al_map_rgb(2 * plr_dir_helper_intensity, 0, 0), 1);
       plr_dir_helper_intensity -= 3;
     }
 
@@ -1121,7 +1119,7 @@ int game(int mission, int *game_modifiers)
     fclose(f_key_presses);
   }
 
-  destroy_bitmap(world.spr);
+  al_destroy_bitmap(world.spr);
 
   {
     ALLEGRO_TRANSFORM transform;

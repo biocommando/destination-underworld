@@ -58,7 +58,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     }
                     if (tile->is_exit_level)
                     {
-                        drawn_color = makecol(0, 0, abs(lava_fluctuations) + 100);
+                        drawn_color = al_map_rgb(0, 0, abs(lava_fluctuations) + 100);
                     }
                     rectfill((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawn_color);
                 }
@@ -75,7 +75,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                         {
                             x_pos += dx;
                             y_pos += dy;
-                            rectfill(x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, makecol(floorcol + 30 - i * 5, 0, 0));
+                            rectfill(x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, al_map_rgb(floorcol + 30 - i * 5, 0, 0));
                         }
                     }
                 }
@@ -103,7 +103,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                 int colcalc = lev == 0 ? 165 : (15 - lev) * 10;
                 colcalc += y * 10;
                 colcalc = colcalc > 255 ? 255 : colcalc;
-                ALLEGRO_COLOR col_wall = makecol(colcalc * world->map_wall_color[0],
+                ALLEGRO_COLOR col_wall = al_map_rgb(colcalc * world->map_wall_color[0],
                                                  colcalc * world->map_wall_color[1],
                                                  colcalc * world->map_wall_color[2]);
 
@@ -118,7 +118,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                         }
                         if (wall_type == WALL_LAVA && (((int)abs(lava_fluctuations) / 5 + (y & x) * (y | x)) % 15 == lev || lev == 15))
                         {
-                            rectfill(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, makecol(colcalc, colcalc >> 1, colcalc >> 2));
+                            rectfill(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, al_map_rgb(colcalc, colcalc >> 1, colcalc >> 2));
                         }
                     }
                     if (lev == 0)
@@ -242,9 +242,9 @@ void draw_explosion_circle(World *world, double x, double y, double intensity, d
     const int green = MIN((sqintens * 0.8 + 0.2) * 255, 255);
     const int blue = MIN((sqintens * sqintens * sqintens * 0.8) * 255, 255);
 
-    const ALLEGRO_COLOR col = makecol(red, green, blue);
+    const ALLEGRO_COLOR col = al_map_rgb(red, green, blue);
 
-    circlefill(x - TILESIZE, y - TILESIZE, radius, col);
+    al_draw_filled_circle(x - TILESIZE, y - TILESIZE, radius, col);
 }
 
 extern double random();
@@ -323,7 +323,7 @@ void progress_and_draw_sparkles(World *world)
 
 void display_level_info(World *world, int mission, int mission_count, long completetime)
 {
-    clear_to_color(BLACK);
+    al_clear_to_color(BLACK);
     al_draw_scaled_bitmap(world->spr, 100, 0, 214, 107, 0, SCREEN_H - 107 * 2, 214 * 2, 107 * 2, 0);
     int y = 5;
     al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Level '%s' cleared!", world->mission_display_name);

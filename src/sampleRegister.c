@@ -12,7 +12,7 @@ struct
 {
   int id;
   int triggered;
-  SAMPLE *sample;
+  ALLEGRO_SAMPLE *sample;
   int priority;
   ALLEGRO_SAMPLE_ID sample_id;
 } sample_register[MAX_NUM_SAMPLES];
@@ -24,7 +24,7 @@ void register_sample(int id, const char *filename, int priority)
     sample_register[sample_reg_idx].id = id;
     char sample_path[256];
     get_data_filename(sample_path, filename);
-    SAMPLE *sample = load_sample(sample_path);
+    ALLEGRO_SAMPLE *sample = al_load_sample(sample_path);
     sample_register[sample_reg_idx].sample = sample;
     sample_register[sample_reg_idx].priority = priority;
     memset(&sample_register[sample_reg_idx].sample_id, 0, sizeof(ALLEGRO_SAMPLE_ID));
@@ -43,6 +43,7 @@ void stop_all_samples()
 
 void trigger_sample_with_params(int id, int volume, int pan, int pitch)
 {
+  const ALLEGRO_PLAYMODE pm = ALLEGRO_PLAYMODE_ONCE;
   if (game_settings.sfx_vol == 0)
     return;
   double gain = volume / 255.0 * game_settings.sfx_vol;
@@ -54,14 +55,14 @@ void trigger_sample_with_params(int id, int volume, int pan, int pitch)
     {
       if (!sample_register[i].triggered)
       {
-        if (!play_sample(sample_register[i].sample, gain, normpan, normpitch, 0, &sample_register[i].sample_id))
+        if (!al_play_sample(sample_register[i].sample, gain, normpan, normpitch, pm, &sample_register[i].sample_id))
         {
           for (int j = sample_reg_idx - 1; j >= 0; j--)
           {
             if (sample_register[j].priority < sample_register[i].priority)
               al_stop_sample(&sample_register[j].sample_id);
           }
-          play_sample(sample_register[i].sample, gain, normpan, normpitch, 0, &sample_register[i].sample_id);
+          al_play_sample(sample_register[i].sample, gain, normpan, normpitch, pm, &sample_register[i].sample_id);
         }
       }
       sample_register[i].triggered = 1;
@@ -85,6 +86,6 @@ void destroy_registered_samples()
 {
   for (int i = sample_reg_idx - 1; i >= 0; i--)
   {
-    destroy_sample(sample_register[i].sample);
+    al_destroy_sample(sample_register[i].sample);
   }
 }

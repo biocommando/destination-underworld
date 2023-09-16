@@ -78,19 +78,19 @@ int handle_menuchoice(int menuchoice, Enemy *autosave,
     return 0;
 }
 
-void show_help(BITMAP *sprites)
+void show_help(ALLEGRO_BITMAP *sprites)
 {
     char help_path[256];
     sprintf(help_path, DATADIR "%s\\help.dat", game_settings.mission_pack);
     FILE *f = fopen(help_path, "r");
-    ALLEGRO_COLOR color = makecol(255, 255, 255);
+    ALLEGRO_COLOR color = al_map_rgb(255, 255, 255);
     ALLEGRO_COLOR saved_colors[10];
     memset(saved_colors, 0, sizeof(saved_colors));
     const int line_height = 16;
     int line = 0;
     int margin = 5;
     const int y_margin = 5;
-    clear_to_color(BLACK);
+    al_clear_to_color(BLACK);
     while (!feof(f))
     {
         char s[256];
@@ -111,7 +111,7 @@ void show_help(BITMAP *sprites)
                 }
                 else
                 {
-                    color = makecol(r, g, b);
+                    color = al_map_rgb(r, g, b);
                     if (colorref >= 0 && colorref < 10)
                     {
                         saved_colors[colorref] = color;
@@ -128,7 +128,7 @@ void show_help(BITMAP *sprites)
             {
                 int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0;
                 sscanf(s, "%*s %d %d %d %d %d %d %d", &x, &y, &w, &h, &r, &g, &b);
-                rectfill(x, y, x + w, y + h, makecol(r, g, b));
+                rectfill(x, y, x + w, y + h, al_map_rgb(r, g, b));
             }
             if (!strcmp(cmd, "#margin"))
             {
@@ -147,7 +147,7 @@ void show_help(BITMAP *sprites)
                 {
                     chunkrest(50);
                 }
-                clear_to_color(BLACK);
+                al_clear_to_color(BLACK);
                 line = 0;
                 if (!strcmp(cmd, "#doc-end") || check_key(ALLEGRO_KEY_ESCAPE))
                     break;
@@ -162,11 +162,11 @@ void show_help(BITMAP *sprites)
     fclose(f);
 }
 
-void menu_play_sample(SAMPLE *s, ALLEGRO_SAMPLE_ID *id)
+void menu_play_sample(ALLEGRO_SAMPLE *s, ALLEGRO_SAMPLE_ID *id)
 {
     if (game_settings.sfx_vol == 0)
         return;
-    play_sample(s, game_settings.sfx_vol, 0, 1, 0, id);
+    al_play_sample(s, game_settings.sfx_vol, 0, 1, ALLEGRO_PLAYMODE_ONCE, id);
 }
 
 int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
@@ -180,21 +180,23 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     int slot = 0;
     int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
     peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
-    BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
+    ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
 
-    BITMAP *sprites;
+    ALLEGRO_BITMAP *sprites;
     if (!game_settings.custom_resources)
     {
-        sprites = load_bitmap(DATADIR "sprites.png");
+        sprites = al_load_bitmap(DATADIR "sprites.png");
     }
     else
     {
         char path[256];
         sprintf(path, DATADIR "%s\\sprites.png", game_settings.mission_pack);
-        sprites = load_bitmap(path);
+        sprites = al_load_bitmap(path);
     }
-    MASKED_BITMAP(sprites);
-    SAMPLE *s_c = load_sample(MENU_SAMPLE_FILENAME), *s_s = load_sample(MENU_SELECT_SAMPLE_FILENAME), *s_ex = load_sample(MENU_EXPLODE_FILENAME);
+    al_convert_mask_to_alpha(sprites, al_map_rgb(255, 0, 255));
+    ALLEGRO_SAMPLE *s_c = al_load_sample(MENU_SAMPLE_FILENAME),
+        *s_s = al_load_sample(MENU_SELECT_SAMPLE_FILENAME),
+        *s_ex = al_load_sample(MENU_EXPLODE_FILENAME);
 
     ALLEGRO_TRANSFORM transform;
     al_identity_transform(&transform);
@@ -205,7 +207,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
 
     if (record_mode == RECORD_MODE_PLAYBACK)
     {
-        clear_to_color(BLACK);
+        al_clear_to_color(BLACK);
         al_draw_textf(get_font(), BLACK, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
         while (!check_key(ALLEGRO_KEY_ENTER)) chunkrest(10);
     }
@@ -216,7 +218,6 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     double bgtint = 0;
     while (!check_key(ALLEGRO_KEY_ENTER) && record_mode != RECORD_MODE_PLAYBACK)
     {
-        //clear_to_color(BLACK);
         al_draw_tinted_scaled_bitmap(menubg, GRAY(50 + 20 * sin(bgtint)), 0, 0, 480, 360, 0, 0, 480 * 2, 360 * 2, 0);
         bgtint += 0.03;
         al_draw_textf(get_font(), DARK_RED, 20, 10, 0, "DESTINATION UNDERWORLD");
@@ -297,13 +298,13 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
 
         if (++flicker == 16)
             flicker = -16;
-        circlefill(30, c * 40 + 65, abs(flicker / 2), makecol(abs(flicker * 8) + 50, 0, 0));
+        al_draw_filled_circle(30, c * 40 + 65, abs(flicker / 2), al_map_rgb(abs(flicker * 8) + 50, 0, 0));
         al_flip_display();
         //stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, SCREEN_W, SCREEN_H);
         /*if (show_help)
             blit(help_pic, screen, 0, 0, SCREEN_W - help_pic->w, SCREEN_H - help_pic->h, help_pic->w, help_pic->h);*/
         chunkrest(50);
-        circlefill(30, c * 40 + 65, abs(flicker / 2), BLACK);
+        al_draw_filled_circle(30, c * 40 + 65, abs(flicker / 2), BLACK);
         if (wait == 0)
         {
             if (c == MENUOPT_NEW_GAME && check_key(ALLEGRO_KEY_LEFT) && game_mode > 0)

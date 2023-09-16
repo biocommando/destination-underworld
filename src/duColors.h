@@ -1,9 +1,9 @@
 #ifndef DUCOLORS
 #define DUCOLORS
-#define BLACK makecol(0, 0, 0)
-#define WHITE makecol(255, 255, 255)
-#define RED makecol(128, 0, 0)
-#define DARK_RED makecol(64, 0, 0)
-#define BLUE makecol(0, 0, 200)
-#define GRAY(x) makecol((x), (x), (x))
+#define BLACK al_map_rgb(0, 0, 0)
+#define WHITE al_map_rgb(255, 255, 255)
+#define RED al_map_rgb(128, 0, 0)
+#define DARK_RED al_map_rgb(64, 0, 0)
+#define BLUE al_map_rgb(0, 0, 200)
+#define GRAY(x) al_map_rgb((x), (x), (x))
 #endif

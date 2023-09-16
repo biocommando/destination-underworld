@@ -203,7 +203,7 @@ typedef struct
     struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
     struct enemy_config enemy_configs[5];
 
-    BITMAP *spr;
+    ALLEGRO_BITMAP *spr;
 
     int boss_fight;
     int play_boss_sound;
