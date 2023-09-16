@@ -89,6 +89,10 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
     {
       config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED;
     }
+    if (!strcmp(s, "positional_trigger"))
+    {
+      config->events[i].trigger_type = BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER;
+    }
     config->events[i].trigger_value = ini_read_int_value(f, event_segment, "trigger_value");
 
     ini_read_string_value(f, event_segment, "event_type", s);
@@ -229,6 +233,13 @@ void bossfight_process_event_triggers(BossFightConfig *config)
     case BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED:
       *trig = state->player_kills >= econf->trigger_value && state->player_previous_kills < econf->trigger_value;
       break;
+    case BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER:
+    {
+      int t_mask = 1 << econf->trigger_value;
+      int t_en_mask = t_mask << 16;
+      *trig = (state->positional_trigger_flags & t_mask) && !(state->positional_trigger_flags & t_en_mask);
+    }
+    break;
     default:
       *trig = 0;
       break;
@@ -261,6 +272,9 @@ void bossfight_trigger_to_str(char *dst, int value)
     break;
   case BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED:
     strcpy(dst, "Kill count reached");
+    break;
+  case BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER:
+    strcpy(dst, "positional trigger");
     break;
   case BFCONF_TRIGGER_TYPE_NEVER:
     strcpy(dst, "Never");

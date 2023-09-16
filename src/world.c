@@ -80,9 +80,12 @@ void init_world(World *world)
 
 Tile create_tile(int symbol)
 {
-    const int sym_restrcitions_start = 500;
-    const int sym_restrcitionClearsStart = 510;
+    const int sym_restrictions_start = 500;
+    const int sym_restriction_clears_start = 510;
     const int max_restrictions = 10;
+
+    const int sym_positional_triggers_start = 600;
+    const int sym_positional_triggers_count = 10;
 
     int sym_exit_points_start = TILE_SYM_EXIT_POINT(0);
 
@@ -96,29 +99,36 @@ Tile create_tile(int symbol)
         tile_properties_set = 1;
     }
     if ((symbol == TILE_SYM_FLOOR) ||
-        (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + 2 * max_restrictions))
+        (symbol >= sym_restrictions_start && symbol < sym_restrictions_start + 2 * max_restrictions) ||
+        (symbol >= sym_positional_triggers_start && symbol < sym_positional_triggers_start + sym_positional_triggers_count))
     {
         t.is_floor = 1;
         t.valid = 1;
         tile_properties_set = 1;
     }
-    if (symbol >= sym_restrcitionClearsStart && symbol < sym_restrcitionClearsStart + max_restrictions)
+    if (symbol >= sym_restriction_clears_start && symbol < sym_restriction_clears_start + max_restrictions)
     {
         t.is_clear_restriction = 1;
-        t.data = symbol - sym_restrcitionClearsStart;
+        t.data = symbol - sym_restriction_clears_start;
+        tile_properties_set = 1;
+    }
+    if (symbol >= sym_positional_triggers_start && symbol < sym_positional_triggers_start + sym_positional_triggers_count)
+    {
+        t.is_positional_trigger = 1;
+        t.data = symbol - sym_positional_triggers_start;
         tile_properties_set = 1;
     }
     if ((symbol == TILE_SYM_WALL1) || (symbol == TILE_SYM_LAVA) || (symbol == TILE_SYM_WALL2) ||
-        (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions) || symbol == TILE_SYM_BREAKABLE_WALL)
+        (symbol >= sym_restrictions_start && symbol < sym_restrictions_start + max_restrictions) || symbol == TILE_SYM_BREAKABLE_WALL)
     {
         t.is_blocker = 1;
         t.valid = 1;
         tile_properties_set = 1;
     }
-    if (symbol >= sym_restrcitions_start && symbol < sym_restrcitions_start + max_restrictions)
+    if (symbol >= sym_restrictions_start && symbol < sym_restrictions_start + max_restrictions)
     {
         t.is_restricted = 1;
-        t.data = symbol - sym_restrcitions_start;
+        t.data = symbol - sym_restrictions_start;
         tile_properties_set = 1;
     }
     if (symbol == TILE_SYM_BREAKABLE_WALL)

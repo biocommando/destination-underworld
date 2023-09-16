@@ -1,0 +1,2 @@
+on positional_trigger: 0 do spawn: 1, 4, 100, 0, 0, 0, 0
+on positional_trigger: 0 do spawn: 1, 5, 100, 0, 0, 0, 0

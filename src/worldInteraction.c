@@ -35,11 +35,6 @@ void clear_restricted_tiles(World *world, int id)
 
 #define calc_sqr_distance(x1, y1, x2, y2) (((x1) - (x2)) * ((x1) - (x2)) + ((y1) - (y2)) * ((y1) - (y2)))
 
-/*inline double calc_sqr_distance(double x1, double y1, double x2, double y2)
-{
-    return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-}*/
-
 void move_enemy(Enemy *enm, World *world)
 {
     if (enm->reload > 0)
@@ -85,6 +80,11 @@ void move_enemy(Enemy *enm, World *world)
     if (enm == &world->plr && t->is_clear_restriction)
     {
         clear_restricted_tiles(world, t->data);
+    }
+    if (enm == &world->plr && t->is_positional_trigger)
+    {
+        world->boss_fight_config->state.positional_trigger_flags |= 1 << t->data;
+        LOG_TRACE("pos trigger, new state %x\n", world->boss_fight_config->state.positional_trigger_flags);
     }
 }
 
@@ -525,6 +525,8 @@ void combine_tile_properties(Tile *dst, Tile *other)
         dst->is_blood_stained = other->is_blood_stained;
     if (dst->durability == 0)
         dst->durability = other->durability;
+    if (dst->is_positional_trigger == 0)
+        dst->is_positional_trigger = other->is_positional_trigger;
 }
 
 void place_lev_object(World *world, int x, int y, int id, int room_from, int room_to)

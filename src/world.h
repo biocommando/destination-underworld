@@ -108,6 +108,7 @@ typedef struct
     int is_blocker;
     int is_restricted;
     int is_clear_restriction;
+    int is_positional_trigger;
     int is_exit_point;
     int is_wall;
     int is_blood_stained;

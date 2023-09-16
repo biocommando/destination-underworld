@@ -969,6 +969,7 @@ X(duedit_compatible)
 120 14 11 5
 120 15 11 5
 100 8 7 1
+600 11 7 1
 #conditions
 *?game_modifiers = 16 COND_1
 *>+SKIP_COND_1
@@ -1000,4 +1001,5 @@ X(duedit_compatible)
 *=par1"25.7"
 *=par6"25.175"
 *=par8"24.4"
+*=script1"core-pack\test.ini"
 *@+end

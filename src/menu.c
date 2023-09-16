@@ -91,7 +91,6 @@ void show_help()
             }
             if (!strcmp(cmd, "#page-end") || !strcmp(cmd, "#doc-end"))
             {
-                //stretch_blit(buf, screen, 0, 0, 640, 480, 0, 0, SCREEN_W, SCREEN_H); TODO
                 al_flip_display();
                 int keys[] = {ALLEGRO_KEY_SPACE, ALLEGRO_KEY_ESCAPE};
                 int key = wait_key_presses(keys, 2);

@@ -13,6 +13,7 @@
 #define BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED 4
 #define BFCONF_TRIGGER_TYPE_SECONDARY_TIMER 5
 #define BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED 6
+#define BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER 7
 
 #define BFCONF_EVENT_TYPE_NO_OP 0
 #define BFCONF_EVENT_TYPE_SPAWN 1
@@ -63,6 +64,7 @@ typedef struct
   int triggers[BFCONF_MAX_EVENTS];
   Coordinates boss_waypoint;
   int boss_want_to_shoot;
+  int positional_trigger_flags;
 } BossFightState;
 
 typedef struct
