@@ -192,7 +192,7 @@ typedef struct potion
 
 typedef struct
 {
-    Tile map[MAPMAX_X][MAPMAX_Y];
+    Tile map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
     char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
     char rooms_visited[ROOMCOUNT];
     int current_room;
@@ -218,10 +218,6 @@ typedef struct
     int story_after_mission_lines;
     // ~60 characters fit on the screen
     char story_after_mission[10][61];
-    // Flag telling if the level has been read yet.
-    // (Level is read whenever room is changed but
-    // there's no point in parsing the metadata each time.)
-    int level_read;
     double par_time;
     int kills;
     int mission;

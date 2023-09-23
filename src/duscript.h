@@ -18,10 +18,22 @@ typedef struct
 } DuScriptState;
 
 DuScriptState du_script_init();
-// Returns:
-// - 0 = expect next line
-// - 1 = expect start of file
-// - -1 = command not parsed
+/*
+ Syntax:
+
+*@[label]                                   goto label
+*=[variable]"[value]"                       set variable to value
+*?[variable] [operator] [value] [label]     if variable is equal / not equal to value go to label
+                                            operators:
+                                                =       equals
+                                                !       not equal
+*>[label]                                   go to label. If label starts with +, only search forward
+
+ Returns:
+ - 0 = expect next line
+ - 1 = expect start of file
+ - -1 = command not parsed
+*/
 int du_script_execute_line(DuScriptState *state, const char *line);
 
 DuScriptVariable *du_script_variable(DuScriptState *state, const char *name);

@@ -61,14 +61,13 @@ void init_world(World *world)
         enm->reload = 10;
         enm->shots = 1;
         enm->ammo = -1;
-        enm->anim = pr_get_random() % 15;
+        enm->anim = rand() % 15;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
             enm->bodyparts[j].exists = 0;
         }
     }
     world->boss = NULL;
-    world->level_read = 0;
 
     world->potion_duration = 0;
     world->potion_effect_flags = 0;
@@ -87,7 +86,7 @@ Tile create_tile(int symbol)
     const int sym_positional_triggers_start = 600;
     const int sym_positional_triggers_count = 10;
 
-    int sym_exit_points_start = TILE_SYM_EXIT_POINT(0);
+    const int sym_exit_points_start = TILE_SYM_EXIT_POINT(0);
 
     Tile t;
     memset(&t, 0, sizeof(t));
@@ -172,17 +171,17 @@ Tile create_tile(int symbol)
 
 inline Tile *get_tile_at(World *world, int x, int y)
 {
-    return &world->map[x / TILESIZE][y / TILESIZE];
+    return &world->map[world->current_room - 1][x / TILESIZE][y / TILESIZE];
 }
 
 inline Tile *ns_get_tile_at(World *world, int x, int y)
 {
-    return &world->map[x][y];
+    return &world->map[world->current_room - 1][x][y];
 }
 
 int ns_get_wall_type_at(World *world, int x, int y)
 {
-    Tile *t = &(world->map[x][y]);
+    Tile *t = &(world->map[world->current_room - 1][x][y]);
     return t->is_wall ? t->data : 0;
 }
 

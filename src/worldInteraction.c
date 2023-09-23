@@ -293,7 +293,7 @@ void bounce_body_parts(int x, int y, World *world)
                 continue;
             }
             double distance = calc_sqr_distance(x, y, bp->x, bp->y);
-            if (distance < 8100) // 90^2
+            if (distance < 90 * 90)
             {
                 distance = sqrt(distance) + 1; // +1 to ensure non-zero divider
                 bp->velocity = 250 / (distance + rand() % 50);
@@ -330,9 +330,9 @@ void create_explosion(int x, int y, World *world)
 
     Explosion *ex = &world->explosion[explosion_counter];
 
-    ex->x = x - 16 + pr_get_random() % 32;
-    ex->y = y - 16 + pr_get_random() % 32;
-    ex->phase = pr_get_random() % 5;
+    ex->x = x - 16 + rand() % 32;
+    ex->y = y - 16 + rand() % 32;
+    ex->phase = rand() % 5;
 
     ex->circle_count = 5 + rand() % 6;
     double scale = random() * 0.5 + 0.5;
@@ -409,13 +409,7 @@ Enemy *get_next_available_enemy(World *world, int *index)
 
 void clear_map(World *world)
 {
-    for (int x = 0; x < MAPMAX_X; x++)
-    {
-        for (int y = 0; y < MAPMAX_Y; y++)
-        {
-            memset(&world->map[x][y], 0, sizeof(Tile));
-        }
-    }
+    memset(world->map, 0, sizeof(world->map));
 }
 
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
@@ -529,32 +523,21 @@ void combine_tile_properties(Tile *dst, Tile *other)
         dst->is_positional_trigger = other->is_positional_trigger;
 }
 
-void place_lev_object(World *world, int x, int y, int id, int room_from, int room_to)
+void place_lev_object(World *world, int x, int y, int id, int room_to)
 {
     Tile tile = create_tile(id);
     if (tile.valid)
     {
-        if (tile.is_exit_point && tile.data == room_from)
+        if (tile.is_exit_point && tile.data == 1 && room_to == 1)
         {
             world->plr.x = x * TILESIZE + 15;
             world->plr.y = y * TILESIZE + 15;
-            if (world->plr.x < 0)
-                world->plr.x = 0;
-            if (world->plr.x >= 480)
-                world->plr.x = 480 - 1;
-            if (world->plr.y < 0)
-                world->plr.y = 0;
-            if (world->plr.y >= 360)
-                world->plr.y = 360 - 1;
-        }
-        if (tile.is_exit_point && tile.data == room_to) // eka huone
-        {
             tile = create_tile(TILE_SYM_FLOOR);
         }
-        combine_tile_properties(&world->map[x][y], &tile);
+        combine_tile_properties(&world->map[room_to - 1][x][y], &tile);
         if (tile.data != 0)
         {
-            world->map[x][y].data = tile.data;
+            world->map[room_to - 1][x][y].data = tile.data;
         }
     }
     else if (id >= 200 && id <= 205)
@@ -585,9 +568,6 @@ void level_read_new_format(World *world, int room_to, FILE *f)
     DuScriptState state = du_script_init();
     int boss_exists = world->boss != NULL;
 
-    var = du_script_variable(&state, "level_read");
-    strcpy(var->value, world->level_read ? "1" : "0");
-    var->read_only = 1;
     var = du_script_variable(&state, "game_modifiers");
     sprintf(var->value, "%d", world->game_modifiers);
     var->read_only = 1;
@@ -613,74 +593,73 @@ void level_read_new_format(World *world, int room_to, FILE *f)
             fseek(f, file_start, SEEK_SET);
             continue;
         }
-        int id = -1, x = -1, y = -1, room = -1;
-        sscanf(buf, "%d %d %d %d", &id, &x, &y, &room);
-        if (room_to == room)
+        else if (*buf != '*')
         {
-            place_lev_object(world, x, y, id, world->current_room, room_to);
+            int id = -1, x = -1, y = -1, room = -1;
+            sscanf(buf, "%d %d %d %d", &id, &x, &y, &room);
+            place_lev_object(world, x, y, id, room);
+            if (id == -1)
+                LOG("unparsed line: %s\n", buf);
         }
     }
     fclose(f);
-    if (!world->level_read)
+    for (int i = 1; i <= ROOMCOUNT; i++)
     {
-        for (int i = 1; i <= ROOMCOUNT; i++)
-        {
-            char script_var[16];
-            sprintf(script_var, "script%d", i);
-            var = du_script_variable(&state, script_var);
-            if (*var->value)
-            {
-                char buf[256];
-                sprintf(buf, DATADIR "%s", var->value);
-                LOG("Opening bossfight config at %s\n", buf);
-                FILE *f2 = fopen(buf, "r");
-                if (f2)
-                {
-                    read_bfconfig(f2, &world->boss_fight_configs[i - 1], world->game_modifiers);
-                    fclose(f2);
-                    LOG("Bossfight initiated\n");
-                    world->boss_fight = 1;
-                }
-                else
-                    LOG("No such file!\n");
-            }
-        }
-        var = du_script_variable(&state, "name");
-        if (strlen(var->value) < 64)
-        {
-            strcpy(world->mission_display_name, var->value);
-        }
-        for (int i = 1; i <= 10; i++)
-        {
-            char story_var[16];
-            sprintf(story_var, "story%d", i);
-            var = du_script_variable(&state, story_var);
-            if (*var->value && strlen(var->value) < 61)
-            {
-                strcpy(world->story_after_mission[i - 1], var->value);
-                world->story_after_mission_lines = i;
-            }
-        }
-        char par_var[16];
-        sprintf(par_var, "par%d", world->game_modifiers);
-        var = du_script_variable(&state, par_var);
-        sscanf(var->value, "%lf", &world->par_time);
-
-        var = du_script_variable(&state, "wall_color");
+        char script_var[16];
+        sprintf(script_var, "script%d", i);
+        var = du_script_variable(&state, script_var);
         if (*var->value)
         {
-            float r = 0, g = 0, b = 0;
-            sscanf(var->value, "%f %f %f", &r, &g, &b);
-            LOG_TRACE("Map color %f %f %f\n", r, g, b);
-            world->map_wall_color[0] = r;
-            world->map_wall_color[1] = g;
-            world->map_wall_color[2] = b;
+            char buf[256];
+            sprintf(buf, DATADIR "%s", var->value);
+            LOG("Opening bossfight config at %s\n", buf);
+            FILE *f2 = fopen(buf, "r");
+            if (f2)
+            {
+                read_bfconfig(f2, &world->boss_fight_configs[i - 1], world->game_modifiers);
+                fclose(f2);
+                LOG("Bossfight initiated\n");
+                world->boss_fight = 1;
+            }
+            else
+                LOG("No such file!\n");
         }
-        var = du_script_variable(&state, "no_more_levels");
-        world->final_level = *var->value ? 1 : 0;
-        var = du_script_variable(&state, "mute_bosstalk");
-        world->play_boss_sound = *var->value ? 0 : 1;
     }
+    var = du_script_variable(&state, "name");
+    if (strlen(var->value) < 64)
+    {
+        strcpy(world->mission_display_name, var->value);
+    }
+    for (int i = 1; i <= 10; i++)
+    {
+        char story_var[16];
+        sprintf(story_var, "story%d", i);
+        var = du_script_variable(&state, story_var);
+        if (*var->value && strlen(var->value) < 61)
+        {
+            strcpy(world->story_after_mission[i - 1], var->value);
+            world->story_after_mission_lines = i;
+        }
+    }
+    char par_var[16];
+    sprintf(par_var, "par%d", world->game_modifiers);
+    var = du_script_variable(&state, par_var);
+    sscanf(var->value, "%lf", &world->par_time);
+
+    var = du_script_variable(&state, "wall_color");
+    if (*var->value)
+    {
+        float r = 0, g = 0, b = 0;
+        sscanf(var->value, "%f %f %f", &r, &g, &b);
+        LOG_TRACE("Map color %f %f %f\n", r, g, b);
+        world->map_wall_color[0] = r;
+        world->map_wall_color[1] = g;
+        world->map_wall_color[2] = b;
+    }
+    var = du_script_variable(&state, "no_more_levels");
+    world->final_level = *var->value ? 1 : 0;
+    var = du_script_variable(&state, "mute_bosstalk");
+    world->play_boss_sound = *var->value ? 0 : 1;
 
     if (world->boss && !boss_exists)
     {
@@ -689,7 +668,6 @@ void level_read_new_format(World *world, int room_to, FILE *f)
     }
 
     world->rooms_visited[room_to - 1] = 1;
-    world->level_read = 1;
 }
 
 int read_level(World *world, int mission, int room_to)
@@ -700,39 +678,34 @@ int read_level(World *world, int mission, int room_to)
 
     clear_map(world);
 
-    if (!world->level_read)
+    // Default colors
+    if (mission % 3 + 1 == 1)
     {
-        // Default colors
-        if (mission % 3 + 1 == 1)
-        {
-            world->map_wall_color[0] = 2.0f / 3;
-            world->map_wall_color[1] = 0;
-            world->map_wall_color[2] = 0;
-        }
-        else if (mission % 3 + 1 == 2)
-        {
-            world->map_wall_color[0] = 1 / 8.0f;
-            world->map_wall_color[1] = 1 / 2.0f;
-            world->map_wall_color[2] = 4.0f / 5;
-        }
-        else
-        {
-            world->map_wall_color[0] = 2 / 5.0f;
-            world->map_wall_color[1] = 1 / 2.0f;
-            world->map_wall_color[2] = 2.0f / 5;
-        }
+        world->map_wall_color[0] = 2.0f / 3;
+        world->map_wall_color[1] = 0;
+        world->map_wall_color[2] = 0;
+    }
+    else if (mission % 3 + 1 == 2)
+    {
+        world->map_wall_color[0] = 1 / 8.0f;
+        world->map_wall_color[1] = 1 / 2.0f;
+        world->map_wall_color[2] = 4.0f / 5;
+    }
+    else
+    {
+        world->map_wall_color[0] = 2 / 5.0f;
+        world->map_wall_color[1] = 1 / 2.0f;
+        world->map_wall_color[2] = 2.0f / 5;
     }
 
     char mission_name[256];
     sprintf(mission_name, DATADIR "%s\\mission%d", game_settings.mission_pack, mission);
 
-    if (!world->level_read)
-    {
-        world->boss_fight = 0;
-        sprintf(world->mission_display_name, "Mission %d", mission);
-        world->story_after_mission_lines = 0;
-        world->par_time = 0;
-    }
+    world->boss_fight = 0;
+    sprintf(world->mission_display_name, "Mission %d", mission);
+    world->story_after_mission_lines = 0;
+    world->par_time = 0;
+
     char special_filename[256];
     sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
     FILE *f = fopen(special_filename, "r");
@@ -772,6 +745,24 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
     }
 }
 
+void place_player_at_entrance(World *world, int to_room)
+{
+    for (int x = 0; x < MAPMAX_X; x++)
+    {
+        for (int y = 0; y < MAPMAX_Y; y++)
+        {
+            Tile *t = &world->map[to_room - 1][x][y];
+            if (t->is_exit_point && t->data == world->current_room)
+            {
+                world->plr.x = x * TILESIZE + 15;
+                world->plr.y = y * TILESIZE + 15;
+                return;
+            }
+        }
+    }
+    LOG("ERROR: exit point not found!\n");
+}
+
 void change_room_if_at_exit_point(World *world, int mission)
 {
     if (get_tile_at(world, world->plr.x, world->plr.y)->is_exit_point && world->plr.health > 0)
@@ -779,7 +770,7 @@ void change_room_if_at_exit_point(World *world, int mission)
         int to_room = get_tile_at(world, world->plr.x, world->plr.y)->data;
         if (world->plr.roomid != to_room)
         {
-            read_level(world, mission, to_room);
+            place_player_at_entrance(world, to_room);
             world->current_room = to_room;
             for (int i = 0; i < BULLETCOUNT; i++)
             {

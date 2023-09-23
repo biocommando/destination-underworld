@@ -72,7 +72,6 @@ function serializeTileMap(data, newline = '\n') {
         serializeList(data.objects.filter(x => x.condition === item.name))
         lines.push(`*@+SKIP_${item.name}`)
     })
-    lines.push('*?level_read = 1 +end')
     lines.push('*@metadata')
     data.metadata
         .filter(x => !x.startsWith('condition: ') && x.indexOf('=') > 0)
@@ -82,8 +81,7 @@ function serializeTileMap(data, newline = '\n') {
             const value = meta.substring(eqidx + 1).trim()
             lines.push(`*=${variable}${value}`)
         })
-        lines.push('*@+end')
-        lines.push('')
+    lines.push('')
     return lines.join(newline)
 }
 

@@ -21,5 +21,6 @@ src/duscript.c ^
 src/sprites.c ^
 -DENABLE_LOGGING ^
 -Iallegro\include ^
+-O3 ^
 allegro\lib\liballegro_monolith.dll.a ^
 -o DestinationUnderworld.exe
