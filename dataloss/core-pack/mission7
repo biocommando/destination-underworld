@@ -822,3 +822,31 @@ X(duedit_compatible)
 *=par1"45.075"
 *=par6"37.125"
 *=par8"17.8"
+#script 1
+# ignore_init_properties
+#end_script
+#script 3
+# ignore_init_properties
+# on kill_count: 2 do modify_terrain: x = 9, y = 2, terrain_type = floor
+# on kill_count: 2 do modify_terrain: x = 10, y = 2, terrain_type = floor
+# 
+# on kill_count: 2 do modify_terrain: x = 11, y = 3, terrain_type = floor
+# on kill_count: 2 do modify_terrain: x = 11, y = 4, terrain_type = floor
+# 
+#end_script
+$1
+end
+$3
+event
+event_trigger kill_count 2
+event_action modify_terrain 9 2 0 0 0 0 0 floor
+event
+event_trigger kill_count 2
+event_action modify_terrain 10 2 0 0 0 0 0 floor
+event
+event_trigger kill_count 2
+event_action modify_terrain 11 3 0 0 0 0 0 floor
+event
+event_trigger kill_count 2
+event_action modify_terrain 11 4 0 0 0 0 0 floor
+end

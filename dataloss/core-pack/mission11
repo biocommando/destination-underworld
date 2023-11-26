@@ -238,13 +238,11 @@ X(duedit_compatible)
 46 1 1 2
 46 2 1 2
 203 2 1 2
-46 3 1 2
 46 4 1 2
 46 5 1 2
 46 6 1 2
 120 7 1 2
 46 8 1 2
-46 9 1 2
 46 10 1 2
 120 11 1 2
 46 12 1 2
@@ -258,7 +256,6 @@ X(duedit_compatible)
 46 4 2 2
 46 5 2 2
 46 6 2 2
-46 7 2 2
 46 8 2 2
 120 9 2 2
 46 10 2 2
@@ -326,7 +323,6 @@ X(duedit_compatible)
 46 4 6 2
 46 5 6 2
 46 6 6 2
-46 7 6 2
 46 8 6 2
 120 9 6 2
 46 10 6 2
@@ -378,7 +374,6 @@ X(duedit_compatible)
 46 5 9 2
 203 5 9 2
 46 6 9 2
-46 7 9 2
 46 8 9 2
 203 8 9 2
 120 9 9 2
@@ -392,7 +387,6 @@ X(duedit_compatible)
 120 0 10 2
 46 1 10 2
 46 2 10 2
-46 3 10 2
 46 4 10 2
 46 5 10 2
 46 6 10 2
@@ -400,7 +394,6 @@ X(duedit_compatible)
 46 8 10 2
 120 9 10 2
 46 10 10 2
-46 11 10 2
 46 12 10 2
 46 13 10 2
 46 14 10 2
@@ -628,7 +621,18 @@ X(duedit_compatible)
 120 13 11 3
 120 14 11 3
 120 15 11 3
-*?level_read = 1 +end
+600 2 9 1
+100 9 1 2
+100 11 10 2
+100 3 10 2
+100 3 1 2
+100 7 2 2
+100 7 6 2
+100 7 9 2
+600 6 2 2
+600 6 6 2
+600 6 9 2
+304 8 7 3
 *@metadata
 *=name"Alien Stronghold"
 *=story1"The ominiously skull-shaped portal takes you further down"
@@ -640,6 +644,51 @@ X(duedit_compatible)
 *=par6"52.825"
 *=par8"55"
 *=par0"50.35"
-*=par1672.25"
-*=par146.35"
-*@+end
+*=par1672.25""
+*=par146.35""
+#script 1
+# ignore_init_properties
+# on positional_trigger: 0 do spawn_potion: x = 3, y = 6, type = 3
+#end_script
+#script 2
+# ignore_init_properties
+# on kill_count: 3 do modify_terrain: x = 11, y = 10, terrain_type = floor
+# on kill_count: 5 do modify_terrain: x = 9, y = 1, terrain_type = floor
+# on kill_count: 7 do modify_terrain: x = 7, y = 2, terrain_type = floor
+# on kill_count: 7 do modify_terrain: x = 7, y = 6, terrain_type = floor
+# on kill_count: 7 do modify_terrain: x = 7, y = 9, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 3, y = 10, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 3, y = 1, terrain_type = floor
+# on kill_count: 12 do spawn_potion: x = 5, y = 8, type = 3
+#end_script
+$1
+event
+event_trigger positional_trigger 0
+event_action spawn_potion 3 6 3
+end
+$2
+event
+event_trigger kill_count 3
+event_action modify_terrain 11 10 0 0 0 0 0 floor
+event
+event_trigger kill_count 5
+event_action modify_terrain 9 1 0 0 0 0 0 floor
+event
+event_trigger kill_count 7
+event_action modify_terrain 7 2 0 0 0 0 0 floor
+event
+event_trigger kill_count 7
+event_action modify_terrain 7 6 0 0 0 0 0 floor
+event
+event_trigger kill_count 7
+event_action modify_terrain 7 9 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 3 10 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 3 1 0 0 0 0 0 floor
+event
+event_trigger kill_count 12
+event_action spawn_potion 5 8 3
+end

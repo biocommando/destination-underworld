@@ -113,10 +113,6 @@ X(duedit_compatible)
 120 14 6 1
 120 15 6 1
 120 0 7 1
-46 1 7 1
-46 2 7 1
-46 3 7 1
-46 4 7 1
 120 5 7 1
 46 6 7 1
 46 7 7 1
@@ -153,10 +149,6 @@ X(duedit_compatible)
 46 3 9 1
 200 3 9 1
 46 4 9 1
-46 5 9 1
-46 6 9 1
-46 7 9 1
-46 8 9 1
 120 9 9 1
 120 10 9 1
 120 11 9 1
@@ -169,12 +161,6 @@ X(duedit_compatible)
 46 2 10 1
 46 3 10 1
 46 4 10 1
-46 5 10 1
-46 6 10 1
-46 7 10 1
-46 8 10 1
-46 9 10 1
-46 10 10 1
 122 11 10 1
 120 12 10 1
 120 13 10 1
@@ -243,9 +229,7 @@ X(duedit_compatible)
 46 10 2 2
 46 11 2 2
 46 12 2 2
-202 12 2 2
 46 13 2 2
-202 13 2 2
 46 14 2 2
 120 15 2 2
 120 0 3 2
@@ -792,6 +776,28 @@ X(duedit_compatible)
 120 13 11 5
 120 14 11 5
 120 15 11 5
+120 5 9 1
+120 5 10 1
+120 6 10 1
+120 7 10 1
+120 8 10 1
+120 9 10 1
+120 10 10 1
+120 8 9 1
+120 7 9 1
+120 6 9 1
+600 1 3 1
+600 2 3 1
+600 2 2 1
+600 2 1 1
+600 1 1 1
+113 4 7 1
+113 3 7 1
+113 2 7 1
+113 1 7 1
+201 9 5 2
+600 1 2 5
+600 1 3 5
 *@metadata
 *=name"Highway to Hell"
 *=story1"As you make it through the dungeon bearing the name"
@@ -809,3 +815,67 @@ X(duedit_compatible)
 *=par1"25.2"
 *=par6"23.1"
 *=par8"19.175"
+#script 1
+# ignore_init_properties
+# on positional_trigger: 0 do modify_terrain: x = 1, y = 2, terrain_type = wall
+# on positional_trigger: 0 do modify_terrain: x = 1, y = 7, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 2, y = 7, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 3, y = 7, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 4, y = 7, terrain_type = floor
+# 
+# on kill_count: 4 do modify_terrain: x = 1, y = 2, terrain_type = floor
+#end_script
+#script 2
+# ignore_init_properties
+# on kill_count: 1 do spawn: 9, 2, 0, 0, 100, 0, 0
+# on kill_count: 1 do spawn: 11, 2, 0, 0, 100, 0, 0
+#end_script
+#script 5
+# ignore_init_properties
+# on positional_trigger: 0 do modify_terrain: x = 6, y = 5, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 6, y = 6, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 7, y = 5, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 7, y = 6, terrain_type = floor
+#end_script
+$1
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 1 2 0 0 0 0 0 wall
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 1 7 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 2 7 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 3 7 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 4 7 0 0 0 0 0 floor
+event
+event_trigger kill_count 4
+event_action modify_terrain 1 2 0 0 0 0 0 floor
+end
+$2
+event
+event_trigger kill_count 1
+event_action spawn 0 0 100 0 0 9 2
+event
+event_trigger kill_count 1
+event_action spawn 0 0 100 0 0 11 2
+end
+$5
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 6 5 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 6 6 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 7 5 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 7 6 0 0 0 0 0 floor
+end

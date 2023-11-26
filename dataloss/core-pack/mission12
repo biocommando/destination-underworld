@@ -657,7 +657,8 @@ X(duedit_compatible)
 120 13 11 3
 1002 14 11 3
 120 15 11 3
-*?level_read = 1 +end
+600 3 3 2
+600 14 3 2
 *@metadata
 *=name"Microsoft Headquarters"
 *=story1"It shouldn't come as a surprise that Windows is a work of"
@@ -674,4 +675,21 @@ X(duedit_compatible)
 *=par1"46.15"
 *=par6"47.325"
 *=par8"36.725"
-*@+end
+#script 1
+# ignore_init_properties
+#end_script
+#script 2
+# ignore_init_properties
+# on positional_trigger: 0 do modify_terrain: x = 7, y = 3, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 8, y = 3, terrain_type = floor
+#end_script
+$1
+end
+$2
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 7 3 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 8 3 0 0 0 0 0 floor
+end

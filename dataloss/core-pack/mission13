@@ -296,7 +296,6 @@ X(duedit_compatible)
 120 11 3 2
 120 12 3 2
 120 13 3 2
-46 14 3 2
 120 15 3 2
 122 0 4 2
 120 1 4 2
@@ -375,7 +374,6 @@ X(duedit_compatible)
 120 9 7 2
 120 10 7 2
 120 11 7 2
-46 12 7 2
 120 13 7 2
 46 14 7 2
 500 14 7 2
@@ -438,8 +436,6 @@ X(duedit_compatible)
 201 11 10 2
 46 12 10 2
 201 12 10 2
-46 13 10 2
-500 13 10 2
 46 14 10 2
 511 14 10 2
 120 15 10 2
@@ -756,8 +752,6 @@ X(duedit_compatible)
 120 7 5 4
 46 8 5 4
 120 9 5 4
-46 10 5 4
-46 11 5 4
 46 12 5 4
 46 13 5 4
 46 14 5 4
@@ -871,13 +865,25 @@ X(duedit_compatible)
 120 13 11 4
 120 14 11 4
 120 15 11 4
+600 5 4 1
+600 11 4 1
+113 12 7 2
+113 13 10 2
+113 14 3 2
+600 14 4 2
+600 10 6 3
+600 11 6 3
+600 12 6 3
+600 13 6 3
+600 14 6 3
+113 11 5 4
+46 10 5 4
 #conditions
 *?game_modifiers = 8 COND_1
 *>+SKIP_COND_1
 *@COND_1
 300 8 6 1
 *@+SKIP_COND_1
-*?level_read = 1 +end
 *@metadata
 *=name"Ancient Hallway of Doom"
 *=story1"As the Ancient Protectors turn to ash behind you, you start"
@@ -893,4 +899,55 @@ X(duedit_compatible)
 *=par1"72.475"
 *=par6"66.1"
 *=par8"66.4"
-*@+end
+#script 1
+# ignore_init_properties
+# on positional_trigger: 0 do modify_terrain: x = 7, y = 5, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 9, y = 5, terrain_type = floor
+#end_script
+#script 2
+# ignore_init_properties
+# on kill_count: 8 do modify_terrain: x = 12, y = 7, terrain_type = floor
+# on kill_count: 15 do modify_terrain: x = 13, y = 10, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 14, y = 3, terrain_type = floor
+#end_script
+#script 3
+# ignore_init_properties
+# on positional_trigger: 0 do modify_terrain: x = 12, y = 4, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 13, y = 4, terrain_type = floor
+#end_script
+#script 4
+# ignore_init_properties
+# on kill_count: 13 do modify_terrain: x = 11, y = 5, terrain_type = floor
+#end_script
+$1
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 7 5 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 9 5 0 0 0 0 0 floor
+end
+$2
+event
+event_trigger kill_count 8
+event_action modify_terrain 12 7 0 0 0 0 0 floor
+event
+event_trigger kill_count 15
+event_action modify_terrain 13 10 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 14 3 0 0 0 0 0 floor
+end
+$3
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 12 4 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 13 4 0 0 0 0 0 floor
+end
+$4
+event
+event_trigger kill_count 13
+event_action modify_terrain 11 5 0 0 0 0 0 floor
+end

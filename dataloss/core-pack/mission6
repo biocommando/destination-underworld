@@ -511,10 +511,7 @@ X(duedit_compatible)
 120 3 6 3
 120 4 6 3
 113 5 6 3
-46 6 6 3
 113 7 6 3
-120 8 6 3
-113 9 6 3
 122 10 6 3
 122 11 6 3
 122 12 6 3
@@ -525,13 +522,8 @@ X(duedit_compatible)
 122 1 7 3
 122 2 7 3
 60 3 7 3
-46 4 7 3
 46 5 7 3
 46 6 7 3
-46 7 7 3
-46 8 7 3
-46 9 7 3
-46 10 7 3
 46 11 7 3
 46 12 7 3
 120 13 7 3
@@ -541,7 +533,6 @@ X(duedit_compatible)
 122 1 8 3
 60 2 8 3
 60 3 8 3
-46 4 8 3
 46 5 8 3
 46 6 8 3
 46 7 8 3
@@ -557,7 +548,6 @@ X(duedit_compatible)
 60 1 9 3
 60 2 9 3
 60 3 9 3
-46 4 9 3
 46 5 9 3
 200 5 9 3
 46 6 9 3
@@ -576,7 +566,6 @@ X(duedit_compatible)
 46 1 10 3
 46 2 10 3
 46 3 10 3
-46 4 10 3
 120 5 10 3
 120 6 10 3
 122 7 10 3
@@ -604,7 +593,19 @@ X(duedit_compatible)
 120 13 11 3
 122 14 11 3
 122 15 11 3
-*?level_read = 1 +end
+100 8 6 3
+100 9 6 3
+100 7 7 3
+100 8 7 3
+100 9 7 3
+100 10 7 3
+120 6 6 3
+303 10 9 3
+303 11 9 3
+120 4 7 3
+120 4 8 3
+120 4 9 3
+120 4 10 3
 *@metadata
 *=name"The Temple of Gargoroth"
 *=story1"You have slain the worshippers of the Great Evil Beast"
@@ -619,4 +620,45 @@ X(duedit_compatible)
 *=par1"31.475"
 *=par6"24.15"
 *=par8"15.45"
-*@+end
+#script 1
+# ignore_init_properties
+# on kill_count: 3 do modify_terrain: x = 4, y = 3, terrain_type = floor
+# on kill_count: 3 do modify_terrain: x = 4, y = 4, terrain_type = floor
+# on kill_count: 3 do modify_terrain: x = 4, y = 5, terrain_type = floor
+# on kill_count: 9 do spawn: 12, 2, 0, 0, 100, 0, 0
+# on kill_count: 11 do spawn: 9, 2, 0, 0, 100, 0, 0
+#end_script
+#script 3
+# ignore_init_properties
+# on kill_count: 5 do modify_terrain: x = 6, y = 6, terrain_type = floor
+# on kill_count: 8 do modify_terrain: x = 4, y = 8, terrain_type = floor
+# on kill_count: 8 do modify_terrain: x = 4, y = 9, terrain_type = floor
+#end_script
+$1
+event
+event_trigger kill_count 3
+event_action modify_terrain 4 3 0 0 0 0 0 floor
+event
+event_trigger kill_count 3
+event_action modify_terrain 4 4 0 0 0 0 0 floor
+event
+event_trigger kill_count 3
+event_action modify_terrain 4 5 0 0 0 0 0 floor
+event
+event_trigger kill_count 9
+event_action spawn 0 0 100 0 0 12 2
+event
+event_trigger kill_count 11
+event_action spawn 0 0 100 0 0 9 2
+end
+$3
+event
+event_trigger kill_count 5
+event_action modify_terrain 6 6 0 0 0 0 0 floor
+event
+event_trigger kill_count 8
+event_action modify_terrain 4 8 0 0 0 0 0 floor
+event
+event_trigger kill_count 8
+event_action modify_terrain 4 9 0 0 0 0 0 floor
+end

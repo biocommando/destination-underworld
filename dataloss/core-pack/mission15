@@ -645,9 +645,6 @@ X(duedit_compatible)
 46 2 10 3
 202 2 10 3
 511 2 10 3
-46 3 10 3
-202 3 10 3
-511 3 10 3
 46 4 10 3
 202 4 10 3
 46 5 10 3
@@ -685,7 +682,8 @@ X(duedit_compatible)
 512 7 6 3
 512 8 6 3
 512 9 6 3
-*?level_read = 1 +end
+100 3 10 3
+600 4 10 3
 *@metadata
 *=name"The Lair of the Evil Man"
 *=story1"You reach the portal at the deepest corner of the Lair of"
@@ -699,4 +697,26 @@ X(duedit_compatible)
 *=par1"66.3"
 *=par6"67.325"
 *=par8"90.25"
-*@+end
+#script 1
+# ignore_init_properties
+#end_script
+#script 2
+# ignore_init_properties
+#end_script
+#script 3
+# ignore_init_properties
+# on positional_trigger: 0 do modify_terrain: x = 11, y = 6, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 10, y = 6, terrain_type = floor
+#end_script
+$1
+end
+$2
+end
+$3
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 11 6 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 10 6 0 0 0 0 0 floor
+end

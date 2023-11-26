@@ -133,7 +133,7 @@ Tile create_tile(int symbol)
     if (symbol == TILE_SYM_BREAKABLE_WALL)
     {
         t.data = WALL_NORMAL;
-        t.durability = 15;
+        t.durability = 5;
         t.is_wall = 1;
         tile_properties_set = 1;
     }

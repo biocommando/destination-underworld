@@ -623,12 +623,17 @@ X(duedit_compatible)
 *=par1"24.4"
 *=par6"25.175"
 *=par8"21.6"
+#script 1
+# ignore_init_properties
+#end_script
 #script 2
 # ignore_init_properties
 # on positional_trigger: 0 do modify_terrain: x = 6, y = 1, terrain_type = floor
 # on positional_trigger: 0 do modify_terrain: x = 4, y = 2, terrain_type = floor
 # on positional_trigger: 0 do modify_terrain: x = 5, y = 2, terrain_type = floor
 #end_script
+$1
+end
 $2
 event
 event_trigger positional_trigger 0

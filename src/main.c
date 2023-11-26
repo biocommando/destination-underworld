@@ -303,7 +303,7 @@ void boss_logic(World *world, int boss_died)
   {
     if (boss)
       world->boss_fight_config->state.health = boss_died ? 0 : boss->health;
-    world->boss_fight_config->state.player_kills = world->kills;
+    //world->boss_fight_config->state.player_kills = world->kills;
     bossfight_process_event_triggers(world->boss_fight_config);
     // Ensure that positional triggers will only fire once ever
     world->boss_fight_config->state.positional_trigger_flags |= 
@@ -515,6 +515,7 @@ void bullet_logic(World *world)
               world->plr.gold += enm->gold;
 
               world->kills++;
+              world->boss_fight_config->state.player_kills++;
               if (enm->gold > 0 || (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
               {
                 if (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
