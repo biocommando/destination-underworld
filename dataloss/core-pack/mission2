@@ -216,7 +216,6 @@ X(duedit_compatible)
 46 3 1 2
 46 4 1 2
 46 5 1 2
-46 6 1 2
 46 7 1 2
 46 8 1 2
 46 9 1 2
@@ -227,12 +226,8 @@ X(duedit_compatible)
 46 14 1 2
 120 15 1 2
 120 0 2 2
-46 1 2 2
 46 2 2 2
 120 3 2 2
-46 4 2 2
-46 5 2 2
-46 6 2 2
 46 7 2 2
 46 8 2 2
 46 9 2 2
@@ -589,19 +584,25 @@ X(duedit_compatible)
 122 13 11 3
 122 14 11 3
 122 15 11 3
+113 6 1 2
+113 6 2 2
+120 4 2 2
+120 5 2 2
+120 1 2 2
+600 2 2 2
 #conditions
 *?game_modifiers ! 16 COND_1
-*>SKIP_COND_1
+*>+SKIP_COND_1
 *@COND_1
 303 2 4 2
 201 13 6 2
 201 14 6 2
 201 13 7 2
 201 14 7 2
-*@SKIP_COND_1
+*@+SKIP_COND_1
 #conditions
 *?game_modifiers ! 16 and game_modifiers ! 1 COND_2
-*>SKIP_COND_2
+*>+SKIP_COND_2
 *@COND_2
 201 13 3 2
 201 14 3 2
@@ -610,7 +611,7 @@ X(duedit_compatible)
 201 14 4 2
 201 13 5 2
 201 14 5 2
-*@SKIP_COND_2
+*@+SKIP_COND_2
 *@metadata
 *=name"Purgatory"
 *=story1"That wasn't too bad, you think, and you think the magician"
@@ -622,3 +623,20 @@ X(duedit_compatible)
 *=par1"24.4"
 *=par6"25.175"
 *=par8"21.6"
+#script 2
+# ignore_init_properties
+# on positional_trigger: 0 do modify_terrain: x = 6, y = 1, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 4, y = 2, terrain_type = floor
+# on positional_trigger: 0 do modify_terrain: x = 5, y = 2, terrain_type = floor
+#end_script
+$2
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 6 1 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 4 2 0 0 0 0 0 floor
+event
+event_trigger positional_trigger 0
+event_action modify_terrain 5 2 0 0 0 0 0 floor
+end

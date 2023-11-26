@@ -26,7 +26,228 @@ void print_configs(BossFightConfig *config)
       }
       LOG("\n");
     }
+    if (!config->events[i].enabled)
+    {
+      LOG("    EVENT DISABLED\n");
+    }
   }
+}
+
+void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
+{
+  memset(config, 0, sizeof(BossFightConfig));
+  char buf[100];
+  BossFightEventConfig *event = NULL;
+  while (!feof(f))
+  {
+    fgets(buf, sizeof(buf), f);
+    char cmd[100];
+    sscanf(buf, "%s", cmd);
+    if (!strcmp(cmd, "health"))
+    {
+      int val, override = -1;
+      sscanf(buf, "%*s %d %d", &val, &override);
+      if (override == -1 || override == game_modifiers)
+        config->health = val;
+    }
+    else if (!strcmp(cmd, "speed"))
+    {
+      int val, override = -1;
+      sscanf(buf, "%*s %d %d", &val, &override);
+      if (override == -1 || override == game_modifiers)
+        config->speed = val;
+    }
+    else if (!strcmp(cmd, "fire_rate"))
+    {
+      int val, override = -1;
+      sscanf(buf, "%*s %d %d", &val, &override);
+      if (override == -1 || override == game_modifiers)
+        config->fire_rate = val;
+    }
+    else if (!strcmp(cmd, "player_initial_gold"))
+    {
+      int val, override = -1;
+      sscanf(buf, "%*s %d %d", &val, &override);
+      if (override == -1 || override == game_modifiers)
+        config->player_initial_gold = val;
+    }
+    else if (!strcmp(cmd, "time_starts_at"))
+    {
+      int val, override = -1;
+      sscanf(buf, "%*s %d %d", &val, &override);
+      if (override == -1 || override == game_modifiers)
+        config->state.timer_value = val;
+    }
+    else if (!strcmp(cmd, "event"))
+    {
+      if (config->num_events == BFCONF_MAX_EVENTS)
+      {
+        LOG("ERROR: too many events defined\n");
+        continue;
+      }
+      event = &config->events[config->num_events];
+      event->enabled = 1;
+      config->num_events++;
+    }
+    else if (!strcmp(cmd, "event_override"))
+    {
+      if (config->num_events == 0)
+      {
+        LOG("ERROR: overrides can only be defined after generic event\n");
+        continue;
+      }
+      int override_num = -1;
+      sscanf(buf, "%*s %d", &override_num);
+      if (override_num == game_modifiers)
+      {
+        event = &config->events[config->num_events - 1];
+      }
+      else
+      {
+        event = NULL;
+      }
+    }
+    else if (!strcmp(cmd, "end"))
+    {
+      break;
+    }
+    else if (event)
+    {
+      if (!strcmp(cmd, "event_trigger"))
+      {
+        char s[100];
+        sscanf(buf, "%*s %s %d", s, &event->trigger_value);
+        int *trigger_type = &event->trigger_type;
+        if (!strcmp(s, "time_interval"))
+        {
+          *trigger_type = BFCONF_TRIGGER_TYPE_TIME_INTERVAL;
+        }
+        if (!strcmp(s, "time_one_time"))
+        {
+          *trigger_type = BFCONF_TRIGGER_TYPE_TIME_ONE_TIME;
+        }
+        if (!strcmp(s, "health"))
+        {
+          *trigger_type = BFCONF_TRIGGER_TYPE_HEALTH;
+        }
+        if (!strcmp(s, "waypoint_reached"))
+        {
+          *trigger_type = BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED;
+        }
+        if (!strcmp(s, "secondary_timer"))
+        {
+          *trigger_type = BFCONF_TRIGGER_TYPE_SECONDARY_TIMER;
+        }
+        if (!strcmp(s, "kill_count"))
+        {
+          *trigger_type = BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED;
+        }
+        if (!strcmp(s, "positional_trigger"))
+        {
+          *trigger_type = BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER;
+        }
+      }
+      else if (!strcmp(cmd, "event_action"))
+      {
+        char s[100] = "", s2[100] = "";
+        int params[7] = {0, 0, 0, 0, 0, 0, 0};
+        sscanf(buf, "%*s %s %d %d %d %d %d %d %d %s", s, params, params + 1, params + 2,
+               params + 3, params + 4, params + 5, params + 6, s2);
+        if (!strcmp(s, "spawn"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_SPAWN;
+          for (int j = 0; j < 5; j++)
+          {
+            int prob = params[j];
+            // >= min, < max
+            event->spawn_point.probability_thresholds[j][0] = j == 0 ? 0 : event->spawn_point.probability_thresholds[j - 1][1];
+            event->spawn_point.probability_thresholds[j][1] = event->spawn_point.probability_thresholds[j][0] + prob;
+          }
+          event->spawn_point.x = params[5];
+          event->spawn_point.y = params[6];
+        }
+
+        if (!strcmp(s, "allow_firing"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_ALLOW_FIRING;
+        }
+
+        if (!strcmp(s, "disallow_firing"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_DISALLOW_FIRING;
+        }
+        if (!strcmp(s, "fire_in_circle"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE;
+          event->parameters[0] = params[0]; // number_of_directions
+          event->parameters[1] = params[1]; // intensity
+        }
+        if (!strcmp(s, "modify_terrain"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_MODIFY_TERRAIN;
+          event->parameters[0] = params[0]; // x
+          event->parameters[1] = params[1]; // y
+          if (!strcmp(s2, "floor"))
+          {
+            event->parameters[2] = BFCONF_MODIFY_TERRAIN_FLOOR;
+          }
+          if (!strcmp(s2, "wall"))
+          {
+            event->parameters[2] = BFCONF_MODIFY_TERRAIN_WALL;
+          }
+          if (!strcmp(s2, "level_exit"))
+          {
+            event->parameters[2] = BFCONF_MODIFY_TERRAIN_EXIT;
+          }
+        }
+        if (!strcmp(s, "set_waypoint"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_SET_WAYPOINT;
+          event->parameters[0] = params[0]; // x
+          event->parameters[1] = params[1]; // y
+          event->parameters[2] = params[2]; // waypoint_id
+        }
+        if (!strcmp(s, "clear_waypoint"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_CLEAR_WAYPOINT;
+        }
+        if (!strcmp(s, "start_secondary_timer"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_START_SECONDARY_TIMER;
+          event->parameters[0] = params[0]; // time
+        }
+        if (!strcmp(s, "stop_secondary_timer"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER;
+        }
+        if (!strcmp(s, "toggle_event_enabled"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED;
+          int event_id = params[0];
+          if (event_id < 0) //|| event_id >= config->num_events)
+          {
+            LOG("Invalid event_id field %d\n", event_id);
+            event_id = 0;
+          }
+          event->parameters[0] = event_id;
+          event->parameters[1] = params[1]; // enabled
+        }
+
+        if (!strcmp(s, "spawn_potion"))
+        {
+          event->event_type = BFCONF_EVENT_TYPE_SPAWN_POTION;
+          event->parameters[0] = params[0]; // x
+          event->parameters[1] = params[1]; // y
+          event->parameters[2] = params[2]; // type
+        }
+      }
+      else if (!strcmp(cmd, "event_initially_disabled"))
+      {
+        event->enabled = 0;
+      }
+    }
+  }
+  print_configs(config);
 }
 
 void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)

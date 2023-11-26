@@ -20,6 +20,7 @@ src/loadindicator.c ^
 src/duscript.c ^
 src/sprites.c ^
 -DENABLE_LOGGING ^
+-DTRACE_LOG ^
 -Iallegro\include ^
 -O3 ^
 allegro\lib\liballegro_monolith.dll.a ^

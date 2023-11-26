@@ -79,6 +79,7 @@ typedef struct
 } BossFightConfig;
 
 void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers);
+void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers);
 
 void bossfight_process_event_triggers(BossFightConfig *config);
 

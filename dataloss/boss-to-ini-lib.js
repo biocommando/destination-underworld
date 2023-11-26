@@ -1,6 +1,7 @@
-function bossToIni(fname) {
+function bossToIni(fileData, format = 'old') {
 const fs = require('fs')
 
+let hasInitProperties = true
 const main = {
     health: 50,
     fire_rate: 10,
@@ -24,7 +25,7 @@ const getNextId = () => ++idCounter
 const ms_delta = 40 * 3
 const ms = a => Math.floor(Number(a) / ms_delta)
 
-let output_filename = `core-pack/${fname.replace('.boss', '.ini')}`
+let output_filename = format === 'old' ? `core-pack/${fileData.replace('.boss', '.ini')}` : ''
 
 const GAMEMODIFIER_DOUBLED_SHOTS = 0x1
 const GAMEMODIFIER_OVERPOWERED_POWERUPS = 0x2
@@ -70,9 +71,13 @@ const intermediateBossFileForDebug = []
 let lineProcessingDone = false
 
 try {
-    fs
-        .readFileSync(fname)
-        .toString().replace(/\{#([^#]*)#\}/gm, (whole, a) => {
+    let data
+    if (format === 'old') {
+        data = fs.readFileSync(fileData).toString()
+    } else {
+        data = fileData
+    }
+    data.replace(/\{#([^#]*)#\}/gm, (whole, a) => {
             try {
                 const result = eval(a)
                 if (result.map)
@@ -183,6 +188,8 @@ try {
                 const evtName = x.split(':')[0]
                 events.filter(e => e.name && (e.name === evtName || e.name.startsWith('overrides__' + evtName + '__for_mode_')))
                     .forEach(e => e[prop[0]] = prop[1])
+            } else if (x === 'ignore_init_properties') {
+                hasInitProperties = false
             }
         })
     lineProcessingDone = true
@@ -195,13 +202,69 @@ try {
             .join('\r\n') + '\r\n'
     }
 
-    let str = `# Generated from ${fname}\r\n`
+    let str = `# Generated from ${fileData}\r\n`
+    let newFormat = []
 
     main.events = events.filter(e => !(e.name && e.name.startsWith('overrides__'))).length
 
-    Object.keys(mainSetup).forEach(sect => {
-        str += `\r\n[${sect}]\r\n${objToIni(mainSetup[sect])}`
-    })
+    if (hasInitProperties) {
+        Object.keys(mainSetup).forEach(sect => {
+            str += `\r\n[${sect}]\r\n${objToIni(mainSetup[sect])}`
+            let overrideFor = Object.keys(main).find(x => main[x] === sect)
+            if (!overrideFor) overrideFor = ''
+            else overrideFor = overrideFor.split('_').pop()
+            Object.keys(mainSetup[sect]).filter(x => !x.startsWith('mode_') && x !== 'events')
+                .forEach(key => newFormat.push(`${key} ${mainSetup[sect][key]} ${overrideFor}`))
+        })
+    }
+    
+
+    function eventToNewFormat(event) {
+        if (event.name && event.name.startsWith('overrides__')) {
+            newFormat.push(`event_override ${event.name.split('_').pop()}`)
+        } else {
+            newFormat.push(`event`)
+        }
+        if (event.trigger_type !== 'never') {
+            newFormat.push(`event_trigger ${event.trigger_type} ${event.trigger_value}`)
+        }
+        if (event.event_type !== 'nothing') {
+            let action = `event_action ${event.event_type} `
+            if (event.event_type === 'spawn') {
+                const sp = spawnpoints.find(x => x.value === event.spawn_point)
+                for (let i = 0; i < 5; i++)
+                    action += `${sp['enemy_' + i + '_probability']} `
+                action += `${sp.x} ${sp.y}`
+            }
+            if (event.event_type === 'fire_in_circle') {
+                action += `${event.number_of_directions} ${event.intensity}`
+            }
+            if (event.event_type === 'modify_terrain') {
+                action += `${event.x} ${event.y} 0 0 0 0 0 ${event.terrain_type}`
+            }
+            if (event.event_type === 'set_waypoint') {
+                action += `${event.x} ${event.y} ${event.waypoint_id}`
+            }
+            if (event.event_type === 'start_secondary_timer') {
+                action += `${event.time}`
+            }
+            if (event.event_type === 'toggle_event_enabled') {
+                action += `${event.event_id} ${event.enabled}`
+            }
+            if (event.event_type === 'spawn_potion') {
+                action += `${event.x} ${event.y} ${event.type}`
+            }
+            newFormat.push(action)
+        }
+    }
+
+    events.filter(x => !x.name || !x.name.startsWith('overrides__'))
+        .forEach(evt => {
+            eventToNewFormat(evt)
+            events.filter(x => x.name && x.name.startsWith(`overrides__${evt.name}__for_mode_`))
+                .forEach(eventToNewFormat)
+        })
+    newFormat.push('end')
 
     events.forEach(e => {
         if (e.event_id !== undefined) {
@@ -242,7 +305,11 @@ try {
         str += objToIni(s, ['name', 'value'])
     })
 
-    fs.writeFileSync(output_filename, str)
+    if (format === 'old') {
+        fs.writeFileSync(output_filename, str)
+    } else {
+        return newFormat.join('\n')
+    }
 } catch (e) {
     if (intermediateBossFileForDebug.length === 0)
         console.log('Error while running preprocessor:', e)

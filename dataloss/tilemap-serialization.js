@@ -4,8 +4,12 @@ function deserializeTileMap(fileAsString) {
         return deserializeTileMapLegacy(fileAsString)
     }
     lines.shift()
-    const data = { objects: [], metadata: [], height: 12, width: 16 }
-    let section = '', conditionName
+    const data = {
+        objects: [], metadata: [], height: 12, width: 16,
+        scripts: [[], [], [], [], [], [], [], []],
+        compiledScripts: ['', '', '', '', '', '', '', '']
+    }
+    let section = '', conditionName, script, compiledScript
     lines.forEach(line => {
         if (line.startsWith('*@') || line.startsWith('#')) {
             if (line === '*@tiles') {
@@ -18,8 +22,22 @@ function deserializeTileMap(fileAsString) {
             } else if (line.startsWith('*@metadata')) {
                 section = 'metadata'
                 data.metadata.push('')
+            } else if (line.startsWith('#script ')) {
+                const room = Number(line.split(' ').pop())
+                script = data.scripts[room - 1]
+                section = 'script'
+            } else if (section === 'script') {
+                if (line === '#end_script') {
+                    section = ''
+                } else {
+                    script.push(line.substring(2))
+                }
             } else if (section === 'condition') {
                 section = ''
+            } else if (line.startsWith('$')) {
+                section = 'compiled_script'
+                const room = Number(line.split('$').pop())
+                compiledScript = data.compiledScripts[room - 1]
             }
         }
         else {
@@ -42,6 +60,9 @@ function deserializeTileMap(fileAsString) {
             if (section === 'metadata' && line.startsWith('*')) {
                 const s = line.substring(2).split('"')
                 data.metadata.push(`${s[0]} = "${s[1]}"`)
+            }
+            if (section === 'compiled_script') {
+
             }
         }
     })
@@ -81,6 +102,19 @@ function serializeTileMap(data, newline = '\n') {
             const value = meta.substring(eqidx + 1).trim()
             lines.push(`*=${variable}${value}`)
         })
+    data.scripts.forEach((script, i) => {
+        if (script.length > 0) {
+            lines.push(`#script ${i + 1}`)
+            lines.push(...script.map(x => `# ${x}`))
+            lines.push('#end_script')
+        }
+    })
+    data.compiledScripts.forEach((script, i) => {
+        if (script.length > 0) {
+            lines.push(`\$${i + 1}`)
+            lines.push(script)
+        }
+    })
     lines.push('')
     return lines.join(newline)
 }

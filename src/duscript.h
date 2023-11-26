@@ -1,7 +1,7 @@
 #pragma once
 
 #define DU_SCRIPT_NUM_VARS 100
-#define DU_SCRIPT_MAX_STR_LEN 128
+#define DU_SCRIPT_MAX_STR_LEN 256
 
 typedef struct
 {

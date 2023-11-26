@@ -2,7 +2,10 @@
 
 <head>
     <style>
-        body { font-family: sans-serif; }
+        body {
+            font-family: sans-serif;
+        }
+
         .cell {
             width: 80px;
             height: 80px;
@@ -106,7 +109,8 @@
     <br />
     <textarea id="boss-script" rows="5" cols="100" spellcheck="false"></textarea>
     <button onclick="saveAndCompileScript()">Save and compile</button>
-<!--    <pre>
+    <button onclick="saveAndCompileInlineScript()">Save and compile - inline</button>
+    <!--    <pre>
 Metadata reference:
 
 <b>Bossfight:</b>
@@ -182,14 +186,14 @@ no_more_levels  -->
             { name: 'restrict-trigger2', id: 511, css: 'restrict-trig' },
             { name: 'enm-restrict3', id: 502, css: 'restrict' },
             { name: 'restrict-trigger3', id: 512, css: 'restrict-trig' },
-            { name: 'P_shield', id: 300, css: 'potion'},
-            { name: 'P_stop', id: 301, css: 'potion'},
-            { name: 'P_fast', id: 302, css: 'potion'},
-            { name: 'P_boost', id: 303, css: 'potion'},
-            { name: 'P_heal', id: 304, css: 'potion'},
-            { name: 'pos-trig1', id: 600, css: 'pos-trig'},
-            { name: 'pos-trig2', id: 601, css: 'pos-trig'},
-            { name: 'pos-trig3', id: 602, css: 'pos-trig'},
+            { name: 'P_shield', id: 300, css: 'potion' },
+            { name: 'P_stop', id: 301, css: 'potion' },
+            { name: 'P_fast', id: 302, css: 'potion' },
+            { name: 'P_boost', id: 303, css: 'potion' },
+            { name: 'P_heal', id: 304, css: 'potion' },
+            { name: 'pos-trig1', id: 600, css: 'pos-trig' },
+            { name: 'pos-trig2', id: 601, css: 'pos-trig' },
+            { name: 'pos-trig3', id: 602, css: 'pos-trig' },
         ];
         let map = { version: 0, width, height, objects: [], metadata: [], levelMetadata: '' };
         let room;
@@ -253,9 +257,12 @@ no_more_levels  -->
                     .then(x => x.text())
                     .then(x => document.getElementById('boss-script').value = x)
                     .catch(x => document.getElementById('boss-script').value = `// file ${file} not found!`)
+            } else if (map.scripts && map.scripts[room - 1].length) {
+                document.getElementById('boss-script').value = map.scripts[room - 1].join('\n')
             } else {
                 document.getElementById('boss-script').value = '// script not defined for this room\n'
-                    + `// To create a new script, add script${room} = "mission-pack\\<new_script>.ini" line to metadata`
+                    + `// To create a new script, add script${room} = "mission-pack\\<new_script>.ini" line to metadata\n`
+                    + `// or use inline scripts (start with ignore_init_properties)`
                 document.getElementById('boss-script-file').innerText = ''
             }
         }
@@ -332,11 +339,11 @@ no_more_levels  -->
             map = deserializeTileMap(str);
             renderMap();
         };
-        
+
         const load = () => {
             loadFromStr(document.getElementById('level-code').value);
         };
-        
+
         const getSerialized = () => {
             const rooms = Array(8).fill().map((a, i) => i + 1);
             const emptyRooms = rooms.filter(roomNumber => !map.objects.some(o => o.room === roomNumber && o.id !== objectTypes[0].id));
@@ -363,7 +370,7 @@ no_more_levels  -->
             }
             renderMap();
         };
-        
+
         const toggleCoordinates = () => {
             showCoords = !showCoords
             renderMap()
@@ -377,6 +384,19 @@ no_more_levels  -->
                     contents: document.getElementById('boss-script').value
                 })
             }).then(x => alert('done!'))
+        }
+
+        const saveAndCompileInlineScript = () => {
+            fetch('/api/save/script-inline', {
+                method: 'post',
+                body: JSON.stringify({
+                    contents: document.getElementById('boss-script').value
+                })
+            }).then(x => x.text()).then(x => {
+                map.scripts[room - 1] = document.getElementById('boss-script').value.split('\n')
+                map.compiledScripts[room - 1] = x
+                alert('ok')
+            })
         }
 
         document.getElementById('paint').innerHTML =
@@ -396,10 +416,19 @@ no_more_levels  -->
             } else if (cmd === 'load') {
                 fetch('/api/load/' + mission).then(x => x.text()).then(t => {
                     loadFromStr(t.replace(/\r\n/g, '\n'))
+                    map.scripts.forEach((script, i) => {
+                        if (script.length === 0)
+                            return
+                        fetch('/api/save/script-inline', {
+                            method: 'post',
+                            body: JSON.stringify({ contents: script.join('\n') })
+                        }).then(x => x.text())
+                        .then(x => map.compiledScripts[i] = x)
+                    })
                 })
             }
         }
-        
+
         // Hide standalone edit controls when server backend is used
         fetch('/').then(x => {
             document.getElementById('standalone-edits').innerHTML = ''

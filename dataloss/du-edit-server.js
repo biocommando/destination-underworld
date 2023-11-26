@@ -29,6 +29,11 @@ http.createServer((req,res) => {
                         const json = JSON.parse(body)
                         fs.writeFileSync(json.fileName, json.contents)
                         bossToIni(json.fileName)
+                    } else if (param === 'script-inline') {
+                        const json = JSON.parse(body)
+                        const compiled = bossToIni(json.contents, 'new')
+                        res.end(compiled)
+                        return
                     } else {
                         fs.writeFileSync(missionPack + '/mission' + param, body)
                     }

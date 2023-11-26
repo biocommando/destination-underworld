@@ -83,6 +83,7 @@ void move_enemy(Enemy *enm, World *world)
     }
     if (enm == &world->plr && t->is_positional_trigger)
     {
+        LOG_TRACE("pos trigger current state %x\n", world->boss_fight_config->state.positional_trigger_flags);
         world->boss_fight_config->state.positional_trigger_flags |= 1 << t->data;
         LOG_TRACE("pos trigger, new state %x\n", world->boss_fight_config->state.positional_trigger_flags);
     }
@@ -593,6 +594,18 @@ void level_read_new_format(World *world, int room_to, FILE *f)
             fseek(f, file_start, SEEK_SET);
             continue;
         }
+        else if (*buf == '$')
+        {
+            LOG_TRACE("Found $\n");
+            int room = -1;
+            sscanf(buf + 1, "%d", &room);
+            if (room >= 1 && room <= ROOMCOUNT)
+            {
+                LOG_TRACE("Reading bossfight for room %d\n", room);
+                read_bfconfig_new(f, &world->boss_fight_configs[room - 1], world->game_modifiers);
+                world->boss_fight = 1;
+            }
+        }
         else if (*buf != '*')
         {
             int id = -1, x = -1, y = -1, room = -1;
@@ -770,6 +783,8 @@ void change_room_if_at_exit_point(World *world, int mission)
         int to_room = get_tile_at(world, world->plr.x, world->plr.y)->data;
         if (world->plr.roomid != to_room)
         {
+            world->boss_fight_config = &world->boss_fight_configs[to_room - 1];
+            LOG_TRACE("Bossfight events: %d\n", world->boss_fight_config->num_events);
             place_player_at_entrance(world, to_room);
             world->current_room = to_room;
             for (int i = 0; i < BULLETCOUNT; i++)
