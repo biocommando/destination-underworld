@@ -697,6 +697,7 @@ X(duedit_compatible)
 *=par1"66.3"
 *=par6"67.325"
 *=par8"90.25"
+*=mute_bosstalk"1"
 #script 1
 # ignore_init_properties
 #end_script

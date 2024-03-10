@@ -1215,6 +1215,7 @@ X(duedit_compatible)
 *=par1"44.525"
 *=par6"37.95"
 *=par8"30.55"
+*=mute_bosstalk"1"
 #script 1
 # ignore_init_properties
 # on positional_trigger: 0 do spawn: 5, 6, 0, 0, 100, 0, 0
