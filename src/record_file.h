@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 // Reads a "record" from a file which means
 // it reads a line from the file that starts with the given id
 int record_file_get_record(const char *file, const char *id, char *record, size_t sz);

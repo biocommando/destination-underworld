@@ -5,11 +5,13 @@
 int record_file_read_write_record(FILE *src, FILE *dst, const char *id, char *record, size_t sz)
 {
     char line[1024], key[1024];
+    int key_found = 0;
     while (fgets(line, sizeof(line), src))
     {
         sscanf(line, "%s", key);
         if (!strcmp(key, id))
         {
+            key_found = 1;
             if (!dst)
             {
                 if (line[strlen(line) - 1] == '\n')
@@ -28,6 +30,10 @@ int record_file_read_write_record(FILE *src, FILE *dst, const char *id, char *re
         {
             fprintf(dst, "%s", line);
         }
+    }
+    if (!key_found && dst)
+    {
+        fprintf(dst, "%s\n", record);
     }
     return dst ? 0 : 1;
 }
