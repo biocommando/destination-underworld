@@ -12,6 +12,10 @@ int record_file_read_write_record(FILE *src, FILE *dst, const char *id, char *re
         {
             if (!dst)
             {
+                if (line[strlen(line) - 1] == '\n')
+                {
+                    line[strlen(line) - 1] = '\0';
+                }
                 memcpy(record, line, sz > sizeof(line) ? sizeof(line) : sz);
                 return 0;
             }
@@ -27,7 +31,6 @@ int record_file_read_write_record(FILE *src, FILE *dst, const char *id, char *re
     }
     return dst ? 0 : 1;
 }
-
 
 int record_file_get_record(const char *file, const char *id, char *record, size_t sz)
 {
@@ -54,7 +57,7 @@ int record_file_set_record(const char *file, const char *id, const char *record)
         fclose(src);
         return 1;
     }
-    int ret = record_file_read_write_record(src, dst, id, record, 0);
+    int ret = record_file_read_write_record(src, dst, id, (char *)record, 0);
     fclose(src);
     fclose(dst);
     remove(file);
