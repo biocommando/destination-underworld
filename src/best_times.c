@@ -19,9 +19,9 @@ int _compare_floats(const void* a, const void* b)
     return 0;
 }
 
-void _get_id(char *id, struct best_times *best_times)
+void _get_id(char *id, struct best_times *best_times, int idx)
 {
-    sprintf(id, "MISSION=%d;MODE=%d;", best_times->mission, best_times->game_modifiers);
+    sprintf(id, "MISSION=%d;MODE=%d;I=%d;", best_times->mission, best_times->game_modifiers, idx);
 }
 
 void _get_file(char *file, const char *mission_pack)
@@ -38,27 +38,19 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
     _get_file(file, mission_pack);
 
     char id[100];
-    _get_id(id, best_times);
-
-    if (record_file_get_record(file, id, record, sizeof(record)) == 0)
+    for (int i = 0; i < NUM_BEST_TIMES; i++)
     {
-        char *p = record;
-        int i = -1;
-        while (i < NUM_BEST_TIMES)
+        _get_id(id, best_times, i);
+        best_times->times[i] = 1e10;
+        if (record_file_get_record(file, id, record, sizeof(record)) == 0)
         {
-            char *p2 = strstr(p, " ");
-            if (!p2)
-                break;
-            *p2 = 0;
-            if (i >= 0)
-                best_times->times[i] = atof(p);
-            p = p2 + 1;
-            i++;
+            sscanf(record, "%*s %f", &best_times->times[i]);
         }
-        qsort(best_times->times, NUM_BEST_TIMES, sizeof(float), _compare_floats);
-        return i == NUM_BEST_TIMES ? 0 : 1;
     }
-    return 1;
+
+    qsort(best_times->times, NUM_BEST_TIMES, sizeof(float), _compare_floats);
+
+    return 0;
 }
 
 int save_best_times(const char *mission_pack, struct best_times *best_times)
@@ -67,19 +59,17 @@ int save_best_times(const char *mission_pack, struct best_times *best_times)
     _get_file(file, mission_pack);
 
     char id[100];
-    _get_id(id, best_times);
-
-    char record[1024];
-    strcpy(record, id);
     for (int i = 0; i < NUM_BEST_TIMES; i++)
     {
-        char buf[100];
-        sprintf(buf, " %f", best_times->times[i]);
-        strcat(record, buf);
+        _get_id(id, best_times, i);
+        char record[1024];
+        sprintf(record, "%s %f", id, best_times->times[i]);
+        if (record_file_set_record(file, id, record))
+        {
+            return 1;
+        }
     }
-    strcat(record, " end");
-
-    return record_file_set_record(file, id, record);
+    return 0;
 }
 
 int check_time_beaten(struct best_times *best_times, float time)

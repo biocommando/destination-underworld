@@ -1,6 +1,6 @@
 #pragma once
 
-#define NUM_BEST_TIMES 10
+#define NUM_BEST_TIMES 4
 
 struct best_times
 {

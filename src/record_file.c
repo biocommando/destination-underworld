@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "record_file.h"
+
 int record_file_read_write_record(FILE *src, FILE *dst, const char *id, char *record, size_t sz)
 {
     char line[1024], key[1024];
