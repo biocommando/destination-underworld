@@ -198,10 +198,279 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
-*?level_read = 1 +end
 *@metadata
 *=name"Arena -- Mage's Maze"
-*=script1"core-pack\arena_103.ini"
 *=mute_bosstalk"1"
 *=wall_color"0.5 0.2 0"
-*@+end
+#script 1
+# // Add a hint to the compiler that this is an arena fight
+# {# game_mode.arena = 1 #}
+# 
+# {#
+#     _interval = 10000,
+#     _time_0 = _interval,
+#     _time_1 = _time_0 + _interval,
+#     _time_2 = _time_1 + _interval,
+#     _time_3 = _time_2 + _interval
+# #}
+# 
+# set [main__over_powerup] player_initial_gold = 10
+# {# set_override_main_setup('over_powerup') #}
+# set [main__powerup_only] player_initial_gold = 80
+# {# set_override_main_setup('powerup_only') #}
+# set [main__explosion_madness] player_initial_gold = 5
+# {# set_override_main_setup('explosion_madness') #}
+# set [main__normal] player_initial_gold = 5
+# {# set_override_main_setup('normal') #}
+# 
+# on [evt_top_left_1] time_interval: ms({# _interval #}) do spawn: 2, 3, 0, 0, 50, 0, 0
+# on [evt_top_left_2] time_interval: ms({# _interval #}) do spawn: 4, 3, 0, 100, 0, 0, 0
+# on [evt_top_right_1] time_interval: ms({# _interval #}) do spawn: 9, 2, 100, 0, 0, 0, 0
+# on [evt_top_right_2] time_interval: ms({# _interval #}) do spawn: 13, 3, 100, 0, 0, 0, 0
+# on [evt_btm_right_1] time_interval: ms({# _interval #}) do spawn: 10, 8, 50, 50, 0, 0, 0
+# on [evt_btm_right_2] time_interval: ms({# _interval #}) do spawn: 12, 8, 50, 50, 0, 0, 0
+# on [evt_btm_left_1] time_interval: ms({# _interval #}) do spawn: 1, 10, 0, 50, 50, 0, 0
+# on [evt_btm_left_2] time_interval: ms({# _interval #}) do spawn: 6, 10, 0, 50, 0, 0, 0
+# 
+# on time_one_time: 1: do start_secondary_timer: time = ms({# _time_0 / 2 #})
+# 
+# // 1
+# on secondary_timer: ms({# _time_0 - ms_delta #}) do toggle_event_enabled: event_id = evt_top_left_1, enabled = 1
+# on secondary_timer: ms({# _time_0 - ms_delta #}) do toggle_event_enabled: event_id = evt_top_left_2, enabled = 1
+# on secondary_timer: ms({# _time_0 - ms_delta #}) do toggle_event_enabled: event_id = evt_top_right_1, enabled = 0
+# on secondary_timer: ms({# _time_0 - ms_delta #}) do toggle_event_enabled: event_id = evt_top_right_2, enabled = 0
+# 
+# on secondary_timer: ms({# _time_0 #}) do modify_terrain: x = 7, y = 2, terrain_type = wall
+# on secondary_timer: ms({# _time_0 #}) do modify_terrain: x = 7, y = 3, terrain_type = wall
+# 
+# on secondary_timer: ms({# _time_0 #}) do modify_terrain: x = 10, y = 5, terrain_type = floor
+# on secondary_timer: ms({# _time_0 #}) do modify_terrain: x = 11, y = 5, terrain_type = floor
+# 
+# // 2
+# on secondary_timer: ms({# _time_1 - ms_delta #}) do toggle_event_enabled: event_id = evt_top_right_1, enabled = 1
+# on secondary_timer: ms({# _time_1 - ms_delta #}) do toggle_event_enabled: event_id = evt_top_right_2, enabled = 1
+# on secondary_timer: ms({# _time_1 - ms_delta #}) do toggle_event_enabled: event_id = evt_btm_right_1, enabled = 0
+# on secondary_timer: ms({# _time_1 - ms_delta #}) do toggle_event_enabled: event_id = evt_btm_right_2, enabled = 0
+# 
+# on secondary_timer: ms({# _time_1 #}) do modify_terrain: x = 10, y = 5, terrain_type = wall
+# on secondary_timer: ms({# _time_1 #}) do modify_terrain: x = 11, y = 5, terrain_type = wall
+# 
+# on secondary_timer: ms({# _time_1 #}) do modify_terrain: x = 7, y = 7, terrain_type = floor
+# on secondary_timer: ms({# _time_1 #}) do modify_terrain: x = 7, y = 8, terrain_type = floor
+# on secondary_timer: ms({# _time_1 #}) do modify_terrain: x = 7, y = 9, terrain_type = floor
+# 
+# // 3
+# on secondary_timer: ms({# _time_2 - ms_delta #}) do toggle_event_enabled: event_id = evt_btm_right_1, enabled = 1
+# on secondary_timer: ms({# _time_2 - ms_delta #}) do toggle_event_enabled: event_id = evt_btm_right_2, enabled = 1
+# on secondary_timer: ms({# _time_2 - ms_delta #}) do toggle_event_enabled: event_id = evt_btm_left_1, enabled = 0
+# on secondary_timer: ms({# _time_2 - ms_delta #}) do toggle_event_enabled: event_id = evt_btm_left_2, enabled = 0
+# 
+# on secondary_timer: ms({# _time_2 #}) do modify_terrain: x = 7, y = 7, terrain_type = wall
+# on secondary_timer: ms({# _time_2 #}) do modify_terrain: x = 7, y = 8, terrain_type = wall
+# on secondary_timer: ms({# _time_2 #}) do modify_terrain: x = 7, y = 9, terrain_type = wall
+# 
+# on secondary_timer: ms({# _time_2 #}) do modify_terrain: x = 2, y = 5, terrain_type = floor
+# on secondary_timer: ms({# _time_2 #}) do modify_terrain: x = 3, y = 5, terrain_type = floor
+# 
+# // 4
+# on secondary_timer: ms({# _time_3 - 100 #}) do toggle_event_enabled: event_id = evt_btm_left_1, enabled = 1
+# on secondary_timer: ms({# _time_3 - 100 #}) do toggle_event_enabled: event_id = evt_btm_left_2, enabled = 1
+# on secondary_timer: ms({# _time_3 - 100 #}) do toggle_event_enabled: event_id = evt_top_left_1, enabled = 0
+# on secondary_timer: ms({# _time_3 - 100 #}) do toggle_event_enabled: event_id = evt_top_left_2, enabled = 0
+# 
+# on secondary_timer: ms({# _time_3 #}) do modify_terrain: x = 2, y = 5, terrain_type = wall
+# on secondary_timer: ms({# _time_3 #}) do modify_terrain: x = 3, y = 5, terrain_type = wall
+# 
+# on secondary_timer: ms({# _time_3 #}) do modify_terrain: x = 7, y = 2, terrain_type = floor
+# on secondary_timer: ms({# _time_3 #}) do modify_terrain: x = 7, y = 3, terrain_type = floor
+# 
+# on secondary_timer: ms({# _time_3 #}) do start_secondary_timer: time = 0
+# 
+# on kill_count: 50 do modify_terrain: x = 7, y = 4, terrain_type = floor
+# on kill_count: 50 do modify_terrain: x = 6, y = 5, terrain_type = floor
+# on kill_count: 50 do modify_terrain: x = 7, y = 5, terrain_type = floor
+# on kill_count: 50 do modify_terrain: x = 8, y = 5, terrain_type = floor
+# on kill_count: 50 do modify_terrain: x = 7, y = 6, terrain_type = floor
+# 
+# on [evt_middle] time_interval: ms({# _interval * 2 #}) do spawn: 7, 5, 0, 0, 100, 0, 0
+# set_event_property evt_middle: initially_disabled = 1
+# 
+# on kill_count: 50 do toggle_event_enabled: event_id = evt_middle, enabled = 1
+# 
+#end_script
+$1
+health 50 
+fire_rate 10 
+speed 1 
+player_initial_gold -1 
+health 50 38
+fire_rate 10 38
+speed 1 38
+player_initial_gold 10 38
+health 50 40
+fire_rate 10 40
+speed 1 40
+player_initial_gold 80 40
+health 50 33
+fire_rate 10 33
+speed 1 33
+player_initial_gold 5 33
+health 50 32
+fire_rate 10 32
+speed 1 32
+player_initial_gold 5 32
+event
+event_trigger time_interval 83
+event_action spawn 0 0 50 0 0 2 3
+event
+event_trigger time_interval 83
+event_action spawn 0 100 0 0 0 4 3
+event
+event_trigger time_interval 83
+event_action spawn 100 0 0 0 0 9 2
+event
+event_trigger time_interval 83
+event_action spawn 100 0 0 0 0 13 3
+event
+event_trigger time_interval 83
+event_action spawn 50 50 0 0 0 10 8
+event
+event_trigger time_interval 83
+event_action spawn 50 50 0 0 0 12 8
+event
+event_trigger time_interval 83
+event_action spawn 0 50 50 0 0 1 10
+event
+event_trigger time_interval 83
+event_action spawn 0 50 0 0 0 6 10
+event
+event_trigger time_one_time 1
+event_action start_secondary_timer 41
+event
+event_trigger secondary_timer 82
+event_action toggle_event_enabled 0 1
+event
+event_trigger secondary_timer 82
+event_action toggle_event_enabled 1 1
+event
+event_trigger secondary_timer 82
+event_action toggle_event_enabled 2 0
+event
+event_trigger secondary_timer 82
+event_action toggle_event_enabled 3 0
+event
+event_trigger secondary_timer 83
+event_action modify_terrain 7 2 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 83
+event_action modify_terrain 7 3 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 83
+event_action modify_terrain 10 5 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 83
+event_action modify_terrain 11 5 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 165
+event_action toggle_event_enabled 2 1
+event
+event_trigger secondary_timer 165
+event_action toggle_event_enabled 3 1
+event
+event_trigger secondary_timer 165
+event_action toggle_event_enabled 4 0
+event
+event_trigger secondary_timer 165
+event_action toggle_event_enabled 5 0
+event
+event_trigger secondary_timer 166
+event_action modify_terrain 10 5 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 166
+event_action modify_terrain 11 5 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 166
+event_action modify_terrain 7 7 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 166
+event_action modify_terrain 7 8 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 166
+event_action modify_terrain 7 9 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 249
+event_action toggle_event_enabled 4 1
+event
+event_trigger secondary_timer 249
+event_action toggle_event_enabled 5 1
+event
+event_trigger secondary_timer 249
+event_action toggle_event_enabled 6 0
+event
+event_trigger secondary_timer 249
+event_action toggle_event_enabled 7 0
+event
+event_trigger secondary_timer 250
+event_action modify_terrain 7 7 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 250
+event_action modify_terrain 7 8 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 250
+event_action modify_terrain 7 9 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 250
+event_action modify_terrain 2 5 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 250
+event_action modify_terrain 3 5 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 332
+event_action toggle_event_enabled 6 1
+event
+event_trigger secondary_timer 332
+event_action toggle_event_enabled 7 1
+event
+event_trigger secondary_timer 332
+event_action toggle_event_enabled 0 0
+event
+event_trigger secondary_timer 332
+event_action toggle_event_enabled 1 0
+event
+event_trigger secondary_timer 333
+event_action modify_terrain 2 5 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 333
+event_action modify_terrain 3 5 0 0 0 0 0 wall
+event
+event_trigger secondary_timer 333
+event_action modify_terrain 7 2 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 333
+event_action modify_terrain 7 3 0 0 0 0 0 floor
+event
+event_trigger secondary_timer 333
+event_action start_secondary_timer 0
+event
+event_trigger kill_count 50
+event_action modify_terrain 7 4 0 0 0 0 0 floor
+event
+event_trigger kill_count 50
+event_action modify_terrain 6 5 0 0 0 0 0 floor
+event
+event_trigger kill_count 50
+event_action modify_terrain 7 5 0 0 0 0 0 floor
+event
+event_trigger kill_count 50
+event_action modify_terrain 8 5 0 0 0 0 0 floor
+event
+event_trigger kill_count 50
+event_action modify_terrain 7 6 0 0 0 0 0 floor
+event
+event_trigger time_interval 166
+event_action spawn 0 0 100 0 0 7 5
+event_initially_disabled
+event
+event_trigger kill_count 50
+event_action toggle_event_enabled 49 1
+end

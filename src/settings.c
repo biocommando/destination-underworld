@@ -3,27 +3,29 @@
 #include <stdlib.h>
 #include "logging.h"
 #include "settings.h"
-#include "iniRead.h"
+#include "record_file.h"
 #include "duConstants.h"
 
 extern GameSettings game_settings;
 
-static void read_setting(FILE *f, char **argv, int argc, char *result, const char *segment, const char *key)
+static void read_setting(const char *filename, char **argv, int argc, char *result, const char *segment, const char *key)
 {
   char cmd_line_arg[256];
   sprintf(cmd_line_arg, "%s--%s", segment, key);
 
   result[0] = 0;
 
-  if (!read_cmd_line_arg_str(cmd_line_arg, argv, argc, result) && f)
+  if (!read_cmd_line_arg_str(cmd_line_arg, argv, argc, result))
   {
-    ini_read_string_value(f, segment, key, result);
+    char temp[256] = "";
+    record_file_get_record(filename, cmd_line_arg, temp, sizeof(temp));
+    sscanf(temp, "%*s %s", result);
   }
   LOG("Setting %s = %s\n", cmd_line_arg, result);
 }
 
 #define READ_SETTING(result_var, format_str, segment, key) do{ \
-  read_setting(f, argv, argc, buf, segment, key); \
+  read_setting(game_settings.settings_file, argv, argc, buf, segment, key); \
   if (!buf[0] || sscanf(buf, format_str, &result_var) == 0) \
      LOG("Read error\n"); \
    \
@@ -31,13 +33,12 @@ static void read_setting(FILE *f, char **argv, int argc, char *result, const cha
 
 void read_settings(char **argv, int argc)
 {
-  char buf[256], file_name[256] = DATADIR "settings.ini";
+  char buf[256], file_name[256] = DATADIR "settings.dat";
 
-  read_cmd_line_arg_str("settings-ini", argv, argc, file_name);
+  read_cmd_line_arg_str("settings-dat", argv, argc, file_name);
   strcpy(game_settings.settings_file, file_name);
 
   LOG("Settings file: %s\n", file_name);
-  FILE *f = fopen(file_name, "r");
 
   READ_SETTING(game_settings.mission_pack, "%s", "general", "mission-pack");
   READ_SETTING(game_settings.mission_count, "%d", game_settings.mission_pack, "mission-count");
@@ -51,13 +52,9 @@ void read_settings(char **argv, int argc)
 
   READ_SETTING(game_settings.num_music_tracks, "%d", "audio", "music-track-count");
 
-  fclose(f);
-
   char arena_config_file[256];
-  sprintf(arena_config_file, DATADIR "%s\\arenas.ini", game_settings.mission_pack);
-  f = fopen(arena_config_file, "r");
-  read_arena_configs(f, &game_settings.arena_config);
-  fclose(f);
+  sprintf(arena_config_file, DATADIR "%s\\arenas.dat", game_settings.mission_pack);
+  read_arena_configs(arena_config_file, &game_settings.arena_config);
 }
 
 int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output)
@@ -91,32 +88,12 @@ void access_arena_highscore(ArenaHighscore *arena_highscore, int load)
 {
   char path[256];
   sprintf(path, DATADIR "%s\\arena_highscores.dat", game_settings.mission_pack);
-  FILE *f;
   if (!load)
   {
-    f = fopen(path, "w");
-    write_arena_highscores(f, arena_highscore);
-    fclose(f);
+    write_arena_highscores(path, arena_highscore);
     return;
   }
-  f = fopen(path, "r");
-  if (!f)
-  {
-    f = fopen(path, "w");
-    for (int i = 0; i < ARENACONF_MAX_NUMBER_OF_ARENAS; i++)
-    {
-      for (int j = 0; j < ARENACONF_HIGHSCORE_MAP_SIZE; j++)
-      {
-        arena_highscore->kills[i][j] = 0;
-        arena_highscore->mode[i][j] = -1;
-      }
-    }
-    write_arena_highscores(f, arena_highscore);
-    fclose(f);
-    f = fopen(path, "r");
-  }
-  read_arena_highscores(f, arena_highscore);
-  fclose(f);
+  read_arena_highscores(path, arena_highscore);
 }
 
 void get_data_filename(char *dst, const char *file)
@@ -133,18 +110,15 @@ void get_data_filename(char *dst, const char *file)
 
 void save_settings()
 {
-  FILE *f = fopen(game_settings.settings_file, "w");
+  char buf[100];
 
-  fprintf(f, "[general]\nmission-pack=%s\n", game_settings.mission_pack);
-  
-  fprintf(f, "[graphics]\nvibration-mode=%d\n", game_settings.vibration_mode);
-
-  fprintf(f, "[audio]\nmusic-on=%d\nmusic-vol=%lf\nsfx-vol=%lf\nmusic-track-count=%d\n",
-    game_settings.music_on, game_settings.music_vol, game_settings.sfx_vol, game_settings.num_music_tracks);
-  
-  fprintf(f, "[%s]\nmission-count=%d\ncustom-resources=%d\n",
-    game_settings.mission_pack, game_settings.mission_count, game_settings.custom_resources);
-  
-  fclose(f);
+  sprintf(buf, "graphics--vibration-mode %d", game_settings.vibration_mode);
+  record_file_set_record(game_settings.settings_file, "graphics--vibration-mode", buf);
+  sprintf(buf, "audio--music-on %d", game_settings.music_on);
+  record_file_set_record(game_settings.settings_file, "audio--music-on", buf);
+  sprintf(buf, "audio--music-vol %lf", game_settings.music_vol);
+  record_file_set_record(game_settings.settings_file, "audio--music-vol", buf);
+  sprintf(buf, "audio--sfx-vol %lf", game_settings.sfx_vol);
+  record_file_set_record(game_settings.settings_file, "audio--sfx-vol", buf);
 
 }

@@ -193,10 +193,176 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
-*?level_read = 1 +end
 *@metadata
 *=name"Arena -- Slaughterhouse"
-*=script1"core-pack\arena_104.ini"
 *=mute_bosstalk"1"
 *=wall_color"0 0.2 0.4"
-*@+end
+#script 1
+# // Add a hint to the compiler that this is an arena fight
+# {# game_mode.arena = 1 #}
+# 
+# set [main__powerup_only] player_initial_gold = 99
+# {# set_override_main_setup('powerup_only') #}
+# set [main__over_powerup] player_initial_gold = 10
+# {# set_override_main_setup('over_powerup') #}
+# set [main__explosion_madness] player_initial_gold = 3
+# {# set_override_main_setup('explosion_madness') #}
+# 
+# {# _interval = 500, _time = 2500 #}
+# {# _nextTime = () => { _time += _interval; return _time }, 0 #}
+# 
+# on time_one_time: 1 do start_secondary_timer: time = 0
+# 
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 1, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 1, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 3, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 3, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 5, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 5, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 7, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 7, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 10, 100, 0, 0, 0, 0
+# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 10, 100, 0, 0, 0, 0
+# 
+# on secondary_timer: ms({# _time #}) do start_secondary_timer: time = 0
+# 
+# on [evt_spawn_imp] secondary_timer: ms({# _time #}) do spawn: 7, 10, 0, 0, 100, 0, 0
+# set_event_property evt_spawn_imp: initially_disabled = 1
+# 
+# on kill_count: 50 do toggle_event_enabled: event_id = evt_spawn_imp, enabled = 1
+# 
+# on [evt_mod_terrain_1] @never do @nothing
+# on [evt_mod_terrain_2] @never do @nothing
+# on [evt_mod_terrain_3] @never do @nothing
+# on [evt_mod_terrain_4] @never do @nothing
+# on [evt_mod_terrain_5] @never do @nothing
+# on [evt_mod_terrain_6] @never do @nothing
+# on [evt_mod_terrain_7] @never do @nothing
+# on [evt_mod_terrain_8] @never do @nothing
+# on [evt_mod_terrain_9] @never do @nothing
+# 
+# on {# override_event('evt_mod_terrain_1', 'powerup_only') #} kill_count: 30 do modify_terrain: x = 7, y = 2, terrain_type = floor
+# on {# override_event('evt_mod_terrain_2', 'powerup_only') #} kill_count: 31 do modify_terrain: x = 7, y = 4, terrain_type = floor
+# on {# override_event('evt_mod_terrain_3', 'powerup_only') #} kill_count: 32 do modify_terrain: x = 7, y = 6, terrain_type = floor
+# on {# override_event('evt_mod_terrain_4', 'powerup_only') #} kill_count: 40 do modify_terrain: x = 7, y = 8, terrain_type = floor
+# 
+# on {# override_event('evt_mod_terrain_1', 'explosion_madness') #} kill_count: 2 do modify_terrain: x = 10, y = 5, terrain_type = floor
+# on {# override_event('evt_mod_terrain_2', 'explosion_madness') #} kill_count: 4 do modify_terrain: x = 11, y = 5, terrain_type = floor
+# on {# override_event('evt_mod_terrain_3', 'explosion_madness') #} kill_count: 6 do modify_terrain: x = 12, y = 5, terrain_type = floor
+# on {# override_event('evt_mod_terrain_4', 'explosion_madness') #} kill_count: 8 do modify_terrain: x = 12, y = 6, terrain_type = floor
+# on {# override_event('evt_mod_terrain_5', 'explosion_madness') #} kill_count: 16 do modify_terrain: x = 12, y = 7, terrain_type = floor
+# on {# override_event('evt_mod_terrain_6', 'explosion_madness') #} kill_count: 24 do modify_terrain: x = 11, y = 7, terrain_type = floor
+# on {# override_event('evt_mod_terrain_7', 'explosion_madness') #} kill_count: 32 do modify_terrain: x = 10, y = 7, terrain_type = floor
+# on {# override_event('evt_mod_terrain_8', 'explosion_madness') #} kill_count: 40 do modify_terrain: x = 11, y = 6, terrain_type = floor
+# on {# override_event('evt_mod_terrain_9', 'explosion_madness') #} kill_count: 48 do modify_terrain: x = 10, y = 6, terrain_type = floor
+# 
+#end_script
+$1
+health 50 
+fire_rate 10 
+speed 1 
+player_initial_gold -1 
+health 50 40
+fire_rate 10 40
+speed 1 40
+player_initial_gold 99 40
+health 50 38
+fire_rate 10 38
+speed 1 38
+player_initial_gold 10 38
+health 50 33
+fire_rate 10 33
+speed 1 33
+player_initial_gold 3 33
+event
+event_trigger time_one_time 1
+event_action start_secondary_timer 0
+event
+event_trigger secondary_timer 25
+event_action spawn 100 0 0 0 0 9 1
+event
+event_trigger secondary_timer 29
+event_action spawn 100 0 0 0 0 5 1
+event
+event_trigger secondary_timer 33
+event_action spawn 100 0 0 0 0 5 3
+event
+event_trigger secondary_timer 37
+event_action spawn 100 0 0 0 0 9 3
+event
+event_trigger secondary_timer 41
+event_action spawn 100 0 0 0 0 9 5
+event
+event_trigger secondary_timer 45
+event_action spawn 100 0 0 0 0 5 5
+event
+event_trigger secondary_timer 50
+event_action spawn 100 0 0 0 0 5 7
+event
+event_trigger secondary_timer 54
+event_action spawn 100 0 0 0 0 9 7
+event
+event_trigger secondary_timer 58
+event_action spawn 100 0 0 0 0 9 10
+event
+event_trigger secondary_timer 62
+event_action spawn 100 0 0 0 0 5 10
+event
+event_trigger secondary_timer 62
+event_action start_secondary_timer 0
+event
+event_trigger secondary_timer 62
+event_action spawn 0 0 100 0 0 7 10
+event_initially_disabled
+event
+event_trigger kill_count 50
+event_action toggle_event_enabled 12 1
+event
+event_override 40
+event_trigger kill_count 30
+event_action modify_terrain 7 2 0 0 0 0 0 floor
+event_override 33
+event_trigger kill_count 2
+event_action modify_terrain 10 5 0 0 0 0 0 floor
+event
+event_override 40
+event_trigger kill_count 31
+event_action modify_terrain 7 4 0 0 0 0 0 floor
+event_override 33
+event_trigger kill_count 4
+event_action modify_terrain 11 5 0 0 0 0 0 floor
+event
+event_override 40
+event_trigger kill_count 32
+event_action modify_terrain 7 6 0 0 0 0 0 floor
+event_override 33
+event_trigger kill_count 6
+event_action modify_terrain 12 5 0 0 0 0 0 floor
+event
+event_override 40
+event_trigger kill_count 40
+event_action modify_terrain 7 8 0 0 0 0 0 floor
+event_override 33
+event_trigger kill_count 8
+event_action modify_terrain 12 6 0 0 0 0 0 floor
+event
+event_override 33
+event_trigger kill_count 16
+event_action modify_terrain 12 7 0 0 0 0 0 floor
+event
+event_override 33
+event_trigger kill_count 24
+event_action modify_terrain 11 7 0 0 0 0 0 floor
+event
+event_override 33
+event_trigger kill_count 32
+event_action modify_terrain 10 7 0 0 0 0 0 floor
+event
+event_override 33
+event_trigger kill_count 40
+event_action modify_terrain 11 6 0 0 0 0 0 floor
+event
+event_override 33
+event_trigger kill_count 48
+event_action modify_terrain 10 6 0 0 0 0 0 floor
+end

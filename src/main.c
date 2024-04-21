@@ -12,7 +12,6 @@
 #include "renderWorld.h"
 #include "gamePersistence.h"
 #include "menu.h"
-#include "iniRead.h"
 #include "bossfightconf.h"
 #include "predictableRandom.h"
 #include "settings.h"
@@ -37,6 +36,7 @@ int fname_counter = 0;
 
 int record_mode = RECORD_MODE_NONE;
 FILE *record_input_file = NULL;
+char record_input_filename[256];
 int no_player_damage = 0;
 
 int main(int argc, char **argv)
@@ -65,6 +65,7 @@ int main(int argc, char **argv)
     if (read_cmd_line_arg_str("file", argv, argc, fname))
     {
       record_input_file = fopen(fname, "r");
+      strcpy(record_input_filename, fname);
     }
     if (record_input_file == NULL)
     {
@@ -111,7 +112,7 @@ int main(int argc, char **argv)
   progress_load_state("Loading sprites...", 1);
   {
     char path[256];
-    get_data_filename(path, "sprites.ini");
+    get_data_filename(path, "sprites.dat");
     read_sprites_from_file(path, SPRITE_ID_MIN, SPRITE_ID_MAX);
   }
 
@@ -672,15 +673,15 @@ int game(int mission, int *game_modifiers)
   {
     char fname[100];
     sprintf(fname, "recorded-mission%d-take%d.dat", mission, ++fname_counter);
+    save_game_save_data(record_input_filename, &world.plr, mission, *game_modifiers, 0);
     f_key_presses = fopen(fname, "w");
-    save_game_save_data(f_key_presses, &world.plr, mission, *game_modifiers);
     fprintf(f_key_presses, "\n-- data start --\n");
   }
   else if (record_mode == RECORD_MODE_PLAYBACK)
   {
     fseek(record_input_file, 0, SEEK_SET);
     f_key_presses = record_input_file;
-    load_game_save_data(f_key_presses, &world.plr, &mission, &world.game_modifiers);
+    load_game_save_data(record_input_filename, &world.plr, &mission, &world.game_modifiers, 0);
     key_press_buffer_idx = -1;
   }
   long time_stamp = 0;

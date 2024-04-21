@@ -2,6 +2,7 @@
 #include "allegro5/allegro_acodec.h"
 #include "duConstants.h"
 #include "duMp3.h"
+#include "gen_version_info.h"
 #include <stdio.h>
 
 char keybuffer[ALLEGRO_KEY_MAX];
@@ -120,7 +121,7 @@ int init_allegro()
     al_init_font_addon();
     al_init_acodec_addon();
 
-    al_set_new_window_title("Destination Underworld");
+    al_set_new_window_title("Destination Underworld " DU_VERSION);
     al_set_new_display_refresh_rate(60);
     al_set_new_display_flags(ALLEGRO_OPENGL);
     font = al_create_builtin_font();

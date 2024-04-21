@@ -256,15 +256,10 @@ try {
             }
             newFormat.push(action)
         }
+        if (event.initially_disabled) {
+            newFormat.push('event_initially_disabled')
+        }
     }
-
-    events.filter(x => !x.name || !x.name.startsWith('overrides__'))
-        .forEach(evt => {
-            eventToNewFormat(evt)
-            events.filter(x => x.name && x.name.startsWith(`overrides__${evt.name}__for_mode_`))
-                .forEach(eventToNewFormat)
-        })
-    newFormat.push('end')
 
     events.forEach(e => {
         if (e.event_id !== undefined) {
@@ -274,6 +269,14 @@ try {
                 throw 'event not found with name ' + name
         }
     })
+
+    events.filter(x => !x.name || !x.name.startsWith('overrides__'))
+        .forEach(evt => {
+            eventToNewFormat(evt)
+            events.filter(x => x.name && x.name.startsWith(`overrides__${evt.name}__for_mode_`))
+                .forEach(eventToNewFormat)
+        })
+    newFormat.push('end')
 
     events.filter(e => e.name && e.name.startsWith('overrides__'))
         .forEach(e => {

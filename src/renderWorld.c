@@ -4,6 +4,8 @@
 #include "ducolors.h"
 #include "predictableRandom.h"
 #include "sprites.h"
+#include "best_times.h"
+#include "settings.h"
 
 void draw_enemy(Enemy *enm, World *world)
 {
@@ -321,6 +323,13 @@ void progress_and_draw_sparkles(World *world)
     }
 }
 
+extern GameSettings game_settings;
+
+static inline void check_valid_time_for_display(float *f)
+{
+    *f = *f > 9999.9f ? 9999.9f : *f;
+}
+
 void display_level_info(World *world, int mission, int mission_count, long completetime)
 {
     al_clear_to_color(BLACK);
@@ -328,8 +337,28 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     int y = 5;
     al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Level '%s' cleared!", world->mission_display_name);
     y += 15;
-    al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Time: %.1f secs. Par: %.1f",
-                  (double)completetime / 40, world->par_time);
+    struct best_times best_times;
+    best_times.game_modifiers = world->game_modifiers;
+    best_times.mission = mission;
+    populate_best_times(game_settings.mission_pack, &best_times);
+    float time_secs = (float)completetime / 40;
+    int beat_idx = check_time_beaten(&best_times, (float)time_secs);
+    
+    check_valid_time_for_display(&time_secs);
+    for (int i = 0; i < 3; i++)
+        check_valid_time_for_display(best_times.times + i);
+    float time0 = best_times.times[0];
+    float time1 = best_times.times[1];
+    float time2 = best_times.times[2];
+
+    al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Time: %.1f secs. Best times: %s%.1f, %s%.1f, %s%.1f",
+                  time_secs, beat_idx == 0 ? "*" : "", time0,
+                  beat_idx == 1 ? "*" : "", time1,
+                  beat_idx == 2 ? "*" : "", time2);
+    if (beat_idx >= 0)
+    {
+        save_best_times(game_settings.mission_pack, &best_times);
+    }
     y += 15;
     if (mission < mission_count)
         al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Now entering level %d / %d.", mission + 1, mission_count);

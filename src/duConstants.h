@@ -21,7 +21,7 @@
 #define PLR_DIR_HELPER_INITIAL_INTENSITY 100
 
 #define DATADIR ".\\dataloss\\"
-#define SAVE_FILENAME DATADIR "%s\\save%d.dat"
+#define SAVE_FILENAME DATADIR "%s\\save.dat"
 #define MENU_BITMAP_FILENAME DATADIR "hell.jpg"
 #define MENU_SAMPLE_FILENAME DATADIR "menuchg.wav"
 #define MENU_SELECT_SAMPLE_FILENAME DATADIR "menusel.wav"

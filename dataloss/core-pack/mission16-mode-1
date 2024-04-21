@@ -199,9 +199,7 @@ X(duedit_compatible)
 122 13 11 1
 122 14 11 1
 122 15 11 1
-*?level_read = 1 +end
 *@metadata
-*=script1"core-pack\boss_mode_1.ini"
 *=par1"19.125"
 *=name"Deepest Abyss"
 *=story1"The corpse of the Arch Evil explodes into 50 shades of"
@@ -211,4 +209,66 @@ X(duedit_compatible)
 *=story5"Congratulations! Now you're totally alone in the deepest"
 *=story6"abyss with no way back to the surface of Earth."
 *=no_more_levels"1"
-*@+end
+#script 1
+# // Boss for "explosion madness" mode
+# 
+# set health = 50
+# set fire_rate = 10
+# set speed = 2
+# set player_initial_gold = 5
+# 
+# on time_one_time: 1 do set_waypoint: 2;1
+# {# set_waypoint_sequence(['2;1', '2;8']) #}
+# 
+# // Spawning -- use secondary timer because it can be stopped
+# 
+# on time_one_time: 1 do start_secondary_timer: time = 0
+# 
+# on secondary_timer: ms(5333) do spawn: 3, 3, 50, 50, 0, 0, 0
+# on secondary_timer: ms(5333) do spawn: 3, 8, 50, 50, 0, 0, 0
+# on secondary_timer: ms(5333) do start_secondary_timer: time = 0
+# 
+# // Death
+# 
+# on health: 0 do modify_terrain: x = 9, y = 4, terrain_type = level_exit
+# on health: 0 do modify_terrain: x = 9, y = 5, terrain_type = level_exit
+# on health: 0 do stop_secondary_timer
+# 
+# 
+#end_script
+$1
+health 50 
+fire_rate 10 
+speed 2 
+player_initial_gold 5 
+event
+event_trigger time_one_time 1
+event_action set_waypoint 2 1 1
+event
+event_trigger waypoint_reached 1
+event_action set_waypoint 2 8 2
+event
+event_trigger waypoint_reached 2
+event_action set_waypoint 2 1 1
+event
+event_trigger time_one_time 1
+event_action start_secondary_timer 0
+event
+event_trigger secondary_timer 44
+event_action spawn 50 50 0 0 0 3 3
+event
+event_trigger secondary_timer 44
+event_action spawn 50 50 0 0 0 3 8
+event
+event_trigger secondary_timer 44
+event_action start_secondary_timer 0
+event
+event_trigger health 0
+event_action modify_terrain 9 4 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 9 5 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action stop_secondary_timer 
+end

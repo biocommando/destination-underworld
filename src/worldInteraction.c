@@ -5,7 +5,7 @@
 #include "settings.h"
 #include "helpers.h"
 #include "predictableRandom.h"
-#include "iniRead.h"
+#include "record_file.h"
 #include "duscript.h"
 
 extern GameSettings game_settings;
@@ -616,28 +616,6 @@ void level_read_new_format(World *world, int room_to, FILE *f)
         }
     }
     fclose(f);
-    for (int i = 1; i <= ROOMCOUNT; i++)
-    {
-        char script_var[16];
-        sprintf(script_var, "script%d", i);
-        var = du_script_variable(&state, script_var);
-        if (*var->value)
-        {
-            char buf[256];
-            sprintf(buf, DATADIR "%s", var->value);
-            LOG("Opening bossfight config at %s\n", buf);
-            FILE *f2 = fopen(buf, "r");
-            if (f2)
-            {
-                read_bfconfig(f2, &world->boss_fight_configs[i - 1], world->game_modifiers);
-                fclose(f2);
-                LOG("Bossfight initiated\n");
-                world->boss_fight = 1;
-            }
-            else
-                LOG("No such file!\n");
-        }
-    }
     var = du_script_variable(&state, "name");
     if (strlen(var->value) < 64)
     {
@@ -812,20 +790,21 @@ void change_room_if_at_exit_point(World *world, int mission)
 void read_enemy_configs(World *world)
 {
     char fname[256];
-    sprintf(fname, DATADIR "%s\\enemy-properties.ini", game_settings.mission_pack);
-    FILE *f = fopen(fname, "r");
+    sprintf(fname, DATADIR "%s\\enemy-properties.dat", game_settings.mission_pack);
     for (int i = 0; i < 5; i++)
     {
-        char section[10];
-        sprintf(section, "type-%d", i);
-        world->enemy_configs[i].turret = ini_read_int_value(f, section, "turret");
-        world->enemy_configs[i].health = ini_read_int_value(f, section, "health");
-        world->enemy_configs[i].rate = ini_read_int_value(f, section, "rate");
-        world->enemy_configs[i].gold = ini_read_int_value(f, section, "gold");
-        world->enemy_configs[i].fast = ini_read_int_value(f, section, "fast");
-        world->enemy_configs[i].hurts_monsters = ini_read_int_value(f, section, "hurts-monsters");
+        char key[10];
+        sprintf(key, "type-%d", i);
+        char rec[256] = "";
+        record_file_get_record(fname, key, rec, sizeof(rec));
+        sscanf(rec, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d",
+            &world->enemy_configs[i].turret,
+            &world->enemy_configs[i].rate,
+            &world->enemy_configs[i].health,
+            &world->enemy_configs[i].gold,
+            &world->enemy_configs[i].fast,
+            &world->enemy_configs[i].hurts_monsters);
     }
-    fclose(f);
 }
 
 int parse_highscore_from_world_state(World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)

@@ -84,7 +84,7 @@ int check_time_beaten(struct best_times *best_times, float time)
         }
     }
     if (idx_beaten == NUM_BEST_TIMES)
-        return 0;
+        return -1;
 
     for (int i = NUM_BEST_TIMES - 1; i > idx_beaten; i--)
     {
@@ -93,5 +93,5 @@ int check_time_beaten(struct best_times *best_times, float time)
 
     best_times->times[idx_beaten] = time;
 
-    return 1;
+    return idx_beaten;
 }

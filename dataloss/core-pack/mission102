@@ -193,10 +193,201 @@ X(duedit_compatible)
 122 13 11 1
 122 14 11 1
 122 15 11 1
-*?level_read = 1 +end
 *@metadata
 *=name"Arena -- Dungeon"
 *=wall_color"1 1 0.5"
-*=script1"core-pack\arena_102.ini"
 *=mute_bosstalk"1"
-*@+end
+#script 1
+# // Add a hint to the compiler that this is an arena fight
+# {# game_mode.arena = 1 #}
+# 
+# ////// SPAWN SETUP IN JAVASCRIPT /////////
+# 
+# {#
+# 
+# (function create_spawnpoints() {
+#     _spawnpoints = {}
+#     const templates = {
+#         normal: '50, 30, 10, 10, 0',
+#         easy: '40, 20, 5, 5, 0'
+#     }
+#     Object.keys(templates).forEach(prefix => {
+#         _spawnpoints[prefix] = []
+#         for (let x = 5; x <= 9; x++) {
+#             for (let y = 3; y <= 7; y++) {
+#                 if (x === 5 || x === 9 || y === 3 || y === 7) {
+#                     _spawnpoints[prefix].push(x + ',' + y + ',' + templates[prefix])
+#                 }
+#             }
+#         }
+#     })
+#     return ''
+# })()
+# 
+# #}
+# 
+# {#
+# 
+# (function configure_spawns() {
+#     const a = []
+#     for (let i = 0; i < 16; i++) {
+#         a.push(`on [evt_${i + 1}] time_interval: ms(${i % 2 === 0 ? 10000 : 15000}) do spawn: ${_spawnpoints.normal[i]}`)
+#     }
+#     return a
+# })()
+# 
+# #}
+# 
+# {#
+# 
+# (function configure_spawn_overrides() {
+#     const a = []
+#     for (let i = 0; i < 16; i++) {
+#         a.push(`on ${override_event('evt_' + (i + 1), 'brutal')} @inherit do spawn: ${_spawnpoints.easy[i]}`)
+#     }
+#     return a
+# })()
+# 
+# #}
+# 
+# ////// SPAWN SETUP IN JAVASCRIPT ENDS /////////
+# 
+# set time_starts_at = ms(7000)
+# 
+# set player_initial_gold = 5
+# 
+# set [main__powerup_only] player_initial_gold = -1
+# set [main__over_powerup] player_initial_gold = 10
+# {# set_override_main_setup('powerup_only') #}
+# {# set_override_main_setup('over_powerup') #}
+# 
+# on time_one_time: ms(35000) do spawn: 5, 3, 0, 0, 0, 0, 100
+# on time_one_time: ms(35000) do spawn: 9, 3, 0, 0, 0, 0, 100
+# on time_one_time: ms(35000) do spawn: 5, 7, 0, 0, 0, 0, 100
+# on time_one_time: ms(35000) do spawn: 9, 7, 0, 0, 0, 0, 100
+#end_script
+$1
+health 50 
+fire_rate 10 
+speed 1 
+player_initial_gold 5 
+time_starts_at 58 
+health 50 40
+fire_rate 10 40
+speed 1 40
+player_initial_gold -1 40
+time_starts_at 58 40
+health 50 38
+fire_rate 10 38
+speed 1 38
+player_initial_gold 10 38
+time_starts_at 58 38
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 5 3
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 5 3
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 5 4
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 5 4
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 5 5
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 5 5
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 5 6
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 5 6
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 5 7
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 5 7
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 6 3
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 6 3
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 6 7
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 6 7
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 7 3
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 7 3
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 7 7
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 7 7
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 8 3
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 8 3
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 8 7
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 8 7
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 9 3
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 9 3
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 9 4
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 9 4
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 9 5
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 9 5
+event
+event_trigger time_interval 83
+event_action spawn 50 30 10 10 0 9 6
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 9 6
+event
+event_trigger time_interval 125
+event_action spawn 50 30 10 10 0 9 7
+event_override 48
+event_trigger inherit 0
+event_action spawn 40 20 5 5 0 9 7
+event
+event_trigger time_one_time 291
+event_action spawn 0 0 0 0 100 5 3
+event
+event_trigger time_one_time 291
+event_action spawn 0 0 0 0 100 9 3
+event
+event_trigger time_one_time 291
+event_action spawn 0 0 0 0 100 5 7
+event
+event_trigger time_one_time 291
+event_action spawn 0 0 0 0 100 9 7
+end

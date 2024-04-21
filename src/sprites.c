@@ -1,6 +1,6 @@
 #include "sprites.h"
 
-#include "iniRead.h"
+#include "record_file.h"
 #include "logging.h"
 
 DuSprite sprites[SPRITE_ID_MAX + 1];
@@ -50,22 +50,15 @@ int read_sprites_from_file(const char *filename, int min_id, int max_id)
         LOG("Invalid sprite id range %d...%d\n", min_id, max_id);
         return -1;
     }
-    FILE *f = fopen(filename, "r");
-    if (!f)
-    {
-        LOG("Invalid file '%s'\n", filename);
-        return -2;
-    }
     init_sprites();
     for(int i = SPRITE_ID_MIN; i <= SPRITE_ID_MAX; i++)
     {
-        char segment[] = "sprite_xxx";
-        sprintf(segment, "sprite_%d", i);
+        char rec[256] = "";
+        char key[] = "sprite_xxx";
+        sprintf(key, "sprite_%d", i);
+        record_file_get_record(filename, key, rec, sizeof(rec));
         DuSprite *s = &sprites[i];
-        s->sx = ini_read_int_value(f, segment, "x");
-        s->sy = ini_read_int_value(f, segment, "y");
-        s->width = ini_read_int_value(f, segment, "w");
-        s->height = ini_read_int_value(f, segment, "h");
+        sscanf(rec, "%*s x=%d y=%d w=%d h=%d", &s->sx, &s->sy, &s->width, &s->height);
         if (s->width !=0 && s->height != 0)
         {
             sprite_ok[i] = 1;

@@ -985,7 +985,6 @@ X(duedit_compatible)
 201 1 10 5
 201 5 10 5
 *@+SKIP_COND_1
-*?level_read = 1 +end
 *@metadata
 *=name"Gates to Purgatory"
 *=story1"The magician enters the magically sparkling portal and"
@@ -1001,6 +1000,4 @@ X(duedit_compatible)
 *=par1"25.7"
 *=par6"25.175"
 *=par8"24.4"
-*=script1"core-pack\test.ini"
 *=mute_bosstalk"1"
-*@+end

@@ -1,3 +1,8 @@
+set VERSION=0.2
+git log --format=%%h -n 1 > version_info.txt
+python gen_version.py %VERSION%
+del version_info.txt
+
 gcc src/arenaconf.c ^
 src/bossfightconf.c ^
 src/continuousData.c ^
@@ -5,7 +10,6 @@ src/duMp3.c ^
 src/musicTrack.c ^
 src/gamePersistence.c ^
 src/helpers.c ^
-src/iniRead.c ^
 src/keyhandling.c ^
 src/main.c ^
 src/menu.c ^
@@ -19,6 +23,8 @@ src/allegro42_compat.c ^
 src/loadindicator.c ^
 src/duscript.c ^
 src/sprites.c ^
+src/record_file.c ^
+src/best_times.c ^
 -DENABLE_LOGGING ^
 -DTRACE_LOG ^
 -Iallegro\include ^

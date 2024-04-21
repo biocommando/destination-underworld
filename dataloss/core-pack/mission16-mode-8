@@ -230,9 +230,7 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
-*?level_read = 1 +end
 *@metadata
-*=script1"core-pack\boss_mode_8.ini"
 *=par8"24.2"
 *=name"Deepest Abyss"
 *=story1"The corpse of the Arch Evil explodes into 50 shades of"
@@ -242,4 +240,133 @@ X(duedit_compatible)
 *=story5"Congratulations! Now you're totally alone in the deepest"
 *=story6"abyss with no way back to the surface of Earth."
 *=no_more_levels"1"
-*@+end
+#script 1
+# // Boss for "power-up only" mode
+# 
+# set health = 50
+# set fire_rate = 10
+# set speed = 3
+# 
+# on time_one_time: 1 do set_waypoint: 12;2
+# {# set_waypoint_sequence(['12;2', '9;2', '12;9', '7;9']) #}
+# 
+# {# _destroy_wall_time1 = 1000 * 5 #}
+# {# _destroy_wall_time2 = 1000 * 15 #}
+# 
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 1, y = 4, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time1 #}) do modify_terrain: x = 2, y = 4, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 3, y = 4, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time1 #}) do modify_terrain: x = 2, y = 2, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 3, y = 2, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time1 #}) do modify_terrain: x = 4, y = 2, terrain_type = floor
+# 
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 4, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 5, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 6, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 7, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 8, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 9, terrain_type = floor
+# 
+# on time_one_time: ms({# _destroy_wall_time2 #}) do start_secondary_timer: time = 0
+# 
+# // Use secondary timer because it can be stopped
+# 
+# on secondary_timer: ms(2000) do fire_in_circle: number_of_directions = 8, intensity = 1
+# on secondary_timer: ms(4000) do fire_in_circle: number_of_directions = 8, intensity = 1
+# on secondary_timer: ms(6000) do fire_in_circle: number_of_directions = 8, intensity = 1
+# on secondary_timer: ms(8000) do fire_in_circle: number_of_directions = 8, intensity = 1
+# on secondary_timer: ms(10000) do fire_in_circle: number_of_directions = 16, intensity = 3
+# on secondary_timer: ms(10000) do start_secondary_timer: time = 0
+# 
+# // Death
+# on health: 0 do modify_terrain: x = 14, y = 5, terrain_type = level_exit
+# on health: 0 do modify_terrain: x = 14, y = 6, terrain_type = level_exit
+# on health: 0 do stop_secondary_timer
+#end_script
+$1
+health 50 
+fire_rate 10 
+speed 3 
+player_initial_gold -1 
+event
+event_trigger time_one_time 1
+event_action set_waypoint 12 2 1
+event
+event_trigger waypoint_reached 1
+event_action set_waypoint 9 2 2
+event
+event_trigger waypoint_reached 2
+event_action set_waypoint 12 9 3
+event
+event_trigger waypoint_reached 3
+event_action set_waypoint 7 9 4
+event
+event_trigger waypoint_reached 4
+event_action set_waypoint 12 2 1
+event
+event_trigger time_one_time 125
+event_action modify_terrain 1 4 0 0 0 0 0 floor
+event
+event_trigger time_one_time 41
+event_action modify_terrain 2 4 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 3 4 0 0 0 0 0 floor
+event
+event_trigger time_one_time 41
+event_action modify_terrain 2 2 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 3 2 0 0 0 0 0 floor
+event
+event_trigger time_one_time 41
+event_action modify_terrain 4 2 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 5 4 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 5 5 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 5 6 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 5 7 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 5 8 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action modify_terrain 5 9 0 0 0 0 0 floor
+event
+event_trigger time_one_time 125
+event_action start_secondary_timer 0
+event
+event_trigger secondary_timer 16
+event_action fire_in_circle 8 1
+event
+event_trigger secondary_timer 33
+event_action fire_in_circle 8 1
+event
+event_trigger secondary_timer 50
+event_action fire_in_circle 8 1
+event
+event_trigger secondary_timer 66
+event_action fire_in_circle 8 1
+event
+event_trigger secondary_timer 83
+event_action fire_in_circle 16 3
+event
+event_trigger secondary_timer 83
+event_action start_secondary_timer 0
+event
+event_trigger health 0
+event_action modify_terrain 14 5 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 14 6 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action stop_secondary_timer 
+end

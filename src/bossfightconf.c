@@ -1,6 +1,5 @@
 #include "bossfightconf.h"
 
-#include "iniRead.h"
 #include "logging.h"
 #include <stdlib.h>
 #include <string.h>
@@ -251,7 +250,7 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
   print_configs(config);
 }
 
-void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
+/*void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
 {
   memset(config, 0, sizeof(BossFightConfig));
   char main_section[100] = "main";
@@ -416,7 +415,7 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
   }
 
   print_configs(config);
-}
+}*/
 
 void bossfight_process_event_triggers(BossFightConfig *config)
 {

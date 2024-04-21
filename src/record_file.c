@@ -40,6 +40,10 @@ int record_file_read_write_record(FILE *src, FILE *dst, const char *id, char *re
     return dst ? 0 : 1;
 }
 
+int record_file_get_record_f(FILE *file, const char *id, char *record, size_t sz)
+{
+    return record_file_read_write_record(file, NULL, id, record, sz);
+}
 int record_file_get_record(const char *file, const char *id, char *record, size_t sz)
 {
     FILE *src = fopen(file, "r");

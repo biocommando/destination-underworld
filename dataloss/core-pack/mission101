@@ -195,10 +195,91 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
-*?level_read = 1 +end
 *@metadata
 *=name"Arena -- Area 51"
-*=script1"core-pack\arena_101.ini"
 *=mute_bosstalk"1"
 *=wall_color"0.1 0.1 0.5"
-*@+end
+#script 1
+# // Add a hint to the compiler that this is an arena fight
+# {# game_mode.arena = 1 #}
+# 
+# set player_initial_gold = 5
+# 
+# set [main__powerup_only] player_initial_gold = -1
+# set [main__over_powerup] player_initial_gold = 10
+# {# set_override_main_setup('powerup_only') #}
+# {# set_override_main_setup('over_powerup') #}
+# 
+# {# _spawn_interval = 7000 #}
+# 
+# on [evt_alien_spawn_1] time_interval: ms({# _spawn_interval #}) do spawn: 11, 2, 0, 0, 0, 100, 0
+# on time_interval: ms({#_spawn_interval#}) do spawn: 12, 2, 50, 50, 0, 0, 0
+# on time_interval: ms({#_spawn_interval#}) do spawn: 13, 2, 100, 0, 0, 0, 0
+# 
+# on [evt_alien_spawn_2] time_interval: ms({# _spawn_interval #}) do spawn: 11, 9, 0, 0, 0, 100, 0
+# on time_interval: ms({# _spawn_interval #}) do spawn: 12, 9, 50, 50, 0, 0, 0
+# on time_interval: ms({# _spawn_interval #}) do spawn: 13, 9, 100, 0, 0, 0, 0
+# 
+# on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 5, 10, 0, 100, 0, 0, 0
+# on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 1, 5, 0, 100, 0, 0, 0
+# 
+# on {# override_event('evt_alien_spawn_1', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do @inherit
+# on {# override_event('evt_alien_spawn_2', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do @inherit
+# 
+# on kill_count: 50 do modify_terrain: x = 4, y = 8, terrain_type = floor
+# on kill_count: 50 do modify_terrain: x = 5, y = 8, terrain_type = floor
+# on kill_count: 50 do modify_terrain: x = 6, y = 8, terrain_type = floor
+#end_script
+$1
+health 50 
+fire_rate 10 
+speed 1 
+player_initial_gold 5 
+health 50 40
+fire_rate 10 40
+speed 1 40
+player_initial_gold -1 40
+health 50 38
+fire_rate 10 38
+speed 1 38
+player_initial_gold 10 38
+event
+event_trigger time_interval 58
+event_action spawn 0 0 0 100 0 11 2
+event_override 48
+event_trigger time_interval 116
+event_action inherit 
+event
+event_trigger time_interval 58
+event_action spawn 50 50 0 0 0 12 2
+event
+event_trigger time_interval 58
+event_action spawn 100 0 0 0 0 13 2
+event
+event_trigger time_interval 58
+event_action spawn 0 0 0 100 0 11 9
+event_override 48
+event_trigger time_interval 116
+event_action inherit 
+event
+event_trigger time_interval 58
+event_action spawn 50 50 0 0 0 12 9
+event
+event_trigger time_interval 58
+event_action spawn 100 0 0 0 0 13 9
+event
+event_trigger time_interval 116
+event_action spawn 0 100 0 0 0 5 10
+event
+event_trigger time_interval 116
+event_action spawn 0 100 0 0 0 1 5
+event
+event_trigger kill_count 50
+event_action modify_terrain 4 8 0 0 0 0 0 floor
+event
+event_trigger kill_count 50
+event_action modify_terrain 5 8 0 0 0 0 0 floor
+event
+event_trigger kill_count 50
+event_action modify_terrain 6 8 0 0 0 0 0 floor
+end

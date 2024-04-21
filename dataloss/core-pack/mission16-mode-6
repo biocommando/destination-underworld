@@ -385,10 +385,7 @@ X(duedit_compatible)
 120 13 11 2
 120 14 11 2
 120 15 11 2
-*?level_read = 1 +end
 *@metadata
-*=script1"core-pack\boss_mode_6_room1.ini"
-*=script2"core-pack\boss_mode_6.ini"
 *=par6"7.65"
 *=name"Deepest Abyss"
 *=story1"The corpse of the Arch Evil explodes into 50 shades of"
@@ -398,4 +395,110 @@ X(duedit_compatible)
 *=story5"Congratulations! Now you're totally alone in the deepest"
 *=story6"abyss with no way back to the surface of Earth."
 *=no_more_levels"1"
-*@+end
+#script 1
+# set health = 180
+# set speed = 1
+# set player_initial_gold = 10
+#end_script
+#script 2
+# // Boss for "over powerup" mode
+# 
+# set health = 180
+# set speed = 1
+# set player_initial_gold = 10
+# 
+# on time_interval: ms(5000) do fire_in_circle: number_of_directions = 16, intensity = 2
+# on time_interval: ms(1777) do fire_in_circle: number_of_directions = 6, intensity = 1
+# on time_interval: ms(1100) do fire_in_circle: number_of_directions = 4, intensity = 1
+# 
+# on time_one_time: 1 do modify_terrain: x = 14, y = 3, terrain_type = floor
+# 
+# on time_one_time: ms(8000) do modify_terrain: x = 10, y = 8, terrain_type = floor
+# on time_one_time: ms(8250) do modify_terrain: x = 11, y = 8, terrain_type = floor
+# on time_one_time: ms(8500) do modify_terrain: x = 10, y = 9, terrain_type = floor
+# on time_one_time: ms(8750) do modify_terrain: x = 11, y = 9, terrain_type = floor
+# 
+# on time_one_time: ms(9000) do spawn: 10, 8, 0, 0, 100, 0, 0
+# on time_one_time: ms(9000) do spawn: 11, 8, 0, 0, 100, 0, 0
+# on time_one_time: ms(9000) do spawn: 10, 9, 0, 0, 100, 0, 0
+# on time_one_time: ms(9000) do spawn: 11, 9, 0, 0, 100, 0, 0
+# on time_one_time: ms(9500) do spawn: 11, 9, 0, 0, 100, 0, 0
+# on time_one_time: ms(9500) do spawn: 10, 9, 0, 0, 100, 0, 0
+# 
+# on health: 0 do start_secondary_timer: time = 0
+# 
+# on secondary_timer: ms(1000) do modify_terrain: x = 10, y = 0, terrain_type = level_exit
+# on secondary_timer: ms(1200) do modify_terrain: x = 11, y = 0, terrain_type = level_exit
+# on secondary_timer: ms(1400) do modify_terrain: x = 12, y = 0, terrain_type = level_exit
+# on secondary_timer: ms(1600) do modify_terrain: x = 13, y = 0, terrain_type = level_exit
+# 
+#end_script
+$1
+health 180 
+fire_rate 10 
+speed 1 
+player_initial_gold 10 
+end
+$2
+health 180 
+fire_rate 10 
+speed 1 
+player_initial_gold 10 
+event
+event_trigger time_interval 41
+event_action fire_in_circle 16 2
+event
+event_trigger time_interval 14
+event_action fire_in_circle 6 1
+event
+event_trigger time_interval 9
+event_action fire_in_circle 4 1
+event
+event_trigger time_one_time 1
+event_action modify_terrain 14 3 0 0 0 0 0 floor
+event
+event_trigger time_one_time 66
+event_action modify_terrain 10 8 0 0 0 0 0 floor
+event
+event_trigger time_one_time 68
+event_action modify_terrain 11 8 0 0 0 0 0 floor
+event
+event_trigger time_one_time 70
+event_action modify_terrain 10 9 0 0 0 0 0 floor
+event
+event_trigger time_one_time 72
+event_action modify_terrain 11 9 0 0 0 0 0 floor
+event
+event_trigger time_one_time 75
+event_action spawn 0 0 100 0 0 10 8
+event
+event_trigger time_one_time 75
+event_action spawn 0 0 100 0 0 11 8
+event
+event_trigger time_one_time 75
+event_action spawn 0 0 100 0 0 10 9
+event
+event_trigger time_one_time 75
+event_action spawn 0 0 100 0 0 11 9
+event
+event_trigger time_one_time 79
+event_action spawn 0 0 100 0 0 11 9
+event
+event_trigger time_one_time 79
+event_action spawn 0 0 100 0 0 10 9
+event
+event_trigger health 0
+event_action start_secondary_timer 0
+event
+event_trigger secondary_timer 8
+event_action modify_terrain 10 0 0 0 0 0 0 level_exit
+event
+event_trigger secondary_timer 10
+event_action modify_terrain 11 0 0 0 0 0 0 level_exit
+event
+event_trigger secondary_timer 11
+event_action modify_terrain 12 0 0 0 0 0 0 level_exit
+event
+event_trigger secondary_timer 13
+event_action modify_terrain 13 0 0 0 0 0 0 level_exit
+end

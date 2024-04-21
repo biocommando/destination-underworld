@@ -14,17 +14,10 @@ extern int record_mode;
 
 void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
-        char filename[50];
-        sprintf(filename, SAVE_FILENAME, game_settings.mission_pack, slot);
-        FILE *f = fopen(filename, "r");
-        if (f)
-        {
-            load_game_save_data(f, autosave, mission, game_modifiers);
-            autosave->id = PLAYER_ID;
-            fclose(f);
-        }
-        if (*mission == 1)
-            autosave->id = NO_OWNER;
+    load_game(autosave, mission, game_modifiers, slot);
+    autosave->id = PLAYER_ID;
+    if (*mission == 1)
+        autosave->id = NO_OWNER;
 }
 
 ALLEGRO_BITMAP *menu_sprites;
@@ -136,7 +129,19 @@ struct menu_item
     char name[100];
     char description[3][100];
     int selectable;
+    int item_id;
 };
+
+int get_menu_item_id(const char *id_str)
+{
+    int id = 0;
+    for (int i = 0; id_str[i] && i < 4; i++)
+    {
+        id = id << 8;
+        id = id | id_str[i];
+    }
+    return id;
+}
 
 struct menu
 {
@@ -144,23 +149,37 @@ struct menu
     struct menu_item items[20];
     int num_items;
     int selected_item;
+    int cancel_menu_item_id;
 };
 
-void add_menu_item(struct menu *m, const char *name, const char *description, ...)
+void set_item_by_id(struct menu *m, int id)
+{
+    for (int i = 0; i < m->num_items; i++)
+    {
+        if (m->items[i].item_id == id)
+        {
+            m->selected_item = i;
+            return;
+        }
+    }
+}
+
+struct menu_item *add_menu_item(struct menu *m, const char *name, const char *description, ...)
 {
     if (m->num_items >= 20)
-        return;
+        return m->items;
     va_list args;
     va_start(args, description);
 
     char full_description[300], *start = full_description;
     vsprintf(full_description, description, args);
- 
+
     int descr_idx = 0;
     struct menu_item *mi = &m->items[m->num_items];
     mi->selectable = 1;
     m->num_items++;
     strcpy(mi->name, name);
+    mi->item_id = get_menu_item_id(name);
     char *c = start;
     int cont = 1;
     while (cont)
@@ -179,7 +198,10 @@ void add_menu_item(struct menu *m, const char *name, const char *description, ..
         }
         c++;
     }
+    return mi;
 }
+
+#define MENU_ID_CANCEL_OPTION_NOT_SET 0x1234FFFF
 
 struct menu create_menu(const char *title, ...)
 {
@@ -188,13 +210,14 @@ struct menu create_menu(const char *title, ...)
     struct menu m;
     memset(&m, 0, sizeof(m));
     vsprintf(m.title, title, args);
+    m.cancel_menu_item_id = MENU_ID_CANCEL_OPTION_NOT_SET;
     return m;
 }
 
 ALLEGRO_SAMPLE *menu_select = NULL;
 
 void display_menu(struct menu *menu_state)
-{   
+{
     ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
     ALLEGRO_SAMPLE *s_c = al_load_sample(MENU_SAMPLE_FILENAME);
 
@@ -204,6 +227,7 @@ void display_menu(struct menu *menu_state)
     int key = 0;
     int flicker = 0;
     ALLEGRO_SAMPLE_ID id;
+    wait_key_release(ALLEGRO_KEY_ESCAPE);
     while (key != ALLEGRO_KEY_ENTER)
     {
         al_draw_scaled_bitmap(menubg, 0, 0, 480, 360, 0, 0, 480 * 2, 360 * 2, 0);
@@ -223,20 +247,21 @@ void display_menu(struct menu *menu_state)
             {
                 if (mi->description[j][0])
                 {
-                    al_draw_textf(get_font(),  mi->selectable ? al_map_rgb(127, 127, 255) : GRAY(127), 80, cursor_y,
-                        0, mi->description[j]);
+                    al_draw_textf(get_font(), mi->selectable ? al_map_rgb(127, 127, 255) : GRAY(127), 80, cursor_y,
+                                  0, mi->description[j]);
                     cursor_y += menu_item_height;
                 }
             }
             cursor_y += menu_item_margin;
         }
         al_flip_display();
-        int keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN};
-        key = wait_key_presses(keys, 3);
+        int keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_ESCAPE};
+        key = wait_key_presses(keys, sizeof(keys) / sizeof(int));
         if (key == ALLEGRO_KEY_UP && menu_state->selected_item > 0)
         {
             int si = menu_state->selected_item - 1;
-            while (si >= 0 && !menu_state->items[si].selectable) si--;
+            while (si >= 0 && !menu_state->items[si].selectable)
+                si--;
             if (si >= 0)
             {
                 menu_state->selected_item = si;
@@ -246,12 +271,18 @@ void display_menu(struct menu *menu_state)
         if (key == ALLEGRO_KEY_DOWN && menu_state->selected_item < menu_state->num_items - 1)
         {
             int si = menu_state->selected_item + 1;
-            while (si < menu_state->num_items && !menu_state->items[si].selectable) si++;
+            while (si < menu_state->num_items && !menu_state->items[si].selectable)
+                si++;
             if (si < menu_state->num_items)
             {
                 menu_state->selected_item = si;
                 menu_play_sample(s_c, &id);
             }
+        }
+        if (key == ALLEGRO_KEY_ESCAPE && menu_state->cancel_menu_item_id != MENU_ID_CANCEL_OPTION_NOT_SET)
+        {
+            set_item_by_id(menu_state, menu_state->cancel_menu_item_id);
+            break;
         }
     }
     menu_play_sample(menu_select, &id);
@@ -262,7 +293,7 @@ void display_menu(struct menu *menu_state)
 int display_load_game_menu()
 {
     struct menu m = create_menu("Load game");
-    add_menu_item(&m, "Cancel", "Cancel and return to previous menu");
+    m.cancel_menu_item_id = add_menu_item(&m, "Cancel", "Cancel and return to previous menu")->item_id;
     for (int slot = 0; slot < 9; slot++)
     {
         char slot_name[32];
@@ -272,7 +303,7 @@ int display_load_game_menu()
         if (current_slot_has_save)
         {
             add_menu_item(&m, slot_name, "Mode: %s\nMission: %d",
-                game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
+                          game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
         }
         else
         {
@@ -287,7 +318,8 @@ int display_load_game_menu()
 int display_save_game_menu()
 {
     struct menu m = create_menu("Save game");
-    add_menu_item(&m, "Cancel", "Cancel and return to previous menu");
+    struct menu_item *mi = add_menu_item(&m, "Cancel", "Cancel and return to previous menu");
+    m.cancel_menu_item_id = mi->item_id;
     for (int slot = 0; slot < 9; slot++)
     {
         char slot_name[32];
@@ -297,7 +329,7 @@ int display_save_game_menu()
         if (current_slot_has_save)
         {
             add_menu_item(&m, slot_name, "Mode: %s\nMission: %d",
-                game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
+                          game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
         }
         else
         {
@@ -316,11 +348,10 @@ int display_game_mode_menu(int game_modifiers)
         GAMEMODIFIER_DOUBLED_SHOTS,
         GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS,
         GAMEMODIFIER_MULTIPLIED_GOLD,
-        -1
-    };
-    
+        -1};
+
     struct menu m = create_menu("Change game mode");
-    
+
     for (int i = 0; modifiers[i] != -1; i++)
     {
         if (modifiers[i] == game_modifiers)
@@ -332,17 +363,20 @@ int display_game_mode_menu(int game_modifiers)
 
     add_menu_item(&m, game_modifiers_to_str(modifiers[0]), "Normal gameplay");
     add_menu_item(&m, game_modifiers_to_str(modifiers[1]),
-        "- Tougher enemies                 - More enemies\n"
-        "- Less souls for buing powerups   - Less effective fireball spells\n"
-        "- More expensive powerups");
+                  "- Tougher enemies                 - More enemies\n"
+                  "- Less souls for buing powerups   - Less effective fireball spells\n"
+                  "- More expensive powerups");
     add_menu_item(&m, game_modifiers_to_str(modifiers[2]),
-        "Whenever anything in the game would shoot a fireball\n"
-        "two fireballs are spawned instead of just one.");
+                  "Whenever anything in the game would shoot a fireball\n"
+                  "two fireballs are spawned instead of just one.");
     add_menu_item(&m, game_modifiers_to_str(modifiers[3]),
-        "All powerups are overpowered but also very expensive");
+                  "All powerups are overpowered but also very expensive");
     add_menu_item(&m, game_modifiers_to_str(modifiers[4]),
-        "Player does not regenerate health or mana.\n"
-        "Player has 20 souls initially at the start of each level.");
+                  "Player does not regenerate health or mana.\n"
+                  "Player has 20 souls initially at the start of each level.");
+
+    m.cancel_menu_item_id = m.items[m.selected_item].item_id;
+
     display_menu(&m);
 
     return modifiers[m.selected_item];
@@ -351,8 +385,9 @@ int display_game_mode_menu(int game_modifiers)
 int display_in_game_menu(int game_modifiers, int mission)
 {
     struct menu m = create_menu("Paused -- %s -- level %d",
-        game_modifiers_to_str(game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT), mission);
-    add_menu_item(&m, "Return", "Close the menu and continue playing");
+                                game_modifiers_to_str(game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT), mission);
+    struct menu_item *mi = add_menu_item(&m, "Return", "Close the menu and continue playing");
+    m.cancel_menu_item_id = mi->item_id;
     add_menu_item(&m, "Save game", "");
     if (game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
     {
@@ -362,13 +397,15 @@ int display_in_game_menu(int game_modifiers, int mission)
     add_menu_item(&m, "View help", "");
     add_menu_item(&m, "Exit to main menu", "");
     display_menu(&m);
-    return m.selected_item;
+    return m.items[m.selected_item].item_id;
 }
 
 int display_new_game_menu(int game_modifiers)
 {
     struct menu m = create_menu("Start new %s game", game_modifiers_to_str(game_modifiers));
-    add_menu_item(&m, "Exit to main menu", "");
+    struct menu_item *mi = add_menu_item(&m, "Exit to main menu", "");
+    m.cancel_menu_item_id = mi->item_id;
+    add_menu_item(&m, "Change game mode", "Current: %s", game_modifiers_to_str(game_modifiers));
     add_menu_item(&m, "Story mode", "Begin a new story mode game");
     ArenaHighscore arena_highscore;
     access_arena_highscore(&arena_highscore, 1);
@@ -383,29 +420,37 @@ int display_new_game_menu(int game_modifiers)
                 break;
             }
         }
-        add_menu_item(&m, game_settings.arena_config.arenas[arena].name,
-            "Arena fight! Kill as many enemies as you can!\nHighscore: %d kills", kills);
+        mi = add_menu_item(&m, game_settings.arena_config.arenas[arena].name,
+                           "Arena fight! Kill as many enemies as you can!\nHighscore: %d kills", kills);
+        mi->item_id = arena;
     }
+    set_item_by_id(&m, get_menu_item_id("Story"));
     display_menu(&m);
-    return m.selected_item;
+    return m.items[m.selected_item].item_id;
 }
 
 int display_game_options(int default_opt)
 {
     struct menu m = create_menu("Options");
-    m.selected_item = default_opt;
-    add_menu_item(&m, "Exit to main menu", "");
-    add_menu_item(&m, "Set music on/off", "Current: %s", game_settings.music_on ? "on" : "off");
+    struct menu_item *mi;
+    mi = add_menu_item(&m, "Exit to main menu", "");
+    m.cancel_menu_item_id = mi->item_id;
+    mi = add_menu_item(&m, "Set music on/off", "Current: %s", game_settings.music_on ? "on" : "off");
+    mi->item_id = get_menu_item_id("m.on/off");
     add_menu_item(&m, "Next music track", "");
-    add_menu_item(&m, "Set music volume", "Current: %d %%%%", (int)(100 * game_settings.music_vol));
-    add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * game_settings.sfx_vol));
-    add_menu_item(&m, "Set vibration intensity", "Current: %s (%d)",
-        game_settings.vibration_mode < 12 ? (game_settings.vibration_mode < 5 ? "heavy" : "medium") : "light", game_settings.vibration_mode);
+    mi = add_menu_item(&m, "Set music volume", "Current: %d %%%%", (int)(100 * game_settings.music_vol));
+    mi->item_id = get_menu_item_id("m.vol");
+    mi = add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * game_settings.sfx_vol));
+    mi->item_id = get_menu_item_id("s.vol");
+    mi = add_menu_item(&m, "Set vibration intensity", "Current: %s (%d)",
+                       game_settings.vibration_mode < 12 ? (game_settings.vibration_mode < 5 ? "heavy" : "medium") : "light", game_settings.vibration_mode);
+    mi->item_id = get_menu_item_id("vibrations");
+    set_item_by_id(&m, default_opt);
     display_menu(&m);
-    return m.selected_item;
+    return m.items[m.selected_item].item_id;
 }
 
-int display_range_menu(const char *title, const char *fmt, int range_start, int count, int step)
+int display_range_menu(const char *title, const char *fmt, int range_start, int count, int step, int default_opt)
 {
     struct menu m = create_menu(title);
     for (int i = 0; i < count; i++)
@@ -415,6 +460,10 @@ int display_range_menu(const char *title, const char *fmt, int range_start, int 
         sprintf(item, fmt, val);
         add_menu_item(&m, item, "");
     }
+    m.selected_item = (default_opt - range_start) / step;
+    if (m.selected_item >= m.num_items || m.selected_item == 0)
+        m.selected_item = 0;
+    m.cancel_menu_item_id = m.items[m.selected_item].item_id;
     display_menu(&m);
     return range_start + m.selected_item * step;
 }
@@ -427,29 +476,31 @@ void game_option_menu()
     do
     {
         choice = display_game_options(choice);
-        if (choice == 1)
+        if (choice == get_menu_item_id("m.on/off"))
         {
             game_settings.music_on = !game_settings.music_on;
         }
-        else if (choice == 2)
+        else if (choice == get_menu_item_id("Next"))
         {
             switch_track(get_current_track() + 1);
         }
-        else if (choice == 3)
+        else if (choice == get_menu_item_id("m.vol"))
         {
-            int vol = display_range_menu("Set music volume", "%d %%%%", 10, 10, 10);
-            game_settings.music_vol = vol / 100.0f; 
+            int default_opt = (int)(game_settings.music_vol * 100 + 0.5f);
+            int vol = display_range_menu("Set music volume", "%d %%%%", 10, 10, 10, default_opt);
+            game_settings.music_vol = vol / 100.0f;
         }
-        else if (choice == 4)
+        else if (choice == get_menu_item_id("s.vol"))
         {
-            int vol = display_range_menu("Set sound volume", "%d %%%%", 10, 10, 10);
-            game_settings.sfx_vol = vol / 100.0f; 
+            int default_opt = (int)(game_settings.sfx_vol * 100 + 0.5f);
+            int vol = display_range_menu("Set sound volume", "%d %%%%", 10, 10, 10, default_opt);
+            game_settings.sfx_vol = vol / 100.0f;
         }
-        else if (choice == 5)
+        else if (choice == get_menu_item_id("vibrations"))
         {
-            game_settings.vibration_mode = display_range_menu("Set vibration intensity", "%d", 1, 16, 1);
+            game_settings.vibration_mode = display_range_menu("Set vibration intensity", "%d", 1, 16, 1, game_settings.vibration_mode);
         }
-    } while (choice != 0);
+    } while (choice != get_menu_item_id("Exit"));
 
     if (memcmp(&orig, &game_settings, sizeof(GameSettings)))
     {
@@ -463,12 +514,11 @@ int display_main_menu(int game_modifiers)
     struct menu m = create_menu("DESTINATION UNDERWORLD");
     add_menu_item(&m, "Start new game", "");
     add_menu_item(&m, "Load game", "");
-    add_menu_item(&m, "Change game mode", "Current: %s", game_modifiers_to_str(game_modifiers));
     add_menu_item(&m, "Game options", "Change the game options");
     add_menu_item(&m, "View help", "");
     add_menu_item(&m, "Exit", "");
     display_menu(&m);
-    return m.selected_item;
+    return m.items[m.selected_item].item_id;
 }
 
 void load_menu_sprites()
@@ -512,44 +562,33 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             while (!exit_menu)
             {
                 int ingame_menu_selection = display_in_game_menu(*game_modifiers, *mission);
-                switch (ingame_menu_selection)
+                // Return game
+                if (ingame_menu_selection == get_menu_item_id("Return"))
                 {
-                    // Return game
-                    case 0:
-                        switch_level = 0;
-                        exit_menu = 1;
-                    break;
-                    // Save game
-                    case 1:
+                    switch_level = 0;
+                    exit_menu = 1;
+                }
+                else if (ingame_menu_selection == get_menu_item_id("Save"))
+                {
+                    int save_slot = display_save_game_menu();
+                    if (save_slot != 0)
                     {
-                        int save_slot = display_save_game_menu();
-                        if (save_slot != 0)
-                        {
-                            save_game(autosave, *mission, *game_modifiers, save_slot - 1);
-                        }
+                        save_game(autosave, *mission, *game_modifiers, save_slot - 1);
                     }
-                    break;
-                    //  Game options
-                    case 2:
-                    {
-                        game_option_menu();
-                    }
-                    break;
-                    // Show help
-                    case 3:
-                    {
-                        show_help();
-                    }
-                    break;
-                    // Exit to main menu
-                    case 4:
-                    {
-                        main_menu = 1;
-                        exit_menu = 1;
-                        *game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
-                    }
-                    default:
-                    break;
+                }
+                else if (ingame_menu_selection == get_menu_item_id("Game options"))
+                {
+                    game_option_menu();
+                }
+                else if (ingame_menu_selection == get_menu_item_id("View help"))
+                {
+                    show_help();
+                }
+                else if (ingame_menu_selection == get_menu_item_id("Exit"))
+                {
+                    main_menu = 1;
+                    exit_menu = 1;
+                    *game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
                 }
             }
             exit_menu = 0;
@@ -557,66 +596,54 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         while (main_menu && !exit_menu)
         {
             int main_menu_selection = display_main_menu(*game_modifiers);
-            switch (main_menu_selection)
+            if (main_menu_selection == get_menu_item_id("Start"))
             {
-                // start new game
-                case 0:
+                int choice = 0;
+                while (choice != get_menu_item_id("Exit") && !exit_menu)
                 {
-                    int level_set = display_new_game_menu(*game_modifiers);
-                    if (level_set == 1)
+                    choice = display_new_game_menu(*game_modifiers);
+
+                    if (choice == get_menu_item_id("Change game mode"))
+                    {
+                        *game_modifiers = display_game_mode_menu(*game_modifiers);
+                    }
+                    else if (choice == get_menu_item_id("Story"))
                     {
                         exit_menu = 1;
                         *mission = 1;
                         autosave->id = NO_OWNER;
                     }
-                    else if (level_set > 1)
+                    else if (choice < ARENACONF_MAX_NUMBER_OF_ARENAS)
                     {
-                        int arena = level_set - 2;
+                        int arena = choice;
                         exit_menu = 1;
                         *mission = game_settings.arena_config.arenas[arena].level_number;
                         *game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
                         autosave->id = NO_OWNER;
                     }
                 }
-                break;
-                // load game
-                case 1:
+            }
+            if (main_menu_selection == get_menu_item_id("Load"))
+            {
+                int load_slot = display_load_game_menu();
+                if (load_slot != 0)
                 {
-                    int load_slot = display_load_game_menu();
-                    if (load_slot != 0)
-                    {
-                        exit_menu = 1;
-                        do_load_game(autosave, mission, game_modifiers, load_slot - 1);
-                    }
-                }
-                break;
-                // Change game mode
-                case 2:
-                {
-                    *game_modifiers = display_game_mode_menu(*game_modifiers);
-                }
-                break;
-                // game options
-                case 3:
-                {
-                    game_option_menu();
-                }
-                break;
-                // show help
-                case 4:
-                {
-                    show_help();
-                }
-                break;
-                // exit
-                case 5:
-                {
-                    *mission = 0;
                     exit_menu = 1;
+                    do_load_game(autosave, mission, game_modifiers, load_slot - 1);
                 }
-                break;
-                default:
-                break;
+            }
+            if (main_menu_selection == get_menu_item_id("Game options"))
+            {
+                game_option_menu();
+            }
+            if (main_menu_selection == get_menu_item_id("View help"))
+            {
+                show_help();
+            }
+            if (main_menu_selection == get_menu_item_id("Exit"))
+            {
+                *mission = 0;
+                exit_menu = 1;
             }
         }
     }

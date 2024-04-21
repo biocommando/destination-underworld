@@ -193,9 +193,7 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
-*?level_read = 1 +end
 *@metadata
-*=script1"core-pack\boss_mode_16.ini"
 *=par16"84.8"
 *=name"Deepest Abyss"
 *=story1"The corpse of the Arch Evil explodes into 50 shades of"
@@ -205,4 +203,129 @@ X(duedit_compatible)
 *=story5"Congratulations! Now you're totally alone in the deepest"
 *=story6"abyss with no way back to the surface of Earth."
 *=no_more_levels"1"
-*@+end
+#script 1
+# // Boss for "brutally hard" mode
+# 
+# {# _start_time = 18667 #}
+# 
+# set health = 15
+# set player_initial_gold = 0
+# set time_starts_at = ms({# _start_time #})
+# 
+# // North-West room
+# // This is the initial room for the player.
+# // After a short while spawns turrets in each cornet with one-time trigger.
+# // Same room will eventually have entrance to the boss room.
+# on time_one_time: ms({#_start_time + 2667#}) do spawn: 1, 1, 0, 0, 0, 0, 100
+# on time_one_time: ms({#_start_time + 2667#}) do spawn: 5, 1, 0, 0, 0, 0, 100
+# on time_one_time: ms({#_start_time + 2667#}) do spawn: 1, 5, 0, 0, 0, 0, 100
+# on time_one_time: ms({#_start_time + 2667#}) do spawn: 5, 5, 0, 0, 0, 0, 100
+# 
+# // South-West room, has moderately difficult enemies
+# on time_interval: ms(40000) do spawn: 1, 7, 0, 100, 0, 0, 0
+# on time_interval: ms(40000) do spawn: 5, 7, 0, 100, 0, 0, 0
+# on time_interval: ms(40000) do spawn: 1, 10, 0, 100, 0, 0, 0
+# on time_interval: ms(40000) do spawn: 5, 10, 0, 100, 0, 0, 0
+# 
+# // South-East room, has easy enemies
+# on time_interval: ms(26667) do spawn: 7, 5, 100, 0, 0, 0, 0
+# on time_interval: ms(26667) do spawn: 14, 5, 100, 0, 0, 0, 0
+# on time_interval: ms(26667) do spawn: 7, 10, 100, 0, 0, 0, 0
+# on time_interval: ms(26667) do spawn: 14, 10, 100, 0, 0, 0, 0
+# 
+# // North-East room, always spawns an imp in the middle
+# on time_interval: ms(40000) do spawn: 13, 2, 0, 0, 100, 0, 0
+# 
+# {# _destroy_wall_time = _start_time + 106668 #}
+# 
+# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 6, y = 1, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 6, y = 2, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 6, y = 3, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 7, y = 4, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 8, y = 4, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 2, y = 6, terrain_type = floor
+# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 4, y = 6, terrain_type = floor
+# 
+# // Death
+# 
+# on health: 0 do modify_terrain: x = 9, y = 1, terrain_type = floor
+# on health: 0 do modify_terrain: x = 9, y = 2, terrain_type = floor
+# on health: 0 do modify_terrain: x = 9, y = 3, terrain_type = floor
+# 
+#end_script
+$1
+health 15 
+fire_rate 10 
+speed 1 
+player_initial_gold 0 
+time_starts_at 155 
+event
+event_trigger time_one_time 177
+event_action spawn 0 0 0 0 100 1 1
+event
+event_trigger time_one_time 177
+event_action spawn 0 0 0 0 100 5 1
+event
+event_trigger time_one_time 177
+event_action spawn 0 0 0 0 100 1 5
+event
+event_trigger time_one_time 177
+event_action spawn 0 0 0 0 100 5 5
+event
+event_trigger time_interval 333
+event_action spawn 0 100 0 0 0 1 7
+event
+event_trigger time_interval 333
+event_action spawn 0 100 0 0 0 5 7
+event
+event_trigger time_interval 333
+event_action spawn 0 100 0 0 0 1 10
+event
+event_trigger time_interval 333
+event_action spawn 0 100 0 0 0 5 10
+event
+event_trigger time_interval 222
+event_action spawn 100 0 0 0 0 7 5
+event
+event_trigger time_interval 222
+event_action spawn 100 0 0 0 0 14 5
+event
+event_trigger time_interval 222
+event_action spawn 100 0 0 0 0 7 10
+event
+event_trigger time_interval 222
+event_action spawn 100 0 0 0 0 14 10
+event
+event_trigger time_interval 333
+event_action spawn 0 0 100 0 0 13 2
+event
+event_trigger time_one_time 1044
+event_action modify_terrain 6 1 0 0 0 0 0 floor
+event
+event_trigger time_one_time 1044
+event_action modify_terrain 6 2 0 0 0 0 0 floor
+event
+event_trigger time_one_time 1044
+event_action modify_terrain 6 3 0 0 0 0 0 floor
+event
+event_trigger time_one_time 1044
+event_action modify_terrain 7 4 0 0 0 0 0 floor
+event
+event_trigger time_one_time 1044
+event_action modify_terrain 8 4 0 0 0 0 0 floor
+event
+event_trigger time_one_time 1044
+event_action modify_terrain 2 6 0 0 0 0 0 floor
+event
+event_trigger time_one_time 1044
+event_action modify_terrain 4 6 0 0 0 0 0 floor
+event
+event_trigger health 0
+event_action modify_terrain 9 1 0 0 0 0 0 floor
+event
+event_trigger health 0
+event_action modify_terrain 9 2 0 0 0 0 0 floor
+event
+event_trigger health 0
+event_action modify_terrain 9 3 0 0 0 0 0 floor
+end

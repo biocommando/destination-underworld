@@ -24,10 +24,10 @@ typedef struct
     int mode[ARENACONF_MAX_NUMBER_OF_ARENAS][ARENACONF_HIGHSCORE_MAP_SIZE];
 } ArenaHighscore;
 
-void read_arena_configs(FILE *f, ArenaConfigs *config);
+void read_arena_configs(const char *filename, ArenaConfigs *config);
 
-void read_arena_highscores(FILE *f, ArenaHighscore *highscore);
+void read_arena_highscores(const char *filename, ArenaHighscore *highscore);
 
-void write_arena_highscores(FILE *f, ArenaHighscore *highscore);
+void write_arena_highscores(const char *filename, ArenaHighscore *highscore);
 
 #endif
