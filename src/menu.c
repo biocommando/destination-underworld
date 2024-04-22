@@ -114,6 +114,8 @@ const char *game_modifiers_to_str(int game_modifiers)
         return "over power up";
     if (game_modifiers == GAMEMODIFIER_MULTIPLIED_GOLD)
         return "power up only";
+    if (game_modifiers == (GAMEMODIFIER_POTION_ON_DEATH | GAMEMODIFIER_MULTIPLIED_GOLD | GAMEMODIFIER_NO_GOLD))
+        return "potions only";
     return "unknown";
 }
 
@@ -348,6 +350,7 @@ int display_game_mode_menu(int game_modifiers)
         GAMEMODIFIER_DOUBLED_SHOTS,
         GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS,
         GAMEMODIFIER_MULTIPLIED_GOLD,
+        (GAMEMODIFIER_POTION_ON_DEATH | GAMEMODIFIER_NO_GOLD | GAMEMODIFIER_MULTIPLIED_GOLD),
         -1};
 
     struct menu m = create_menu("Change game mode");
@@ -374,6 +377,10 @@ int display_game_mode_menu(int game_modifiers)
     add_menu_item(&m, game_modifiers_to_str(modifiers[4]),
                   "Player does not regenerate health or mana.\n"
                   "Player has 20 souls initially at the start of each level.");
+    add_menu_item(&m, game_modifiers_to_str(modifiers[5]),
+                  "Player does not regenerate health or mana.\n"
+                  "Player does not have access to powerups.\n"
+                  "Player uses potions to survive.");
 
     m.cancel_menu_item_id = m.items[m.selected_item].item_id;
 

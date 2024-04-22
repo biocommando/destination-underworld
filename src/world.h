@@ -57,6 +57,7 @@ typedef struct
     enum TurretType turret;
     int hurts_monsters;
     int sprite;
+    int potion; // if >= 0, the enemy drops a potion with this effect after death
     BodyPart bodyparts[BODYPARTCOUNT];
 } Enemy;
 
@@ -96,6 +97,8 @@ typedef struct
 #define GAMEMODIFIER_MULTIPLIED_GOLD 0x8
 #define GAMEMODIFIER_BRUTAL 0x10
 #define GAMEMODIFIER_ARENA_FIGHT 0x20
+#define GAMEMODIFIER_POTION_ON_DEATH 0x40
+#define GAMEMODIFIER_NO_GOLD 0x80
 
 #define GET_DIFFICULTY(world) (((world)->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : DIFFICULTY_NORMAL)
 

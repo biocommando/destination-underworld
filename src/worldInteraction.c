@@ -430,6 +430,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     new_enemy->x = x;
     new_enemy->y = y;
     new_enemy->move = 0;
+    new_enemy->potion = -1;
 
     new_enemy->sprite = type;
 
@@ -451,6 +452,9 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         // fast is overridden by boss speed
         // rate and health are set in boss config
     }
+
+    if (world->game_modifiers & GAMEMODIFIER_POTION_SPAWN)
+        new_enemy->potion = index % 5;
 
     int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
 

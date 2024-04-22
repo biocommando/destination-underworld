@@ -513,7 +513,8 @@ void bullet_logic(World *world)
               }
 
               get_tile_at(world, enm->x, enm->y)->is_blood_stained = 1;
-              world->plr.gold += enm->gold;
+              if ((world.game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
+                world->plr.gold += enm->gold;
 
               world->kills++;
               world->boss_fight_config->state.player_kills++;
@@ -535,6 +536,10 @@ void bullet_logic(World *world)
                 world->plr.ammo += 7;
                 if (world->plr.ammo > 15)
                   world->plr.ammo = 15;
+              }
+              if (enm->potion >= 0)
+              {
+                spawn_potion(enm->x, enm->y, enm->potion, world->current_room, world);
               }
 
               if (enm == world->boss) // Archmage dies
@@ -737,6 +742,8 @@ int game(int mission, int *game_modifiers)
     world.plr.gold = 20;
   }
   else if (difficulty == DIFFICULTY_BRUTAL)
+    world.plr.gold = 0;
+  if (world.game_modifiers & GAMEMODIFIER_NO_GOLD)
     world.plr.gold = 0;
 
   if (world.boss_fight && world.boss_fight_config->player_initial_gold >= 0)
