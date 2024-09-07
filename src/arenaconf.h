@@ -22,6 +22,7 @@ typedef struct
 {
     int kills[ARENACONF_MAX_NUMBER_OF_ARENAS][ARENACONF_HIGHSCORE_MAP_SIZE];
     int mode[ARENACONF_MAX_NUMBER_OF_ARENAS][ARENACONF_HIGHSCORE_MAP_SIZE];
+    int dirty[ARENACONF_MAX_NUMBER_OF_ARENAS][ARENACONF_HIGHSCORE_MAP_SIZE];
 } ArenaHighscore;
 
 void read_arena_configs(const char *filename, ArenaConfigs *config);

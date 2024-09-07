@@ -1116,10 +1116,14 @@ int game(int mission, int *game_modifiers)
             al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
             al_draw_textf(get_font(), WHITE, offx + 10, offy + 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
             highscore.kills[arena_idx][mode_idx] = world.kills;
+            highscore.dirty[arena_idx][mode_idx] = 1;
             if (!no_player_damage)
             {
-              LOG("Not saving highscore, no damage mode active");
               access_arena_highscore(&highscore, 0);
+            }
+            else
+            {
+              LOG("Not saving highscore, no damage mode active");
             }
           }
           else
