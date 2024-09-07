@@ -633,11 +633,6 @@ X(duedit_compatible)
 *=story7"the magician finally feeling empowered by being able to"
 *=story8"kick the demons' asses that tormented him for the last 200"
 *=story9"years."
-*=par16"22.025"
-*=par0"22.925"
-*=par1"19.75"
-*=par6"14.7"
-*=par8"15.825"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

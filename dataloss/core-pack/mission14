@@ -1029,11 +1029,6 @@ X(duedit_compatible)
 *=story5"so evil. Maybe talking sense to him would make him good"
 *=story6"again? You know that could be a possibility but you can't"
 *=story7"take the risk. You must end him, for once and for all."
-*=par16"158.55"
-*=par0"110.55"
-*=par1"93.55"
-*=par6"88.075"
-*=par8"160.7"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

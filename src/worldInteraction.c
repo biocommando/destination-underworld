@@ -662,10 +662,6 @@ void level_read_new_format(World *world, int room_to, FILE *f)
             world->story_after_mission_lines = i;
         }
     }
-    char par_var[16];
-    sprintf(par_var, "par%d", world->game_modifiers);
-    var = du_script_variable(&state, par_var);
-    sscanf(var->value, "%lf", &world->par_time);
 
     var = du_script_variable(&state, "wall_color");
     if (*var->value)

@@ -1218,11 +1218,6 @@ X(duedit_compatible)
 *=story7"he has been supporting together with his good friend"
 *=story8"Pestilence. On the other hand, maybe it's good that not all"
 *=story9"the evil creatures consider you their enemy."
-*=par16"47.75"
-*=par0"41.775"
-*=par1"44.525"
-*=par6"37.95"
-*=par8"30.55"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

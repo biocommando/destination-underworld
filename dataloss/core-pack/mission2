@@ -625,11 +625,6 @@ X(duedit_compatible)
 *=story2"whose soul you possess would agree. If all of Hell is this"
 *=story3"poorly guarder you won't probably even break a sweat! Well,"
 *=story4"if the temperatures weren't so melting hot, that is."
-*=par16"22.1"
-*=par0"24.775"
-*=par1"24.4"
-*=par6"25.175"
-*=par8"21.6"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

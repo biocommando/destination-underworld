@@ -817,11 +817,6 @@ X(duedit_compatible)
 *=story8"hazy LSD trips. And in the same way as the LSD trips, Hell"
 *=story9"is not even supposed to make sense. You better get used to"
 *=story10"it while traversing further down towards the Ultimate Evil."
-*=par16"37.175"
-*=par0"26.175"
-*=par1"25.2"
-*=par6"23.1"
-*=par8"19.175"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

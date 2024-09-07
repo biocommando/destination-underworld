@@ -679,11 +679,6 @@ X(duedit_compatible)
 *=story7"(not this software, unfortunately) with the Ultimate Evil."
 *=story8"You could think that Bill Gates is powerful but he's mere"
 *=story9"pesky servant of the Truly Grand Evil."
-*=par16"79.975"
-*=par0"39.8"
-*=par1"46.15"
-*=par6"47.325"
-*=par8"36.725"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

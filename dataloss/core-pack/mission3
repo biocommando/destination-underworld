@@ -810,11 +810,6 @@ X(duedit_compatible)
 *=story8"savings by the way) will likely plummet if you succeed. So,"
 *=story9"better keep it quiet what you're doing here in the"
 *=story10"basement."
-*=par16"26.575"
-*=par0"22.1"
-*=par1"22.1"
-*=par8"24.2"
-*=par6"24.475"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

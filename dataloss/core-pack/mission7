@@ -818,10 +818,6 @@ X(duedit_compatible)
 *=story8"your inner demons instead of actually taking down monsters."
 *=story9"Of course, it's impossible to tell if that's happening"
 *=story10"already. What tells inner and outer reality apart anyway?"
-*=par0"21.675"
-*=par1"45.075"
-*=par6"37.125"
-*=par8"17.8"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

@@ -901,11 +901,6 @@ X(duedit_compatible)
 *=story6"evil. But when you need to guard a hallway for an eternity"
 *=story7"without any apparent reason, in Hell of all places, it can"
 *=story8"really twist your mind."
-*=par16"94.45"
-*=par0"76.025"
-*=par1"72.475"
-*=par6"66.1"
-*=par8"66.4"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

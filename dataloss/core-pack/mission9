@@ -1242,11 +1242,6 @@ X(duedit_compatible)
 *=story6"consume human souls as their energy source. Actually, you'd"
 *=story7"be surprised to know how many other technologies are magic"
 *=story8"based, too."
-*=par16"60.725"
-*=par0"34.125"
-*=par1"32.25"
-*=par6"39.2"
-*=par8"36.25"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

@@ -622,11 +622,6 @@ X(duedit_compatible)
 *=story5"with the current storyline? I don't know, probably not."
 *=story6"But no matter who they worship, they were on your way. And"
 *=story7"the only way to deal with that is total annihilation."
-*=par16"65.425"
-*=par0"19.825"
-*=par1"31.475"
-*=par6"24.15"
-*=par8"15.45"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

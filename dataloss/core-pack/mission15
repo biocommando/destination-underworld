@@ -703,11 +703,6 @@ X(duedit_compatible)
 *=story4"annihilate the Arch Evil, the archetype of white male and"
 *=story5"thus end the sinister reign of patriarchy. Go, do it now!"
 *=story6"This may be your only change!"
-*=par16"140.4"
-*=par0"87.375"
-*=par1"66.3"
-*=par6"67.325"
-*=par8"90.25"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

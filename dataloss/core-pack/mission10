@@ -659,11 +659,6 @@ X(duedit_compatible)
 *=story8"just need to adapt. It's like every other taxi would take"
 *=story9"you reliably to your destination and every other gives you"
 *=story10"sleeping pills to abduct you. But that's just how Hell is!"
-*=par16"133.1"
-*=par0"55.5"
-*=par1"71.85"
-*=par6"62.75"
-*=par8"47.325"
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties

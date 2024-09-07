@@ -651,11 +651,6 @@ X(duedit_compatible)
 *=story4"the Ultimate Evil. But no. He's just an ALIEN. Aliens are"
 *=story5"not inherently evil. The truly evil people are just further"
 *=story6"down!"
-*=par6"52.825"
-*=par8"55"
-*=par0"50.35"
-*=par1672.25""
-*=par146.35""
 *=mute_bosstalk"1"
 #script 1
 # ignore_init_properties
