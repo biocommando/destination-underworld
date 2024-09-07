@@ -1,6 +1,6 @@
-set VERSION=0.2
+set VERSION=0.3
 git log --format=%%h -n 1 > version_info.txt
-python gen_version.py %VERSION%
+node gen_version.js %VERSION%
 del version_info.txt
 
 gcc src/arenaconf.c ^
