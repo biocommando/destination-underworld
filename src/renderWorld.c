@@ -176,6 +176,26 @@ void draw_player_legend(World *world, int x, int y)
         {
             int sprite = 8 * world->potion_duration / (POTION_DURATION_CAP + 1);
             draw_sprite_animated(world->spr, SPRITE_ID_POTION_DURATION, x - 32, y - 18, sprite, 0);
+            int yeffect = -1;
+            if (world->potion_effect_flags & POTION_EFFECT_SHIELD_OF_FIRE)
+                draw_sprite_animated(world->spr, SPRITE_ID_POTION_EFFECT, x - 32, (y - 8) + (++yeffect) * 6, 0, 0);
+            if (world->potion_effect_flags & POTION_EFFECT_STOP_ENEMIES)
+                draw_sprite_animated(world->spr, SPRITE_ID_POTION_EFFECT, x - 32, (y - 8) + (++yeffect) * 6, 1, 0);
+            if (world->potion_effect_flags & POTION_EFFECT_FAST_PLAYER)
+                draw_sprite_animated(world->spr, SPRITE_ID_POTION_EFFECT, x - 32, (y - 8) + (++yeffect) * 6, 2, 0);
+            if (world->potion_effect_flags & POTION_EFFECT_BOOSTED_SHOTS)
+                draw_sprite_animated(world->spr, SPRITE_ID_POTION_EFFECT, x - 32, (y - 8) + (++yeffect) * 6, 3, 0);
+            if (world->potion_effect_flags & POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS)
+                draw_sprite_animated(world->spr, SPRITE_ID_POTION_EFFECT, x - 32, (y - 8) + (++yeffect) * 6, 4, 0);
+            if (world->potion_effect_flags & POTION_EFFECT_HEALING)
+                draw_sprite_animated(world->spr, SPRITE_ID_POTION_EFFECT, x - 32, (y - 8) + (++yeffect) * 6, 5, 0);
+            if (world->potion_turbo_mode)
+            {
+                draw_sprite(world->spr, SPRITE_ID_CLUSTER, x, y - 32);
+                draw_sprite(world->spr, SPRITE_ID_CLUSTER, x - 32, y);
+                draw_sprite(world->spr, SPRITE_ID_CLUSTER, x, y + 32);
+                draw_sprite(world->spr, SPRITE_ID_CLUSTER, x + 32, y);
+            }
         }
     }
 }

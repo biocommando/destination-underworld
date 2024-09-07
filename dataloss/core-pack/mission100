@@ -156,8 +156,6 @@ X(duedit_compatible)
 46 4 9 1
 46 5 9 1
 46 6 9 1
-46 7 9 1
-304 7 9 1
 46 8 9 1
 46 9 9 1
 46 10 9 1
@@ -198,6 +196,19 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
+46 7 9 1
+#conditions
+*?game_modifiers ! 232 COND_no_potion
+*>+SKIP_COND_no_potion
+*@COND_no_potion
+304 7 9 1
+*@+SKIP_COND_no_potion
+#conditions
+*?game_modifiers = 232 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 7 6 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"Arena -- Imp Pit"
 *=mute_bosstalk"1"

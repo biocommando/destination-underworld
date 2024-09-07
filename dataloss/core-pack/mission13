@@ -884,6 +884,13 @@ X(duedit_compatible)
 *@COND_1
 300 8 6 1
 *@+SKIP_COND_1
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+300 8 6 1
+306 13 5 2
+*@+SKIP_COND_potion
 *@metadata
 *=name"Ancient Hallway of Doom"
 *=story1"As the Ancient Protectors turn to ash behind you, you start"

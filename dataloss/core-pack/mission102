@@ -193,6 +193,12 @@ X(duedit_compatible)
 122 13 11 1
 122 14 11 1
 122 15 11 1
+#conditions
+*?game_modifiers = 232 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 7 5 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"Arena -- Dungeon"
 *=wall_color"1 1 0.5"
@@ -258,8 +264,10 @@ X(duedit_compatible)
 # 
 # set [main__powerup_only] player_initial_gold = -1
 # set [main__over_powerup] player_initial_gold = 10
+# set [main__potion_only] player_initial_gold = 0
 # {# set_override_main_setup('powerup_only') #}
 # {# set_override_main_setup('over_powerup') #}
+# {# set_override_main_setup('potion_only') #}
 # 
 # on time_one_time: ms(35000) do spawn: 5, 3, 0, 0, 0, 0, 100
 # on time_one_time: ms(35000) do spawn: 9, 3, 0, 0, 0, 0, 100
@@ -282,6 +290,11 @@ fire_rate 10 38
 speed 1 38
 player_initial_gold 10 38
 time_starts_at 58 38
+health 50 232
+fire_rate 10 232
+speed 1 232
+player_initial_gold 0 232
+time_starts_at 58 232
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 5 3

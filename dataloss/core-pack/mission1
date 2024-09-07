@@ -985,6 +985,14 @@ X(duedit_compatible)
 201 1 10 5
 201 5 10 5
 *@+SKIP_COND_1
+#conditions
+*?game_modifiers = 200 COND_2
+*>+SKIP_COND_2
+*@COND_2
+305 4 5 1
+305 5 5 1
+304 9 10 4
+*@+SKIP_COND_2
 *@metadata
 *=name"Gates to Purgatory"
 *=story1"The magician enters the magically sparkling portal and"

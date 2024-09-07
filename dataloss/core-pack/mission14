@@ -625,8 +625,6 @@ X(duedit_compatible)
 201 2 8 3
 502 2 8 3
 46 3 8 3
-202 3 8 3
-502 3 8 3
 46 4 8 3
 502 4 8 3
 46 5 8 3
@@ -650,8 +648,6 @@ X(duedit_compatible)
 201 2 9 3
 502 2 9 3
 46 4 9 3
-204 4 9 3
-502 4 9 3
 46 5 9 3
 502 5 9 3
 120 6 9 3
@@ -988,6 +984,8 @@ X(duedit_compatible)
 500 1 1 2
 500 2 1 2
 500 3 1 2
+502 4 9 3
+502 3 8 3
 #conditions
 *?game_modifiers = 8 COND_+PWUP
 *>+SKIP_COND_+PWUP
@@ -1004,6 +1002,24 @@ X(duedit_compatible)
 200 5 3 2
 200 7 3 2
 *@+SKIP_COND_-PWUP
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 5 8 1
+305 11 4 1
+306 7 10 3
+306 11 10 3
+306 2 9 3
+306 7 9 4
+*@+SKIP_COND_potion
+#conditions
+*?game_modifiers ! 200 COND_nopotion
+*>+SKIP_COND_nopotion
+*@COND_nopotion
+204 4 9 3
+202 3 8 3
+*@+SKIP_COND_nopotion
 *@metadata
 *=name"Slaughter House"
 *=story1"You start to have a feeling that you're nearing the end,"

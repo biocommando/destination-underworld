@@ -95,10 +95,12 @@ int main(int argc, char **argv)
   register_sample(SAMPLE_TURRET, "turret.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_SPAWN, "spawn.wav", SAMPLE_PRIORITY(HIGH, 0));
   register_sample(SAMPLE_POTION(0), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(5), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_POTION(1), "potion_stop.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_POTION(2), "potion_fast.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_POTION(3), "potion_boost.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_POTION(4), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(6), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
 
   for (int i = 0; i < 6; i++)
   {
@@ -300,15 +302,15 @@ void boss_logic(World *world, int boss_died)
 {
   Enemy *boss = world->boss;
   int in_same_room = boss != NULL && boss->roomid == world->current_room;
-  if (/*in_same_room || boss_died*/1)
+  if (/*in_same_room || boss_died*/ 1)
   {
     if (boss)
       world->boss_fight_config->state.health = boss_died ? 0 : boss->health;
-    //world->boss_fight_config->state.player_kills = world->kills;
+    // world->boss_fight_config->state.player_kills = world->kills;
     bossfight_process_event_triggers(world->boss_fight_config);
     // Ensure that positional triggers will only fire once ever
-    world->boss_fight_config->state.positional_trigger_flags |= 
-      (world->boss_fight_config->state.positional_trigger_flags & 0xFFFF) << 16;
+    world->boss_fight_config->state.positional_trigger_flags |=
+        (world->boss_fight_config->state.positional_trigger_flags & 0xFFFF) << 16;
     for (int x = 0; x < world->boss_fight_config->num_events; x++)
     {
       if (!world->boss_fight_config->state.triggers[x])
@@ -401,7 +403,7 @@ void boss_logic(World *world, int boss_died)
         break;
       case BFCONF_EVENT_TYPE_SPAWN_POTION:
         spawn_potion(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE,
-                     event->parameters[2], world->current_room, world);
+                     event->parameters[2], world->current_room, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
         break;
       }
     }
@@ -504,7 +506,7 @@ void bullet_logic(World *world)
             world->playcount = PLAYDELAY;
             if (enm->id == NO_OWNER) // enemy was killed (bullet_hit has side effects)
             {
-              
+
               if (check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
               {
                 world->potion_effect_flags &= ~POTION_EFFECT_STOP_ENEMIES;
@@ -513,7 +515,7 @@ void bullet_logic(World *world)
               }
 
               get_tile_at(world, enm->x, enm->y)->is_blood_stained = 1;
-              if ((world.game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
+              if ((world->game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
                 world->plr.gold += enm->gold;
 
               world->kills++;
@@ -539,7 +541,11 @@ void bullet_logic(World *world)
               }
               if (enm->potion >= 0)
               {
-                spawn_potion(enm->x, enm->y, enm->potion, world->current_room, world);
+                int potion = enm->potion;
+                // if almost out of health, spawn healing potion
+                if (world->plr.health == 1)
+                  potion = 6;
+                spawn_potion(enm->x, enm->y, potion, world->current_room, world, POTION_DROP_RANGE_START, POTION_DROP_RANGE_END);
               }
 
               if (enm == world->boss) // Archmage dies
@@ -598,6 +604,14 @@ void potion_logic(World *w)
         w->potion_duration += p->duration_boost;
         if (w->potion_duration > POTION_DURATION_CAP)
           w->potion_duration = POTION_DURATION_CAP;
+        if (p->effects & POTION_EFFECT_HEAL_ONCE)
+        {
+          w->plr.health = 6;
+        }
+        if ((w->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && (w->potion_effect_flags & p->effects) && w->potion_duration == POTION_DURATION_CAP)
+        {
+          create_cluster_explosion(w, w->plr.x, w->plr.y, 8, 2, &w->plr);
+        }
         w->potion_effect_flags |= p->effects;
         trigger_sample(p->sample, 255);
         create_sparkles(p->location.x, p->location.y, 12, 1, w);
@@ -617,7 +631,7 @@ void potion_logic(World *w)
   potion_anim_phase++;
   if (w->potion_duration > 0)
   {
-    w->potion_duration--;
+    w->potion_duration -= w->potion_turbo_mode ? 2 : 1;
   }
   else
   {
@@ -657,7 +671,7 @@ int game(int mission, int *game_modifiers)
   char fly_in_text[64];
   strcpy(fly_in_text, world.mission_display_name);
   int boss_fight_frame_count = 0;
-  //world.boss_want_to_shoot = 0;
+  // world.boss_want_to_shoot = 0;
 
   world.current_room = 1;
 
@@ -671,7 +685,7 @@ int game(int mission, int *game_modifiers)
   int key_press_buffer_idx = 0;
   long key_press_mask = 0;
 
-  //world.boss_waypoint.x = world.boss_waypoint.y = -1;
+  // world.boss_waypoint.x = world.boss_waypoint.y = -1;
   world.hint.time_shows = 0;
 
   if (record_mode == RECORD_MODE_RECORD)
@@ -744,7 +758,10 @@ int game(int mission, int *game_modifiers)
   else if (difficulty == DIFFICULTY_BRUTAL)
     world.plr.gold = 0;
   if (world.game_modifiers & GAMEMODIFIER_NO_GOLD)
+  {
     world.plr.gold = 0;
+    world.plr.ammo = 0;
+  }
 
   if (world.boss_fight && world.boss_fight_config->player_initial_gold >= 0)
   {
@@ -814,12 +831,12 @@ int game(int mission, int *game_modifiers)
     // by walls etc.
     int legend_x = world.plr.x;
     int legend_y = world.plr.y;
+    int key_left, key_right, key_up, key_down, key_space = 0,
+        key_x, key_z, key_a, key_s, key_d, key_f;
     if (world.plr.health > 0)
     {
       draw_enemy(&world.plr, &world);
 
-      int key_left, key_right, key_up, key_down, key_space,
-          key_x, key_z, key_a, key_s, key_d, key_f;
       if (record_mode == RECORD_MODE_PLAYBACK)
       {
         int has_more = read_and_process_continuous_data(key_presses,
@@ -862,6 +879,8 @@ int game(int mission, int *game_modifiers)
         key_d = check_key(ALLEGRO_KEY_D);
         key_f = check_key(ALLEGRO_KEY_F);
       }
+
+      world.potion_turbo_mode = (world.game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && key_space && world.potion_duration > 0;
 
       int player_did_change_dir = handle_direction_keys(&world, key_up, key_down, key_left, key_right);
       if (player_did_change_dir)
@@ -916,9 +935,20 @@ int game(int mission, int *game_modifiers)
     {
       world.plr.move = 0;
     }
-    for (int plr_speed = check_potion_effect(&world, POTION_EFFECT_FAST_PLAYER) ? 4 : 3; plr_speed >= 0; plr_speed--)
     {
-      move_enemy(&world.plr, &world);
+      int plr_speed = 3;
+      if (check_potion_effect(&world, POTION_EFFECT_FAST_PLAYER))
+      {
+        plr_speed++;
+        if (world.potion_turbo_mode)
+        {
+          plr_speed += 2;
+        }
+      }
+      for (; plr_speed >= 0; plr_speed--)
+      {
+        move_enemy(&world.plr, &world);
+      }
     }
 
     change_room_if_at_exit_point(&world, mission);
@@ -943,12 +973,14 @@ int game(int mission, int *game_modifiers)
       break;
     }
 
-    if (world.plr.health > 0 && world.plr.health < 6 && check_potion_effect(&world, POTION_EFFECT_HEALING) && completetime % 25 == 0)
+    int potion_effect_divider = world.potion_turbo_mode ? 2 : 1;
+
+    if (world.plr.health > 0 && world.plr.health < 6 && check_potion_effect(&world, POTION_EFFECT_HEALING) && completetime % (25 / potion_effect_divider) == 0)
     {
       world.plr.health++;
     }
 
-    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_SHIELD_OF_FIRE) && completetime % 15 == 0)
+    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_SHIELD_OF_FIRE) && completetime % (15 / potion_effect_divider) == 0)
     {
       create_cluster_explosion(&world, world.plr.x, world.plr.y, 4, 1, &world.plr);
     }
@@ -1004,15 +1036,15 @@ int game(int mission, int *game_modifiers)
       if (world.powerups.rune_of_protection_active < 0)
       {
         world.powerups.rune_of_protection_active++;
-        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION, 
-          world.plr.x + world.powerups.rune_of_protection_active * sin(completetime * 0.15),
-          world.plr.y + world.powerups.rune_of_protection_active * cos(completetime * 0.15));
+        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION,
+                             world.plr.x + world.powerups.rune_of_protection_active * sin(completetime * 0.15),
+                             world.plr.y + world.powerups.rune_of_protection_active * cos(completetime * 0.15));
       }
       else
       {
-        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION, 
-          world.plr.x - TILESIZE * sin(completetime * 0.15),
-          world.plr.y - TILESIZE * cos(completetime * 0.15));
+        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION,
+                             world.plr.x - TILESIZE * sin(completetime * 0.15),
+                             world.plr.y - TILESIZE * cos(completetime * 0.15));
       }
     }
 

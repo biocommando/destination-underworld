@@ -198,6 +198,15 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
+#conditions
+*?game_modifiers = 232 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 2 8 1
+305 2 3 1
+305 9 3 1
+305 9 8 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"Arena -- Mage's Maze"
 *=mute_bosstalk"1"

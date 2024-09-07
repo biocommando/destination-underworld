@@ -791,6 +791,13 @@ X(duedit_compatible)
 600 9 8 3
 600 14 3 2
 46 9 3 2
+#conditions
+*?game_modifiers = 200 COND_1
+*>+SKIP_COND_1
+*@COND_1
+301 4 9 1
+305 6 2 1
+*@+SKIP_COND_1
 *@metadata
 *=name"Terrace of Gluttony"
 *=story1"What the hell was that thing? You could google it but I'm"

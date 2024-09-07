@@ -172,14 +172,16 @@ struct enemy_config
     int gold;
     int fast;
     int hurts_monsters;
+    int potion_for_potion_only;
 };
 
-#define POTION_EFFECT_SHIELD_OF_FIRE 1
-#define POTION_EFFECT_STOP_ENEMIES 2
-#define POTION_EFFECT_FAST_PLAYER 4
-#define POTION_EFFECT_BOOSTED_SHOTS 8
-#define POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS 16
-#define POTION_EFFECT_HEALING 32
+#define POTION_EFFECT_SHIELD_OF_FIRE (1 << 0)
+#define POTION_EFFECT_STOP_ENEMIES (1 << 1)
+#define POTION_EFFECT_FAST_PLAYER (1 << 2)
+#define POTION_EFFECT_BOOSTED_SHOTS (1 << 3)
+#define POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS (1 << 4)
+#define POTION_EFFECT_HEALING (1 << 5)
+#define POTION_EFFECT_HEAL_ONCE (1 << 6)
 #define POTION_DURATION_CAP 400
 
 typedef struct potion
@@ -229,6 +231,7 @@ typedef struct
 
     int potion_duration;
     int potion_effect_flags;
+    int potion_turbo_mode;
     Potion potions[POTION_COUNT];
 } World;
 

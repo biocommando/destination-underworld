@@ -195,6 +195,14 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
+#conditions
+*?game_modifiers = 232 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 9 9 1
+301 13 6 1
+306 4 9 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"Arena -- Area 51"
 *=mute_bosstalk"1"
@@ -207,8 +215,10 @@ X(duedit_compatible)
 # 
 # set [main__powerup_only] player_initial_gold = -1
 # set [main__over_powerup] player_initial_gold = 10
+# set [main__potion_only] player_initial_gold = 0
 # {# set_override_main_setup('powerup_only') #}
 # {# set_override_main_setup('over_powerup') #}
+# {# set_override_main_setup('potion_only') #}
 # 
 # {# _spawn_interval = 7000 #}
 # 
@@ -243,6 +253,10 @@ health 50 38
 fire_rate 10 38
 speed 1 38
 player_initial_gold 10 38
+health 50 232
+fire_rate 10 232
+speed 1 232
+player_initial_gold 0 232
 event
 event_trigger time_interval 58
 event_action spawn 0 0 0 100 0 11 2

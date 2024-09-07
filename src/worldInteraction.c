@@ -442,6 +442,15 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         new_enemy->fast = world->enemy_configs[type].fast;
         new_enemy->gold = world->enemy_configs[type].gold;
         new_enemy->hurts_monsters = world->enemy_configs[type].hurts_monsters;
+        if (world->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH)
+        {
+            new_enemy->potion = world->enemy_configs[type].potion_for_potion_only;
+            // Healing potions are "banned" because otherwise the fights will keep on going forever
+            if ((world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) && new_enemy->potion == 4)
+            {
+                new_enemy->potion = 6;
+            }
+        }
     }
     else if (type == 5)
     {
@@ -452,9 +461,6 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         // fast is overridden by boss speed
         // rate and health are set in boss config
     }
-
-    if (world->game_modifiers & GAMEMODIFIER_POTION_SPAWN)
-        new_enemy->potion = index % 5;
 
     int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
 
@@ -469,24 +475,40 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     return new_enemy;
 }
 
-Potion *get_next_available_potion(World *world)
+Potion *get_next_available_potion(World *world, int range_start, int range_end)
 {
-    for (int i = 0; i < POTION_COUNT; i++)
+    for (int i = range_start; i < range_end; i++)
     {
         if (!world->potions[i].exists)
             return &world->potions[i];
     }
+    // If dropped potions run out, start reusing from oldest
+    if (range_start != POTION_PRESET_RANGE_START)
+    {
+        int min_exists = range_start;
+        for (int i = range_start + 1; i < range_end; i++)
+        {
+            if (world->potions[i].exists < world->potions[min_exists].exists)
+                min_exists = i;
+        }
+        return &world->potions[min_exists];        
+    }
     return NULL;
 }
 
-Potion *spawn_potion(int x, int y, int type, int room_id, World *world)
+Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int range_start, int range_end)
 {
-    Potion *p = get_next_available_potion(world);
+    static int spawned_count = 0;
+    Potion *p = get_next_available_potion(world, range_start, range_end);
     if (!p)
         return NULL;
     p->location.x = x;
     p->location.y = y;
     p->duration_boost = 250;
+    int is_drop = range_start != POTION_PRESET_RANGE_START;
+    if (is_drop)
+        p->duration_boost = 50;
+    p->effects = 0;
     if (type == 0)
         p->effects = POTION_EFFECT_SHIELD_OF_FIRE | POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS;
     else if (type == 1)
@@ -495,12 +517,16 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world)
         p->effects = POTION_EFFECT_FAST_PLAYER;
     else if (type == 3)
         p->effects = POTION_EFFECT_BOOSTED_SHOTS;
-    else
+    else if (type == 4)
         p->effects = POTION_EFFECT_HEALING;
+    else if (type == 5)
+        p->effects = POTION_EFFECT_SHIELD_OF_FIRE;
+    else
+        p->effects = POTION_EFFECT_HEAL_ONCE;
     p->sprite = type;
     p->sample = SAMPLE_POTION(type);
     p->room_id = room_id;
-    p->exists = 1;
+    p->exists = ++spawned_count;
     return p;
 }
 
@@ -552,11 +578,11 @@ void place_lev_object(World *world, int x, int y, int id, int room_to)
             spawn_enemy(x, y, id - 200, room_to, world);
         }
     }
-    else if (id >= 300 && id <= 305)
+    else if (id >= 300 && id <= 306)
     {
         if (!world->rooms_visited[room_to - 1])
         {
-            spawn_potion(x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, id - 300, room_to, world);
+            spawn_potion(x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, id - 300, room_to, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
         }
     }
     else
@@ -801,21 +827,21 @@ void read_enemy_configs(World *world)
         sprintf(key, "type-%d", i);
         char rec[256] = "";
         record_file_get_record(fname, key, rec, sizeof(rec));
-        sscanf(rec, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d",
+        sscanf(rec, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d",
             &world->enemy_configs[i].turret,
             &world->enemy_configs[i].rate,
             &world->enemy_configs[i].health,
             &world->enemy_configs[i].gold,
             &world->enemy_configs[i].fast,
-            &world->enemy_configs[i].hurts_monsters);
+            &world->enemy_configs[i].hurts_monsters,
+            &world->enemy_configs[i].potion_for_potion_only);
     }
 }
 
 int parse_highscore_from_world_state(World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
 {
     int arena_idx, mode_idx;
-    int mode = world->game_modifiers & (GAMEMODIFIER_DOUBLED_SHOTS | GAMEMODIFIERS_OVER_POWERUP |
-                                        GAMEMODIFIER_MULTIPLIED_GOLD | GAMEMODIFIER_BRUTAL);
+    int mode = world->game_modifiers & (~GAMEMODIFIER_ARENA_FIGHT);
     for (arena_idx = 0; arena_idx < game_settings.arena_config.number_of_arenas; arena_idx++)
     {
         if (game_settings.arena_config.arenas[arena_idx].level_number == world->mission)

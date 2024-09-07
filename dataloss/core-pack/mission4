@@ -616,6 +616,12 @@ X(duedit_compatible)
 120 12 8 3
 120 12 9 3
 120 12 10 3
+#conditions
+*?game_modifiers = 200 COND_1
+*>+SKIP_COND_1
+*@COND_1
+305 8 9 1
+*@+SKIP_COND_1
 *@metadata
 *=name"Paths of Gory"
 *=story1"When you step once again through the portal you get a gut"

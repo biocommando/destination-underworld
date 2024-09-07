@@ -317,13 +317,15 @@ try {
         return newFormat.join('\n')
     }
 } catch (e) {
+    let err = ''
     if (intermediateBossFileForDebug.length === 0)
-        console.log('Error while running preprocessor:', e)
+        err = 'Error while running preprocessor:'
     else if (lineProcessingDone)
-        console.log('Error while compiling to INI format:', e)
+        err = 'Error while compiling to INI format:'
     else
-        console.log('Error while processing line "%s":',
-            intermediateBossFileForDebug[intermediateBossFileForDebug.length - 1], e)
+        err = `Error while processing line "${intermediateBossFileForDebug[intermediateBossFileForDebug.length - 1]}":`
+    console.log(err, e)
+    return `>>ERROR>> ${err} ${e}`
 } finally {
     fs.writeFileSync('intermediate_debug.boss', intermediateBossFileForDebug.join('\r\n'))
 }

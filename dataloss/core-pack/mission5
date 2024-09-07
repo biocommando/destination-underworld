@@ -798,6 +798,13 @@ X(duedit_compatible)
 201 9 5 2
 600 1 2 5
 600 1 3 5
+#conditions
+*?game_modifiers = 200 COND_1
+*>+SKIP_COND_1
+*@COND_1
+305 5 4 1
+303 12 5 2
+*@+SKIP_COND_1
 *@metadata
 *=name"Highway to Hell"
 *=story1"As you make it through the dungeon bearing the name"

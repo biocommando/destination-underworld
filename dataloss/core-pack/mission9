@@ -62,11 +62,7 @@ X(duedit_compatible)
 204 4 3 1
 46 5 3 1
 46 6 3 1
-120 7 3 1
 46 8 3 1
-120 9 3 1
-122 10 3 1
-120 11 3 1
 46 12 3 1
 204 12 3 1
 46 13 3 1
@@ -1216,6 +1212,26 @@ X(duedit_compatible)
 100 11 10 5
 100 8 4 5
 303 11 4 4
+46 7 3 1
+46 9 3 1
+46 10 3 1
+46 11 3 1
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 7 8 1
+303 8 1 4
+*@+SKIP_COND_potion
+#conditions
+*?game_modifiers ! 200 COND_nopotion
+*>+SKIP_COND_nopotion
+*@COND_nopotion
+120 7 3 1
+120 9 3 1
+120 11 3 1
+122 10 3 1
+*@+SKIP_COND_nopotion
 *@metadata
 *=name"Defence Line"
 *=story1"The Defence Turret UF-0 mk II is the newest invention by"

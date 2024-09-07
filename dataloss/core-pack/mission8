@@ -1199,6 +1199,14 @@ X(duedit_compatible)
 100 7 9 6
 100 8 9 6
 46 4 3 3
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 5 3 1
+305 9 8 1
+305 9 3 3
+*@+SKIP_COND_potion
 *@metadata
 *=name"The Altar of the Cursed God"
 *=story1"Sometimes when you fight evil with violence you can't avoid"

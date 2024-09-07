@@ -108,7 +108,7 @@
     script <span id="boss-script-file"></span>
     <br />
     <textarea id="boss-script" rows="5" cols="100" spellcheck="false"></textarea>
-    <button onclick="saveAndCompileScript()">Save and compile</button>
+    <!--<button onclick="saveAndCompileScript()">Save and compile</button>-->
     <button onclick="saveAndCompileInlineScript()">Save and compile - inline</button>
     <!--    <pre>
 Metadata reference:
@@ -191,6 +191,8 @@ no_more_levels  -->
             { name: 'P_fast', id: 302, css: 'potion' },
             { name: 'P_boost', id: 303, css: 'potion' },
             { name: 'P_heal', id: 304, css: 'potion' },
+            { name: 'P_shield_drop', id: 305, css: 'potion' },
+            { name: 'p_inst_heal', id: 306, css: 'potion' },
             { name: 'pos-trig1', id: 600, css: 'pos-trig' },
             { name: 'pos-trig2', id: 601, css: 'pos-trig' },
             { name: 'pos-trig3', id: 602, css: 'pos-trig' },
@@ -393,6 +395,10 @@ no_more_levels  -->
                     contents: document.getElementById('boss-script').value
                 })
             }).then(x => x.text()).then(x => {
+                if (x.startsWith('>>ERROR>>')) {
+                    alert(x)
+                    return
+                }
                 map.scripts[room - 1] = document.getElementById('boss-script').value.split('\n')
                 map.compiledScripts[room - 1] = x
                 alert('ok')

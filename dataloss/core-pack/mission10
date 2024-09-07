@@ -638,6 +638,15 @@ X(duedit_compatible)
 100 7 10 2
 100 8 10 2
 100 9 10 2
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 10 9 1
+305 12 9 1
+306 13 9 1
+304 11 9 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"Entrance to the SpaceX Headquarters"
 *=story1"You would expect the next dungeon to be the SpaceX office,"

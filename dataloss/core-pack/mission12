@@ -659,6 +659,15 @@ X(duedit_compatible)
 120 15 11 3
 600 3 3 2
 600 14 3 2
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 11 6 1
+306 11 4 1
+306 11 8 1
+303 10 2 3
+*@+SKIP_COND_potion
 *@metadata
 *=name"Microsoft Headquarters"
 *=story1"It shouldn't come as a surprise that Windows is a work of"

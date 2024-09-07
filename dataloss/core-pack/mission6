@@ -606,6 +606,13 @@ X(duedit_compatible)
 120 4 8 3
 120 4 9 3
 120 4 10 3
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 4 2 1
+306 1 4 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"The Temple of Gargoroth"
 *=story1"You have slain the worshippers of the Great Evil Beast"
@@ -626,6 +633,7 @@ X(duedit_compatible)
 # on kill_count: 3 do modify_terrain: x = 4, y = 3, terrain_type = floor
 # on kill_count: 3 do modify_terrain: x = 4, y = 4, terrain_type = floor
 # on kill_count: 3 do modify_terrain: x = 4, y = 5, terrain_type = floor
+# on kill_count: 5 do spawn_potion: x = 4, y = 4, type = 3
 # on kill_count: 9 do spawn: 12, 2, 0, 0, 100, 0, 0
 # on kill_count: 11 do spawn: 9, 2, 0, 0, 100, 0, 0
 #end_script
@@ -645,6 +653,9 @@ event_action modify_terrain 4 4 0 0 0 0 0 floor
 event
 event_trigger kill_count 3
 event_action modify_terrain 4 5 0 0 0 0 0 floor
+event
+event_trigger kill_count 5
+event_action spawn_potion 4 4 3
 event
 event_trigger kill_count 9
 event_action spawn 0 0 100 0 0 12 2

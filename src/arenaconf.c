@@ -45,7 +45,7 @@ void read_arena_highscores(const char *filename, ArenaHighscore *highscore)
         {
             highscore->mode[i][mi] = 0;
             highscore->kills[i][mi] = -1;
-            char key[100], rec[100];
+            char key[100], rec[100] = "";
             sprintf(key, "arena_%d_item_%d", i, mi);
             record_file_get_record(filename, key, rec, sizeof(rec));
             sscanf(rec, "%*s mode=%d kills=%d", &highscore->mode[i][mi], &highscore->kills[i][mi]);
@@ -62,6 +62,7 @@ void write_arena_highscores(const char *filename, ArenaHighscore *highscore)
             char key[100], rec[100];
             sprintf(key, "arena_%d_item_%d", i, mi);
             sprintf(rec, "%s mode=%d kills=%d", key, highscore->mode[i][mi],  highscore->kills[i][mi]);
+            record_file_set_record(filename, key, rec);
         }
     }
 }

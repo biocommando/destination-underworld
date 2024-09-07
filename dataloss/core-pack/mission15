@@ -684,6 +684,17 @@ X(duedit_compatible)
 512 9 6 3
 100 3 10 3
 600 4 10 3
+#conditions
+*?game_modifiers = 200 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 7 1 1
+306 1 3 1
+306 14 3 1
+303 4 6 1
+303 10 6 1
+304 6 1 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"The Lair of the Evil Man"
 *=story1"You reach the portal at the deepest corner of the Lair of"

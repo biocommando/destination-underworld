@@ -193,6 +193,12 @@ X(duedit_compatible)
 120 13 11 1
 120 14 11 1
 120 15 11 1
+#conditions
+*?game_modifiers = 232 COND_potion
+*>+SKIP_COND_potion
+*@COND_potion
+305 8 9 1
+*@+SKIP_COND_potion
 *@metadata
 *=name"Arena -- Slaughterhouse"
 *=mute_bosstalk"1"

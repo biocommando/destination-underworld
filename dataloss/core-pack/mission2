@@ -612,6 +612,13 @@ X(duedit_compatible)
 201 13 5 2
 201 14 5 2
 *@+SKIP_COND_2
+#conditions
+*?game_modifiers = 200 COND_3
+*>+SKIP_COND_3
+*@COND_3
+305 12 8 1
+306 3 8 2
+*@+SKIP_COND_3
 *@metadata
 *=name"Purgatory"
 *=story1"That wasn't too bad, you think, and you think the magician"
