@@ -259,27 +259,45 @@ void display_menu(struct menu *menu_state)
         al_flip_display();
         int keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_ESCAPE};
         key = wait_key_presses(keys, sizeof(keys) / sizeof(int));
-        if (key == ALLEGRO_KEY_UP && menu_state->selected_item > 0)
+        if (key == ALLEGRO_KEY_UP)
         {
-            int si = menu_state->selected_item - 1;
-            while (si >= 0 && !menu_state->items[si].selectable)
-                si--;
-            if (si >= 0)
+            int initial_item = menu_state->selected_item - 1;
+            do
             {
-                menu_state->selected_item = si;
-                menu_play_sample(s_c, &id);
-            }
+                int si = initial_item;
+                while (si >= 0 && !menu_state->items[si].selectable)
+                    si--;
+                if (si >= 0)
+                {
+                    menu_state->selected_item = si;
+                    menu_play_sample(s_c, &id);
+                    initial_item = 999;
+                }
+                else
+                {
+                    initial_item = menu_state->num_items - 1;
+                }
+            } while (initial_item != 999);
         }
-        if (key == ALLEGRO_KEY_DOWN && menu_state->selected_item < menu_state->num_items - 1)
+        if (key == ALLEGRO_KEY_DOWN)
         {
-            int si = menu_state->selected_item + 1;
-            while (si < menu_state->num_items && !menu_state->items[si].selectable)
-                si++;
-            if (si < menu_state->num_items)
+            int initial_item = menu_state->selected_item + 1;
+            do
             {
-                menu_state->selected_item = si;
-                menu_play_sample(s_c, &id);
-            }
+                int si = initial_item;
+                while (si < menu_state->num_items && !menu_state->items[si].selectable)
+                    si++;
+                if (si < menu_state->num_items)
+                {
+                    menu_state->selected_item = si;
+                    menu_play_sample(s_c, &id);
+                    initial_item = 999;
+                }
+                else
+                {
+                    initial_item = 0;
+                }
+            } while (initial_item != 999);
         }
         if (key == ALLEGRO_KEY_ESCAPE && menu_state->cancel_menu_item_id != MENU_ID_CANCEL_OPTION_NOT_SET)
         {
