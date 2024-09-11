@@ -36,6 +36,12 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
 {
   memset(config, 0, sizeof(BossFightConfig));
   config->player_initial_gold = -1;
+
+  // Disable waypoints by default;
+  // otherwise boss will try to go to coordinate 0,0
+  config->state.boss_waypoint.x = -1;
+  config->state.boss_waypoint.y = -1;
+
   char buf[100];
   BossFightEventConfig *event = NULL;
   while (!feof(f))

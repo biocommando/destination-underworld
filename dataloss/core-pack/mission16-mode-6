@@ -411,6 +411,7 @@ X(duedit_compatible)
 # on time_interval: ms(1100) do fire_in_circle: number_of_directions = 4, intensity = 1
 # 
 # on time_one_time: 1 do modify_terrain: x = 14, y = 3, terrain_type = floor
+# on time_one_time: 1 do allow_firing
 # 
 # on time_one_time: ms(8000) do modify_terrain: x = 10, y = 8, terrain_type = floor
 # on time_one_time: ms(8250) do modify_terrain: x = 11, y = 8, terrain_type = floor
@@ -455,6 +456,9 @@ event_action fire_in_circle 4 1
 event
 event_trigger time_one_time 1
 event_action modify_terrain 14 3 0 0 0 0 0 floor
+event
+event_trigger time_one_time 1
+event_action allow_firing 
 event
 event_trigger time_one_time 66
 event_action modify_terrain 10 8 0 0 0 0 0 floor

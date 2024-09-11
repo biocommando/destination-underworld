@@ -992,6 +992,7 @@ X(duedit_compatible)
 305 4 5 1
 305 5 5 1
 304 9 10 4
+306 1 9 3
 *@+SKIP_COND_2
 *@metadata
 *=name"Gates to Purgatory"

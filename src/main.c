@@ -169,7 +169,7 @@ void enemy_logic(World *world)
       if (enm->turret != TURRET_TYPE_PLAYER) // not a (player's) turret
       {
         Coordinates aim_at = {world->plr.x, world->plr.y};
-        int aim_window = 2 + (enm->turret || enm == world->boss ? 5 : 0);
+        int aim_window = 2 + (enm->turret || is_boss ? 5 : 0);
         int reacts_to_player = sees_each_other(enm, &world->plr, world);
 
         if (reacts_to_player || (is_boss && world->boss_fight_config->state.boss_waypoint.x >= 0))
@@ -671,7 +671,6 @@ int game(int mission, int *game_modifiers)
   char fly_in_text[64];
   strcpy(fly_in_text, world.mission_display_name);
   int boss_fight_frame_count = 0;
-  // world.boss_want_to_shoot = 0;
 
   world.current_room = 1;
 
@@ -685,7 +684,6 @@ int game(int mission, int *game_modifiers)
   int key_press_buffer_idx = 0;
   long key_press_mask = 0;
 
-  // world.boss_waypoint.x = world.boss_waypoint.y = -1;
   world.hint.time_shows = 0;
 
   if (record_mode == RECORD_MODE_RECORD)
