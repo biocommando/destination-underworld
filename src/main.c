@@ -429,7 +429,7 @@ void bullet_logic(World *world)
         if (world->playcount == 0)
           trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
         world->playcount = PLAYDELAY;
-        create_explosion(bullet->x - bullet->dx * 5, bullet->y - bullet->dy * 5, world);
+        create_explosion(bullet_orig_x, bullet_orig_y, world);
         if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
         {
           bullet->x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
@@ -581,11 +581,25 @@ void bullet_logic(World *world)
     {
       int bullet_sprite = ((int)(bullet->x + bullet->y) / 30) % 4;
       draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET, bullet->x, bullet->y, bullet_sprite, 0);
+
+      // Draw bullet trail
+      double dx = bullet_orig_x - bullet->x;
+      double dy = bullet_orig_y - bullet->y;
+      unsigned limit = bullet->duration;
+      if (limit > 4) limit = 4;
+      for (int j = 0; j < limit; j++)
+      {
+        draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET,
+          bullet_orig_x + dx * j + rand() % 3 - 1, bullet_orig_y + dy * j + rand() % 3 - 1,
+          (j + bullet_sprite) % 4, -1 - j);
+      }
+
     }
     else if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
     {
       draw_sprite_centered(world->spr, SPRITE_ID_CLUSTER, bullet->x, bullet->y);
     }
+    bullet->duration++;
   }
 }
 
@@ -811,19 +825,6 @@ int game(int mission, int *game_modifiers)
     if (world.playcount > 0)
       world.playcount--;
 
-    vibrations = progress_and_draw_explosions(&world);
-    if (game_settings.vibration_mode != 1)
-    {
-      if (game_settings.vibration_mode == 0)
-      {
-        vibrations = 0;
-      }
-      else
-      {
-        vibrations /= game_settings.vibration_mode;
-      }
-    }
-
     // Draw legend to same position as player
     // Legend cannot be drawn here or it would get obscured
     // by walls etc.
@@ -992,6 +993,19 @@ int game(int mission, int *game_modifiers)
     }
 
     draw_map(&world, 1, 0);
+
+    vibrations = progress_and_draw_explosions(&world);
+    if (game_settings.vibration_mode != 1)
+    {
+      if (game_settings.vibration_mode == 0)
+      {
+        vibrations = 0;
+      }
+      else
+      {
+        vibrations /= game_settings.vibration_mode;
+      }
+    }
 
     draw_player_legend(&world, legend_x, legend_y);
 

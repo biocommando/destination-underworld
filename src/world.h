@@ -76,6 +76,7 @@ typedef struct
     int owner_id;
     int hurts_flags;
     int bullet_type;
+    unsigned duration; // How many frames the bullet has been alive?
 } Bullet;
 
 #define TILE_SYM_FLOOR 46

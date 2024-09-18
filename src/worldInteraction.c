@@ -177,6 +177,8 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
     {
         Bullet *bb = get_next_available_bullet(world);
 
+        bb->duration = 0;
+
         if (dx != 0 || dy != 0)
         {
             bb->dx = randomized_bullet_direction(dx);
@@ -341,8 +343,8 @@ void create_explosion(int x, int y, World *world)
     {
         struct explosion_circle *c = &ex->circles[i];
         c->i = random() * 0.25 + 0.75;
-        c->loc.x = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
-        c->loc.y = 16 + circle_max_radius / 2 + (1 - 2 * random()) * circle_max_radius * scale;
+        c->loc.x = (1 - 2 * random()) * circle_max_radius * scale;
+        c->loc.y = (1 - 2 * random()) * circle_max_radius * scale;
         c->r = MAX(random() * circle_max_radius * scale, 5);
     }
     // Sort so that most intense are on top (last)

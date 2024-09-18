@@ -266,10 +266,22 @@ void draw_explosion_circle(World *world, double x, double y, double intensity, d
 
     const ALLEGRO_COLOR col = al_map_rgb(red, green, blue);
 
-    al_draw_filled_circle(x - TILESIZE, y - TILESIZE, radius, col);
+    al_draw_filled_circle(x, y, radius, col);
 }
 
 extern double random();
+
+static const double expl_sin_cos_table[2][10] = {
+    {0.19866933079506122, 0.7367955455941375, 0.9934909047357762,
+    0.8707065057822322,   0.4153418158455323, -0.19866933079506127,
+    -0.7367955455941376,  -0.9934909047357762,-0.8707065057822322,
+    -0.4153418158455324},
+  { 0.9800665778412416,   0.6761156143683099,  0.11391146653120064,
+    -0.49180298981248144, -0.9096654198166136, -0.9800665778412416,
+    -0.6761156143683098,  -0.11391146653120054,0.49180298981248133,
+    0.9096654198166136
+  }
+};
 
 int progress_and_draw_explosions(World *world)
 {
@@ -286,14 +298,14 @@ int progress_and_draw_explosions(World *world)
         {
             struct explosion_circle *c = &ex->circles[j];
 
-            while (c->loc.x + c->r > circle_max_radius * 2 - 1)
+            /*while (c->loc.x + c->r > circle_max_radius * 2 - 1)
                 c->loc.x -= 1;
             while (c->loc.x - c->r < 0)
                 c->loc.x += 1;
             while (c->loc.y + c->r > circle_max_radius * 2 - 1)
                 c->loc.y -= 1;
             while (c->loc.y - c->r < 0)
-                c->loc.y += 1;
+                c->loc.y += 1;*/
 
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i * .9, c->r);
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i, c->r * .8);
@@ -301,12 +313,32 @@ int progress_and_draw_explosions(World *world)
 
             // Fade
 
-            c->loc.x = c->loc.x > circle_max_radius / 2 ? c->loc.x + random() * 3 : c->loc.x - random() * 3;
-            c->loc.y = c->loc.y > circle_max_radius / 2 ? c->loc.y + random() * 3 : c->loc.y - random() * 3;
+            double move_speed = random() * c->i * 5;
+
+            c->loc.x += c->loc.x > circle_max_radius / 2 ? move_speed : -move_speed;
+            c->loc.y += c->loc.y > circle_max_radius / 2 ? move_speed : -move_speed;
             double multiplier_factor = log(sqrt(j) + 2) / 10;
             double intensity_multiplier = (1 - multiplier_factor) + random() * multiplier_factor;
             c->i *= intensity_multiplier;
             c->r *= intensity_multiplier;
+        }
+
+        if (ex->phase < 8)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                double dx = expl_sin_cos_table[0][j];
+                double dy = expl_sin_cos_table[1][j];
+
+                for (int k = 4; k < 6; k += 2)
+                {
+                    draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET,
+                        dx * ex->phase * k + ex->x,
+                        dy * ex->phase * k + ex->y,
+                        (ex->phase + j) % 4,
+                        -1 - ex->phase / 2);
+                }
+            }
         }
 
         if (++ex->phase >= 30)
