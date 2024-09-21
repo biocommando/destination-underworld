@@ -736,8 +736,9 @@ int game(int mission, int *game_modifiers)
   {
     char fname[100];
     sprintf(fname, "recorded-mission%d-take%d.dat", mission, ++fname_counter);
-    save_game_save_data(record_input_filename, &world.plr, mission, *game_modifiers, 0);
-    f_key_presses = fopen(fname, "w");
+    fclose(fopen(fname, "w"));
+    save_game_save_data(fname, &world.plr, mission, *game_modifiers, 0);
+    f_key_presses = fopen(fname, "a");
     fprintf(f_key_presses, "\n-- data start --\n");
   }
   else if (record_mode == RECORD_MODE_PLAYBACK)
