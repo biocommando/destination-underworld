@@ -381,7 +381,7 @@ static inline void check_valid_time_for_display(float *f)
 void display_level_info(World *world, int mission, int mission_count, long completetime)
 {
     al_clear_to_color(BLACK);
-    al_draw_scaled_bitmap(world->spr, 100, 0, 214, 107, 0, SCREEN_H - 107 * 2, 214 * 2, 107 * 2, 0);
+    al_draw_scaled_bitmap(world->spr, 105, 0, 160, 100, 0, SCREEN_H - 107 * 2, SCREEN_W, 107 * 2, 0);
     int y = 5;
     al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Level '%s' cleared!", world->mission_display_name);
     y += 15;
@@ -403,7 +403,8 @@ void display_level_info(World *world, int mission, int mission_count, long compl
                   time_secs, beat_idx == 0 ? "*" : "", time0,
                   beat_idx == 1 ? "*" : "", time1,
                   beat_idx == 2 ? "*" : "", time2);
-    if (beat_idx >= 0)
+    extern int record_mode;
+    if (beat_idx >= 0 && record_mode != RECORD_MODE_PLAYBACK)
     {
         save_best_times(game_settings.mission_pack, &best_times);
     }

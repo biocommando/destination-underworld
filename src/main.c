@@ -15,12 +15,13 @@
 #include "bossfightconf.h"
 #include "predictableRandom.h"
 #include "settings.h"
-#include "continuousData.h"
 #include "keyhandling.h"
 #include "sampleRegister.h"
 #include "helpers.h"
 #include "loadindicator.h"
 #include "sprites.h"
+#include "record_file.h"
+#include "game_playback.h"
 
 #ifdef ENABLE_LOGGING
 int logging_enabled = 0;
@@ -35,8 +36,7 @@ Enemy plrautosave;
 int fname_counter = 0;
 
 int record_mode = RECORD_MODE_NONE;
-FILE *record_input_file = NULL;
-char record_input_filename[256];
+char record_input_filename[256] = "";
 int no_player_damage = 0;
 
 int main(int argc, char **argv)
@@ -62,6 +62,7 @@ int main(int argc, char **argv)
   {
     record_mode = RECORD_MODE_PLAYBACK;
     char fname[256];
+    FILE *record_input_file = NULL;
     if (read_cmd_line_arg_str("file", argv, argc, fname))
     {
       record_input_file = fopen(fname, "r");
@@ -72,6 +73,7 @@ int main(int argc, char **argv)
       LOG("Valid input file required (--file=<filename>)!!\n");
       return 0;
     }
+    fclose(record_input_file);
     LOG("Playback mode active.\n");
   }
 
@@ -134,19 +136,19 @@ int main(int argc, char **argv)
     while (mission > 0)
     {
       mission = game(mission, &game_modifiers);
-      if (record_input_file)
+      if (record_mode == RECORD_MODE_PLAYBACK)
+      {
+        mission = 0;
         break;
+      }
     }
   }
   progress_load_state("Exiting game...", 0);
   destroy_registered_samples();
-  if (record_input_file)
-    fclose(record_input_file);
 
   destroy_mp3s();
-  /*set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-  remove_keyboard();
-  remove_mouse();*/
+
+  record_file_flush();
   return 0;
 }
 
@@ -724,29 +726,23 @@ int game(int mission, int *game_modifiers)
   read_enemy_configs(&world);
   init_player(&world, &plrautosave);
 
-  FILE *f_key_presses = NULL;
-  ContinuousData key_presses[128];
-  int key_press_buffer_sz = 128;
-  int key_press_buffer_idx = 0;
+  long playback_next_event_time_stamp = 0;
   long key_press_mask = 0;
 
   world.hint.time_shows = 0;
 
   if (record_mode == RECORD_MODE_RECORD)
   {
-    char fname[100];
-    sprintf(fname, "recorded-mission%d-take%d.dat", mission, ++fname_counter);
-    fclose(fopen(fname, "w"));
-    save_game_save_data(fname, &world.plr, mission, *game_modifiers, 0);
-    f_key_presses = fopen(fname, "a");
-    fprintf(f_key_presses, "\n-- data start --\n");
+    sprintf(record_input_filename, "recorded-mission%d-take%d.dat", mission, ++fname_counter);
+    remove(record_input_filename);
+    game_playback_init(record_input_filename, 'w');
+    save_game_save_data(record_input_filename, &world.plr, mission, *game_modifiers, 0);
   }
   else if (record_mode == RECORD_MODE_PLAYBACK)
   {
-    fseek(record_input_file, 0, SEEK_SET);
-    f_key_presses = record_input_file;
+    game_playback_init(record_input_filename, 'r');
     load_game_save_data(record_input_filename, &world.plr, &mission, &world.game_modifiers, 0);
-    key_press_buffer_idx = -1;
+    playback_next_event_time_stamp = game_playback_get_time_stamp();
   }
   long time_stamp = 0;
 
@@ -871,9 +867,16 @@ int game(int mission, int *game_modifiers)
 
       if (record_mode == RECORD_MODE_PLAYBACK)
       {
-        int has_more = read_and_process_continuous_data(key_presses,
-                                                        &key_press_buffer_sz, &key_press_buffer_idx, f_key_presses,
-                                                        time_stamp, get_key_presses, &key_press_mask);
+        int has_more = 1;
+        if (time_stamp >= playback_next_event_time_stamp)
+        {
+          key_press_mask = game_playback_get_key_mask();
+          game_playback_next();
+          playback_next_event_time_stamp = game_playback_get_time_stamp();
+          has_more = playback_next_event_time_stamp != -1;
+          LOG("Timestamp=%ld, keymask=0x%lx, Next timestamp: %ld\n",
+            time_stamp, key_press_mask, playback_next_event_time_stamp);
+        }
         if (!has_more)
         {
           world.hint.time_shows = 0;
@@ -941,7 +944,7 @@ int game(int mission, int *game_modifiers)
         show_gold_hint(&world, gold_hint_amount);
       }
 
-      if (check_key(ALLEGRO_KEY_R))
+      if (check_key(ALLEGRO_KEY_R) && record_mode != RECORD_MODE_PLAYBACK)
       {
         restart_requested = 1;
       }
@@ -959,7 +962,9 @@ int game(int mission, int *game_modifiers)
         if (new_key_press_mask != key_press_mask)
         {
           key_press_mask = new_key_press_mask;
-          produce_and_write_continuous_data(key_presses, key_press_buffer_sz, &key_press_buffer_idx, f_key_presses, time_stamp, 1, key_press_mask);
+
+          game_playback_add_key_event(time_stamp, key_press_mask);
+          game_playback_next();
         }
       }
     }
@@ -992,7 +997,8 @@ int game(int mission, int *game_modifiers)
 
       display_level_info(&world, mission, game_settings.mission_count, completetime);
 
-      wait_key_press(ALLEGRO_KEY_ENTER);
+      if (record_mode != RECORD_MODE_PLAYBACK)
+        wait_key_press(ALLEGRO_KEY_ENTER);
 
       if (world.final_level)
       {
@@ -1192,7 +1198,10 @@ int game(int mission, int *game_modifiers)
 
     if (check_key(ALLEGRO_KEY_ESCAPE))
     {
-
+      if (record_mode == RECORD_MODE_PLAYBACK)
+      {
+        break;
+      }
       world.hint.time_shows = 0;
       int switch_level = menu(1, &plrautosave, &mission, game_modifiers);
       if (switch_level)
@@ -1204,9 +1213,8 @@ int game(int mission, int *game_modifiers)
   }
 
   if (record_mode == RECORD_MODE_RECORD)
-  {
-    produce_and_write_continuous_data(key_presses, key_press_buffer_idx + 1, &key_press_buffer_idx, f_key_presses, time_stamp, 999, 999);
-    fclose(f_key_presses);
+  {   
+    game_playback_add_end_event();
   }
 
   al_destroy_bitmap(world.spr);

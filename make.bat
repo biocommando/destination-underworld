@@ -5,7 +5,7 @@ del version_info.txt
 
 gcc src/arenaconf.c ^
 src/bossfightconf.c ^
-src/continuousData.c ^
+src/game_playback.c ^
 src/duMp3.c ^
 src/musicTrack.c ^
 src/gamePersistence.c ^

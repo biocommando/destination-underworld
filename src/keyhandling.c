@@ -5,15 +5,6 @@
 #include "worldInteraction.h"
 #include "sampleRegister.h"
 
-void get_key_presses(ContinuousData *data, void *key_press_output)
-{
-  long *key_press_output_long = (long *)key_press_output;
-  if (data->data_type_id == 1)
-  {
-    *key_press_output_long = data->data_value;
-  }
-}
-
 int handle_direction_keys(World *world, int key_up, int key_down, int key_left, int key_right)
 {
   int orig_dx = world->plr.dx;
