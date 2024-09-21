@@ -167,23 +167,31 @@ void enemy_logic(World *world)
   for (int x = 0; x < ENEMYCOUNT; x++)
   {
     Enemy *enm = &world->enm[x];
-    if (enm->roomid != world->current_room)
-      continue;
     if (enm->id == NO_OWNER)
     {
-      if (enm->death_animation < 16)
+      const int death_anim_max = 16;
+      if (enm->death_animation < death_anim_max)
       {
-        draw_sprite_animated_centered(world->spr, SPRITE_ID_SKELETON, enm->x, enm->y, 0, enm->death_animation / 4);
-        enm->death_animation++;
-        if (enm->death_animation == 16)
+        if (enm->roomid == world->current_room)
         {
-          //create_explosion(enm->x, enm->y, world, 1.8);
+          draw_sprite_animated_centered(world->spr, SPRITE_ID_SKELETON, enm->x, enm->y, 0, enm->death_animation * 4 / death_anim_max);
+          enm->death_animation++;
+          if (enm->death_animation == death_anim_max)
+          {
+            spawn_body_parts(enm);
+            trigger_sample_with_params(SAMPLE_SPLASH(rand() % 3), 180 + rand() % 76, 127, 500 + rand() % 500);
+          }
+        }
+        else
+        {
+          enm->death_animation = death_anim_max;
           spawn_body_parts(enm);
-          trigger_sample_with_params(SAMPLE_SPLASH(rand() % 3), 255, 127, 500 + rand() % 500);
         }
       }
       continue;
     }
+    if (enm->roomid != world->current_room)
+      continue;
 
     if (world->plr.health > 0)
     {

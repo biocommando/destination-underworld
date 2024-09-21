@@ -62,6 +62,7 @@ void init_world(World *world)
         enm->shots = 1;
         enm->ammo = -1;
         enm->anim = rand() % 15;
+        enm->death_animation = 999;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
             enm->bodyparts[j].exists = 0;
