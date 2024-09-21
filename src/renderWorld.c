@@ -202,13 +202,18 @@ void draw_player_legend(World *world, int x, int y)
 
 void move_and_draw_body_parts(World *world)
 {
-    for (int x = 0; x < ENEMYCOUNT; x++)
+    for (int i = 0; i < ENEMYCOUNT; i++)
     {
+        if (world->enm[i].roomid != world->current_room || world->enm[i].health > 0)
+        {
+            continue;
+        }
+
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
             int bonesturn = 0;
-            BodyPart *bodypart = &world->enm[x].bodyparts[j];
-            if (bodypart->exists && world->enm[x].roomid == world->current_room)
+            BodyPart *bodypart = &world->enm[i].bodyparts[j];
+            if (bodypart->exists)
             {
                 if (bodypart->velocity > 0.7)
                 {
@@ -298,15 +303,6 @@ int progress_and_draw_explosions(World *world)
         {
             struct explosion_circle *c = &ex->circles[j];
 
-            /*while (c->loc.x + c->r > circle_max_radius * 2 - 1)
-                c->loc.x -= 1;
-            while (c->loc.x - c->r < 0)
-                c->loc.x += 1;
-            while (c->loc.y + c->r > circle_max_radius * 2 - 1)
-                c->loc.y -= 1;
-            while (c->loc.y - c->r < 0)
-                c->loc.y += 1;*/
-
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i * .9, c->r);
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i, c->r * .8);
             draw_explosion_circle(world, c->loc.x + ex->x, c->loc.y + ex->y, c->i * 1.1, c->r * .7);
@@ -333,8 +329,8 @@ int progress_and_draw_explosions(World *world)
                 for (int k = 4; k < 6; k += 2)
                 {
                     draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET,
-                        dx * ex->phase * k + ex->x,
-                        dy * ex->phase * k + ex->y,
+                        dx * ex->phase * k * ex->intensity + ex->x,
+                        dy * ex->phase * k * ex->intensity + ex->y,
                         (ex->phase + j) % 4,
                         -1 - ex->phase / 2);
                 }

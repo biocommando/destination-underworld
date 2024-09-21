@@ -111,6 +111,13 @@ int main(int argc, char **argv)
     register_sample(SAMPLE_DEATH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
   }
 
+  for (int i = 0; i < 3; i++)
+  {
+    char loadsamplename[100];
+    sprintf(loadsamplename, "wet_%d.wav", i + 1);
+    register_sample(SAMPLE_SPLASH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
+  }
+
   progress_load_state("Loading sprites...", 1);
   {
     char path[256];
@@ -160,8 +167,23 @@ void enemy_logic(World *world)
   for (int x = 0; x < ENEMYCOUNT; x++)
   {
     Enemy *enm = &world->enm[x];
-    if (enm->roomid != world->current_room || enm->id == NO_OWNER)
+    if (enm->roomid != world->current_room)
       continue;
+    if (enm->id == NO_OWNER)
+    {
+      if (enm->death_animation < 16)
+      {
+        draw_sprite_animated_centered(world->spr, SPRITE_ID_SKELETON, enm->x, enm->y, 0, enm->death_animation / 4);
+        enm->death_animation++;
+        if (enm->death_animation == 16)
+        {
+          //create_explosion(enm->x, enm->y, world, 1.8);
+          spawn_body_parts(enm);
+          trigger_sample_with_params(SAMPLE_SPLASH(rand() % 3), 255, 127, 500 + rand() % 500);
+        }
+      }
+      continue;
+    }
 
     if (world->plr.health > 0)
     {
@@ -271,9 +293,9 @@ void enemy_logic(World *world)
         {
           trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
           create_shade_around_hit_point(enm->x, enm->y, 9, world);
-          create_explosion(enm->x, enm->y, world);
-          create_explosion(enm->x, enm->y, world);
-          create_explosion(enm->x, enm->y, world);
+          create_explosion(enm->x, enm->y, world, 1);
+          create_explosion(enm->x, enm->y, world, 1);
+          create_explosion(enm->x, enm->y, world, 2);
           enm->ammo = -1;
           enm->shots = 1;
           enm->id = NO_OWNER;
@@ -375,7 +397,7 @@ void boss_logic(World *world, int boss_died)
           world->map[world->current_room - 1][event->parameters[0]][event->parameters[1]] = create_tile(tile_type);
           trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
           for (int y = 0; y < 3; y++)
-            create_explosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world);
+            create_explosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world, 1);
         }
       }
       break;
@@ -429,7 +451,7 @@ void bullet_logic(World *world)
         if (world->playcount == 0)
           trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
         world->playcount = PLAYDELAY;
-        create_explosion(bullet_orig_x, bullet_orig_y, world);
+        create_explosion(bullet_orig_x, bullet_orig_y, world, 0.5);
         if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
         {
           bullet->x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
@@ -465,13 +487,18 @@ void bullet_logic(World *world)
           trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
         world->playcount = PLAYDELAY;
         create_shade_around_hit_point(world->plr.x, world->plr.y, 9, world);
-        create_explosion(world->plr.x, world->plr.y, world);
+        create_explosion(world->plr.x, world->plr.y, world, 1);
         if (world->plr.health <= 0)
         {
-          create_explosion(world->plr.x - 20, world->plr.y - 20, world);
-          create_explosion(world->plr.x + 20, world->plr.y + 20, world);
-          create_explosion(world->plr.x - 20, world->plr.y + 20, world);
-          create_explosion(world->plr.x + 20, world->plr.y - 20, world);
+          create_explosion(world->plr.x - 20, world->plr.y - 20, world, 1.5);
+          create_explosion(world->plr.x + 20, world->plr.y + 20, world, 1.5);
+          create_explosion(world->plr.x - 20, world->plr.y + 20, world, 1.5);
+          create_explosion(world->plr.x + 20, world->plr.y - 20, world, 1.5);
+          // As player is not really an "enemy" (not in the same array), the bodypart logic is not
+          // run for player object. Copy a "vacant" enemy to player's place so that the death animation
+          // will play for that object instead.
+          Enemy *substitute = &world->enm[ENEMYCOUNT - 1];
+          memcpy(substitute, &world->plr, sizeof(Enemy));
 
           wait_delay_ms(1); // The death sample won't play else
           trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world->plr.x - 240) / 8, 900 + rand() % 200);
@@ -491,9 +518,7 @@ void bullet_logic(World *world)
           if (bullet_hit(world->enm + j, world->bullets + i))
           {
             create_shade_around_hit_point(enm->x, enm->y, 9, world);
-            create_explosion(enm->x, enm->y, world);
-            create_explosion(enm->x, enm->y, world);
-            create_explosion(enm->x, enm->y, world);
+            create_explosion(enm->x, enm->y, world, 1.2);
             if (!deathsample_plays)
               if (world->playcount == 0)
                 trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
@@ -506,6 +531,7 @@ void bullet_logic(World *world)
             world->playcount = PLAYDELAY;
             if (enm->id == NO_OWNER) // enemy was killed (bullet_hit has side effects)
             {
+              create_explosion(enm->x, enm->y, world, 1.8);
 
               if (check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
               {
@@ -569,8 +595,6 @@ void bullet_logic(World *world)
                   trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
               }
               deathsample_plays = 1;
-
-              spawn_body_parts(enm);
             }
             break;
           }

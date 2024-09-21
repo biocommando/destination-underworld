@@ -258,6 +258,7 @@ int bullet_hit(Enemy *enm, Bullet *bb)
     if (--enm->health <= 0)
     {
         enm->id = NO_OWNER;
+        enm->death_animation = 0;
     }
 
     return 1;
@@ -326,7 +327,7 @@ int comp_expl_circle(const void *elem1, const void *elem2)
     return -1;
 }
 
-void create_explosion(int x, int y, World *world)
+void create_explosion(int x, int y, World *world, double intensity)
 {
     static int explosion_counter = 0;
     const double circle_max_radius = 17;
@@ -337,12 +338,15 @@ void create_explosion(int x, int y, World *world)
     ex->y = y - 16 + rand() % 32;
     ex->phase = rand() % 5;
 
+    ex->intensity = intensity;
+
     ex->circle_count = 5 + rand() % 6;
     double scale = random() * 0.5 + 0.5;
     for (int i = 0; i < ex->circle_count; i++)
     {
         struct explosion_circle *c = &ex->circles[i];
         c->i = random() * 0.25 + 0.75;
+        c->i *= intensity;
         c->loc.x = (1 - 2 * random()) * circle_max_radius * scale;
         c->loc.y = (1 - 2 * random()) * circle_max_radius * scale;
         c->r = MAX(random() * circle_max_radius * scale, 5);

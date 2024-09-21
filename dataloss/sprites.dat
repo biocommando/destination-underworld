@@ -30,3 +30,5 @@ sprite_13 x=48 y=186 w=7 h=9
 sprite_14 x=311 y=129 w=11 h=11 
 # Potion effect
 sprite_15 x=184 y=144 w=5 h=5
+# Skeleton
+sprite_16 x=79 y=0 w=25 h=29

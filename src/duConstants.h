@@ -58,6 +58,8 @@
 
 #define SAMPLE_POTION(x) (3000 + (x))
 
+#define SAMPLE_SPLASH(x) (4000 + (x))
+
 #define SCREEN_W 480
 #define SCREEN_H 360
 

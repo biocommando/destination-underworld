@@ -59,6 +59,7 @@ typedef struct
     int sprite;
     int potion; // if >= 0, the enemy drops a potion with this effect after death
     BodyPart bodyparts[BODYPARTCOUNT];
+    int death_animation;
 } Enemy;
 
 #define BULLET_TYPE_NORMAL 0
@@ -139,6 +140,7 @@ typedef struct
     int y;
     int phase;
     int circle_count;
+    double intensity;
     struct explosion_circle circles[10];
 } Explosion;
 

@@ -11,7 +11,7 @@ int shoot(Enemy *enm, World *world);
 int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, int hurts_monsters, World *world);
 int bullet_hit(Enemy *enm, Bullet *bb);
 int sees_each_other(Enemy *e1, Enemy *e2, World *world);
-void create_explosion(int x, int y, World *world);
+void create_explosion(int x, int y, World *world, double intensity);
 void create_sparkles(int x, int y, int count, int color, World *world);
 int read_level(World *world, int mission, int room_to);
 Enemy *get_next_available_enemy(World *world, int *index);
