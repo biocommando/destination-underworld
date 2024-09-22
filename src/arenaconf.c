@@ -44,7 +44,7 @@ void read_arena_highscores(const char *filename, ArenaHighscore *highscore)
         for (int mi = 0; mi < ARENACONF_HIGHSCORE_MAP_SIZE; mi++)
         {
             highscore->mode[i][mi] = 0;
-            highscore->kills[i][mi] = -1;
+            highscore->kills[i][mi] = 0;
             highscore->dirty[i][mi] = 0;
             char key[100], rec[100] = "";
             sprintf(key, "arena_%d_item_%d", i, mi);

@@ -46,7 +46,12 @@ http.createServer((req,res) => {
                 res.end('unknown command')
             }
         }
-        if (url === '/') url = '/du-edit.html'
+        if (url === '/')
+        {
+            res.writeHead(200, {'Content-Type': mimeTypeMap['.html']})
+            res.end('<a href="http://localhost:3000/editor/du-edit.html">open editor</a>')
+            return
+        }
         const extension = '.' + url.replace(/.+\./, '')
         let mimeType = mimeTypeMap[extension]
         if (!mimeType) mimeType = 'text/plain'
