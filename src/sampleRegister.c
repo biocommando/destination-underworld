@@ -34,7 +34,6 @@ void register_sample(int id, const char *filename, int priority)
 
 void stop_all_samples()
 {
-  //al_stop_samples();
   for (int i = sample_reg_idx - 1; i >= 0; i--)
   {
     al_stop_sample(&sample_register[i].sample_id);

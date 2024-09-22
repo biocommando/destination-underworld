@@ -17,7 +17,7 @@ void draw_enemy(Enemy *enm, World *world)
 
 void draw_map(World *world, int draw_walls, int vibration_intensity)
 {
-    const int floor_base_col = 100; // 66
+    const int floor_base_col = 100;
     const int shadow_base_col = floor_base_col - 44;
 
     static int lava_fluctuations = 0;
@@ -419,7 +419,6 @@ void display_level_info(World *world, int mission, int mission_count, long compl
         y += 15;
     }
     al_draw_textf(get_font(), GRAY(200), 5, SCREEN_H - 15, 0, "Press enter to continue!");
-    // stretch_blit(world->buf, screen, 0, 0, 480, 360, 0, 0, screen->w, screen->h);
     al_flip_display();
 }
 

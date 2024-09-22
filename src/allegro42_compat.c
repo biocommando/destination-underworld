@@ -46,16 +46,6 @@ int wait_event()
     {
         return 1;
     }
-    /*else if (event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT && opt_sound_state != OPT_ALL_SOUND_OFF)
-    {
-        ALLEGRO_AUDIO_STREAM *stream = (ALLEGRO_AUDIO_STREAM *)event.any.source;
-        float *buf = (float *)al_get_audio_stream_fragment(stream);
-        if (buf)
-        {
-            synth_process(buf, audio_buf_size);
-            al_set_audio_stream_fragment(stream, buf);
-        }
-    }*/
     return 2;
 }
 
@@ -140,7 +130,6 @@ int init_allegro()
     al_register_event_source(queue, al_get_mouse_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
-    //al_register_event_source(queue, al_get_audio_stream_event_source(audio_stream));
     al_start_timer(timer);
     printf("init ok\n");
     return 0;
