@@ -55,13 +55,17 @@ void record_file_flush()
     memset(&rec_db_state, 0, sizeof(rec_db_state));
 }
 
-int record_file_read(const char *file)
+void record_file_read(const char *file)
 {
     record_file_flush();
     strncpy(rec_db_state.current_file, file, 1024);
 
     char line[REC_MAX_LENGTH];
     FILE *f = fopen(file, "r");
+    if (f == NULL)
+    {
+        return;
+    }
     int line_idx = 0;
     while (fgets(line, sizeof(line), f))
     {
