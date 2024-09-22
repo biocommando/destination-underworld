@@ -96,13 +96,13 @@ int main(int argc, char **argv)
   register_sample(SAMPLE_PROTECTION, "rune_of_protection.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_TURRET, "turret.wav", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_SPAWN, "spawn.wav", SAMPLE_PRIORITY(HIGH, 0));
-  register_sample(SAMPLE_POTION(0), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(5), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(1), "potion_stop.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(2), "potion_fast.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(3), "potion_boost.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(4), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(6), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_SHIELD), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_MINOR_SHIELD), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_STOP), "potion_stop.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_FAST), "potion_fast.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_BOOST), "potion_boost.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_HEAL), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_INSTANT_HEAL), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
 
   for (int i = 0; i < 6; i++)
   {
@@ -575,12 +575,12 @@ void bullet_logic(World *world)
                 if (world->plr.ammo > 15)
                   world->plr.ammo = 15;
               }
-              if (enm->potion >= 0)
+              if (enm->potion >= POTION_ID_SHIELD)
               {
                 int potion = enm->potion;
                 // if almost out of health, spawn healing potion
                 if (world->plr.health == 1)
-                  potion = 6;
+                  potion = POTION_ID_INSTANT_HEAL;
                 spawn_potion(enm->x, enm->y, potion, world->current_room, world, POTION_DROP_RANGE_START, POTION_DROP_RANGE_END);
               }
 

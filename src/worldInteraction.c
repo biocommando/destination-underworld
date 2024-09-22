@@ -436,7 +436,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     new_enemy->x = x;
     new_enemy->y = y;
     new_enemy->move = 0;
-    new_enemy->potion = -1;
+    new_enemy->potion = POTION_ID_NONE;
 
     new_enemy->sprite = type;
 
@@ -452,9 +452,9 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         {
             new_enemy->potion = world->enemy_configs[type].potion_for_potion_only;
             // Healing potions are "banned" because otherwise the fights will keep on going forever
-            if ((world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) && new_enemy->potion == 4)
+            if ((world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) && new_enemy->potion == POTION_ID_HEAL)
             {
-                new_enemy->potion = 6;
+                new_enemy->potion = POTION_ID_INSTANT_HEAL;
             }
         }
     }
@@ -515,17 +515,17 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int rang
     if (is_drop)
         p->duration_boost = 50;
     p->effects = 0;
-    if (type == 0)
+    if (type == POTION_ID_SHIELD)
         p->effects = POTION_EFFECT_SHIELD_OF_FIRE | POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS;
-    else if (type == 1)
+    else if (type == POTION_ID_STOP)
         p->effects = POTION_EFFECT_STOP_ENEMIES;
-    else if (type == 2)
+    else if (type == POTION_ID_FAST)
         p->effects = POTION_EFFECT_FAST_PLAYER;
-    else if (type == 3)
+    else if (type == POTION_ID_BOOST)
         p->effects = POTION_EFFECT_BOOSTED_SHOTS;
-    else if (type == 4)
+    else if (type == POTION_ID_HEAL)
         p->effects = POTION_EFFECT_HEALING;
-    else if (type == 5)
+    else if (type == POTION_ID_MINOR_SHIELD)
         p->effects = POTION_EFFECT_SHIELD_OF_FIRE;
     else
         p->effects = POTION_EFFECT_HEAL_ONCE;
