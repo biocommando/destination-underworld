@@ -86,39 +86,43 @@ int main(int argc, char **argv)
   int game_modifiers = 0;
 
   progress_load_state("Loading samples...", 1);
-  register_sample(SAMPLE_SELECT, "sel.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_WARP, "warp.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_BOSSTALK_1, "bt1.wav", SAMPLE_PRIORITY(HIGH, 2));
-  register_sample(SAMPLE_BOSSTALK_2, "bt2.wav", SAMPLE_PRIORITY(HIGH, 2));
-  register_sample(SAMPLE_THROW, "throw.wav", SAMPLE_PRIORITY(LOW, 0));
-  register_sample(SAMPLE_SELECT_WEAPON, "select_weapon.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_HEAL, "healing.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_PROTECTION, "rune_of_protection.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_TURRET, "turret.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_SPAWN, "spawn.wav", SAMPLE_PRIORITY(HIGH, 0));
-  register_sample(SAMPLE_POTION(POTION_ID_SHIELD), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(POTION_ID_MINOR_SHIELD), "potion_shield.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(POTION_ID_STOP), "potion_stop.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(POTION_ID_FAST), "potion_fast.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(POTION_ID_BOOST), "potion_boost.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(POTION_ID_HEAL), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
-  register_sample(SAMPLE_POTION(POTION_ID_INSTANT_HEAL), "potion_heal.wav", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_SELECT, "select_weapon", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_WARP, "warp", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_BOSSTALK_1, "boss_level_start", SAMPLE_PRIORITY(HIGH, 2));
+  register_sample(SAMPLE_BOSSTALK_2, "boss_level_boss_dies", SAMPLE_PRIORITY(HIGH, 2));
+  register_sample(SAMPLE_THROW, "throw", SAMPLE_PRIORITY(LOW, 0));
+  register_sample(SAMPLE_SELECT_WEAPON, "select_weapon", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_HEAL, "powerup_healing", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_PROTECTION, "powerup_protection", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_TURRET, "powerup_turret", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_BLAST, "powerup_megablast", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_SPAWN, "spawn", SAMPLE_PRIORITY(HIGH, 0));
+  register_sample(SAMPLE_POTION(POTION_ID_SHIELD), "potion_shield", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_MINOR_SHIELD), "potion_minor_shield", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_STOP), "potion_stop", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_FAST), "potion_fast", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_BOOST), "potion_boost", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_HEAL), "potion_heal", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_POTION(POTION_ID_INSTANT_HEAL), "potion_instant_heal", SAMPLE_PRIORITY(HIGH, 1));
 
   for (int i = 0; i < 6; i++)
   {
     char loadsamplename[100];
-    sprintf(loadsamplename, "ex%d.wav", i + 1);
+    sprintf(loadsamplename, "explosion_%d", i + 1);
     register_sample(SAMPLE_EXPLOSION(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
-    sprintf(loadsamplename, "die%d.wav", i + 1);
+    sprintf(loadsamplename, "death_%d", i + 1);
     register_sample(SAMPLE_DEATH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
   }
 
   for (int i = 0; i < 3; i++)
   {
     char loadsamplename[100];
-    sprintf(loadsamplename, "wet_%d.wav", i + 1);
+    sprintf(loadsamplename, "blood_splash_%d", i + 1);
     register_sample(SAMPLE_SPLASH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
   }
+  
+  register_sample(SAMPLE_MENU_CHANGE, "menu_change", SAMPLE_PRIORITY(HIGH, 1));
+  register_sample(SAMPLE_MENU_SELECT, "menu_select", SAMPLE_PRIORITY(HIGH, 1));
 
   progress_load_state("Loading sprites...", 1);
   {

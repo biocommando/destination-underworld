@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "duConstants.h"
 #include "logging.h"
+#include "record_file.h"
 #include <stdio.h>
 
 extern GameSettings game_settings;
@@ -17,14 +18,38 @@ struct
   ALLEGRO_SAMPLE_ID sample_id;
 } sample_register[MAX_NUM_SAMPLES];
 
-void register_sample(int id, const char *filename, int priority)
+int get_sample_path(char *sample_path, const char *sample_name)
+{
+  char sample_mappings_filename[256];
+  get_data_filename(sample_mappings_filename, "sounds.dat");
+  char record[256] = "", value[256] = "";
+  if (record_file_get_record(sample_mappings_filename, sample_name, record, sizeof(record)) == 0 &&
+    sscanf(record, "%*s %s", value) == 1)
+  {
+    get_data_filename(sample_path, value);
+    return 0;
+  }
+  return 1;
+}
+
+void register_sample(int id, const char *sample_name, int priority)
 {
   if (sample_reg_idx < MAX_NUM_SAMPLES)
   {
+    char sample_path[256] = "";
+    if (get_sample_path(sample_path, sample_name) != 0)
+    {
+      printf("ERROR: Sample mapping not found for \"%s\"\n", sample_name);
+      return;
+    }
     sample_register[sample_reg_idx].id = id;
-    char sample_path[256];
-    get_data_filename(sample_path, filename);
+    
     ALLEGRO_SAMPLE *sample = al_load_sample(sample_path);
+    if (!sample)
+    {
+      printf("ERROR: Loading sample \"%s\" from path \"%s\" failed\n", sample_name, sample_path);
+      return;
+    }
     sample_register[sample_reg_idx].sample = sample;
     sample_register[sample_reg_idx].priority = priority;
     memset(&sample_register[sample_reg_idx].sample_id, 0, sizeof(ALLEGRO_SAMPLE_ID));

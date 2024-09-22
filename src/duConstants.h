@@ -39,7 +39,7 @@
 #define RECORD_MODE_RECORD 1
 #define RECORD_MODE_PLAYBACK 2
 
-#define SAMPLE_SELECT 0
+#define SAMPLE_SELECT 0 // select weapon
 #define SAMPLE_WARP 1
 #define SAMPLE_BOSSTALK_1 2
 #define SAMPLE_BOSSTALK_2 3
@@ -59,6 +59,9 @@
 #define SAMPLE_POTION(x) (3000 + (x))
 
 #define SAMPLE_SPLASH(x) (4000 + (x))
+
+#define SAMPLE_MENU_SELECT 5001
+#define SAMPLE_MENU_CHANGE 5002
 
 #define SCREEN_W 480
 #define SCREEN_H 360

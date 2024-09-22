@@ -8,6 +8,7 @@
 #include "settings.h"
 #include "sprites.h"
 #include "logging.h"
+#include "sampleRegister.h"
 
 extern GameSettings game_settings;
 extern int record_mode;
@@ -119,11 +120,12 @@ const char *game_modifiers_to_str(int game_modifiers)
     return "unknown";
 }
 
-void menu_play_sample(ALLEGRO_SAMPLE *s, ALLEGRO_SAMPLE_ID *id)
+void menu_play_sample(int sample_id)
 {
     if (game_settings.sfx_vol == 0)
         return;
-    al_play_sample(s, game_settings.sfx_vol, 0, 1, ALLEGRO_PLAYMODE_ONCE, id);
+    reset_sample_triggers();
+    trigger_sample(sample_id, 255);
 }
 
 struct menu_item
@@ -216,19 +218,15 @@ struct menu create_menu(const char *title, ...)
     return m;
 }
 
-ALLEGRO_SAMPLE *menu_select = NULL;
-
 void display_menu(struct menu *menu_state)
 {
     ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
-    ALLEGRO_SAMPLE *s_c = al_load_sample(MENU_SAMPLE_FILENAME);
 
     const int menu_item_height = 10;
     const int menu_item_margin = 5;
     const int y_offset = 60;
     int key = 0;
     int flicker = 0;
-    ALLEGRO_SAMPLE_ID id;
     wait_key_release(ALLEGRO_KEY_ESCAPE);
     while (key != ALLEGRO_KEY_ENTER)
     {
@@ -270,7 +268,7 @@ void display_menu(struct menu *menu_state)
                 if (si >= 0)
                 {
                     menu_state->selected_item = si;
-                    menu_play_sample(s_c, &id);
+                    menu_play_sample(SAMPLE_MENU_CHANGE);
                     initial_item = 999;
                 }
                 else
@@ -290,7 +288,7 @@ void display_menu(struct menu *menu_state)
                 if (si < menu_state->num_items)
                 {
                     menu_state->selected_item = si;
-                    menu_play_sample(s_c, &id);
+                    menu_play_sample(SAMPLE_MENU_CHANGE);
                     initial_item = 999;
                 }
                 else
@@ -305,9 +303,8 @@ void display_menu(struct menu *menu_state)
             break;
         }
     }
-    menu_play_sample(menu_select, &id);
+    menu_play_sample(SAMPLE_MENU_SELECT);
     al_destroy_bitmap(menubg);
-    al_destroy_sample(s_c);
 }
 
 int display_load_game_menu()
@@ -560,10 +557,6 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     static int level_set = 0;
 
     load_menu_sprites();
-    if (!menu_select)
-    {
-        menu_select = al_load_sample(MENU_SELECT_SAMPLE_FILENAME);
-    }
 
     ALLEGRO_TRANSFORM transform;
     al_identity_transform(&transform);
@@ -675,11 +668,6 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         }
     }
     al_destroy_bitmap(menu_sprites);
-    if (*mission == 0)
-    {
-        al_destroy_sample(menu_select);
-        menu_select = NULL;
-    }
 
     return switch_level;
 }
