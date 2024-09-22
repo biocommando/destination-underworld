@@ -65,6 +65,10 @@ int record_file_read(const char *file)
     int line_idx = 0;
     while (fgets(line, sizeof(line), f))
     {
+        if (line[0] == '#')
+        {
+            continue;
+        }
         if (line[strlen(line) - 1] == '\n')
         {
             line[strlen(line) - 1] = '\0';
