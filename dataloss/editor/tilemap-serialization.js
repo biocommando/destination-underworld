@@ -189,3 +189,11 @@ function serializeTileMapLegacy(tileMap, newline = '\n') {
     add(JSON.stringify(tileMap.levelMetadata));
     return lines.join(newline);
 }
+
+try {
+    module.exports = {
+        serializeTileMap, deserializeTileMap
+    }
+} catch (e) {
+    // ok
+}
