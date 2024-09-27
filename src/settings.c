@@ -61,6 +61,9 @@ int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output)
 {
   char format_str[256];
   sprintf(format_str, "--%s=%%s", arg);
+
+  printf(format_str, "<value>\n");
+
   while (argc--)
   {
     int success = sscanf(argv[argc], format_str, output);

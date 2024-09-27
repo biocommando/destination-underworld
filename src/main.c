@@ -22,6 +22,7 @@
 #include "sprites.h"
 #include "record_file.h"
 #include "game_playback.h"
+#include "gen_version_info.h"
 
 #ifdef ENABLE_LOGGING
 int logging_enabled = 0;
@@ -41,6 +42,9 @@ int no_player_damage = 0;
 
 int main(int argc, char **argv)
 {
+  printf("Destination Underworld " DU_VERSION "\n");
+  printf("Command line arguments attempted to read:\n");
+
   char read_arg[256] = "";
 #ifdef ENABLE_LOGGING
   logging_enabled = read_cmd_line_arg_int("logging", argv, argc);
@@ -75,6 +79,11 @@ int main(int argc, char **argv)
     }
     fclose(record_input_file);
     LOG("Playback mode active.\n");
+  }
+  else if (read_arg[0])
+  {
+    printf("Record mode must be either 'play' or 'record'.\n");
+    return 1;
   }
 
   read_settings(argv, argc);
