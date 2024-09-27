@@ -1,4 +1,4 @@
-const {serializeTileMap} = require('./tilemap-serialization')
+const { serializeTileMap } = require('./tilemap-serialization')
 const fs = require('fs')
 
 let configFile = process.argv.pop()
@@ -26,207 +26,208 @@ const packName = params.packName || `${placeNames.pop()}-of-${ominiousWords.pop(
 
 function createOneMission(mission) {
 
-console.log(`** Generating mission ${mission} **`)
+    console.log(`** Generating mission ${mission} **`)
 
-const ids = {
-    wall: 120,
-    floor: 46,
-    lava: 122,
-    wall2: 113,
-    room: n => 1000 + n,
-    exit: 60,
-    enemy: e => e + 200,
-    potion: p => p + 300
-}
+    const ids = {
+        wall: 120,
+        floor: 46,
+        lava: 122,
+        wall2: 113,
+        room: n => 1000 + n,
+        exit: 60,
+        enemy: e => e + 200,
+        potion: p => p + 300
+    }
 
-let map = []
+    let map = []
 
-function fillWithWalls(room) {
-    for (let x = 0; x < 16; x++) {
-        for (let y = 0; y < 12; y++) {
-            map.push({id: ids.wall, x, y, room})
+    function fillWithWalls(room) {
+        for (let x = 0; x < 16; x++) {
+            for (let y = 0; y < 12; y++) {
+                map.push({ id: ids.wall, x, y, room })
+            }
         }
     }
-}
 
-function getTile(x, y, room) {
-    return map.find(t => t.x === x && t.y === y && t.room === room)
-}
-
-function setTile(x, y, room, id) {
-    const o = getTile(x, y, room)
-    if (!o) console.log('not found:', x, y, room)
-    o.id = id
-}
-
-function addBorders(room) {
-    for (let x = 0; x < 16; x++) {
-        for (let y = 0; y < 12; y++) {
-            let tile
-            if (x == 0 || x == 15 || y == 0 || y == 11) {
-                tile = ids.wall
-                if (x == 0 && y == 5) {
-                    tile = ids.room(room == 1 ? room : room - 1)
-                }
-                if (x == 15 && y == 5 && room != 8) {
-                    tile = ids.room(room + 1)
-                }
-                if (x == 15 && y > 3 && y < 9 && room == 8) {
-                    tile = ids.exit
-                }
-            }
-            if (tile)
-                setTile(x, y, room, tile)
-        }
+    function getTile(x, y, room) {
+        return map.find(t => t.x === x && t.y === y && t.room === room)
     }
-    const lavaThreshold = Math.random() * 0.2 + 0.7
-    
-    map.filter(x => x.id === ids.wall && x.room === room).forEach(x => {
-        if (Math.random() > lavaThreshold) x.id = ids.lava
-        else if (Math.random() > 0.9) x.id = ids.wall2
-    })
-}
 
-let pausePotionSpawned = false
-for (let room = 1; room <= params.numberOfRooms; room++) {
-    fillWithWalls(room)
-    let x = 1, y = 4
-    let enemies = 0, walkedCount = 0, chdirat = 2
-    let enemyPowerScore = 0
-    let dx = 0, dy = 1
-    let bannedCoords = ['2,4', '2,5', '2,6']
-    let totalHoleSizes = 0
+    function setTile(x, y, room, id) {
+        const o = getTile(x, y, room)
+        if (!o) console.log('not found:', x, y, room)
+        o.id = id
+    }
 
-    while (x !== 15 || y !== 5) {
-
-        if (walkedCount >= chdirat) {
-            let validDir = false, itCount = 0
-            while (!validDir) {
-                const dir = Math.random()
-
-                dx = 0
-                dy = 0
-                if (dir < 0.25) dx = 1
-                else if (dir < 0.5) dx = -1
-                else if (dir < 0.75) dy = 1
-                else dy = -1
-
-                validDir = true
-                if (x + dx == 0)
-                    validDir = false
-                if (x + dx == 15) {
-                    if (y !== 5) validDir = false
+    function addBorders(room) {
+        for (let x = 0; x < 16; x++) {
+            for (let y = 0; y < 12; y++) {
+                let tile
+                if (x == 0 || x == 15 || y == 0 || y == 11) {
+                    tile = ids.wall
+                    if (x == 0 && y == 5) {
+                        tile = ids.room(room == 1 ? room : room - 1)
+                    }
+                    if (x == 15 && y == 5 && room != 8) {
+                        tile = ids.room(room + 1)
+                    }
+                    if (x == 15 && y > 3 && y < 9 && room == 8) {
+                        tile = ids.exit
+                    }
                 }
-                if (y + dy == 0 || y + dy == 11)
-                    validDir = false
-                const t = getTile(x + dx, y + dy, room)
-                if (!t || (t.id !== ids.wall && t.id !== ids.floor))
-                    validDir = false
-                if (t && t.id !== ids.wall && itCount < 4)
-                    validDir = false
-                itCount++
+                if (tile)
+                    setTile(x, y, room, tile)
             }
-            chdirat = Math.floor(Math.random() * params.keepWalkingDirectionMaxNumberOfTiles) + 1 + walkedCount
         }
-        
-        x += dx
-        y += dy
-        walkedCount++
+        const lavaThreshold = Math.random() * 0.2 + 0.7
 
-        if (bannedCoords.includes(`${x},${y}`) || x < 0 || y < 0 || x > 15 || y > 11) {
-            x -= dx
-            y -= dy
+        map.filter(x => x.id === ids.wall && x.room === room).forEach(x => {
+            if (Math.random() > lavaThreshold) x.id = ids.lava
+            else if (Math.random() > 0.9) x.id = ids.wall2
+        })
+    }
+
+    let pausePotionSpawned = false
+    for (let room = 1; room <= params.numberOfRooms; room++) {
+        fillWithWalls(room)
+        let x = 1, y = 4
+        let enemies = 0, walkedCount = 0, chdirat = 2
+        let enemyPowerScore = 0
+        let dx = 0, dy = 1
+        let bannedCoords = ['2,4', '2,5', '2,6']
+        let totalHoleSizes = 0
+
+        while (x !== 15 || y !== 5) {
+
+            if (walkedCount >= chdirat) {
+                let validDir = false, itCount = 0
+                while (!validDir) {
+                    const dir = Math.random()
+
+                    dx = 0
+                    dy = 0
+                    if (dir < 0.25) dx = 1
+                    else if (dir < 0.5) dx = -1
+                    else if (dir < 0.75) dy = 1
+                    else dy = -1
+
+                    validDir = true
+                    if (x + dx == 0)
+                        validDir = false
+                    if (x + dx == 15) {
+                        if (y !== 5) validDir = false
+                    }
+                    if (y + dy == 0 || y + dy == 11)
+                        validDir = false
+                    const t = getTile(x + dx, y + dy, room)
+                    if (!t || (t.id !== ids.wall && t.id !== ids.floor))
+                        validDir = false
+                    if (t && t.id !== ids.wall && itCount < 4)
+                        validDir = false
+                    itCount++
+                }
+                chdirat = Math.floor(Math.random() * params.keepWalkingDirectionMaxNumberOfTiles) + 1 + walkedCount
+            }
+
+            x += dx
+            y += dy
+            walkedCount++
+
+            if (bannedCoords.includes(`${x},${y}`) || x < 0 || y < 0 || x > 15 || y > 11) {
+                x -= dx
+                y -= dy
+                continue
+            }
+
+            if (x != 15 || y != 5)
+                setTile(x, y, room, ids.floor)
+
+            if (Math.random() > params.holeProbability && totalHoleSizes < params.holeTotalSizeLimit) {
+                const r = Math.random()
+                const holeSize = r * r * (params.maxHoleSize - 1) + 1
+                totalHoleSizes += holeSize * holeSize * 0.5
+                for (let xx = 0; xx < 15; xx++) {
+                    for (let yy = 0; yy < 12; yy++) {
+                        if (Math.sqrt((xx - x) * (xx - x) + (yy - y) * (yy - y)) < holeSize)
+                            setTile(x, y, room, ids.floor)
+                    }
+                }
+            }
+
+            if ((x != 15 || y != 5) && x > 1 && Math.random() > 0.85 + Math.log(enemies) / (13 + room)) {
+                const missionRoom = room + mission - 1
+                let enemyTypeMax = params.baseEnemyTypeMax - 0.001
+                if (missionRoom >= params.roomsThatIntroduceNewEnemyTypes[0]) enemyTypeMax += 1
+                if (missionRoom >= params.roomsThatIntroduceNewEnemyTypes[1]) enemyTypeMax += 1
+                if (missionRoom >= params.roomsThatIntroduceNewEnemyTypes[2]) enemyTypeMax += 1
+                let enemyType = Math.floor(Math.random() * enemyTypeMax)
+                map.push({ x, y, room, id: ids.enemy(enemyType) })
+                enemies++
+                enemyPowerScore += enemyType + 1
+            }
+        }
+
+        const potionCount = enemyPowerScore >= params.potionSpawnEnemyPowerScoreThreshold ? 1 : 0
+
+        for (let potions = 0; potions < potionCount; potions++) {
+            let potionType = Math.floor(Math.random() * 5)
+            if (potionType === 1 && params.limitPausePotionsTo1) {
+                while (pausePotionSpawned && potionType === 1) {
+                    potionType = Math.floor(Math.random() * 5)
+                }
+                pausePotionSpawned = true
+            }
+
+            let tile, x = 0, y = 0
+            while (!tile || tile.id === ids.wall) {
+                x = 1 + Math.floor(Math.random() * 14)
+                y = 1 + Math.floor(Math.random() * 10)
+                tile = getTile(x, y, room)
+            }
+
+            map.push({ x, y, room, id: ids.potion(potionType) })
+        }
+
+        addBorders(room)
+
+        const floorTiles = map.filter(x => x.room === room && x.id === ids.floor).length
+        if (floorTiles > params.tooOpenRoomFloorTileThreshold) {
+            console.log('Too open map, regenerating')
+            map = map.filter(x => x.room !== room)
+            room--
             continue
         }
 
-        if (x != 15 || y != 5)
-            setTile(x, y, room, ids.floor)
-
-        if (Math.random() > params.holeProbability && totalHoleSizes < params.holeTotalSizeLimit) {
-            const r = Math.random()
-            const holeSize = r * r * (params.maxHoleSize - 1) + 1
-            totalHoleSizes += holeSize * holeSize * 0.5
-            for (let xx = 0; xx < 15; xx++) {
-                for (let yy = 0; yy < 12; yy++) {
-                    if (Math.sqrt((xx - x) * (xx - x) + (yy - y) * (yy - y)) < holeSize)
-                        setTile(x, y, room, ids.floor)
-                }
-            }
-        }
-
-        if ((x != 15 || y != 5) && x > 1 && Math.random() > 0.85 + Math.log(enemies) / (13 + room)) {
-            const missionRoom = room + mission - 1
-            let enemyTypeMax = params.baseEnemyTypeMax - 0.001
-            if (missionRoom >= params.roomsThatIntroduceNewEnemyTypes[0]) enemyTypeMax += 1
-            if (missionRoom >= params.roomsThatIntroduceNewEnemyTypes[1]) enemyTypeMax += 1
-            if (missionRoom >= params.roomsThatIntroduceNewEnemyTypes[2]) enemyTypeMax += 1
-            let enemyType = Math.floor(Math.random() * enemyTypeMax)
-            map.push({x, y, room, id: ids.enemy(enemyType)})
-            enemies++
-            enemyPowerScore += enemyType + 1
-        }
+        console.log(`Room ${room}, spawned enemies: ${enemies}, potions: ${potionCount}, walkedCount: ${walkedCount}`)
     }
 
-    const potionCount = enemyPowerScore >= params.potionSpawnEnemyPowerScoreThreshold ? 1 : 0
+    map.push({ x: 1, y: 5, id: ids.potion(5), room: 1, condition: 'COND_POTION_ONLY' })
 
-    for (let potions = 0; potions < potionCount; potions++) {
-        let potionType = Math.floor(Math.random() * 5)
-        if (potionType === 1 && params.limitPausePotionsTo1) {
-            while (pausePotionSpawned && potionType === 1) {
-                potionType = Math.floor(Math.random() * 5)
-            }
-            pausePotionSpawned = true
-        }
+    let colors
+    do {
+        colors = [Math.pow(Math.random(), 2), Math.pow(Math.random(), 2), Math.pow(Math.random(), 1)]
+    } while (!colors.some(x => x > 0.5))
+    colors.sort(() => Math.random() - 0.5)
 
-        let tile, x = 0, y = 0
-        while (!tile || tile.id === ids.wall) {
-            x = 1 + Math.floor(Math.random() * 14)
-            y = 1 + Math.floor(Math.random() * 10)
-            tile = getTile(x, y, room)
-        }
+    const metadata = [
+        `name = "${packName.split('--')[0].replace(/-/g, ' ')} ${mission} / ${numMissions}"`,
+        `wall_color = "${colors.join(' ')}"`,
+        'condition: COND_POTION_ONLY: game_modifiers = 200',
+        'mute_bosstalk = "1"',
+    ]
 
-        map.push({x, y, room, id: ids.potion(potionType)})
+    if (mission === numMissions) {
+        metadata.push('no_more_levels = "1"')
     }
 
-    addBorders(room)
+    const serialized = serializeTileMap({
+        objects: map,
+        scripts: [],
+        compiledScripts: [],
+        metadata
+    }).replace(/\n/, '\r\n')
 
-    const floorTiles = map.filter(x => x.room === room && x.id === ids.floor).length
-    if (floorTiles > params.tooOpenRoomFloorTileThreshold) {
-        console.log('Too open map, regenerating')
-        map = map.filter(x => x.room !== room)
-        room--
-        continue
-    }
-
-    console.log(`Room ${room}, spawned enemies: ${enemies}, potions: ${potionCount}, walkedCount: ${walkedCount}`)
-}
-
-map.push({x: 1, y: 5, id: ids.potion(5), room: 1, condition: 'COND_POTION_ONLY'})
-
-let colors
-do {
-    colors = [Math.pow(Math.random(), 2), Math.pow(Math.random(), 2), Math.pow(Math.random(), 1)]
-} while (!colors.some(x => x > 0.5))
-colors.sort(() => Math.random() - 0.5)
-
-const metadata = [
-    `name = "${packName.split('--')[0].replace(/-/g, ' ')} ${mission} / ${numMissions}"`,
-    `wall_color = "${colors.join(' ')}"`,
-    'condition: COND_POTION_ONLY: game_modifiers = 200'
-]
-
-if (mission === numMissions) {
-    metadata.push('no_more_levels = "1"')
-}
-
-const serialized = serializeTileMap({
-    objects: map,
-    scripts: [],
-    compiledScripts: [],
-    metadata
-}).replace(/\n/, '\r\n')
-
-fs.writeFileSync(packName + '/mission' + mission, serialized)
+    fs.writeFileSync(packName + '/mission' + mission, serialized)
 }
 
 fs.mkdirSync(packName)
