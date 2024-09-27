@@ -1,0 +1,26 @@
+{
+    "tooOpenRoomFloorTileThreshold": 130,
+    "potionSpawnEnemyPowerScoreThreshold": 30,
+    "maxHoleSize": 6,
+    "holeProbability": 0.95,
+    "holeTotalSizeLimit": 50,
+    "keepWalkingDirectionMaxNumberOfTiles": 4,
+    "limitPausePotionsTo1": true,
+    "baseEnemyTypeMax": 2,
+    "roomsThatIntroduceNewEnemyTypes": [3, 5, 7],
+    "numberOfRooms": 8,
+    "numberOfMissions": 4,
+    "packName": null,
+    "randomEnemyProperties": {
+        "useDefault": false,
+        "targetPowerScores": [
+            2, 3.5, 7.5, 9, 7
+        ],
+        "allowedPowerScoreOffset": 1,
+        "goldAtPowerScore": 5,
+        "rateRange": [2, 30],
+        "healthRange": [2, 8],
+        "fastProbability": 0.5,
+        "hurtsMonstersProbability": 0.8
+    }
+}
