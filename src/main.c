@@ -488,7 +488,6 @@ void bullet_logic(World *world)
       }
       if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
       {
-        LOG("Bullet hit player, current health %d\n", world->plr.health);
         if (no_player_damage)
           world->plr.health++;
         if (world->powerups.rune_of_protection_active == 1)
@@ -1021,8 +1020,6 @@ int game(int mission, int *game_modifiers)
       plrautosave = world.plr;
       break;
     }
-
-    LOG("potion effect: %d, duration: %d, potion_shield_counter: %d\n", world.potion_effect_flags, world.potion_duration, world.potion_shield_counter);
 
     int potion_effect_divider = world.potion_turbo_mode ? 2 : 1;
 
