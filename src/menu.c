@@ -572,7 +572,6 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         al_draw_textf(get_font(), WHITE, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
         al_flip_display();
         wait_key_press(ALLEGRO_KEY_ENTER);
-        LOG("wait ok\n");
     }
     else
     {

@@ -185,7 +185,9 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
             bb->dy = randomized_bullet_direction(dy);
         }
         else
+        {
             return 0;
+        }
 
         bb->x = x;
         bb->y = y;

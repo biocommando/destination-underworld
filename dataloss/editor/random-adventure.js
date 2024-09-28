@@ -1,10 +1,14 @@
 const { serializeTileMap } = require('./tilemap-serialization')
+const compileScript = require('./boss-to-ini-lib').bossToIni
 const fs = require('fs')
 
-let configFile = process.argv.pop()
-if (!configFile.endsWith('.json')) configFile = 'random-adventure-default-params.json'
+const defaultParams = JSON.parse(fs.readFileSync('random-adventure-default-params.json'))
+let customParams = {}
 
-const params = JSON.parse(fs.readFileSync(configFile))
+const configFile = process.argv.pop()
+if (configFile.endsWith('.json')) customParams = JSON.parse(fs.readFileSync(configFile))
+
+const params = {...defaultParams, ...customParams}
 
 const numMissions = params.numberOfMissions
 
@@ -24,6 +28,13 @@ ominiousWords.sort(() => Math.random() - 0.5)
 
 const packName = params.packName || `${placeNames.pop()}-of-${ominiousWords.pop()}--${new Date().getTime().toString(36)}`
 
+function randomIntFromRange(range) {
+    const [min, max] = range
+    return Math.round(Math.random() * (max - min)) + min
+}
+
+const spawnerInfos = []
+
 function createOneMission(mission) {
 
     console.log(`** Generating mission ${mission} **`)
@@ -36,10 +47,12 @@ function createOneMission(mission) {
         room: n => 1000 + n,
         exit: 60,
         enemy: e => e + 200,
-        potion: p => p + 300
+        potion: p => p + 300,
+        positionalTrigger: t => t + 600
     }
 
     let map = []
+    let scripts = new Array(8).fill().map(() => ['ignore_init_properties'])
 
     function fillWithWalls(room) {
         for (let x = 0; x < 16; x++) {
@@ -85,6 +98,47 @@ function createOneMission(mission) {
             if (Math.random() > lavaThreshold) x.id = ids.lava
             else if (Math.random() > 0.9) x.id = ids.wall2
         })
+    }
+
+    function createEnemySpawnerScript(types, numEnemies, enemyProbs, room) {
+        const script = ['ignore_init_properties']
+        const enemyProbsStr = enemyProbs.join(', ')
+
+        const possibleSpawnSpots = map.filter(t => t.id === ids.floor && t.room === room && t.x > 1)
+        possibleSpawnSpots.sort(() => Math.random() - 0.5)
+        types.forEach(type => {
+            spawnerInfos.push({room, mission, type})
+            if (type === 'hydra') {
+                const spawnSpot1 = possibleSpawnSpots.pop()
+                const spawnSpot2 = possibleSpawnSpots.pop()
+                script.push('// "Hydra" spawner')
+                for (let i = 0; i < numEnemies; i++) {
+                    script.push(`on kill_count: ${i + 1} do spawn: ${spawnSpot1.x}, ${spawnSpot1.y}, ${enemyProbsStr}`)
+                    script.push(`on kill_count: ${i + 1} do spawn: ${spawnSpot2.x}, ${spawnSpot2.y}, ${enemyProbsStr}`)
+                }
+            } else if (type === 'timed') {
+                const spawnSpot = possibleSpawnSpots.pop()
+                script.push('// "Timed" spawner')
+                script.push(`on time_one_time: 1 do start_secondary_timer: time = 0`)
+                script.push(`on time_one_time: ms(${2000 * numEnemies}) do stop_secondary_timer`)
+                script.push(`on secondary_timer: ms(2000) do spawn: ${spawnSpot.x}, ${spawnSpot.y}, ${enemyProbsStr}`)
+                script.push(`on secondary_timer: ms(2000) do start_secondary_timer: time = 0`)
+            } else if (type === 'positional') {
+                for (let y = 0; y < 12; y++) {
+                    map.push({x: 5, y, id: ids.positionalTrigger(0), room})
+                }
+                script.push('// "Positional" spawner')
+                for (let i = 0; i < numEnemies; i++) {
+                    const spawnSpot = possibleSpawnSpots.pop()
+                    if (spawnSpot) {
+                        script.push(`on positional_trigger: 0 do spawn: ${spawnSpot.x}, ${spawnSpot.y}, ${enemyProbsStr}`)
+                    }
+                }
+            } else {
+                throw `Invalid spawner type ${type}. Allowed: hydra, timed, positional`
+            }
+        })
+        scripts[room - 1] = script
     }
 
     let pausePotionSpawned = false
@@ -203,6 +257,20 @@ function createOneMission(mission) {
 
     map.push({ x: 1, y: 5, id: ids.potion(5), room: 1, condition: 'COND_POTION_ONLY' })
 
+    const roomsWithSpawners = []
+    let numSpawners = randomIntFromRange(params.spawners.numSpawnersPerMapRange)
+    console.log(`Creating ${numSpawners} spawners`)
+    for (let i = 0; i < numSpawners; i++) {
+        let room
+        while (!room || roomsWithSpawners.includes(room)) {
+            room = randomIntFromRange([1, 8])
+        }
+        roomsWithSpawners.push(room)
+        const type = params.spawners.allowedSpawnerTypes[randomIntFromRange([0, params.spawners.allowedSpawnerTypes.length - 1])]
+        const numEnemies = randomIntFromRange(params.spawners.numEnemiesRange)
+        createEnemySpawnerScript([type], numEnemies, params.spawners.enemyProbabilities, room)
+    }
+
     let colors
     do {
         colors = [Math.pow(Math.random(), 2), Math.pow(Math.random(), 2), Math.pow(Math.random(), 1)]
@@ -220,10 +288,12 @@ function createOneMission(mission) {
         metadata.push('no_more_levels = "1"')
     }
 
+    const compiledScripts = scripts.map(s => compileScript(s.join('\n'), 'new'))
+
     const serialized = serializeTileMap({
         objects: map,
-        scripts: [],
-        compiledScripts: [],
+        scripts,
+        compiledScripts,
         metadata
     }).replace(/\n/, '\r\n')
 
@@ -242,7 +312,20 @@ type-2 turret=0 rate=15 health=5 gold=1 fast=1 hurts-monsters=0 potion-for-potio
 type-3 turret=0 rate=10 health=6 gold=1 fast=1 hurts-monsters=0 potion-for-potion-only=3
 type-4 turret=1 rate=5 health=8 gold=1 fast=0 hurts-monsters=1 potion-for-potion-only=3`
 
+let enemyHelp = ''
+
 if (!params.randomEnemyProperties.useDefault) {
+    enemyHelp = `
+Custom enemy profiles
+#color 1
+#sprite 6 10 55 0 0
+#sprite 6 10 87 0 1
+#sprite 6 10 119 0 2
+#sprite 6 10 151 0 3
+#sprite 6 10 183 0 4
+#margin 40
+
+`
     enemyProperties = ''
     for (let e = 0; e < 5; e++) {
         let powerScore = 1e9
@@ -252,8 +335,8 @@ if (!params.randomEnemyProperties.useDefault) {
         let it = 0
         while (Math.abs(powerScore - params.randomEnemyProperties.targetPowerScores[e]) > offset) {
             turret = e === 4 ? 1 : 0
-            rate = Math.floor(Math.random() * (params.randomEnemyProperties.rateRange[1] - params.randomEnemyProperties.rateRange[0])) + params.randomEnemyProperties.rateRange[0]
-            health = Math.floor(Math.random() * (params.randomEnemyProperties.healthRange[1] - params.randomEnemyProperties.healthRange[0])) + params.randomEnemyProperties.healthRange[0]
+            rate = randomIntFromRange(params.randomEnemyProperties.rateRange)
+            health = randomIntFromRange(params.randomEnemyProperties.healthRange)
             fast = Math.random() > params.randomEnemyProperties.fastProbability ? 1 : 0
             if (turret) fast = 0
             hurtsMonsters = Math.random() > params.randomEnemyProperties.hurtsMonstersProbability ? 1 : 0
@@ -271,14 +354,56 @@ if (!params.randomEnemyProperties.useDefault) {
 
         enemyProperties += `type-${e} turret=${turret} rate=${rate} health=${health} gold=${gold} fast=${fast} hurts-monsters=${hurtsMonsters} potion-for-potion-only=${potionForPotionOnly}
 `
+        enemyHelp += `Health: ${health}, Fire rate: ${Math.round(400 / rate) / 10} / sec, ${turret ? 'Stationary' : (fast ? 'Moves fast' : 'Moves slow')}${hurtsMonsters ? ', Friendly fire' : ''}${gold ? ', Possesses a soul' : ''}
+
+`
         console.log(`Enemy ${e} created with power score ${powerScore}`)
     }
+    enemyHelp += '#margin 5'
 }
 
 fs.writeFileSync(packName + '/arenas.dat', 'number_of_arenas 0')
 fs.writeFileSync(packName + '/enemy-properties.dat', enemyProperties)
-fs.writeFileSync(packName + '/help.dat', `A random-generated dungeon pack for Destination Underworld.
 
+spawnerInfos.sort((a, b) => a.mission * 10 + a.room - b.mission * 10 - b.room)
+
+function getSpawnerInfoTable() {
+    let rows = ''
+    for (let mission = 1; mission <= numMissions; mission++) {
+        const infos = spawnerInfos.filter(x => x.mission === mission)
+        const rooms = [1, 2, 3, 4, 5, 6, 7, 8].map(room => {
+            const info = infos.find(i => i.room === room)
+            if (info) {
+                return {hydra: ' HYDRA  ', positional: ' AMBUSH ', timed: ' REINF. '}[info.type]
+            } else {
+                return '        '
+            }
+        }).join('|')
+        const paddedMission = (mission + ' ').substring(0, 2)
+        rows += `  ${paddedMission}  |${rooms}
+`
+    }
+    return rows
+}
+
+fs.writeFileSync(packName + '/help.dat', `#color 128 128 64 1
+A random-generated dungeon pack for Destination Underworld.
+#color 192 64 32 2
+${enemyHelp}
+
+#color 2
+Map trap info
+#color 64 64 64 3
+HYDRA         = When an enemy is killed, two are spawned at a random location
+AMBUSH        = When the player gets near the middle of the level,
+                enemies spawn at random locations
+REINFORCEMENT = New enemies are spawned in the same location periodically
+
+#color 1
+LEVEL | ROOM 1 |    2   |    3   |    4   |    5   |    6   |    7   |    8
+#color 3
+${getSpawnerInfoTable()}
+#color 255 255 255 4
 
 ((press space to continue))
 #doc-end
@@ -293,6 +418,6 @@ IF EXIST mission1 (
     cd ..
     cd ..
 )
-DestinationUnderworld.exe --general--mission-pack=${packName} --${packName}--mission-count=${numMissions}`)
+DestinationUnderworld.exe --general--mission-pack=${packName} --${packName}--mission-count=${numMissions} --default-game-mode=${params.defaultGameMode}`)
 
 console.log(`Created files for pack named ${packName}`)

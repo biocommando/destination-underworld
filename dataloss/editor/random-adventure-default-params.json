@@ -14,13 +14,20 @@
     "randomEnemyProperties": {
         "useDefault": false,
         "targetPowerScores": [
-            2, 3.5, 7.5, 9, 7
+            2, 3, 7, 8, 6
         ],
         "allowedPowerScoreOffset": 1,
         "goldAtPowerScore": 5,
-        "rateRange": [2, 30],
-        "healthRange": [2, 8],
+        "rateRange": [4, 30],
+        "healthRange": [2, 7],
         "fastProbability": 0.5,
         "hurtsMonstersProbability": 0.8
-    }
+    },
+    "spawners": {
+        "numSpawnersPerMapRange": [2, 3],
+        "allowedSpawnerTypes": ["hydra", "timed", "positional"],
+        "numEnemiesRange": [5, 15],
+        "enemyProbabilities": [40, 40, 20, 0, 0]
+    },
+    "defaultGameMode": 0
 }

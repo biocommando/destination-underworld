@@ -92,7 +92,7 @@ int main(int argc, char **argv)
   preload_mp3s();
   srand((int)time(NULL));
   int mission = 1;
-  int game_modifiers = 0;
+  int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc);
 
   progress_load_state("Loading samples...", 1);
   register_sample(SAMPLE_SELECT, "select_weapon", SAMPLE_PRIORITY(HIGH, 1));
@@ -488,6 +488,7 @@ void bullet_logic(World *world)
       }
       if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
       {
+        LOG("Bullet hit player, current health %d\n", world->plr.health);
         if (no_player_damage)
           world->plr.health++;
         if (world->powerups.rune_of_protection_active == 1)
@@ -656,7 +657,7 @@ void potion_logic(World *w)
     if (p->exists && p->room_id == w->current_room)
     {
       if (w->plr.x > p->location.x - 20 && w->plr.x < p->location.x + 20 &&
-          w->plr.y > p->location.y - 20 && w->plr.y < p->location.y + 20)
+          w->plr.y > p->location.y - 20 && w->plr.y < p->location.y + 20 && w->plr.health > 0)
       {
         p->exists = 0;
         w->potion_duration += p->duration_boost;
@@ -691,7 +692,7 @@ void potion_logic(World *w)
   {
     w->potion_duration -= w->potion_turbo_mode ? 2 : 1;
   }
-  else
+  if (w->potion_duration <= 0)
   {
     w->potion_effect_flags = 0;
   }
@@ -704,9 +705,9 @@ int game(int mission, int *game_modifiers)
   long completetime = 0;
 
   World world;
+  memset(&world, 0, sizeof(World));
   world.game_modifiers = *game_modifiers;
   world.mission = mission;
-  memset(&world.boss_fight_configs, 0, sizeof(world.boss_fight_configs));
   world.boss_fight_config = world.boss_fight_configs;
   if (!game_settings.custom_resources)
   {
@@ -1021,16 +1022,35 @@ int game(int mission, int *game_modifiers)
       break;
     }
 
+    LOG("potion effect: %d, duration: %d, potion_shield_counter: %d\n", world.potion_effect_flags, world.potion_duration, world.potion_shield_counter);
+
     int potion_effect_divider = world.potion_turbo_mode ? 2 : 1;
 
-    if (world.plr.health > 0 && world.plr.health < 6 && check_potion_effect(&world, POTION_EFFECT_HEALING) && completetime % (25 / potion_effect_divider) == 0)
+    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_HEALING))
     {
-      world.plr.health++;
+      if (world.potion_healing_counter <= 0)
+      {
+        if (world.plr.health < 6)
+          world.plr.health++;
+        world.potion_healing_counter = 25;
+      }
+      else
+      {
+        world.potion_healing_counter -= potion_effect_divider;
+      }
     }
 
-    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_SHIELD_OF_FIRE) && completetime % (15 / potion_effect_divider) == 0)
+    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_SHIELD_OF_FIRE))
     {
-      create_cluster_explosion(&world, world.plr.x, world.plr.y, 4, 1, &world.plr);
+      if (world.potion_shield_counter <= 0)
+      {
+        create_cluster_explosion(&world, world.plr.x, world.plr.y, 4, 1, &world.plr);
+        world.potion_shield_counter = 15;
+      }
+      else
+      {
+        world.potion_shield_counter -= potion_effect_divider;
+      }
     }
 
     enemy_logic(&world);

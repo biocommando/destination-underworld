@@ -235,6 +235,8 @@ typedef struct
     int potion_duration;
     int potion_effect_flags;
     int potion_turbo_mode;
+    int potion_healing_counter;
+    int potion_shield_counter;
     Potion potions[POTION_COUNT];
 } World;
 
