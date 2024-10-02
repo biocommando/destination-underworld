@@ -38,9 +38,9 @@ void init_world(World *world)
     for (int i = 0; i < ROOMCOUNT; i++)
     {
         world->rooms_visited[i] = 0;
-        for (int x = 0; x < 16; x++)
+        for (int x = 0; x < MAPMAX_X; x++)
         {
-            for (int y = 0; y < 12; y++)
+            for (int y = 0; y < MAPMAX_Y; y++)
             {
                 world->floor_shade_map[i][x][y] = 0;
             }

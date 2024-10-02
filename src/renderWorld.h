@@ -10,3 +10,4 @@ int progress_and_draw_explosions(World *world);
 void progress_and_draw_sparkles(World *world);
 void display_level_info(World *world, int mission, int mission_count, long completetime);
 void show_gold_hint(World *world, int number);
+void show_ingame_info_screen(World *world);

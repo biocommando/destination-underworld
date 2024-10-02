@@ -442,7 +442,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
 
     new_enemy->sprite = type;
 
-    if (type < 5)
+    if (type < ENEMY_TYPE_COUNT)
     {
         new_enemy->turret = world->enemy_configs[type].turret ? TURRET_TYPE_ENEMY : TURRET_TYPE_NONE;
         new_enemy->health = world->enemy_configs[type].health;
@@ -460,7 +460,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
             }
         }
     }
-    else if (type == 5)
+    else if (type == ENEMY_TYPE_COUNT)
     {
         world->boss = new_enemy;
         new_enemy->hurts_monsters = 0;

@@ -210,7 +210,7 @@ typedef struct
     Bullet bullets[BULLETCOUNT];
     Explosion explosion[EXPLOSIONCOUNT];
     struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
-    struct enemy_config enemy_configs[5];
+    struct enemy_config enemy_configs[ENEMY_TYPE_COUNT];
 
     ALLEGRO_BITMAP *spr;
 

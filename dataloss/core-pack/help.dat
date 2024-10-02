@@ -29,6 +29,7 @@ A: Activate powerup Heal
 S: Activate powerup Shield
 D: Activate powerup Turret
 F: Activate powerup Torrent of Fire
+M: Display level information screen
 
 #color 1
 Basic Gameplay

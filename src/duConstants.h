@@ -12,6 +12,7 @@
 
 #define BODYPARTCOUNT 32
 #define ROOMCOUNT 8
+#define ENEMY_TYPE_COUNT 5 // all "normal" enemies excluding the special boss type
 #define ENEMYCOUNT 200
 #define EXPLOSIONCOUNT 16
 #define BULLETCOUNT 400

@@ -852,6 +852,11 @@ int game(int mission, int *game_modifiers)
       // Draw well outside of screen so that the zoom in transformation would not look like ass
       rectfill(0, 0, SCREEN_W * 2, SCREEN_H * 2, BLACK);
     }
+    else if (check_key(ALLEGRO_KEY_M))
+    {
+      show_ingame_info_screen(&world);
+    }
+
     cleanup_bodyparts(&world);
     if (time_stamp % 6 == 0)
     {
