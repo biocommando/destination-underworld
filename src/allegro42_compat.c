@@ -68,7 +68,7 @@ void wait_key_press(int key)
 	wait_key_presses(&key, 1);
 }
 
-int wait_key_presses(int *keys, int num_keys)
+int wait_key_presses(const int *keys, int num_keys)
 {
     int key = -1;
     while (key == -1)

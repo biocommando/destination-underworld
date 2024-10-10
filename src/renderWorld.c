@@ -434,6 +434,7 @@ void show_gold_hint(World *world, int number)
 
 void show_ingame_info_screen(World *world)
 {
+    wait_key_release(ALLEGRO_KEY_M);
     al_clear_to_color(BLACK);
     const int map_tile_size = 8;
     const int max_minimaps_per_row = SCREEN_W / (map_tile_size * (MAPMAX_X + 1));
@@ -467,6 +468,11 @@ void show_ingame_info_screen(World *world)
                     al_draw_textf(get_font(), GRAY(200), xx, yy, 0, "%d", world->map[i][x][y].data);
                 }
             }
+        }
+        if (world->plr.roomid == i + 1)
+        {
+            al_draw_filled_circle(offset_x + world->plr.x / TILESIZE * map_tile_size + map_tile_size / 2,
+                offset_y + world->plr.y / TILESIZE * map_tile_size + map_tile_size / 2, map_tile_size / 2, WHITE);
         }
         int num_enemies = 0;
         for (int e = 0; e < ENEMYCOUNT; e++)
@@ -512,6 +518,8 @@ void show_ingame_info_screen(World *world)
     offset_y += y_incr;
     al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "- Blue: exit level");
     offset_y += y_incr;
+    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "- White circle: YOU");
+    offset_y += y_incr;
     al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "- 1-8: room entrance");
     offset_y += y_incr;
     al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "- S: tile may be swapped");
@@ -545,5 +553,6 @@ void show_ingame_info_screen(World *world)
 
     al_flip_display();
 
-    wait_key_press(ALLEGRO_KEY_SPACE);
+    const int keys[] = {ALLEGRO_KEY_SPACE, ALLEGRO_KEY_M};
+    wait_key_presses(keys, 2);
 }
