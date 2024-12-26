@@ -11,9 +11,9 @@ Custom enemy profiles
 #sprite 6 10 183 0 4
 #margin 40
 
-Health: 5, Fire rate: 1.4 / sec, Moves slow
+Health: 3, Fire rate: 1.4 / sec, Moves slow
 
-Health: 7, Fire rate: 1.4 / sec, Moves slow
+Health: 5, Fire rate: 1.4 / sec, Moves slow
 
 Health: 3, Fire rate: 2.9 / sec, Moves fast, Possesses a soul
 
