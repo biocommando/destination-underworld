@@ -420,4 +420,5 @@ void Synth_read_instruments(Synth *s, const char *file)
             }
         }
     }
+    fclose(f);
 }
