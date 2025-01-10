@@ -6,8 +6,6 @@ del version_info.txt
 gcc src/arenaconf.c ^
 src/bossfightconf.c ^
 src/game_playback.c ^
-src/duMp3.c ^
-src/musicTrack.c ^
 src/gamePersistence.c ^
 src/helpers.c ^
 src/keyhandling.c ^
@@ -25,6 +23,16 @@ src/duscript.c ^
 src/sprites.c ^
 src/record_file.c ^
 src/best_times.c ^
+src/midi_playback.c ^
+src/synth/adsr_envelope.c ^
+src/synth/basic_delay.c ^
+src/synth/basic_oscillator.c ^
+src/synth/envelope_stage.c ^
+src/synth/kick_wav.c ^
+src/synth/midi_player.c ^
+src/synth/midi_reader.c ^
+src/synth/moog_filter.c ^
+src/synth/synth.c ^
 -DENABLE_LOGGING ^
 -DTRACE_LOG ^
 -Iallegro\include ^

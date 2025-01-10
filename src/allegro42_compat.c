@@ -1,9 +1,12 @@
 #include "allegro42_compat.h"
 #include "allegro5/allegro_acodec.h"
 #include "duConstants.h"
-#include "duMp3.h"
 #include "gen_version_info.h"
+#include "midi_playback.h"
+#include "settings.h"
 #include <stdio.h>
+
+extern GameSettings game_settings;
 
 char keybuffer[ALLEGRO_KEY_MAX];
 
@@ -12,7 +15,6 @@ ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_EVENT_QUEUE *queue = NULL;
 ALLEGRO_AUDIO_STREAM *audio_stream = NULL;
-ALLEGRO_MIXER *mixer = NULL;
 ALLEGRO_EVENT event;
 
 int check_key(int key)
@@ -26,9 +28,6 @@ int check_key(int key)
 
 int wait_event()
 {
-    // Ensure that track is switched if track is played to the end while
-    // waiting
-    play_mp3();
     ALLEGRO_TIMEOUT tmo;
     al_init_timeout(&tmo, 0.1);
     int res = al_wait_for_event_until(queue, &event, &tmo);
@@ -45,6 +44,24 @@ int wait_event()
     else if (event.type == ALLEGRO_EVENT_TIMER)
     {
         return 1;
+    }
+    else if (event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
+    {
+        if (!game_settings.music_on)
+            return 2;
+        ALLEGRO_AUDIO_STREAM *stream = (ALLEGRO_AUDIO_STREAM *)event.any.source;
+        float *buf = (float *)al_get_audio_stream_fragment(stream);
+        if (buf)
+        {
+            MidiPlayer *mp = get_midi_player();
+            mp->synth.total_volume = game_settings.music_vol;
+            midi_player_process_buffer(mp, buf, 1024);
+            al_set_audio_stream_fragment(stream, buf);
+            if (mp->ended)
+            {
+                next_midi_track();
+            }
+        }
     }
     return 2;
 }
@@ -65,7 +82,7 @@ void wait_delay_ms(int ms)
 
 void wait_key_press(int key)
 {
-	wait_key_presses(&key, 1);
+    wait_key_presses(&key, 1);
 }
 
 int wait_key_presses(const int *keys, int num_keys)
@@ -91,10 +108,10 @@ int wait_key_presses(const int *keys, int num_keys)
 
 void wait_key_release(int key)
 {
-	while (keybuffer[key])
-	{
-		wait_event();
-	}
+    while (keybuffer[key])
+    {
+        wait_event();
+    }
 }
 
 int init_allegro()
@@ -104,7 +121,7 @@ int init_allegro()
         return 1;
     }
     memset(keybuffer, 0, sizeof(keybuffer));
-    al_install_mouse();
+    //al_install_mouse();
     al_install_keyboard();
     al_init_image_addon();
     al_init_primitives_addon();
@@ -124,14 +141,32 @@ int init_allegro()
     al_install_audio();
     al_reserve_samples(64);
 
+    audio_stream = al_create_audio_stream(8, 1024, 44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
+    ALLEGRO_MIXER *mixer = al_get_default_mixer();
+    al_attach_audio_stream_to_mixer(audio_stream, mixer);
+
+    init_midi_playback(44100);
+
     timer = al_create_timer(1.0 / 100);
     queue = al_create_event_queue();
     al_register_event_source(queue, al_get_keyboard_event_source());
-    al_register_event_source(queue, al_get_mouse_event_source());
+    //al_register_event_source(queue, al_get_mouse_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
+    al_register_event_source(queue, al_get_audio_stream_event_source(audio_stream));
     al_start_timer(timer);
     return 0;
+}
+
+void destroy_allegro()
+{
+    al_destroy_event_queue(queue);
+    al_destroy_timer(timer);
+    al_destroy_audio_stream(audio_stream);
+    al_uninstall_audio();
+    al_destroy_display(display);
+    al_uninstall_keyboard();
+    free_midi_playback();
 }
 
 ALLEGRO_FONT *get_font()

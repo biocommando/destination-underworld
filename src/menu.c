@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdarg.h>
 #include "menu.h"
-#include "dump3.h"
 #include "gamePersistence.h"
 #include "duColors.h"
 #include "helpers.h"
@@ -9,6 +8,7 @@
 #include "sprites.h"
 #include "logging.h"
 #include "sampleRegister.h"
+#include "midi_playback.h"
 
 extern GameSettings game_settings;
 extern int record_mode;
@@ -501,10 +501,13 @@ void game_option_menu()
         if (choice == get_menu_item_id("m.on/off"))
         {
             game_settings.music_on = !game_settings.music_on;
+            if (game_settings.music_on)
+                next_midi_track();
         }
         else if (choice == get_menu_item_id("Next"))
         {
-            switch_track(get_current_track() + 1);
+            //switch_track(get_current_track() + 1);
+            next_midi_track();
         }
         else if (choice == get_menu_item_id("m.vol"))
         {

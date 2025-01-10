@@ -1,6 +1,5 @@
 #include "helpers.h"
 #include "allegro42_compat.h"
-#include "dump3.h"
 
 void game_loop_rest(clock_t *state)
 {

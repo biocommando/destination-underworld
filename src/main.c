@@ -4,7 +4,6 @@
 #include <time.h>
 #include <math.h>
 #include "logging.h"
-#include "dump3.h"
 #include "duconstants.h"
 #include "ducolors.h"
 #include "world.h"
@@ -23,6 +22,7 @@
 #include "record_file.h"
 #include "game_playback.h"
 #include "gen_version_info.h"
+#include "midi_playback.h"
 
 #ifdef ENABLE_LOGGING
 int logging_enabled = 0;
@@ -89,7 +89,6 @@ int main(int argc, char **argv)
   read_settings(argv, argc);
   init_allegro();
   progress_load_state("Loading game...", 1);
-  preload_mp3s();
   srand((int)time(NULL));
   int mission = 1;
   int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc);
@@ -140,8 +139,9 @@ int main(int argc, char **argv)
     read_sprites_from_file(path, SPRITE_ID_MIN, SPRITE_ID_MAX);
   }
 
-  switch_track(1);
   progress_load_state("Loading menu...", 1);
+  randomize_midi_playlist();
+  next_midi_track();
 
   while (mission != 0)
   {
@@ -159,9 +159,8 @@ int main(int argc, char **argv)
   progress_load_state("Exiting game...", 0);
   destroy_registered_samples();
 
-  destroy_mp3s();
-
   record_file_flush();
+  destroy_allegro();
   return 0;
 }
 
@@ -1157,7 +1156,6 @@ int game(int mission, int *game_modifiers)
       al_scale_transform(&transform, 3, 3);
       al_use_transform(&transform);
       al_flip_display();
-      play_mp3();
     }
     else
     {

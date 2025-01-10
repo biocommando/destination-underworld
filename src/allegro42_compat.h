@@ -16,6 +16,7 @@
 int wait_event();
 
 int init_allegro();
+void destroy_allegro();
 void wait_delay(int v);
 void wait_delay_ms(int ms);
 void wait_key_press(int key);
