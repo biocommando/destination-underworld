@@ -467,6 +467,8 @@ int display_game_options(int default_opt)
     mi = add_menu_item(&m, "Set vibration intensity", "Current: %s (%d)",
                        game_settings.vibration_mode < 12 ? (game_settings.vibration_mode < 5 ? "heavy" : "medium") : "light", game_settings.vibration_mode);
     mi->item_id = get_menu_item_id("vibrations");
+    mi = add_menu_item(&m, "Window mode", "Current: %s\nThe game needs to be restarted to take new window mode into use.", game_settings.fullscreen ? "Full screen" : "Windowed");
+    mi->item_id = get_menu_item_id("Window");
     set_item_by_id(&m, default_opt);
     display_menu(&m);
     return m.items[m.selected_item].item_id;
@@ -524,6 +526,10 @@ void game_option_menu()
         else if (choice == get_menu_item_id("vibrations"))
         {
             game_settings.vibration_mode = display_range_menu("Set vibration intensity", "%d", 1, 16, 1, game_settings.vibration_mode);
+        }
+        else if (choice == get_menu_item_id("Window"))
+        {
+            game_settings.fullscreen = !game_settings.fullscreen;
         }
     } while (choice != get_menu_item_id("Exit"));
 

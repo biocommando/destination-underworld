@@ -45,12 +45,11 @@ void read_settings(char **argv, int argc)
   READ_SETTING(game_settings.custom_resources, "%d", game_settings.mission_pack, "custom-resources");
 
   READ_SETTING(game_settings.vibration_mode, "%d", "graphics", "vibration-mode");
+  READ_SETTING(game_settings.fullscreen, "%d", "graphics", "fullscreen");
 
   READ_SETTING(game_settings.music_on, "%d", "audio", "music-on");
   READ_SETTING(game_settings.music_vol, "%f", "audio", "music-vol");
   READ_SETTING(game_settings.sfx_vol, "%f", "audio", "sfx-vol");
-
-  READ_SETTING(game_settings.num_music_tracks, "%d", "audio", "music-track-count");
 
   char arena_config_file[256];
   sprintf(arena_config_file, DATADIR "%s\\arenas.dat", game_settings.mission_pack);
@@ -117,6 +116,8 @@ void save_settings()
 
   sprintf(buf, "graphics--vibration-mode %d", game_settings.vibration_mode);
   record_file_set_record(game_settings.settings_file, "graphics--vibration-mode", buf);
+  sprintf(buf, "graphics--fullscreen %d", game_settings.fullscreen);
+  record_file_set_record(game_settings.settings_file, "graphics--fullscreen", buf);
   sprintf(buf, "audio--music-on %d", game_settings.music_on);
   record_file_set_record(game_settings.settings_file, "audio--music-on", buf);
   sprintf(buf, "audio--music-vol %lf", game_settings.music_vol);

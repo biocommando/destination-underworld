@@ -8,6 +8,7 @@ typedef struct
   char mission_pack[64];
   int mission_count;
   int vibration_mode;
+  int fullscreen;
   int music_on;
   float music_vol;
   float sfx_vol;

@@ -130,7 +130,8 @@ int init_allegro()
 
     al_set_new_window_title("Destination Underworld " DU_VERSION);
     al_set_new_display_refresh_rate(60);
-    al_set_new_display_flags(ALLEGRO_OPENGL);
+    int fullscreen_flag = game_settings.fullscreen ? ALLEGRO_FULLSCREEN : 0;
+    al_set_new_display_flags(ALLEGRO_OPENGL | fullscreen_flag);
     font = al_create_builtin_font();
     display = al_create_display(DISPLAY_W, DISPLAY_H);
     if (!display)

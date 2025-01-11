@@ -3,6 +3,6 @@ graphics--vibration-mode 12
 audio--music-on 1
 audio--music-vol 0.500000
 audio--sfx-vol 0.500000
-audio--music-track-count 4
 core-pack--mission-count 16
 core-pack--custom-resources 0
+graphics--fullscreen 0
