@@ -1,9 +1,12 @@
+for /F "tokens=*" %%i in ('type environment.txt') do set %%i
+
 set VERSION=0.3
 git log --format=%%h -n 1 > version_info.txt
 node gen_version.js %VERSION%
 del version_info.txt
 
-gcc src/arenaconf.c ^
+%compiler% %compiler_flags% ^
+src/arenaconf.c ^
 src/bossfightconf.c ^
 src/game_playback.c ^
 src/gamePersistence.c ^
@@ -33,9 +36,6 @@ src/synth/midi_player.c ^
 src/synth/midi_reader.c ^
 src/synth/moog_filter.c ^
 src/synth/synth.c ^
--DENABLE_LOGGING ^
--DTRACE_LOG ^
--Iallegro\include ^
--O3 ^
-allegro\lib\liballegro_monolith.dll.a ^
+-I%allegro_path%\include ^
+%allegro_path%\lib\liballegro_monolith.dll.a ^
 -o DestinationUnderworld.exe

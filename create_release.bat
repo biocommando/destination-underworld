@@ -1,3 +1,5 @@
+for /F "tokens=*" %%i in ('type environment.txt') do set %%i
+
 rd /s /q DestinationUnderworldRelease
 call make.bat
 
@@ -59,5 +61,5 @@ xcopy dataloss\menuchg.ogg DestinationUnderworldRelease\dataloss
 xcopy dataloss\midi-music\*.mid DestinationUnderworldRelease\dataloss\midi-music
 xcopy dataloss\midi-music\*.ini DestinationUnderworldRelease\dataloss\midi-music
 
-xcopy allegro_monolith-5.2.dll DestinationUnderworldRelease
+xcopy %allegro_path%\bin\allegro_monolith-5.2.dll DestinationUnderworldRelease
 xcopy DestinationUnderworld.exe DestinationUnderworldRelease

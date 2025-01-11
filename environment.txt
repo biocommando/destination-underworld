@@ -1,0 +1,3 @@
+allegro_path=allegro
+compiler=gcc
+compiler_flags=-static-libgcc -O3 -DENABLE_LOGGING -DTRACE_LOG
