@@ -19,6 +19,7 @@ void init_SynthVoice(SynthVoice *sv, float sample_rate, int key, int channel)
     sv->osc2_type = 0;
     sv->osc1_mix = 1;
     sv->osc2_mix = 1;
+    sv->fm_on = 0;
 
     sv->volume = 1;
     sv->delay_send = 0;
@@ -47,15 +48,26 @@ void init_SynthVoice(SynthVoice *sv, float sample_rate, int key, int channel)
 void SynthVoice_process(SynthVoice *sv, float *delay_sample, float *left, float *right)
 {
     float v = 0;
-    if (sv->osc1_mix > 0)
+    
+    if (sv->fm_on)
     {
         BasicOscillator_calculateNext(&sv->osc1);
-        v += BasicOscillator_getValue(&sv->osc1, (enum OscType)sv->osc1_type) * sv->osc1_mix;
-    }
-    if (sv->osc2_mix > 0)
-    {
         BasicOscillator_calculateNext(&sv->osc2);
-        v += BasicOscillator_getValue(&sv->osc2, (enum OscType)sv->osc2_type) * sv->osc2_mix;
+        const float o2_value = BasicOscillator_getValue(&sv->osc2, (enum OscType)sv->osc2_type) * sv->osc2_mix;
+        v = BasicOscillator_getValueFm(&sv->osc1, (enum OscType)sv->osc1_type, o2_value) * sv->osc1_mix;
+    }
+    else
+    {
+        if (sv->osc1_mix > 0)
+        {
+            BasicOscillator_calculateNext(&sv->osc1);
+            v += BasicOscillator_getValue(&sv->osc1, (enum OscType)sv->osc1_type) * sv->osc1_mix;
+        }
+        if (sv->osc2_mix > 0)
+        {
+            BasicOscillator_calculateNext(&sv->osc2);
+            v += BasicOscillator_getValue(&sv->osc2, (enum OscType)sv->osc2_type) * sv->osc2_mix;
+        }
     }
     AdsrEnvelope_calculateNext(&sv->filter_envelope);
     float e = AdsrEnvelope_getEnvelope(&sv->filter_envelope);
@@ -102,7 +114,6 @@ float note_to_hz(float note)
 }
 
 void SynthVoice_set_params(SynthVoice *sv, const SynthParams *params)
-
 {
     sv->osc1_base_freq = note_to_hz(sv->key + params->osc1_semitones);
     BasicOscillator_setFrequency(&sv->osc1, sv->osc1_base_freq);
@@ -117,6 +128,8 @@ void SynthVoice_set_params(SynthVoice *sv, const SynthParams *params)
     }
     sv->osc2_type = params->osc2_type;
     sv->osc2_mix = params->osc2_mix;
+
+    sv->fm_on = params->osc2_to_osc1_fm;
 
     AdsrEnvelope_setAttack(&sv->amp_envelope, sv->sample_rate * 4 * params->amp_attack);
     AdsrEnvelope_setDecay(&sv->amp_envelope, sv->sample_rate * 4 * params->amp_decay);
@@ -323,6 +336,7 @@ void Synth_read_instruments(Synth *s, const char *file)
     if (!f)
         return;
     SynthParams currentParams;
+    memset(&currentParams, 0, sizeof(SynthParams));
     float delay_send = 0, delay_time = 500, delay_feed = 0.5;
     int instrument_count = 0;
 
@@ -351,6 +365,9 @@ void Synth_read_instruments(Synth *s, const char *file)
                 currentParams.osc1_mix = value;
             if (!strcmp(name, "o2mix"))
                 currentParams.osc2_mix = value;
+
+            if (!strcmp(name, "o2o1_fm"))
+                currentParams.osc2_to_osc1_fm = value > 0.5 ? 1 : 0;
 
             if (!strcmp(name, "v_a"))
                 currentParams.amp_attack = value;
@@ -413,6 +430,7 @@ void Synth_read_instruments(Synth *s, const char *file)
             if (!strcmp(name, "SYNTH_DATA_END"))
             {
                 Synth_add_instrument(s, instrument_count, currentParams, delay_send);
+                memset(&currentParams, 0, sizeof(SynthParams));
                 instrument_count++;
                 // Skip drum track in GM (ch num 10 = idx 9)
                 if (instrument_count == 9)

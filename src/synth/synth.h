@@ -21,6 +21,7 @@ typedef struct
     float filter_mod_amount;
     float volume;
     float pan;
+    int osc2_to_osc1_fm;
 } SynthParams;
 
 typedef struct
@@ -33,6 +34,7 @@ typedef struct
     float osc2_mix; // = 1;
     int osc1_type;  // = 0;
     int osc2_type;  // = 0;
+    int fm_on;
     AdsrEnvelope amp_envelope;
     AdsrEnvelope filter_envelope;
     float sample_rate;

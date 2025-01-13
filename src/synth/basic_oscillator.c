@@ -90,6 +90,7 @@ void BasicOscillator_setFrequency(BasicOscillator* bo, float f_Hz)
 {
     bo->frequency = f_Hz * bo->hzToF;
 }
+
 float BasicOscillator_getValue(BasicOscillator* bo, enum OscType oscType)
 {
     switch (oscType)
@@ -104,6 +105,29 @@ float BasicOscillator_getValue(BasicOscillator* bo, enum OscType oscType)
         return sqr1(bo->phase);
     case OSC_WT:
         return wt1(bo->wt, bo->phase, bo->wtPos, bo->wtWindow, bo->dcFilterState);
+    default:
+        return 0;
+    }
+}
+
+float BasicOscillator_getValueFm(BasicOscillator* bo, enum OscType oscType, float fmAmount)
+{
+    float p = bo->phase + fmAmount;
+    while (p >= 1) p -= 1;
+    while (p < 0) p += 1;
+
+    switch (oscType)
+    {
+    case OSC_SINE:
+        return sin1(p);
+    case OSC_TRIANGLE:
+        return tri1(p);
+    case OSC_SAW:
+        return saw1(p);
+    case OSC_SQUARE:
+        return sqr1(p);
+    case OSC_WT:
+        return wt1(bo->wt, p, bo->wtPos, bo->wtWindow, bo->dcFilterState);
     default:
         return 0;
     }
