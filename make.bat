@@ -31,7 +31,8 @@ src/synth/adsr_envelope.c ^
 src/synth/basic_delay.c ^
 src/synth/basic_oscillator.c ^
 src/synth/envelope_stage.c ^
-src/synth/kick_wav.c ^
+src/synth/wav_handler.c ^
+src/synth/wt_sample_loader.c ^
 src/synth/midi_player.c ^
 src/synth/midi_reader.c ^
 src/synth/moog_filter.c ^
