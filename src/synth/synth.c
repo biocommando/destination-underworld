@@ -1,5 +1,5 @@
 #include "synth.h"
-#include "kick_wav.h"
+#include "wt_sample_loader.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,11 +31,11 @@ void init_SynthVoice(SynthVoice *sv, float sample_rate, int key, int channel)
     init_BasicOscillator(&sv->osc2, sample_rate);
     sv->key = key;
     sv->channel = channel;
-    // This is kind of cheating but creating good sounding kicks
-    // is just near impossible with this limited sub synth otherwise
-    BasicOscillator_setWavetable(&sv->osc1, get_kick_wav());
+
+    struct wt_sample *wts = get_wt_sample(0);
+    BasicOscillator_setWavetable(&sv->osc1, wts->data, wts->size);
     BasicOscillator_setWaveTableParams(&sv->osc1, 0, 1);
-    BasicOscillator_setWavetable(&sv->osc2, get_kick_wav());
+    BasicOscillator_setWavetable(&sv->osc2, wts->data, wts->size);
     BasicOscillator_setWaveTableParams(&sv->osc2, 0, 1);
 
     init_AdsrEnvelope(&sv->amp_envelope);
@@ -115,11 +115,14 @@ float note_to_hz(float note)
 
 void SynthVoice_set_params(SynthVoice *sv, const SynthParams *params)
 {
-    sv->osc1_base_freq = note_to_hz(sv->key + params->osc1_semitones);
+    int modified_key = sv->key + params->note_offset;
+    if (modified_key < 0) modified_key = 0;
+    if (modified_key > 127) modified_key = 127;
+    sv->osc1_base_freq = note_to_hz(modified_key + params->osc1_semitones);
     BasicOscillator_setFrequency(&sv->osc1, sv->osc1_base_freq);
     sv->osc1_type = params->osc1_type;
     sv->osc1_mix = params->osc1_mix;
-    sv->osc2_base_freq = note_to_hz(sv->key + params->osc2_semitones);
+    sv->osc2_base_freq = note_to_hz(modified_key + params->osc2_semitones);
     BasicOscillator_setFrequency(&sv->osc2, sv->osc2_base_freq);
     if (params->randomize_phase)
     {
@@ -153,6 +156,24 @@ void SynthVoice_set_params(SynthVoice *sv, const SynthParams *params)
     sv->right_volume = params->pan > 0.5 ? 1 : 2 * params->pan;
 
     sv->volume *= params->volume;
+
+    if (params->wt1_slot != 0)
+    {
+        struct wt_sample *wts = get_wt_sample(params->wt1_slot);
+        BasicOscillator_setWavetable(&sv->osc1, wts->data, wts->size);
+        BasicOscillator_setWaveTableParams(&sv->osc1, 0, 1);
+    }
+    if (params->wt2_slot != 0)
+    {
+        struct wt_sample *wts = get_wt_sample(params->wt2_slot);
+        BasicOscillator_setWavetable(&sv->osc2, wts->data, wts->size);
+        BasicOscillator_setWaveTableParams(&sv->osc2, 0, 1);
+    }
+    if (params->wt_oneshot)
+    {
+        sv->osc1.wt_oneshot = 1;
+        sv->osc2.wt_oneshot = 1;
+    }
 }
 
 int SynthVoice_ended(SynthVoice *sv)
@@ -369,6 +390,11 @@ void Synth_read_instruments(Synth *s, const char *file)
             if (!strcmp(name, "o2o1_fm"))
                 currentParams.osc2_to_osc1_fm = value > 0.5 ? 1 : 0;
 
+            if (!strcmp(name, "o1_wt"))
+                currentParams.wt1_slot = (int)(MAX_WT_SAMPLE_SLOTS * value * 0.99);
+            if (!strcmp(name, "o2_wt"))
+                currentParams.wt2_slot = (int)(MAX_WT_SAMPLE_SLOTS * value * 0.99);
+
             if (!strcmp(name, "v_a"))
                 currentParams.amp_attack = value;
             if (!strcmp(name, "v_d"))
@@ -413,6 +439,13 @@ void Synth_read_instruments(Synth *s, const char *file)
 
             if (!strcmp(name, "delsnd"))
                 delay_send = value;
+
+            if (!strcmp(name, "wt1shot"))
+                currentParams.wt_oneshot = value > 0.5 ? 1 : 0;
+
+            if (!strcmp(name, "keyoffs"))
+                currentParams.note_offset = 128 * value - 64;
+
             if (!strcmp(name, "deltm"))
             {
                 delay_time = 1000 * value;

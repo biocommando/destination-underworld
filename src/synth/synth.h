@@ -22,6 +22,10 @@ typedef struct
     float volume;
     float pan;
     int osc2_to_osc1_fm;
+    int wt1_slot;
+    int wt2_slot;
+    int wt_oneshot;
+    int note_offset;
 } SynthParams;
 
 typedef struct

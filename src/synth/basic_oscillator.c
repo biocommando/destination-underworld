@@ -4,8 +4,6 @@
 #include <math.h>
 #include <string.h>
 
-#define wtSize 4537
-
 static float sine_table[256];
 
 static void init_sine_table()
@@ -28,13 +26,14 @@ void init_BasicOscillator(BasicOscillator* bo, int sampleRate)
 
 void BasicOscillator_setWaveTableParams(BasicOscillator* bo, float pos, float window)
 {
-    bo->wtWindow = 2 + window * (wtSize - 2);
-    bo->wtPos = pos * (wtSize - bo->wtWindow - 1);
+    bo->wtWindow = 2 + window * (bo->wt_size - 2);
+    bo->wtPos = pos * (bo->wt_size - bo->wtWindow - 1);
 }
 
-void BasicOscillator_setWavetable(BasicOscillator* this, float *wt)
+void BasicOscillator_setWavetable(BasicOscillator* this, float *wt, int size)
 {
     this->wt = wt;
+    this->wt_size = size;
 }
 
 
@@ -84,7 +83,15 @@ void BasicOscillator_calculateNext(BasicOscillator* bo)
 {
     bo->phase = bo->phase + bo->frequency;
     if (bo->phase >= 1.0)
+    {
+        if (bo->wt_oneshot)
+        {
+            bo->wt_oneshot = 0;
+            BasicOscillator_setWavetable(bo, sine_table, 1);
+            BasicOscillator_setWaveTableParams(bo, 0, 1);
+        }
         bo->phase = bo->phase - 1.0f;
+    }
 }
 void BasicOscillator_setFrequency(BasicOscillator* bo, float f_Hz)
 {

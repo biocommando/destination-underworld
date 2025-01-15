@@ -13,13 +13,15 @@ typedef struct
 {
     float phase, frequency, hzToF;
     int wtPos, wtWindow;
+    int wt_oneshot;
     float *wt;
-    float dcFilterState[2];    
+    int wt_size;
+    float dcFilterState[2];
 } BasicOscillator;
 
 void init_BasicOscillator(BasicOscillator* bo, int sampleRate);
 void BasicOscillator_calculateNext(BasicOscillator* bo);
-void BasicOscillator_setWavetable(BasicOscillator* bo, float *wt);
+void BasicOscillator_setWavetable(BasicOscillator* bo, float *wt, int size);
 float BasicOscillator_getValue(BasicOscillator* bo, enum OscType oscType);
 float BasicOscillator_getValueFm(BasicOscillator* bo, enum OscType oscType, float fmAmount);
 void BasicOscillator_setFrequency(BasicOscillator* bo, float f_Hz);

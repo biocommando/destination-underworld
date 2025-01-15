@@ -23,6 +23,7 @@
 #include "game_playback.h"
 #include "gen_version_info.h"
 #include "midi_playback.h"
+#include "synth/wt_sample_loader.h"
 
 #ifdef ENABLE_LOGGING
 int logging_enabled = 0;
@@ -87,6 +88,7 @@ int main(int argc, char **argv)
   }
 
   read_settings(argv, argc);
+  wt_sample_read_all(DATADIR);
   init_allegro();
   progress_load_state("Loading game...", 1);
   srand((int)time(NULL));
@@ -159,6 +161,7 @@ int main(int argc, char **argv)
   progress_load_state("Exiting game...", 0);
   destroy_registered_samples();
 
+  wt_sample_free();
   record_file_flush();
   destroy_allegro();
   return 0;
