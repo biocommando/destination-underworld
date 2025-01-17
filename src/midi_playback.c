@@ -60,7 +60,7 @@ void _load_playlist()
                 pe->path = (char*)malloc(strlen(fname) + 1);
                 strcpy(pe->path, fname);
                 pe->meta_f = meta_f_name;
-                printf("Read playlist entry %d: F=%s; META=%s\n", playlist_entries, playlist[playlist_entries].path, playlist[playlist_entries].meta_f);
+                // printf("Read playlist entry %d: F=%s; META=%s\n", playlist_entries, playlist[playlist_entries].path, playlist[playlist_entries].meta_f);
                 playlist_entries++;
                 if (playlist_entries == MAX_PLAYLIST_LEN)
                     break;
@@ -100,13 +100,16 @@ MidiPlayer *get_midi_player()
     return &midi_player;
 }
 
-void next_midi_track()
+void next_midi_track(int index)
 {
     if (playlist_entries == 0)
         return;
     if (midi_file_ready)
         free_midi_file(&midi_file);
-    current_playlist_entry++;
+    if (index >= 0)
+        current_playlist_entry = index;
+    else
+        current_playlist_entry++;
     if (current_playlist_entry >= playlist_entries)
         current_playlist_entry = 0;
     Synth_read_instruments(&midi_player.synth, playlist[current_playlist_entry].meta_f);
@@ -124,4 +127,22 @@ int randomize_midi_playlist_sorter(const void *a, const void *b)
 void randomize_midi_playlist()
 {
     qsort(playlist, playlist_entries, sizeof(struct playlist_entry), randomize_midi_playlist_sorter);
+}
+
+const char *get_midi_playlist_entry_file_name(int index)
+{
+    if (index < 0)
+    {
+        if (current_playlist_entry < 0)
+            return NULL;
+        index = current_playlist_entry;
+    }
+    if (index >= playlist_entries) return NULL;
+
+    char *ret = playlist[index].path;
+    for (char *c = ret; *c; c++)
+    {
+        if (*c == '\\') ret = c + 1;
+    }
+    return ret;
 }

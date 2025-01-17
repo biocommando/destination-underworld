@@ -459,7 +459,7 @@ int display_game_options(int default_opt)
     m.cancel_menu_item_id = mi->item_id;
     mi = add_menu_item(&m, "Set music on/off", "Current: %s", game_settings.music_on ? "on" : "off");
     mi->item_id = get_menu_item_id("m.on/off");
-    add_menu_item(&m, "Next music track", "");
+    add_menu_item(&m, "Select music track", "Now playing: %s", get_midi_playlist_entry_file_name(-1));
     mi = add_menu_item(&m, "Set music volume", "Current: %d %%%%", (int)(100 * game_settings.music_vol));
     mi->item_id = get_menu_item_id("m.vol");
     mi = add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * game_settings.sfx_vol));
@@ -492,6 +492,29 @@ int display_range_menu(const char *title, const char *fmt, int range_start, int 
     return range_start + m.selected_item * step;
 }
 
+int display_select_track_menu()
+{
+    struct menu m = create_menu("Select track");
+    const char *fname;
+    const char *current = get_midi_playlist_entry_file_name(-1);
+    for (int i = 0; fname = get_midi_playlist_entry_file_name(i); i++)
+    {
+        add_menu_item(&m, fname, "");
+        if (!strcmp(current, fname))
+            m.selected_item = i;
+    }
+    add_menu_item(&m, "Randomize", "");
+    int randomize_idx = m.num_items - 1;
+    add_menu_item(&m, "Cancel", "");
+    int cancel_idx = m.num_items - 1;
+    m.items[cancel_idx].item_id = 1;
+    m.cancel_menu_item_id = 1;
+    display_menu(&m);
+    if (m.selected_item == randomize_idx)
+        return -2;
+    return m.selected_item == cancel_idx ? -1 : m.selected_item;
+}
+
 void game_option_menu()
 {
     GameSettings orig;
@@ -504,12 +527,20 @@ void game_option_menu()
         {
             game_settings.music_on = !game_settings.music_on;
             if (game_settings.music_on)
-                next_midi_track();
+                next_midi_track(0);
         }
-        else if (choice == get_menu_item_id("Next"))
+        else if (choice == get_menu_item_id("Select"))
         {
             //switch_track(get_current_track() + 1);
-            next_midi_track();
+            //next_midi_track(-1);
+            int track = display_select_track_menu();
+            if (track == -2)
+            {
+                randomize_midi_playlist();
+                track = 0;
+            }
+            if (track >= 0)
+                next_midi_track(track);
         }
         else if (choice == get_menu_item_id("m.vol"))
         {

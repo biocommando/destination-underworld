@@ -59,7 +59,7 @@ int wait_event()
             al_set_audio_stream_fragment(stream, buf);
             if (mp->ended)
             {
-                next_midi_track();
+                next_midi_track(-1);
             }
         }
     }

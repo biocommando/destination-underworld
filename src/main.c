@@ -143,7 +143,7 @@ int main(int argc, char **argv)
 
   progress_load_state("Loading menu...", 1);
   randomize_midi_playlist();
-  next_midi_track();
+  next_midi_track(-1);
 
   while (mission != 0)
   {
