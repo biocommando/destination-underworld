@@ -5,3 +5,4 @@
 #define DARK_RED al_map_rgb(64, 0, 0)
 #define BLUE al_map_rgb(0, 0, 200)
 #define GRAY(x) al_map_rgb((x), (x), (x))
+#define GRAY_A(x, a) al_map_rgba((x), (x), (x), (a))

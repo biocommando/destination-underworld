@@ -15,6 +15,44 @@ void draw_enemy(Enemy *enm, World *world)
         draw_sprite_animated_centered(world->spr, SPRITE_ID_ENEMY, enm->x, enm->y, enm->anim > 20, enm->sprite);
 }
 
+static void draw_enemy_shadow(Enemy *enm)
+{
+    al_draw_filled_ellipse(enm->x - 3, enm->y + 12, 15, 5, al_map_rgba(0, 0, 0, 60));
+}
+
+void draw_enemy_shadows(World *world)
+{
+    draw_enemy_shadow(&world->plr);
+    for (int i = 0; i < ENEMYCOUNT; i++)
+    {
+        Enemy *enm = &world->enm[i];
+        if (enm->id != NO_OWNER && enm->roomid == world->current_room)
+        {
+            draw_enemy_shadow(enm);
+        }
+    }
+}
+
+void draw_wall_shadows(World *world)
+{
+    const int floor_base_col = 100;
+    const int shadow_base_col = floor_base_col - 44;
+    for (int y = 0; y < MAPMAX_Y; y++)
+    {
+        for (int x = 1; x < MAPMAX_X; x++)
+        {
+            int shadowcolm1 = shadow_base_col;
+            int wall_type = ns_get_wall_type_at(world, x, y);
+            if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
+            {
+                const Tile *t = ns_get_tile_at(world, x - 1, y);
+                if (t->is_floor)
+                    al_draw_filled_rectangle((x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE + 1, (y + 1) * TILESIZE, al_map_rgba(0, 0, 0, shadowcolm1));
+            }
+        }
+    }
+}
+
 void draw_map(World *world, int draw_walls, int vibration_intensity)
 {
     const int floor_base_col = 100;
@@ -34,21 +72,6 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                 shadowcol = shadowcol < 0 ? 0 : shadowcol;
                 int floorcol = floor_base_col + 5 * vibration_intensity - fshd;
                 floorcol = floorcol < 0 ? 0 : floorcol;
-                int shadowcolm1 = 0;
-                if (x > 0)
-                {
-                    shadowcolm1 = shadow_base_col + 5 * vibration_intensity - world->floor_shade_map[world->current_room - 1][x - 1][y] * 5;
-                }
-                if (shadowcolm1 < 0)
-                {
-                    shadowcolm1 = 0;
-                }
-                int wall_type = ns_get_wall_type_at(world, x, y);
-                if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
-                {
-                    if (x > 0 && !ns_get_tile_at(world, x - 1, y)->is_exit_level)
-                        rectfill((x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE, (y + 1) * TILESIZE - 1, GRAY(shadowcolm1));
-                }
                 Tile *tile = ns_get_tile_at(world, x, y);
                 if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
                 {
@@ -97,7 +120,6 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
     }
     else
     {
-
         for (int y = 0; y < MAPMAX_Y; y++)
         {
             for (int lev = 15; lev >= 0; lev--)
@@ -134,9 +156,9 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                             Tile *tile = ns_get_tile_at(world, x, y);
                             if (tile->is_exit_point)
                             {
-                                rectfill(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 14, y * TILESIZE + 14, GRAY(100));
-                                rectfill(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 9, y * TILESIZE + 9, GRAY(90));
-                                rectfill(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 4, y * TILESIZE + 4, GRAY(80));
+                                rectfill(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 14, y * TILESIZE + 14, GRAY_A(100, 100));
+                                rectfill(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 9, y * TILESIZE + 9, GRAY_A(100, 128));
+                                rectfill(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 4, y * TILESIZE + 4, GRAY_A(80, 150));
                             }
                             if (tile->durability > 0)
                             {

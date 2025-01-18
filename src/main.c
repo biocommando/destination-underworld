@@ -865,8 +865,10 @@ int game(int mission, int *game_modifiers)
       reset_sample_triggers();
     }
     time_stamp++;
-    draw_map(&world, 0, vibrations); // shadows
+    draw_map(&world, 0, vibrations);
     move_and_draw_body_parts(&world);
+    draw_wall_shadows(&world);
+    // draw_enemy_shadows(&world); -- doesn't look very good and the shadow physics are f'd up
 
     if (world.playcount > 0)
       world.playcount--;
