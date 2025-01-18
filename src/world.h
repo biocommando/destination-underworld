@@ -167,6 +167,14 @@ struct sparkle_fx
     int color;
 };
 
+struct sparkle_fx_circle
+{
+    Coordinates loc;
+    int duration;
+    int time;
+    ALLEGRO_COLOR color;
+};
+
 struct enemy_config
 {
     int turret;
@@ -210,6 +218,7 @@ typedef struct
     Bullet bullets[BULLETCOUNT];
     Explosion explosion[EXPLOSIONCOUNT];
     struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
+    struct sparkle_fx_circle sparkle_fx_circle[SPARKLE_FX_CIRCLE_COUNT];
     struct enemy_config enemy_configs[ENEMY_TYPE_COUNT];
 
     ALLEGRO_BITMAP *spr;

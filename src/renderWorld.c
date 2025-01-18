@@ -369,6 +369,18 @@ int progress_and_draw_explosions(World *world)
 
 void progress_and_draw_sparkles(World *world)
 {
+    for (int i = 0; i < SPARKLE_FX_CIRCLE_COUNT; i++)
+    {
+        struct sparkle_fx_circle *fxc = &world->sparkle_fx_circle[i];
+        if (fxc->duration > 0)
+        {
+            al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 5, fxc->color, fxc->duration / 4);
+            al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 3, fxc->color, fxc->duration / 5);
+            al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 1, fxc->color, 1);
+            fxc->duration--;
+            fxc->time++;
+        }
+    }
     for (int i = 0; i < SPARKLE_FX_COUNT; i++)
     {
         struct sparkle_fx *fx = &world->sparkle_fx[i];

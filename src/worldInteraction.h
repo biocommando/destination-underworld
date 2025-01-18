@@ -12,7 +12,7 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
 int bullet_hit(Enemy *enm, Bullet *bb);
 int sees_each_other(Enemy *e1, Enemy *e2, World *world);
 void create_explosion(int x, int y, World *world, double intensity);
-void create_sparkles(int x, int y, int count, int color, World *world);
+void create_sparkles(int x, int y, int count, int color, int circle_duration, World *world);
 int read_level(World *world, int mission, int room_to);
 Enemy *get_next_available_enemy(World *world, int *index);
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world);

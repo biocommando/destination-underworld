@@ -28,6 +28,10 @@ void clear_visual_fx(World *world)
     {
         world->sparkle_fx[i].duration = 0;
     }
+    for (int i = 0; i < SPARKLE_FX_CIRCLE_COUNT; i++)
+    {
+        world->sparkle_fx_circle[i].duration = 0;
+    }
 }
 
 void init_world(World *world)

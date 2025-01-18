@@ -364,9 +364,10 @@ void create_explosion(int x, int y, World *world, double intensity)
     bounce_body_parts(x, y, world);
 }
 
-void create_sparkles(int x, int y, int count, int color, World *world)
+void create_sparkles(int x, int y, int count, int color, int circle_duration, World *world)
 {
     static int sparkle_counter = 0;
+    static int sparkle_circle_counter = 0;
     for (int i = 0; i < count; i++)
     {
         double angle = 2 * AL_PI / count * i;
@@ -388,6 +389,20 @@ void create_sparkles(int x, int y, int count, int color, World *world)
         {
             sparkle_counter = 0;
         }
+    }
+
+    struct sparkle_fx_circle *fxc = &world->sparkle_fx_circle[sparkle_circle_counter];
+    fxc->loc.x = x;
+    fxc->loc.y = y;
+    fxc->duration = circle_duration;
+    fxc->time = 0;
+    int col = rand() % 3;
+    int col_intensity = rand() % 60 + 195;
+    fxc->color = al_map_rgb(col == 0 ? col_intensity : 0 , col == 1 ? col_intensity : 0, col == 2 ? col_intensity : 0);
+
+    if (++sparkle_circle_counter == SPARKLE_FX_CIRCLE_COUNT)
+    {
+        sparkle_circle_counter = 0;
     }
 }
 

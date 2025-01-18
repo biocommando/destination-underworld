@@ -382,7 +382,7 @@ void boss_logic(World *world, int boss_died)
         if (random_num >= spawn_point->probability_thresholds[spawn_type][0] && random_num < spawn_point->probability_thresholds[spawn_type][1])
         {
           spawn_enemy(spawn_point->x, spawn_point->y, spawn_type, world->current_room, world);
-          create_sparkles(spawn_point->x * TILESIZE + HALFTILESIZE, spawn_point->y * TILESIZE + HALFTILESIZE, 15, 2, world);
+          create_sparkles(spawn_point->x * TILESIZE + HALFTILESIZE, spawn_point->y * TILESIZE + HALFTILESIZE, 15, 2, 20, world);
 
           trigger_sample(SAMPLE_SPAWN, 255);
           break;
@@ -449,6 +449,7 @@ void boss_logic(World *world, int boss_died)
     case BFCONF_EVENT_TYPE_SPAWN_POTION:
       spawn_potion(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE,
                     event->parameters[2], world->current_room, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
+      create_sparkles(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE, 15, 2, 15, world);
       break;
     }
   }
@@ -674,7 +675,7 @@ void potion_logic(World *w)
         }
         w->potion_effect_flags |= p->effects;
         trigger_sample(p->sample, 255);
-        create_sparkles(p->location.x, p->location.y, 12, 1, w);
+        create_sparkles(p->location.x, p->location.y, 12, 1, 10, w);
       }
 
       unsigned anim_phase = (potion_anim_phase + i * 1337) % 200;
@@ -843,7 +844,7 @@ int game(int mission, int *game_modifiers)
 
   draw_static_background();
 
-  create_sparkles(world.plr.x, world.plr.y, 30, -1, &world);
+  create_sparkles(world.plr.x, world.plr.y, 30, -1, 10, &world);
 
   clock_t game_loop_clk = clock();
 
