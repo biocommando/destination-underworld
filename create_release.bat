@@ -60,6 +60,9 @@ xcopy dataloss\menuchg.ogg DestinationUnderworldRelease\dataloss
 
 xcopy dataloss\midi-music\*.mid DestinationUnderworldRelease\dataloss\midi-music
 xcopy dataloss\midi-music\*.ini DestinationUnderworldRelease\dataloss\midi-music
+node .\dataloss\midi-music\track_name_mapper.js DestinationUnderworldRelease\dataloss\midi-music
+
+xcopy dataloss\wt_sample_slot_*.wav DestinationUnderworldRelease\dataloss
 
 xcopy %allegro_path%\bin\allegro_monolith-5.2.dll DestinationUnderworldRelease
 xcopy DestinationUnderworld.exe DestinationUnderworldRelease
