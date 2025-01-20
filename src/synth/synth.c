@@ -311,14 +311,14 @@ void Synth_process(Synth *s, float *buffer_left, float *buffer_right, int buffer
         float sample_right = 0;
         float delay_send_sample = 0;
         int active_voices_modified = 0;
-        for (int i = 0; i < SYNTH_MAX_VOICES && s->active_voices[i] >= 0; i++)
+        for (int j = 0; j < SYNTH_MAX_VOICES && s->active_voices[j] >= 0; j++)
         {
-            const int vi = s->active_voices[i];
+            const int vi = s->active_voices[j];
             SynthVoice *voice = &s->voices[vi];
             SynthVoice_process(voice, &delay_send_sample, &sample_left, &sample_right);
             if (SynthVoice_ended(voice))
             {
-                s->active_voices[i] = -1;
+                s->active_voices[j] = -1;
                 active_voices_modified = 1;
             }
         }
