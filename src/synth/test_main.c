@@ -1,9 +1,23 @@
 #include <stdio.h>
+#include <string.h>
 #include "midi_player.h"
 #include "wav_handler.h"
+#include "wt_sample_loader.h"
 
 int main(int argc, char **argv)
 {
+    if (argc < 2)
+    {
+        printf("Path to midi file expected as argument.\n");
+        return -1;
+    }
+    int wt_sample_count = wt_sample_read_all("..\\..\\dataloss");
+    printf("Wavetable samples loaded: %d\n", wt_sample_count);
+    if (wt_sample_count == 0)
+    {
+        printf("Couldn't load wavetable samples. Running from correct directory?");
+        return 1;
+    }
     MidiPlayer mp;
     MidiFile mf;
     init_midi_player(&mp, 44100);
@@ -43,9 +57,13 @@ int main(int argc, char **argv)
 
     printf("Max voices in use simultaneously: %d\n", mp.synth.diagnostics_max_n_voices);
 
-    write_wav_file("test_output.wav", &wf);
+    char output_file[1024];
+    sprintf(output_file, "%s.wav", argv[1]);
+    write_wav_file(output_file, &wf);
     free_wav_file(&wf);
 
     free_midi_file(&mf);
     free_midi_player(&mp);
+
+    wt_sample_free();
 }
