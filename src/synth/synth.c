@@ -360,6 +360,7 @@ void Synth_read_instruments(Synth *s, const char *file)
     memset(&currentParams, 0, sizeof(SynthParams));
     float delay_send = 0, delay_time = 500, delay_feed = 0.5;
     int instrument_count = 0;
+    float gain_adjust = 1;
 
     while (instrument_count < 16)
     {
@@ -433,7 +434,7 @@ void Synth_read_instruments(Synth *s, const char *file)
                 currentParams.noise_amount = value;
 
             if (!strcmp(name, "volume"))
-                currentParams.volume = value;
+                currentParams.volume = value * gain_adjust;
             if (!strcmp(name, "pan"))
                 currentParams.pan = value;
 
@@ -456,6 +457,10 @@ void Synth_read_instruments(Synth *s, const char *file)
                 delay_feed = value;
                 Synth_set_send_delay_params(s, delay_feed, delay_time);
             }
+            // Global gain adjust in dB.
+            // Modify each instrument gain by this value
+            if (!strcmp(name, "glob_gain_adj_db"))
+                gain_adjust = powf(10, value / 20);
         }
         else
         {
