@@ -10,7 +10,8 @@ soft_values : Soft Values, Hardcore Attitude
 sytrus presets : Evening Tea at the Local Space Port Lounge
 trance : Elevate
 weird : Trip to the Demon Zoo
-with new wavetables : Nuclear Waste Hangover`
+with new wavetables : Nuclear Waste Hangover
+eetteritekno : Relieve Us`
 
 const fs = require('fs')
 
