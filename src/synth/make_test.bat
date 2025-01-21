@@ -1,0 +1,1 @@
+gcc -O3 *.c -o test_main.exe
