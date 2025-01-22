@@ -6,15 +6,6 @@
 #include "helpers.h"
 #include <time.h>
 
-struct gamedata
-{
-    char game_id[256];
-    long kills;
-    long deaths;
-    long fireballs;
-    long powerups;
-};
-
 typedef struct
 {
     int exists;
