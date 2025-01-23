@@ -1,6 +1,6 @@
 for /F "tokens=*" %%i in ('type environment.txt') do set %%i
 
-set VERSION=0.3
+set VERSION=1.0
 git log --format=%%h -n 1 > version_info.txt
 node gen_version.js %VERSION%
 del version_info.txt
