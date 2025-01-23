@@ -20,18 +20,9 @@ void stop_bodyparts(World *world)
 
 void clear_visual_fx(World *world)
 {
-    for (int i = 0; i < EXPLOSIONCOUNT; i++)
-    {
-        world->explosion[i].exists = 0;
-    }
-    for (int i = 0; i < SPARKLE_FX_COUNT; i++)
-    {
-        world->sparkle_fx[i].duration = 0;
-    }
-    for (int i = 0; i < SPARKLE_FX_CIRCLE_COUNT; i++)
-    {
-        world->sparkle_fx_circle[i].duration = 0;
-    }
+    memset(world->explosion, 0, sizeof(world->explosion));
+    memset(world->sparkle_fx, 0, sizeof(world->sparkle_fx));
+    memset(world->sparkle_fx_circle, 0, sizeof(world->sparkle_fx_circle));
 }
 
 void init_world(World *world)
@@ -39,16 +30,11 @@ void init_world(World *world)
     world->kills = 0;
     world->play_boss_sound = 1;
     world->final_level = 0;
+    
+    memset(world->floor_shade_map, 0, sizeof(world->floor_shade_map));
     for (int i = 0; i < ROOMCOUNT; i++)
     {
         world->rooms_visited[i] = 0;
-        for (int x = 0; x < MAPMAX_X; x++)
-        {
-            for (int y = 0; y < MAPMAX_Y; y++)
-            {
-                world->floor_shade_map[i][x][y] = 0;
-            }
-        }
     }
     clear_visual_fx(world);
     for (int i = 0; i < BULLETCOUNT; i++)
@@ -67,19 +53,13 @@ void init_world(World *world)
         enm->ammo = -1;
         enm->anim = rand() % 15;
         enm->death_animation = 999;
-        for (int j = 0; j < BODYPARTCOUNT; j++)
-        {
-            enm->bodyparts[j].exists = 0;
-        }
+        memset(enm->bodyparts, 0, sizeof(enm->bodyparts));
     }
     world->boss = NULL;
 
     world->potion_duration = 0;
     world->potion_effect_flags = 0;
-    for (int i = 0; i < POTION_COUNT; i++)
-    {
-        world->potions[i].exists = 0;
-    }
+    memset(world->potions, 0, sizeof(world->potions));
     world->potion_turbo_mode = 0;
     world->potion_healing_counter = 0;
     world->potion_shield_counter = 0;
