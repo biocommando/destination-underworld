@@ -121,7 +121,7 @@ int init_allegro()
         return 1;
     }
     memset(keybuffer, 0, sizeof(keybuffer));
-    //al_install_mouse();
+    // al_install_mouse();
     al_install_keyboard();
     al_init_image_addon();
     al_init_primitives_addon();
@@ -151,7 +151,7 @@ int init_allegro()
     timer = al_create_timer(1.0 / 100);
     queue = al_create_event_queue();
     al_register_event_source(queue, al_get_keyboard_event_source());
-    //al_register_event_source(queue, al_get_mouse_event_source());
+    // al_register_event_source(queue, al_get_mouse_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
     al_register_event_source(queue, al_get_audio_stream_event_source(audio_stream));

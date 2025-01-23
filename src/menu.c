@@ -531,8 +531,8 @@ void game_option_menu()
         }
         else if (choice == get_menu_item_id("Select"))
         {
-            //switch_track(get_current_track() + 1);
-            //next_midi_track(-1);
+            // switch_track(get_current_track() + 1);
+            // next_midi_track(-1);
             int track = display_select_track_menu();
             if (track == -2)
             {

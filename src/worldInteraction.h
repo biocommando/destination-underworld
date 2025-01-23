@@ -22,4 +22,4 @@ void change_room_if_at_exit_point(World *world, int mission);
 void read_enemy_configs(World *world);
 int parse_highscore_from_world_state(World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode);
 Potion *spawn_potion(int x, int y, int type, int room_id, World *world,
-    int range_start, int range_end);
+                     int range_start, int range_end);

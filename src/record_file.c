@@ -79,14 +79,14 @@ void record_file_read(const char *file)
         }
         if (rec_db_state.recs == NULL && sscanf(line, "_record_count %d", &rec_db_state.sz) == 1)
         {
-            rec_db_state.recs = (struct mem_record*) calloc(rec_db_state.sz, sizeof(struct mem_record));
+            rec_db_state.recs = (struct mem_record *)calloc(rec_db_state.sz, sizeof(struct mem_record));
             continue;
         }
         if (line_idx + 1 > rec_db_state.sz)
         {
             rec_db_state.sz = line_idx + 1;
             size_t sz = sizeof(struct mem_record) * rec_db_state.sz;
-            rec_db_state.recs = (struct mem_record*) realloc(rec_db_state.recs, sz);
+            rec_db_state.recs = (struct mem_record *)realloc(rec_db_state.recs, sz);
         }
         memcpy(&rec_db_state.recs[line_idx], line, REC_MAX_LENGTH);
         line_idx++;
@@ -139,7 +139,7 @@ int record_file_set_record(const char *file, const char *id, const char *record)
         rec_idx = rec_db_state.sz;
         rec_db_state.sz++;
         size_t sz = sizeof(struct mem_record) * rec_db_state.sz;
-        rec_db_state.recs = (struct mem_record*) realloc(rec_db_state.recs, sz);
+        rec_db_state.recs = (struct mem_record *)realloc(rec_db_state.recs, sz);
     }
     strcpy(rec_db_state.recs[rec_idx].value, record);
 

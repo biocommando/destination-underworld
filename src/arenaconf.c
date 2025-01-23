@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 void read_arena_configs(const char *filename, ArenaConfigs *config)
 {
     char rec[256] = "";
@@ -18,7 +17,7 @@ void read_arena_configs(const char *filename, ArenaConfigs *config)
         num = ARENACONF_MAX_NUMBER_OF_ARENAS;
     }
     config->number_of_arenas = num;
-    
+
     for (int i = 0; i < num; i++)
     {
         char arena_key[100];
@@ -30,7 +29,8 @@ void read_arena_configs(const char *filename, ArenaConfigs *config)
 
         for (char *p = config->arenas[i].name; *p; p++)
         {
-            if (*p == '_') *p = ' ';
+            if (*p == '_')
+                *p = ' ';
         }
 
         LOG("Read arena config: '%s' = %d\n", config->arenas[i].name, config->arenas[i].level_number);
@@ -64,7 +64,7 @@ void write_arena_highscores(const char *filename, ArenaHighscore *highscore)
             {
                 char key[100], rec[100];
                 sprintf(key, "arena_%d_item_%d", i, mi);
-                sprintf(rec, "%s mode=%d kills=%d", key, highscore->mode[i][mi],  highscore->kills[i][mi]);
+                sprintf(rec, "%s mode=%d kills=%d", key, highscore->mode[i][mi], highscore->kills[i][mi]);
                 record_file_set_record(filename, key, rec);
             }
         }

@@ -5,7 +5,6 @@
 #include "duColors.h"
 #include "allegro42_compat.h"
 
-
 void progress_load_state(const char *status, int display_load_state)
 {
     static int load_state = 0;

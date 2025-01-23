@@ -30,8 +30,8 @@ void game_playback_get_event(struct game_playback_event *evt)
     game_playback_format_id(id);
     if (record_file_get_record(game_playback_filename, id, value, sizeof(value)) == 0)
     {
-        sscanf(value, "%*s end=%d time=%ld keys=%ld", 
-            &evt->end, &evt->time_stamp, &evt->key_mask);
+        sscanf(value, "%*s end=%d time=%ld keys=%ld",
+               &evt->end, &evt->time_stamp, &evt->key_mask);
     }
 }
 

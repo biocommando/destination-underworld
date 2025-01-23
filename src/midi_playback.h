@@ -12,4 +12,3 @@ void next_midi_track(int index);
 void randomize_midi_playlist();
 
 const char *get_midi_playlist_entry_file_name(int index);
-

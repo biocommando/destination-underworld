@@ -9,13 +9,15 @@
 
 #define BEST_TIMES_FILE DATADIR "%s\\best_times.dat"
 
-int _compare_floats(const void* a, const void* b)
+int _compare_floats(const void *a, const void *b)
 {
-    float arg1 = *(const float*)a;
-    float arg2 = *(const float*)b;
+    float arg1 = *(const float *)a;
+    float arg2 = *(const float *)b;
 
-    if (arg1 < arg2) return -1;
-    if (arg1 > arg2) return 1;
+    if (arg1 < arg2)
+        return -1;
+    if (arg1 > arg2)
+        return 1;
     return 0;
 }
 

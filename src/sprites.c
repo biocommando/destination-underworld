@@ -51,7 +51,7 @@ int read_sprites_from_file(const char *filename, int min_id, int max_id)
         return -1;
     }
     init_sprites();
-    for(int i = SPRITE_ID_MIN; i <= SPRITE_ID_MAX; i++)
+    for (int i = SPRITE_ID_MIN; i <= SPRITE_ID_MAX; i++)
     {
         char rec[256] = "";
         char key[] = "sprite_xxx";
@@ -59,7 +59,7 @@ int read_sprites_from_file(const char *filename, int min_id, int max_id)
         record_file_get_record(filename, key, rec, sizeof(rec));
         DuSprite *s = &sprites[i];
         sscanf(rec, "%*s x=%d y=%d w=%d h=%d", &s->sx, &s->sy, &s->width, &s->height);
-        if (s->width !=0 && s->height != 0)
+        if (s->width != 0 && s->height != 0)
         {
             sprite_ok[i] = 1;
             LOG("Read sprite %d : %d %d %d %d\n", i, s->sx, s->sy, s->width, s->height);
@@ -106,6 +106,6 @@ void draw_sprite_animated_centered(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, 
     if (s)
     {
         al_draw_bitmap_region(sprite_sheet, s->sx + s->width * dx, s->sy + s->height * dy, s->width, s->height,
-            x - s->width / 2, y - s->height / 2, 0);
+                              x - s->width / 2, y - s->height / 2, 0);
     }
 }

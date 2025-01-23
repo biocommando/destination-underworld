@@ -111,8 +111,8 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     {
                         double angle = (lava_fluctuations + i * 20) * AL_PI / 50;
                         draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES,
-                            x * TILESIZE + HALFTILESIZE + sin(angle) * 10,
-                            y * TILESIZE + HALFTILESIZE + cos(angle) * 10, (rand() % 4), 0);
+                                                      x * TILESIZE + HALFTILESIZE + sin(angle) * 10,
+                                                      y * TILESIZE + HALFTILESIZE + cos(angle) * 10, (rand() % 4), 0);
                     }
                 }
             }
@@ -128,8 +128,8 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                 colcalc += y * 10;
                 colcalc = colcalc > 255 ? 255 : colcalc;
                 ALLEGRO_COLOR col_wall = al_map_rgb(colcalc * world->map_wall_color[0],
-                                                 colcalc * world->map_wall_color[1],
-                                                 colcalc * world->map_wall_color[2]);
+                                                    colcalc * world->map_wall_color[1],
+                                                    colcalc * world->map_wall_color[2]);
 
                 for (int x = 0; x < MAPMAX_X; x++)
                 {
@@ -278,7 +278,7 @@ void move_and_draw_body_parts(World *world)
                 }
 
                 draw_sprite_animated_centered(world->spr, SPRITE_ID_BODY_PART, (int)bodypart->x, (int)bodypart->y,
-                    bodypart->anim > 1, bodypart->type - 1);
+                                              bodypart->anim > 1, bodypart->type - 1);
             }
         }
     }
@@ -300,15 +300,13 @@ extern double random();
 
 static const double expl_sin_cos_table[2][10] = {
     {0.19866933079506122, 0.7367955455941375, 0.9934909047357762,
-    0.8707065057822322,   0.4153418158455323, -0.19866933079506127,
-    -0.7367955455941376,  -0.9934909047357762,-0.8707065057822322,
-    -0.4153418158455324},
-  { 0.9800665778412416,   0.6761156143683099,  0.11391146653120064,
-    -0.49180298981248144, -0.9096654198166136, -0.9800665778412416,
-    -0.6761156143683098,  -0.11391146653120054,0.49180298981248133,
-    0.9096654198166136
-  }
-};
+     0.8707065057822322, 0.4153418158455323, -0.19866933079506127,
+     -0.7367955455941376, -0.9934909047357762, -0.8707065057822322,
+     -0.4153418158455324},
+    {0.9800665778412416, 0.6761156143683099, 0.11391146653120064,
+     -0.49180298981248144, -0.9096654198166136, -0.9800665778412416,
+     -0.6761156143683098, -0.11391146653120054, 0.49180298981248133,
+     0.9096654198166136}};
 
 int progress_and_draw_explosions(World *world)
 {
@@ -351,10 +349,10 @@ int progress_and_draw_explosions(World *world)
                 for (int k = 4; k < 6; k += 2)
                 {
                     draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET,
-                        dx * ex->phase * k * ex->intensity + ex->x,
-                        dy * ex->phase * k * ex->intensity + ex->y,
-                        (ex->phase + j) % 4,
-                        -1 - ex->phase / 2);
+                                                  dx * ex->phase * k * ex->intensity + ex->x,
+                                                  dy * ex->phase * k * ex->intensity + ex->y,
+                                                  (ex->phase + j) % 4,
+                                                  -1 - ex->phase / 2);
                 }
             }
         }
@@ -425,7 +423,7 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     populate_best_times(game_settings.mission_pack, &best_times);
     float time_secs = (float)completetime / 40;
     int beat_idx = check_time_beaten(&best_times, (float)time_secs);
-    
+
     check_valid_time_for_display(&time_secs);
     for (int i = 0; i < 3; i++)
         check_valid_time_for_display(best_times.times + i);
@@ -465,7 +463,6 @@ void show_gold_hint(World *world, int number)
     world->hint.time_shows = 60;
 }
 
-
 void show_ingame_info_screen(World *world)
 {
     wait_key_release(ALLEGRO_KEY_M);
@@ -491,7 +488,7 @@ void show_ingame_info_screen(World *world)
                 else if (t->is_exit_level)
                 {
                     color = BLUE;
-                } 
+                }
                 else
                 {
                     color = RED;
@@ -506,7 +503,7 @@ void show_ingame_info_screen(World *world)
         if (world->plr.roomid == i + 1)
         {
             al_draw_filled_circle(offset_x + world->plr.x / TILESIZE * map_tile_size + map_tile_size / 2,
-                offset_y + world->plr.y / TILESIZE * map_tile_size + map_tile_size / 2, map_tile_size / 2, WHITE);
+                                  offset_y + world->plr.y / TILESIZE * map_tile_size + map_tile_size / 2, map_tile_size / 2, WHITE);
         }
         int num_enemies = 0;
         for (int e = 0; e < ENEMYCOUNT; e++)
@@ -515,8 +512,8 @@ void show_ingame_info_screen(World *world)
             if (enm->id != NO_OWNER && enm->roomid == i + 1 && enm != world->boss)
                 num_enemies++;
         }
-        al_draw_textf(get_font(), GRAY(200), offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1, 
-            num_enemies);
+        al_draw_textf(get_font(), GRAY(200), offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1,
+                      num_enemies);
         for (int e = 0; e < world->boss_fight_configs[i].num_events; e++)
         {
             BossFightEventConfig *evt = &world->boss_fight_configs[i].events[e];
@@ -563,7 +560,6 @@ void show_ingame_info_screen(World *world)
     al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "- P: potion spawn point");
     offset_y += y_incr;
     al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "(press space to continue)");
-
 
     offset_y = map_tile_size * (MAPMAX_Y + 1) * max_minimaps_per_row;
     offset_x = map_tile_size;

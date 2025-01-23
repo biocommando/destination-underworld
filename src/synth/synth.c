@@ -48,7 +48,7 @@ void init_SynthVoice(SynthVoice *sv, float sample_rate, int key, int channel)
 void SynthVoice_process(SynthVoice *sv, float *delay_sample, float *left, float *right)
 {
     float v = 0;
-    
+
     if (sv->fm_on)
     {
         BasicOscillator_calculateNext(&sv->osc1);
@@ -116,8 +116,10 @@ float note_to_hz(float note)
 void SynthVoice_set_params(SynthVoice *sv, const SynthParams *params)
 {
     int modified_key = sv->key + params->note_offset;
-    if (modified_key < 0) modified_key = 0;
-    if (modified_key > 127) modified_key = 127;
+    if (modified_key < 0)
+        modified_key = 0;
+    if (modified_key > 127)
+        modified_key = 127;
     sv->osc1_base_freq = note_to_hz(modified_key + params->osc1_semitones);
     BasicOscillator_setFrequency(&sv->osc1, sv->osc1_base_freq);
     sv->osc1_type = params->osc1_type;

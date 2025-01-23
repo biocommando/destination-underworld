@@ -5,17 +5,17 @@
 
 typedef struct
 {
-    float tempo;// = 120;
+    float tempo; // = 120;
     float sample_rate;
-    float signature;// = 4;
-    int ticks_per_quarter_note;// = 48;
-    int samples_per_tick;// = 0;
-    unsigned pos;// = 0;
-    int tick_pos;// = 0;
-    int tracks_at_end;// = 0;
+    float signature;            // = 4;
+    int ticks_per_quarter_note; // = 48;
+    int samples_per_tick;       // = 0;
+    unsigned pos;               // = 0;
+    int tick_pos;               // = 0;
+    int tracks_at_end;          // = 0;
 
     MidiFile *midi_file;
-    
+
     unsigned *next_track_event_at;
     unsigned *next_track_event_idx;
 

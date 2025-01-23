@@ -50,14 +50,14 @@ void _load_playlist()
         const char *fname = al_get_fs_entry_name(next);
         if (_check_file_type(fname, ".mid") == 0)
         {
-            char *meta_f_name = (char*)malloc(strlen(fname) + 9 + 1);
+            char *meta_f_name = (char *)malloc(strlen(fname) + 9 + 1);
             sprintf(meta_f_name, "%s_meta.ini", fname);
             FILE *meta_f = fopen(meta_f_name, "r");
             if (meta_f)
             {
                 fclose(meta_f);
                 struct playlist_entry *pe = &playlist[playlist_entries];
-                pe->path = (char*)malloc(strlen(fname) + 1);
+                pe->path = (char *)malloc(strlen(fname) + 1);
                 strcpy(pe->path, fname);
                 pe->meta_f = meta_f_name;
                 // printf("Read playlist entry %d: F=%s; META=%s\n", playlist_entries, playlist[playlist_entries].path, playlist[playlist_entries].meta_f);
@@ -137,12 +137,14 @@ const char *get_midi_playlist_entry_file_name(int index)
             return NULL;
         index = current_playlist_entry;
     }
-    if (index >= playlist_entries) return NULL;
+    if (index >= playlist_entries)
+        return NULL;
 
     char *ret = playlist[index].path;
     for (char *c = ret; *c; c++)
     {
-        if (*c == '\\') ret = c + 1;
+        if (*c == '\\')
+            ret = c + 1;
     }
     return ret;
 }

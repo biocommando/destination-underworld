@@ -398,7 +398,7 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
     fxc->time = 0;
     int col = rand() % 3;
     int col_intensity = rand() % 60 + 195;
-    fxc->color = al_map_rgb(col == 0 ? col_intensity : 0 , col == 1 ? col_intensity : 0, col == 2 ? col_intensity : 0);
+    fxc->color = al_map_rgb(col == 0 ? col_intensity : 0, col == 1 ? col_intensity : 0, col == 2 ? col_intensity : 0);
 
     if (++sparkle_circle_counter == SPARKLE_FX_CIRCLE_COUNT)
     {
@@ -514,7 +514,7 @@ Potion *get_next_available_potion(World *world, int range_start, int range_end)
             if (world->potions[i].exists < world->potions[min_exists].exists)
                 min_exists = i;
         }
-        return &world->potions[min_exists];        
+        return &world->potions[min_exists];
     }
     return NULL;
 }
@@ -847,13 +847,13 @@ void read_enemy_configs(World *world)
         char rec[256] = "";
         record_file_get_record(fname, key, rec, sizeof(rec));
         sscanf(rec, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d",
-            &world->enemy_configs[i].turret,
-            &world->enemy_configs[i].rate,
-            &world->enemy_configs[i].health,
-            &world->enemy_configs[i].gold,
-            &world->enemy_configs[i].fast,
-            &world->enemy_configs[i].hurts_monsters,
-            &world->enemy_configs[i].potion_for_potion_only);
+               &world->enemy_configs[i].turret,
+               &world->enemy_configs[i].rate,
+               &world->enemy_configs[i].health,
+               &world->enemy_configs[i].gold,
+               &world->enemy_configs[i].fast,
+               &world->enemy_configs[i].hurts_monsters,
+               &world->enemy_configs[i].potion_for_potion_only);
     }
 }
 

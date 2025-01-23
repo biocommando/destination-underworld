@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 void debug_print_event(MidiEvent *this)
 {
     printf("<%s %u %u %u %u>", this->end_of_track ? "y" : "n", this->data[0], this->data[1], this->data[2], this->time_delta);
@@ -180,9 +179,9 @@ void read_track(unsigned total_length, FILE *f, MidiFile *midi)
     {
         midi->tracks = (Track *)realloc(midi->tracks, sizeof(Track) * (midi->track_count + 1));
         midi->tracks[midi->track_count] = events;
-        midi->next_track_event_at = (unsigned*)realloc(midi->next_track_event_at, sizeof(unsigned) * (midi->track_count + 1));
+        midi->next_track_event_at = (unsigned *)realloc(midi->next_track_event_at, sizeof(unsigned) * (midi->track_count + 1));
         midi->next_track_event_at[midi->track_count] = events.events[0].time_delta;
-        midi->next_track_event_idx = (unsigned*)realloc(midi->next_track_event_idx, sizeof(unsigned) * (midi->track_count + 1));
+        midi->next_track_event_idx = (unsigned *)realloc(midi->next_track_event_idx, sizeof(unsigned) * (midi->track_count + 1));
         midi->next_track_event_idx[midi->track_count] = 0;
         midi->track_count++;
     }
@@ -226,7 +225,7 @@ void read_midi_file(const char *file, MidiFile *midi)
         fseek(f, current_pos + length, SEEK_SET);
     }
     fclose(f);
-    
+
     float ticks_per_second = midi->tempo / 60.0f * midi->ticks_per_quarter_note;
     midi->samples_per_tick = midi->sample_rate / ticks_per_second;
 

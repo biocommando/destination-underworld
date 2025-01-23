@@ -24,12 +24,14 @@ static void read_setting(const char *filename, char **argv, int argc, char *resu
   LOG("Setting %s = %s\n", cmd_line_arg, result);
 }
 
-#define READ_SETTING(result_var, format_str, segment, key) do{ \
-  read_setting(game_settings.settings_file, argv, argc, buf, segment, key); \
-  if (!buf[0] || sscanf(buf, format_str, &result_var) == 0) \
-     LOG("Read error\n"); \
-   \
-} while(0)
+#define READ_SETTING(result_var, format_str, segment, key)                    \
+  do                                                                          \
+  {                                                                           \
+    read_setting(game_settings.settings_file, argv, argc, buf, segment, key); \
+    if (!buf[0] || sscanf(buf, format_str, &result_var) == 0)                 \
+      LOG("Read error\n");                                                    \
+                                                                              \
+  } while (0)
 
 void read_settings(char **argv, int argc)
 {
@@ -100,14 +102,14 @@ void access_arena_highscore(ArenaHighscore *arena_highscore, int load)
 
 void get_data_filename(char *dst, const char *file)
 {
-    if (game_settings.custom_resources)
-    {
-      sprintf(dst, DATADIR "%s\\%s", game_settings.mission_pack, file);
-    }
-    else
-    {
-      sprintf(dst, DATADIR "%s", file);
-    }
+  if (game_settings.custom_resources)
+  {
+    sprintf(dst, DATADIR "%s\\%s", game_settings.mission_pack, file);
+  }
+  else
+  {
+    sprintf(dst, DATADIR "%s", file);
+  }
 }
 
 void save_settings()
@@ -124,5 +126,4 @@ void save_settings()
   record_file_set_record(game_settings.settings_file, "audio--music-vol", buf);
   sprintf(buf, "audio--sfx-vol %lf", game_settings.sfx_vol);
   record_file_set_record(game_settings.settings_file, "audio--sfx-vol", buf);
-
 }

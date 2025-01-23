@@ -130,7 +130,7 @@ int main(int argc, char **argv)
     sprintf(loadsamplename, "blood_splash_%d", i + 1);
     register_sample(SAMPLE_SPLASH(i), loadsamplename, SAMPLE_PRIORITY(NORMAL, 0));
   }
-  
+
   register_sample(SAMPLE_MENU_CHANGE, "menu_change", SAMPLE_PRIORITY(HIGH, 1));
   register_sample(SAMPLE_MENU_SELECT, "menu_select", SAMPLE_PRIORITY(HIGH, 1));
 
@@ -448,7 +448,7 @@ void boss_logic(World *world, int boss_died)
       break;
     case BFCONF_EVENT_TYPE_SPAWN_POTION:
       spawn_potion(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE,
-                    event->parameters[2], world->current_room, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
+                   event->parameters[2], world->current_room, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
       create_sparkles(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE, 15, 2, 15, world);
       break;
     }
@@ -633,14 +633,14 @@ void bullet_logic(World *world)
       double dx = bullet_orig_x - bullet->x;
       double dy = bullet_orig_y - bullet->y;
       unsigned limit = bullet->duration;
-      if (limit > 4) limit = 4;
+      if (limit > 4)
+        limit = 4;
       for (int j = 0; j < limit; j++)
       {
         draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET,
-          bullet_orig_x + dx * j + rand() % 3 - 1, bullet_orig_y + dy * j + rand() % 3 - 1,
-          (j + bullet_sprite) % 4, -1 - j);
+                                      bullet_orig_x + dx * j + rand() % 3 - 1, bullet_orig_y + dy * j + rand() % 3 - 1,
+                                      (j + bullet_sprite) % 4, -1 - j);
       }
-
     }
     else if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
     {
@@ -880,7 +880,7 @@ int game(int mission, int *game_modifiers)
     int legend_x = world.plr.x;
     int legend_y = world.plr.y;
     int key_left, key_right, key_up, key_down, key_space = 0,
-        key_x, key_z, key_a, key_s, key_d, key_f;
+                                               key_x, key_z, key_a, key_s, key_d, key_f;
     if (world.plr.health > 0)
     {
       draw_enemy(&world.plr, &world);
@@ -895,7 +895,7 @@ int game(int mission, int *game_modifiers)
           playback_next_event_time_stamp = game_playback_get_time_stamp();
           has_more = playback_next_event_time_stamp != -1;
           LOG("Timestamp=%ld, keymask=0x%lx, Next timestamp: %ld\n",
-            time_stamp, key_press_mask, playback_next_event_time_stamp);
+              time_stamp, key_press_mask, playback_next_event_time_stamp);
         }
         if (!has_more)
         {
@@ -1249,7 +1249,7 @@ int game(int mission, int *game_modifiers)
   }
 
   if (record_mode == RECORD_MODE_RECORD)
-  {   
+  {
     game_playback_add_end_event();
   }
 
