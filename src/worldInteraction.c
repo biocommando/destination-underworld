@@ -744,7 +744,6 @@ int read_level(World *world, int mission, int room_to)
     world->boss_fight = 0;
     sprintf(world->mission_display_name, "Mission %d", mission);
     world->story_after_mission_lines = 0;
-    world->par_time = 0;
 
     char special_filename[256];
     sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
