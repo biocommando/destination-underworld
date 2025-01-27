@@ -1,4 +1,7 @@
 #include "predictableRandom.h"
+#include <stdint.h>
+
+#define PREDICTABLE_RANDOM_SEED 8507
 
 uint32_t pr_get_random_stateless(uint32_t state)
 {
