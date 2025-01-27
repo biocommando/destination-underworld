@@ -408,8 +408,8 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
 
 Enemy *get_next_available_enemy(World *world, int *index)
 {
-    int fallback = 1;
-    for (int i = 1; i < ENEMYCOUNT; i++)
+    int fallback = 0;
+    for (int i = 0; i < ENEMYCOUNT; i++)
     {
         if (world->enm[i].former_id == NO_OWNER)
         {
