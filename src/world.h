@@ -63,7 +63,7 @@ typedef struct
     int move;
     // Animation frame
     int anim;
-    // How many shots the player can shoot still
+    // How many shots the player can shoot still. -1 = infinite ammo.
     int ammo;
     // Player gold amount, or the amount of gold the player gets when killing the enemy
     int gold;
