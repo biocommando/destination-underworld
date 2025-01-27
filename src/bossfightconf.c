@@ -261,6 +261,7 @@ void bossfight_process_event_triggers(BossFightConfig *config)
   BossFightState *state = &config->state;
   if (state->timer_value == 0)
   {
+    // Previous health is initialized to initial health + 1
     state->previous_health = state->health + 1;
   }
   if (state->secondary_timer_started)
