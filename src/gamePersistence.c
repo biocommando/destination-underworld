@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "gamePersistence.h"
 #include "record_file.h"
 #include "settings.h"
