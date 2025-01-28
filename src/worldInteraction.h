@@ -122,6 +122,10 @@ void read_enemy_configs(World *world);
 /*
  * Gets arena highscores from the GameSettings.arena_config.arenas data structure. If the highscore.mode
  * array does not contain the arena/game mode mapping, the function reserves a slot for it.
+ *
+ * hs_arena and hs_mode are set to the indices in ArenaHighscore arrays so that the data can be accessed
+ * by the caller like:
+ * `highscore->kills[*hs_arena][*hs_mode] = 100;`
  */
 int parse_highscore_from_world_state(World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode);
 /*
