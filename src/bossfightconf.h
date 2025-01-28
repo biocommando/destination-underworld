@@ -159,8 +159,88 @@ typedef struct
   BossFightState state;
 } BossFightConfig;
 
+/*
+ * Read BossFightConfig structure from file.
+ * Uses a syntax where each line consists of a command and any number of parameters
+ * separated by spaces.
+ *
+ * The commands with parameters are (optional parameters marked with *):
+ *
+ * <property> amount override*
+ *    Sets BossFightConfig.<property> to amount if game_modifiers == override or override
+ *    parameter is not provided. The command <property> can be one of:
+ *    health, speed, fire_rate, player_initial_gold
+ *
+ * time_starts_at time override*
+ *    Set primary timer initially to this value (e.g. for fine tuning the first event from
+ *    time interval triggers) if game_modifiers == override or override
+ *    parameter is not provided.
+ *
+ * event
+ *    New event. Event properties expected on next lines.
+ *
+ * event_override override
+ *    Skips the next event property lines if game_modifiers != override.
+ *
+ * end
+ *    End of event data.
+ *
+ * Event property commands:
+ *
+ * event_trigger type value
+ *    Sets current event's trigger type and value (see BossFightEventConfig).
+ *    Parameter type can be one of:
+ *    time_interval, time_one_time, health, waypoint_reached, secondary_timer, kill_count,
+ *    positional_trigger
+ *
+ * event_action spawn prob0 prob1 prob2 prob3 prob4 x y
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_SPAWN and configure spawn
+ *    point so that the probability for enemy type 0 is prob0 %, enemy type 1 prob1 % and so on.
+ *    prob0 + prob1 + ... + prob4 should equal 100. Set the map position x, y to the spawn point
+ *    configuration.
+ *
+ * event_action allow_firing
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_ALLOW_FIRING.
+ *
+ * event_action disallow_firing
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_DISALLOW_FIRING.
+ *
+ * event_action fire_in_circle number_of_directions intensity
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE and parameters accordingly.
+ *
+ * event_action modify_terrain x y type
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_MODIFY_TERRAIN and parameters accordingly.
+ *    The type can be one of: wall, floor, level_exit
+ *
+ * event_action set_waypoint x y waypoint_id
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_SET_WAYPOINT and parameters accordingly.
+ *
+ * event_action clear_waypoint
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_CLEAR_WAYPOINT.
+ *
+ * event_action start_secondary_timer time
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_START_SECONDARY_TIMER and the parameters accordingly.
+ *
+ * event_action stop_secondary_timer
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER.
+ *
+ * event_action toggle_event_enabled event_index enabled_status
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED and the parameters accordingly.
+ *
+ * event_action spawn_potion x y potion_type
+ *    Sets current event's event_type to BFCONF_EVENT_TYPE_SPAWN_POTION and the parameters accordingly.
+ *
+ * event_initially_disabled
+ *    Sets current event's enabled flag to 0.
+ */
 void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers);
 
+/*
+ * Processes event triggers as described in BossFightEventConfig documentation.
+ * Processing means that it checks each trigger condition and if the trigger condition
+ * is met, marks the trigger value at index corresponding to event array index
+ * as "triggered". The triggered events are then processed in the main game logic.
+ */
 void bossfight_process_event_triggers(BossFightConfig *config);
 
 // BFCONF_TRIGGER_TYPE_* to string for debug prints
