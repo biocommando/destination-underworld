@@ -6,6 +6,7 @@
 #include "sprites.h"
 #include "best_times.h"
 #include "settings.h"
+#include "helpers.h"
 
 void draw_enemy(Enemy *enm, World *world)
 {
@@ -284,7 +285,7 @@ void move_and_draw_body_parts(World *world)
     }
 }
 
-void draw_explosion_circle(World *world, double x, double y, double intensity, double radius)
+static void draw_explosion_circle(World *world, double x, double y, double intensity, double radius)
 {
     const int red = MIN((intensity * 0.5 + 0.5) * 255, 255);
     const double sqintens = intensity * intensity;

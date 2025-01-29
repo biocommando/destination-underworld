@@ -8,14 +8,14 @@
 
 extern GameSettings game_settings;
 
-char keybuffer[ALLEGRO_KEY_MAX];
+static char keybuffer[ALLEGRO_KEY_MAX];
 
-ALLEGRO_FONT *font = NULL;
-ALLEGRO_DISPLAY *display = NULL;
-ALLEGRO_TIMER *timer = NULL;
-ALLEGRO_EVENT_QUEUE *queue = NULL;
-ALLEGRO_AUDIO_STREAM *audio_stream = NULL;
-ALLEGRO_EVENT event;
+static ALLEGRO_FONT *font = NULL;
+static ALLEGRO_DISPLAY *display = NULL;
+static ALLEGRO_TIMER *timer = NULL;
+static ALLEGRO_EVENT_QUEUE *queue = NULL;
+static ALLEGRO_AUDIO_STREAM *audio_stream = NULL;
+static ALLEGRO_EVENT event;
 
 int check_key(int key)
 {

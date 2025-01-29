@@ -7,7 +7,7 @@
 
 extern GameSettings game_settings;
 
-int sample_reg_idx = 0;
+static int sample_reg_idx = 0;
 
 struct
 {
@@ -18,7 +18,7 @@ struct
   ALLEGRO_SAMPLE_ID sample_id;
 } sample_register[MAX_NUM_SAMPLES];
 
-int get_sample_path(char *sample_path, const char *sample_name)
+static int get_sample_path(char *sample_path, const char *sample_name)
 {
   char sample_mappings_filename[256];
   get_data_filename(sample_mappings_filename, "sounds.dat");

@@ -6,9 +6,9 @@
 
 #define MAX_PLAYLIST_LEN 128
 
-MidiPlayer midi_player;
-MidiFile midi_file;
-int midi_file_ready = 0;
+static MidiPlayer midi_player;
+static MidiFile midi_file;
+static int midi_file_ready = 0;
 
 struct playlist_entry
 {
@@ -16,11 +16,11 @@ struct playlist_entry
     char *meta_f;
 };
 
-struct playlist_entry playlist[MAX_PLAYLIST_LEN];
-int playlist_entries = 0;
-int current_playlist_entry = -1;
+static struct playlist_entry playlist[MAX_PLAYLIST_LEN];
+static int playlist_entries = 0;
+static int current_playlist_entry = -1;
 
-int _check_file_type(const char *fn, const char *type)
+static int check_file_type(const char *fn, const char *type)
 {
     size_t type_len = strlen(type);
     size_t fn_len = strlen(fn);
@@ -34,7 +34,7 @@ int _check_file_type(const char *fn, const char *type)
     return 0;
 }
 
-void _load_playlist()
+static void load_playlist()
 {
     playlist_entries = 0;
     current_playlist_entry = -1;
@@ -48,7 +48,7 @@ void _load_playlist()
         if (!next)
             break;
         const char *fname = al_get_fs_entry_name(next);
-        if (_check_file_type(fname, ".mid") == 0)
+        if (check_file_type(fname, ".mid") == 0)
         {
             char *meta_f_name = (char *)malloc(strlen(fname) + 9 + 1);
             sprintf(meta_f_name, "%s_meta.ini", fname);
@@ -79,7 +79,7 @@ void init_midi_playback(float sample_rate)
 {
     memset(playlist, 0, sizeof(playlist));
     init_midi_player(&midi_player, sample_rate);
-    _load_playlist();
+    load_playlist();
 }
 
 void free_midi_playback()
@@ -119,7 +119,7 @@ void next_midi_track(int index)
     midi_player_set_midi_file(&midi_player, &midi_file);
 }
 
-int randomize_midi_playlist_sorter(const void *a, const void *b)
+static int randomize_midi_playlist_sorter(const void *a, const void *b)
 {
     return rand() & 1 ? 1 : -1;
 }

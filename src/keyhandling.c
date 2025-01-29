@@ -75,7 +75,7 @@ int handle_weapon_change_keys(World *world, int key_x, int key_z)
   return 0;
 }
 
-Enemy *create_turret(World *world)
+static inline Enemy *create_turret(World *world)
 {
   Enemy *enm = ns_spawn_enemy(world->plr.x, world->plr.y, 9, world->current_room, world);
   enm->ammo = 128;

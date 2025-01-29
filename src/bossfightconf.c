@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void print_configs(BossFightConfig *config)
+static void print_configs(BossFightConfig *config)
 {
   char s[100];
   LOG("Bossfight config read:\n  Events: %d\n", config->num_events);

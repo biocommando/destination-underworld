@@ -9,7 +9,7 @@
 
 #define BEST_TIMES_FILE DATADIR "%s\\best_times.dat"
 
-int _compare_floats(const void *a, const void *b)
+static int compare_floats(const void *a, const void *b)
 {
     float arg1 = *(const float *)a;
     float arg2 = *(const float *)b;
@@ -21,12 +21,12 @@ int _compare_floats(const void *a, const void *b)
     return 0;
 }
 
-void _get_id(char *id, struct best_times *best_times, int idx)
+static inline void get_id(char *id, struct best_times *best_times, int idx)
 {
     sprintf(id, "MISSION=%d;MODE=%d;I=%d;", best_times->mission, best_times->game_modifiers, idx);
 }
 
-void _get_file(char *file, const char *mission_pack)
+static inline void get_file(char *file, const char *mission_pack)
 {
     sprintf(file, BEST_TIMES_FILE, mission_pack);
 }
@@ -37,12 +37,12 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
     char record[1024];
 
     char file[1024];
-    _get_file(file, mission_pack);
+    get_file(file, mission_pack);
 
     char id[100];
     for (int i = 0; i < NUM_BEST_TIMES; i++)
     {
-        _get_id(id, best_times, i);
+        get_id(id, best_times, i);
         best_times->times[i] = 1e10;
         if (record_file_get_record(file, id, record, sizeof(record)) == 0)
         {
@@ -50,7 +50,7 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
         }
     }
 
-    qsort(best_times->times, NUM_BEST_TIMES, sizeof(float), _compare_floats);
+    qsort(best_times->times, NUM_BEST_TIMES, sizeof(float), compare_floats);
 
     return 0;
 }
@@ -58,12 +58,12 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
 int save_best_times(const char *mission_pack, struct best_times *best_times)
 {
     char file[1024];
-    _get_file(file, mission_pack);
+    get_file(file, mission_pack);
 
     char id[100];
     for (int i = 0; i < NUM_BEST_TIMES; i++)
     {
-        _get_id(id, best_times, i);
+        get_id(id, best_times, i);
         char record[1024];
         sprintf(record, "%s %f", id, best_times->times[i]);
         if (record_file_set_record(file, id, record))

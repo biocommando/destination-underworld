@@ -13,7 +13,7 @@
 extern GameSettings game_settings;
 extern int record_mode;
 
-void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
+static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
     load_game(autosave, mission, game_modifiers, slot);
     autosave->id = PLAYER_ID;
@@ -21,9 +21,9 @@ void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
         autosave->id = NO_OWNER;
 }
 
-ALLEGRO_BITMAP *menu_sprites;
+static ALLEGRO_BITMAP *menu_sprites;
 
-void show_help()
+static void show_help()
 {
     char help_path[256];
     sprintf(help_path, DATADIR "%s\\help.dat", game_settings.mission_pack);
@@ -103,7 +103,7 @@ void show_help()
     fclose(f);
 }
 
-const char *game_modifiers_to_str(int game_modifiers)
+static const char *game_modifiers_to_str(int game_modifiers)
 {
     if (game_modifiers == 0)
         return "normal";
@@ -120,7 +120,7 @@ const char *game_modifiers_to_str(int game_modifiers)
     return "unknown";
 }
 
-void menu_play_sample(int sample_id)
+static void menu_play_sample(int sample_id)
 {
     if (game_settings.sfx_vol == 0)
         return;
@@ -136,7 +136,7 @@ struct menu_item
     int item_id;
 };
 
-int get_menu_item_id(const char *id_str)
+static int get_menu_item_id(const char *id_str)
 {
     int id = 0;
     for (int i = 0; id_str[i] && i < 4; i++)
@@ -156,7 +156,7 @@ struct menu
     int cancel_menu_item_id;
 };
 
-void set_item_by_id(struct menu *m, int id)
+static void set_item_by_id(struct menu *m, int id)
 {
     for (int i = 0; i < m->num_items; i++)
     {
@@ -168,7 +168,7 @@ void set_item_by_id(struct menu *m, int id)
     }
 }
 
-struct menu_item *add_menu_item(struct menu *m, const char *name, const char *description, ...)
+static struct menu_item *add_menu_item(struct menu *m, const char *name, const char *description, ...)
 {
     if (m->num_items >= 20)
         return m->items;
@@ -218,7 +218,7 @@ struct menu create_menu(const char *title, ...)
     return m;
 }
 
-void display_menu(struct menu *menu_state)
+static void display_menu(struct menu *menu_state)
 {
     ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
 
@@ -307,7 +307,7 @@ void display_menu(struct menu *menu_state)
     al_destroy_bitmap(menubg);
 }
 
-int display_load_game_menu()
+static int display_load_game_menu()
 {
     struct menu m = create_menu("Load game");
     m.cancel_menu_item_id = add_menu_item(&m, "Cancel", "Cancel and return to previous menu")->item_id;
@@ -332,7 +332,7 @@ int display_load_game_menu()
     return m.selected_item;
 }
 
-int display_save_game_menu()
+static int display_save_game_menu()
 {
     struct menu m = create_menu("Save game");
     struct menu_item *mi = add_menu_item(&m, "Cancel", "Cancel and return to previous menu");
@@ -357,7 +357,7 @@ int display_save_game_menu()
     return m.selected_item;
 }
 
-int display_game_mode_menu(int game_modifiers)
+static int display_game_mode_menu(int game_modifiers)
 {
     const int modifiers[] = {
         0,
@@ -404,7 +404,7 @@ int display_game_mode_menu(int game_modifiers)
     return modifiers[m.selected_item];
 }
 
-int display_in_game_menu(int game_modifiers, int mission)
+static int display_in_game_menu(int game_modifiers, int mission)
 {
     struct menu m = create_menu("Paused -- %s -- level %d",
                                 game_modifiers_to_str(game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT), mission);
@@ -422,7 +422,7 @@ int display_in_game_menu(int game_modifiers, int mission)
     return m.items[m.selected_item].item_id;
 }
 
-int display_new_game_menu(int game_modifiers)
+static int display_new_game_menu(int game_modifiers)
 {
     struct menu m = create_menu("Start new %s game", game_modifiers_to_str(game_modifiers));
     struct menu_item *mi = add_menu_item(&m, "Exit to main menu", "");
@@ -451,7 +451,7 @@ int display_new_game_menu(int game_modifiers)
     return m.items[m.selected_item].item_id;
 }
 
-int display_game_options(int default_opt)
+static int display_game_options(int default_opt)
 {
     struct menu m = create_menu("Options");
     struct menu_item *mi;
@@ -474,7 +474,7 @@ int display_game_options(int default_opt)
     return m.items[m.selected_item].item_id;
 }
 
-int display_range_menu(const char *title, const char *fmt, int range_start, int count, int step, int default_opt)
+static int display_range_menu(const char *title, const char *fmt, int range_start, int count, int step, int default_opt)
 {
     struct menu m = create_menu(title);
     for (int i = 0; i < count; i++)
@@ -492,7 +492,7 @@ int display_range_menu(const char *title, const char *fmt, int range_start, int 
     return range_start + m.selected_item * step;
 }
 
-int display_select_track_menu()
+static int display_select_track_menu()
 {
     struct menu m = create_menu("Select track");
     const char *fname;
@@ -515,7 +515,7 @@ int display_select_track_menu()
     return m.selected_item == cancel_idx ? -1 : m.selected_item;
 }
 
-void game_option_menu()
+static void game_option_menu()
 {
     GameSettings orig;
     memcpy(&orig, &game_settings, sizeof(GameSettings));
@@ -571,7 +571,7 @@ void game_option_menu()
     }
 }
 
-int display_main_menu(int game_modifiers)
+static int display_main_menu(int game_modifiers)
 {
     struct menu m = create_menu("DESTINATION UNDERWORLD");
     add_menu_item(&m, "Start new game", "");
@@ -583,7 +583,7 @@ int display_main_menu(int game_modifiers)
     return m.items[m.selected_item].item_id;
 }
 
-void load_menu_sprites()
+static void load_menu_sprites()
 {
     char path[256];
     get_data_filename(path, "sprites.png");

@@ -10,7 +10,7 @@
 
 extern GameSettings game_settings;
 
-int is_passable(World *world, int x, int y)
+static inline int is_passable(World *world, int x, int y)
 {
     return !get_tile_at(world, x, y)->is_blocker;
 }
@@ -107,7 +107,7 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world)
     }
 }
 
-int tile_check_bullet_hit_wall(World *world, int x, int y)
+static inline int tile_check_bullet_hit_wall(World *world, int x, int y)
 {
     Tile *tile = get_tile_at(world, x, y);
     if (tile->is_wall)
@@ -144,7 +144,7 @@ void move_bullet(Bullet *bb, World *world)
         bb->owner_id = NO_OWNER;
     }
 }
-double randomized_bullet_direction(double dir)
+static inline double randomized_bullet_direction(double dir)
 {
     return dir + 0.03 - 0.01 * (pr_get_random() % 7);
 }
@@ -204,7 +204,7 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
     return 1;
 }
 
-int shoot_one_shot(Enemy *enm, World *world)
+static inline int shoot_one_shot(Enemy *enm, World *world)
 {
     if (enm->ammo == 0)
     {
@@ -287,7 +287,7 @@ int sees_each_other(Enemy *e1, Enemy *e2, World *world)
     return 0;
 }
 
-void bounce_body_parts(int x, int y, World *world)
+static inline void bounce_body_parts(int x, int y, World *world)
 {
     // Make existing bodyparts bounce all over the place
     for (int i = 0; i < ENEMYCOUNT; i++)
@@ -317,12 +317,7 @@ void bounce_body_parts(int x, int y, World *world)
         }
 }
 
-double random()
-{
-    return (double)(rand() % 1000) / 1000;
-}
-
-int comp_expl_circle(const void *elem1, const void *elem2)
+static inline int comp_expl_circle(const void *elem1, const void *elem2)
 {
     if (((struct explosion_circle *)elem1)->i > ((struct explosion_circle *)elem2)->i)
         return 1;
@@ -429,11 +424,6 @@ Enemy *get_next_available_enemy(World *world, int *index)
         *index = fallback;
     }
     return &world->enm[fallback];
-}
-
-void clear_map(World *world)
-{
-    memset(world->map, 0, sizeof(world->map));
 }
 
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
@@ -553,7 +543,7 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int rang
     return p;
 }
 
-void combine_tile_properties(Tile *dst, Tile *other)
+static inline void combine_tile_properties(Tile *dst, Tile *other)
 {
     if (dst->is_exit_level == 0)
         dst->is_exit_level = other->is_exit_level;
@@ -577,7 +567,7 @@ void combine_tile_properties(Tile *dst, Tile *other)
         dst->is_positional_trigger = other->is_positional_trigger;
 }
 
-void place_lev_object(World *world, int x, int y, int id, int room_to)
+static inline void place_lev_object(World *world, int x, int y, int id, int room_to)
 {
     Tile tile = create_tile(id);
     if (tile.valid)
@@ -614,7 +604,7 @@ void place_lev_object(World *world, int x, int y, int id, int room_to)
     }
 }
 
-void level_read_new_format(World *world, int room_to, FILE *f)
+static inline void level_read_new_format(World *world, int room_to, FILE *f)
 {
     world->boss_fight_config = &world->boss_fight_configs[room_to - 1];
     DuScriptVariable *var;
@@ -716,7 +706,7 @@ int read_level(World *world, int mission, int room_to)
 
     int room_from = world->current_room;
 
-    clear_map(world);
+    memset(world->map, 0, sizeof(world->map));
 
     // Default colors
     if (mission % 3 + 1 == 1)
@@ -784,7 +774,7 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
     }
 }
 
-void place_player_at_entrance(World *world, int to_room)
+static void place_player_at_entrance(World *world, int to_room)
 {
     for (int x = 0; x < MAPMAX_X; x++)
     {

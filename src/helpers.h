@@ -8,6 +8,11 @@
  */
 void game_loop_rest(clock_t *state);
 
+/*
+ * Get a random number in range [0, 1[.
+ */
+double random();
+
 // Structure representing a 2D point
 typedef struct coordinates
 {

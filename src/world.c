@@ -167,13 +167,13 @@ inline Tile *ns_get_tile_at(World *world, int x, int y)
     return &world->map[world->current_room - 1][x][y];
 }
 
-int ns_get_wall_type_at(World *world, int x, int y)
+inline int ns_get_wall_type_at(World *world, int x, int y)
 {
     Tile *t = &(world->map[world->current_room - 1][x][y]);
     return t->is_wall ? t->data : 0;
 }
 
-int get_wall_type_at(World *world, int x, int y)
+inline int get_wall_type_at(World *world, int x, int y)
 {
     return ns_get_wall_type_at(world, x / TILESIZE, y / TILESIZE);
 }
@@ -260,7 +260,7 @@ void init_player(World *world, Enemy *plrautosave)
     }
 }
 
-int check_potion_effect(World *w, int effect_id)
+inline int check_potion_effect(World *w, int effect_id)
 {
     return w->potion_duration > 0 && ((w->potion_effect_flags & effect_id) != 0);
 }

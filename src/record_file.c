@@ -21,44 +21,44 @@ struct mem_record_db
     char current_file[1024];
 };
 
-struct mem_record_db rec_db_state;
-int rec_db_state_init_done = 0;
+static struct mem_record_db state;
+static int init_done = 0;
 
-void record_file_init()
+static inline void init()
 {
-    if (rec_db_state_init_done)
+    if (init_done)
     {
         return;
     }
-    rec_db_state_init_done = 1;
+    init_done = 1;
 
-    memset(&rec_db_state, 0, sizeof(rec_db_state));
+    memset(&state, 0, sizeof(state));
 }
 
 void record_file_flush()
 {
-    record_file_init();
-    if (rec_db_state.dirty)
+    init();
+    if (state.dirty)
     {
-        FILE *f = fopen(rec_db_state.current_file, "w");
+        FILE *f = fopen(state.current_file, "w");
         // Optional meta information in the beginning of the file
-        fprintf(f, "_record_count %d\n", rec_db_state.sz);
-        for (int i = 0; i < rec_db_state.sz; i++)
+        fprintf(f, "_record_count %d\n", state.sz);
+        for (int i = 0; i < state.sz; i++)
         {
-            const struct mem_record *rec = &rec_db_state.recs[i];
+            const struct mem_record *rec = &state.recs[i];
             fprintf(f, "%s\n", rec->value);
         }
         fclose(f);
     }
 
-    free(rec_db_state.recs);
-    memset(&rec_db_state, 0, sizeof(rec_db_state));
+    free(state.recs);
+    memset(&state, 0, sizeof(state));
 }
 
 void record_file_read(const char *file)
 {
     record_file_flush();
-    strncpy(rec_db_state.current_file, file, 1024);
+    strncpy(state.current_file, file, 1024);
 
     char line[REC_MAX_LENGTH];
     FILE *f = fopen(file, "r");
@@ -77,36 +77,36 @@ void record_file_read(const char *file)
         {
             line[strlen(line) - 1] = '\0';
         }
-        if (rec_db_state.recs == NULL && sscanf(line, "_record_count %d", &rec_db_state.sz) == 1)
+        if (state.recs == NULL && sscanf(line, "_record_count %d", &state.sz) == 1)
         {
-            rec_db_state.recs = (struct mem_record *)calloc(rec_db_state.sz, sizeof(struct mem_record));
+            state.recs = (struct mem_record *)calloc(state.sz, sizeof(struct mem_record));
             continue;
         }
-        if (line_idx + 1 > rec_db_state.sz)
+        if (line_idx + 1 > state.sz)
         {
-            rec_db_state.sz = line_idx + 1;
-            size_t sz = sizeof(struct mem_record) * rec_db_state.sz;
-            rec_db_state.recs = (struct mem_record *)realloc(rec_db_state.recs, sz);
+            state.sz = line_idx + 1;
+            size_t sz = sizeof(struct mem_record) * state.sz;
+            state.recs = (struct mem_record *)realloc(state.recs, sz);
         }
-        memcpy(&rec_db_state.recs[line_idx], line, REC_MAX_LENGTH);
+        memcpy(&state.recs[line_idx], line, REC_MAX_LENGTH);
         line_idx++;
     }
     fclose(f);
 }
 
 // Returns the index of the record if found, -1 otherwise
-int record_file_db_get_record(const char *file, const char *id)
+static int get_record_index(const char *file, const char *id)
 {
-    if (strcmp(file, rec_db_state.current_file) != 0)
+    if (strcmp(file, state.current_file) != 0)
     {
         record_file_read(file);
     }
 
     char key[REC_MAX_LENGTH];
-    for (int i = 0; i < rec_db_state.sz; i++)
+    for (int i = 0; i < state.sz; i++)
     {
         key[0] = 0;
-        sscanf(rec_db_state.recs[i].value, "%s", key);
+        sscanf(state.recs[i].value, "%s", key);
         if (!strcmp(id, key))
         {
             return i;
@@ -118,10 +118,10 @@ int record_file_db_get_record(const char *file, const char *id)
 
 int record_file_get_record(const char *file, const char *id, char *record, size_t sz)
 {
-    int rec_idx = record_file_db_get_record(file, id);
+    int rec_idx = get_record_index(file, id);
     if (rec_idx >= 0)
     {
-        memcpy(record, rec_db_state.recs[rec_idx].value, sz > REC_MAX_LENGTH ? REC_MAX_LENGTH : sz);
+        memcpy(record, state.recs[rec_idx].value, sz > REC_MAX_LENGTH ? REC_MAX_LENGTH : sz);
         return 0;
     }
     return 1;
@@ -133,16 +133,16 @@ int record_file_set_record(const char *file, const char *id, const char *record)
     {
         return 1;
     }
-    int rec_idx = record_file_db_get_record(file, id);
+    int rec_idx = get_record_index(file, id);
     if (rec_idx == -1)
     {
-        rec_idx = rec_db_state.sz;
-        rec_db_state.sz++;
-        size_t sz = sizeof(struct mem_record) * rec_db_state.sz;
-        rec_db_state.recs = (struct mem_record *)realloc(rec_db_state.recs, sz);
+        rec_idx = state.sz;
+        state.sz++;
+        size_t sz = sizeof(struct mem_record) * state.sz;
+        state.recs = (struct mem_record *)realloc(state.recs, sz);
     }
-    strcpy(rec_db_state.recs[rec_idx].value, record);
+    strcpy(state.recs[rec_idx].value, record);
 
-    rec_db_state.dirty = 1;
+    state.dirty = 1;
     return 0;
 }

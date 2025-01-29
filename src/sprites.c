@@ -3,33 +3,33 @@
 #include "record_file.h"
 #include "logging.h"
 
-DuSprite sprites[SPRITE_ID_MAX + 1];
-int sprite_ok[SPRITE_ID_MAX + 1];
-int sprites_init_ok = 0;
+static DuSprite sprites[SPRITE_ID_MAX + 1];
+static int sprite_ok[SPRITE_ID_MAX + 1];
+static int init_ok = 0;
 
-static inline int _sprite_id_ok(int id)
+static inline int id_ok(int id)
 {
     return id <= SPRITE_ID_MAX && id >= SPRITE_ID_MIN;
 }
 
-static inline int _sprite_ok(int id)
+static inline int check_sprite_ok(int id)
 {
-    return sprites_init_ok && _sprite_id_ok(id) && sprite_ok[id];
+    return init_ok && id_ok(id) && sprite_ok[id];
 }
 
 void init_sprites()
 {
-    if (!sprites_init_ok)
+    if (!init_ok)
     {
         memset(sprites, 0, sizeof(sprites));
         memset(sprite_ok, 0, sizeof(sprite_ok));
-        sprites_init_ok = 1;
+        init_ok = 1;
     }
 }
 
 int set_sprite(int sprite_id, DuSprite sprite)
 {
-    if (!_sprite_id_ok(sprite_id))
+    if (!id_ok(sprite_id))
         return -1;
     init_sprites();
     sprites[sprite_id] = sprite;
@@ -38,14 +38,14 @@ int set_sprite(int sprite_id, DuSprite sprite)
 
 DuSprite *get_sprite(int sprite_id)
 {
-    if (!_sprite_ok(sprite_id))
+    if (!check_sprite_ok(sprite_id))
         return NULL;
     return &sprites[sprite_id];
 }
 
 int read_sprites_from_file(const char *filename, int min_id, int max_id)
 {
-    if (!_sprite_id_ok(min_id) || !_sprite_id_ok(max_id))
+    if (!id_ok(min_id) || !id_ok(max_id))
     {
         LOG("Invalid sprite id range %d...%d\n", min_id, max_id);
         return -1;

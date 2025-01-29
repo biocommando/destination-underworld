@@ -167,7 +167,7 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
+static void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
 {
   if (enm->x > aim_at->x + aim_window)
     enm->dx = -1;
@@ -179,7 +179,7 @@ void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
     enm->dy = 1;
 }
 
-void enemy_logic(World *world)
+static void enemy_logic(World *world)
 {
   for (int x = 0; x < ENEMYCOUNT; x++)
   {
@@ -332,7 +332,7 @@ void enemy_logic(World *world)
   }
 }
 
-void draw_static_background()
+static void draw_static_background()
 {
   rectfill(0, 0, SCREEN_W, SCREEN_H, BLACK);
   int maxsz = SCREEN_H > SCREEN_W ? SCREEN_H : SCREEN_W;
@@ -345,7 +345,7 @@ void draw_static_background()
   }
 }
 
-void boss_logic(World *world, int boss_died)
+static void boss_logic(World *world, int boss_died)
 {
   Enemy *boss = world->boss;
   int in_same_room = boss != NULL && boss->roomid == world->current_room;
@@ -455,7 +455,7 @@ void boss_logic(World *world, int boss_died)
   }
 }
 
-void bullet_logic(World *world)
+static void bullet_logic(World *world)
 {
   const int difficulty = GET_DIFFICULTY(world);
   for (int i = 0; i < BULLETCOUNT; i++)
@@ -650,7 +650,7 @@ void bullet_logic(World *world)
   }
 }
 
-void potion_logic(World *w)
+static void potion_logic(World *w)
 {
   static unsigned potion_anim_phase = 0;
   for (int i = 0; i < POTION_COUNT; i++)
