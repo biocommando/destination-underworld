@@ -2,7 +2,7 @@
 
 /*
  * Initialize game playback (= "demo mode"). The key inputs will be saved to/loaded from
- * the provided file. TODO: mode is not used anymore (not needed when using the record file API).
+ * the file provided with game_playback_set_filename.
  *
  * The file uses record file format with the following syntax:
  * event_[index] end=%d time=%ld keys=%ld
@@ -14,7 +14,17 @@
  * - keys: the key mask containing all the control keys (4 direction keys, 2 weapon select keys,
  *         4 power up keys, shoot key = 11 bits)
  */
-void game_playback_init(const char *fn, char mode);
+void game_playback_init();
+
+/*
+ * Sets filename to use for recording / playback. Max. 255 characters
+ */
+void game_playback_set_filename(const char *fn);
+
+/*
+ * Gets filename to use for recording / playback. Max. 255 characters
+ */
+const char *game_playback_get_filename();
 
 /*
  * Get the key mask at the current playback position.

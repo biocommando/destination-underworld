@@ -15,9 +15,8 @@ struct game_playback_event
 static char filename[256] = "";
 static int event_index = 0;
 
-void game_playback_init(const char *fn, char mode)
+void game_playback_init()
 {
-    strncpy(filename, fn, 256);
     event_index = 0;
 }
 
@@ -92,4 +91,16 @@ void game_playback_next()
 inline int *get_playback_mode()
 {
     return &record_mode;
+}
+
+inline void game_playback_set_filename(const char *fn)
+{
+    if (strlen(fn) >= sizeof(filename))
+        return;
+    strcpy(filename, fn);
+}
+
+inline const char *game_playback_get_filename()
+{
+    return filename;
 }
