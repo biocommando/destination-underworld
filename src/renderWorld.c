@@ -404,8 +404,6 @@ void progress_and_draw_sparkles(World *world)
     }
 }
 
-extern GameSettings game_settings;
-
 static inline void check_valid_time_for_display(float *f)
 {
     *f = *f > 9999.9f ? 9999.9f : *f;
@@ -421,7 +419,7 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     struct best_times best_times;
     best_times.game_modifiers = world->game_modifiers;
     best_times.mission = mission;
-    populate_best_times(game_settings.mission_pack, &best_times);
+    populate_best_times(get_game_settings()->mission_pack, &best_times);
     float time_secs = (float)completetime / 40;
     int beat_idx = check_time_beaten(&best_times, (float)time_secs);
 
@@ -439,7 +437,7 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     extern int record_mode;
     if (beat_idx >= 0 && record_mode != RECORD_MODE_PLAYBACK)
     {
-        save_best_times(game_settings.mission_pack, &best_times);
+        save_best_times(get_game_settings()->mission_pack, &best_times);
     }
     y += 15;
     if (mission < mission_count)

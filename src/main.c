@@ -31,8 +31,6 @@ int logging_enabled = 0;
 
 int game(int mission, int *game_modifiers);
 
-GameSettings game_settings;
-
 Enemy plrautosave;
 
 int fname_counter = 0;
@@ -711,14 +709,14 @@ int game(int mission, int *game_modifiers)
   world.game_modifiers = *game_modifiers;
   world.mission = mission;
   world.boss_fight_config = world.boss_fight_configs;
-  if (!game_settings.custom_resources)
+  if (!get_game_settings()->custom_resources)
   {
     world.spr = al_load_bitmap(DATADIR "sprites.png");
   }
   else
   {
     char path[256];
-    sprintf(path, DATADIR "\\%s\\sprites.png", game_settings.mission_pack);
+    sprintf(path, DATADIR "\\%s\\sprites.png", get_game_settings()->mission_pack);
     world.spr = al_load_bitmap(path);
   }
   al_convert_mask_to_alpha(world.spr, al_map_rgb(255, 0, 255));
@@ -902,7 +900,7 @@ int game(int mission, int *game_modifiers)
           world.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-          display_level_info(&world, mission, game_settings.mission_count, completetime);
+          display_level_info(&world, mission, get_game_settings()->mission_count, completetime);
 
           wait_key_press(ALLEGRO_KEY_ENTER);
           break;
@@ -1015,7 +1013,7 @@ int game(int mission, int *game_modifiers)
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, mission, game_settings.mission_count, completetime);
+      display_level_info(&world, mission, get_game_settings()->mission_count, completetime);
 
       if (record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);
@@ -1071,15 +1069,15 @@ int game(int mission, int *game_modifiers)
     draw_map(&world, 1, 0);
 
     vibrations = progress_and_draw_explosions(&world);
-    if (game_settings.vibration_mode != 1)
+    if (get_game_settings()->vibration_mode != 1)
     {
-      if (game_settings.vibration_mode == 0)
+      if (get_game_settings()->vibration_mode == 0)
       {
         vibrations = 0;
       }
       else
       {
-        vibrations /= game_settings.vibration_mode;
+        vibrations /= get_game_settings()->vibration_mode;
       }
     }
 

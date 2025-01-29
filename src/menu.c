@@ -10,7 +10,6 @@
 #include "sampleRegister.h"
 #include "midi_playback.h"
 
-extern GameSettings game_settings;
 extern int record_mode;
 
 static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
@@ -26,7 +25,7 @@ static ALLEGRO_BITMAP *menu_sprites;
 static void show_help()
 {
     char help_path[256];
-    sprintf(help_path, DATADIR "%s\\help.dat", game_settings.mission_pack);
+    sprintf(help_path, DATADIR "%s\\help.dat", get_game_settings()->mission_pack);
     FILE *f = fopen(help_path, "r");
     ALLEGRO_COLOR color = al_map_rgb(255, 255, 255);
     ALLEGRO_COLOR saved_colors[10];
@@ -122,7 +121,7 @@ static const char *game_modifiers_to_str(int game_modifiers)
 
 static void menu_play_sample(int sample_id)
 {
-    if (game_settings.sfx_vol == 0)
+    if (get_game_settings()->sfx_vol == 0)
         return;
     reset_sample_triggers();
     trigger_sample(sample_id, 255);
@@ -431,7 +430,7 @@ static int display_new_game_menu(int game_modifiers)
     add_menu_item(&m, "Story mode", "Begin a new story mode game");
     ArenaHighscore arena_highscore;
     access_arena_highscore(&arena_highscore, 1);
-    for (int arena = 0; arena < game_settings.arena_config.number_of_arenas; arena++)
+    for (int arena = 0; arena < get_game_settings()->arena_config.number_of_arenas; arena++)
     {
         int kills = 0;
         for (int i = 0; i < ARENACONF_HIGHSCORE_MAP_SIZE; i++)
@@ -442,7 +441,7 @@ static int display_new_game_menu(int game_modifiers)
                 break;
             }
         }
-        mi = add_menu_item(&m, game_settings.arena_config.arenas[arena].name,
+        mi = add_menu_item(&m, get_game_settings()->arena_config.arenas[arena].name,
                            "Arena fight! Kill as many enemies as you can!\nHighscore: %d kills", kills);
         mi->item_id = arena;
     }
@@ -457,17 +456,17 @@ static int display_game_options(int default_opt)
     struct menu_item *mi;
     mi = add_menu_item(&m, "Exit to main menu", "");
     m.cancel_menu_item_id = mi->item_id;
-    mi = add_menu_item(&m, "Set music on/off", "Current: %s", game_settings.music_on ? "on" : "off");
+    mi = add_menu_item(&m, "Set music on/off", "Current: %s", get_game_settings()->music_on ? "on" : "off");
     mi->item_id = get_menu_item_id("m.on/off");
     add_menu_item(&m, "Select music track", "Now playing: %s", get_midi_playlist_entry_file_name(-1));
-    mi = add_menu_item(&m, "Set music volume", "Current: %d %%%%", (int)(100 * game_settings.music_vol));
+    mi = add_menu_item(&m, "Set music volume", "Current: %d %%%%", (int)(100 * get_game_settings()->music_vol));
     mi->item_id = get_menu_item_id("m.vol");
-    mi = add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * game_settings.sfx_vol));
+    mi = add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * get_game_settings()->sfx_vol));
     mi->item_id = get_menu_item_id("s.vol");
     mi = add_menu_item(&m, "Set vibration intensity", "Current: %s (%d)",
-                       game_settings.vibration_mode < 12 ? (game_settings.vibration_mode < 5 ? "heavy" : "medium") : "light", game_settings.vibration_mode);
+                       get_game_settings()->vibration_mode < 12 ? (get_game_settings()->vibration_mode < 5 ? "heavy" : "medium") : "light", get_game_settings()->vibration_mode);
     mi->item_id = get_menu_item_id("vibrations");
-    mi = add_menu_item(&m, "Window mode", "Current: %s\nThe game needs to be restarted to take new window mode into use.", game_settings.fullscreen ? "Full screen" : "Windowed");
+    mi = add_menu_item(&m, "Window mode", "Current: %s\nThe game needs to be restarted to take new window mode into use.", get_game_settings()->fullscreen ? "Full screen" : "Windowed");
     mi->item_id = get_menu_item_id("Window");
     set_item_by_id(&m, default_opt);
     display_menu(&m);
@@ -518,15 +517,15 @@ static int display_select_track_menu()
 static void game_option_menu()
 {
     GameSettings orig;
-    memcpy(&orig, &game_settings, sizeof(GameSettings));
+    memcpy(&orig, get_game_settings(), sizeof(GameSettings));
     int choice = 0;
     do
     {
         choice = display_game_options(choice);
         if (choice == get_menu_item_id("m.on/off"))
         {
-            game_settings.music_on = !game_settings.music_on;
-            if (game_settings.music_on)
+            get_game_settings()->music_on = !get_game_settings()->music_on;
+            if (get_game_settings()->music_on)
                 next_midi_track(0);
         }
         else if (choice == get_menu_item_id("Select"))
@@ -544,27 +543,27 @@ static void game_option_menu()
         }
         else if (choice == get_menu_item_id("m.vol"))
         {
-            int default_opt = (int)(game_settings.music_vol * 100 + 0.5f);
+            int default_opt = (int)(get_game_settings()->music_vol * 100 + 0.5f);
             int vol = display_range_menu("Set music volume", "%d %%%%", 10, 10, 10, default_opt);
-            game_settings.music_vol = vol / 100.0f;
+            get_game_settings()->music_vol = vol / 100.0f;
         }
         else if (choice == get_menu_item_id("s.vol"))
         {
-            int default_opt = (int)(game_settings.sfx_vol * 100 + 0.5f);
+            int default_opt = (int)(get_game_settings()->sfx_vol * 100 + 0.5f);
             int vol = display_range_menu("Set sound volume", "%d %%%%", 10, 10, 10, default_opt);
-            game_settings.sfx_vol = vol / 100.0f;
+            get_game_settings()->sfx_vol = vol / 100.0f;
         }
         else if (choice == get_menu_item_id("vibrations"))
         {
-            game_settings.vibration_mode = display_range_menu("Set vibration intensity", "%d", 1, 16, 1, game_settings.vibration_mode);
+            get_game_settings()->vibration_mode = display_range_menu("Set vibration intensity", "%d", 1, 16, 1, get_game_settings()->vibration_mode);
         }
         else if (choice == get_menu_item_id("Window"))
         {
-            game_settings.fullscreen = !game_settings.fullscreen;
+            get_game_settings()->fullscreen = !get_game_settings()->fullscreen;
         }
     } while (choice != get_menu_item_id("Exit"));
 
-    if (memcmp(&orig, &game_settings, sizeof(GameSettings)))
+    if (memcmp(&orig, get_game_settings(), sizeof(GameSettings)))
     {
         LOG("Game settings changed, saving\n");
         save_settings();
@@ -676,7 +675,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                     {
                         int arena = choice;
                         exit_menu = 1;
-                        *mission = game_settings.arena_config.arenas[arena].level_number;
+                        *mission = get_game_settings()->arena_config.arenas[arena].level_number;
                         *game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
                         autosave->id = NO_OWNER;
                     }

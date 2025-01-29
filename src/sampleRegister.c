@@ -5,8 +5,6 @@
 #include "record_file.h"
 #include <stdio.h>
 
-extern GameSettings game_settings;
-
 static int sample_reg_idx = 0;
 
 struct
@@ -68,9 +66,9 @@ void stop_all_samples()
 void trigger_sample_with_params(int id, int volume, int pan, int pitch)
 {
   const ALLEGRO_PLAYMODE pm = ALLEGRO_PLAYMODE_ONCE;
-  if (game_settings.sfx_vol == 0)
+  if (get_game_settings()->sfx_vol == 0)
     return;
-  double gain = volume / 255.0 * game_settings.sfx_vol;
+  double gain = volume / 255.0 * get_game_settings()->sfx_vol;
   double normpan = (pan - 127) / 128.0;
   double normpitch = pitch / 1000.0;
   for (int i = sample_reg_idx - 1; i >= 0; i--)

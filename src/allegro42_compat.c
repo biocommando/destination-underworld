@@ -6,8 +6,6 @@
 #include "settings.h"
 #include <stdio.h>
 
-extern GameSettings game_settings;
-
 static char keybuffer[ALLEGRO_KEY_MAX];
 
 static ALLEGRO_FONT *font = NULL;
@@ -50,14 +48,14 @@ int wait_event()
     }
     else if (event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
     {
-        if (!game_settings.music_on)
+        if (!get_game_settings()->music_on)
             return 2;
         ALLEGRO_AUDIO_STREAM *stream = (ALLEGRO_AUDIO_STREAM *)event.any.source;
         float *buf = (float *)al_get_audio_stream_fragment(stream);
         if (buf)
         {
             MidiPlayer *mp = get_midi_player();
-            mp->synth.total_volume = game_settings.music_vol;
+            mp->synth.total_volume = get_game_settings()->music_vol;
             midi_player_process_buffer(mp, buf, 1024);
             al_set_audio_stream_fragment(stream, buf);
             if (mp->ended)
@@ -138,7 +136,7 @@ int init_allegro()
 
     al_set_new_window_title("Destination Underworld " DU_VERSION);
     al_set_new_display_refresh_rate(60);
-    int fullscreen_flag = game_settings.fullscreen ? ALLEGRO_FULLSCREEN : 0;
+    int fullscreen_flag = get_game_settings()->fullscreen ? ALLEGRO_FULLSCREEN : 0;
     al_set_new_display_flags(ALLEGRO_OPENGL | fullscreen_flag);
     font = al_create_builtin_font();
     display = al_create_display(DISPLAY_W, DISPLAY_H);

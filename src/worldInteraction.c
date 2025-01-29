@@ -8,8 +8,6 @@
 #include "record_file.h"
 #include "duscript.h"
 
-extern GameSettings game_settings;
-
 static inline int is_passable(World *world, int x, int y)
 {
     return !get_tile_at(world, x, y)->is_blocker;
@@ -729,7 +727,7 @@ int read_level(World *world, int mission, int room_to)
     }
 
     char mission_name[256];
-    sprintf(mission_name, DATADIR "%s\\mission%d", game_settings.mission_pack, mission);
+    sprintf(mission_name, DATADIR "%s\\mission%d", get_game_settings()->mission_pack, mission);
 
     world->boss_fight = 0;
     sprintf(world->mission_display_name, "Mission %d", mission);
@@ -828,7 +826,7 @@ void change_room_if_at_exit_point(World *world, int mission)
 void read_enemy_configs(World *world)
 {
     char fname[256];
-    sprintf(fname, DATADIR "%s\\enemy-properties.dat", game_settings.mission_pack);
+    sprintf(fname, DATADIR "%s\\enemy-properties.dat", get_game_settings()->mission_pack);
     for (int i = 0; i < 5; i++)
     {
         char key[10];
@@ -850,9 +848,9 @@ int parse_highscore_from_world_state(World *world, ArenaHighscore *highscore, in
 {
     int arena_idx, mode_idx;
     int mode = world->game_modifiers & (~GAMEMODIFIER_ARENA_FIGHT);
-    for (arena_idx = 0; arena_idx < game_settings.arena_config.number_of_arenas; arena_idx++)
+    for (arena_idx = 0; arena_idx < get_game_settings()->arena_config.number_of_arenas; arena_idx++)
     {
-        if (game_settings.arena_config.arenas[arena_idx].level_number == world->mission)
+        if (get_game_settings()->arena_config.arenas[arena_idx].level_number == world->mission)
             break;
     }
     int highscore_kills = 0;

@@ -6,7 +6,7 @@
 #include "record_file.h"
 #include "duConstants.h"
 
-extern GameSettings game_settings;
+static GameSettings game_settings;
 
 static void read_setting(const char *filename, char **argv, int argc, char *result, const char *segment, const char *key)
 {
@@ -126,4 +126,9 @@ void save_settings()
   record_file_set_record(game_settings.settings_file, "audio--music-vol", buf);
   sprintf(buf, "audio--sfx-vol %lf", game_settings.sfx_vol);
   record_file_set_record(game_settings.settings_file, "audio--sfx-vol", buf);
+}
+
+inline GameSettings *get_game_settings()
+{
+    return &game_settings;
 }

@@ -39,8 +39,7 @@ typedef struct
  * For example, if setting id is audio--music-on, overriding this to 0 could be done
  * using command line argument `--audio--music-on=0`.
  *
- * The read result is saved to a global variable that can be accessed like:
- * `extern GameSettings game_settings;`
+ * The read result is saved to a global variable that can be using get_game_settings.
  */
 void read_settings(char **argv, int argc);
 
@@ -81,3 +80,8 @@ void access_arena_highscore(ArenaHighscore *arena_highscore, int load);
  * The destination buffer size should be at least strlen(DATADIR) + 64 + strlen(file) + 1.
  */
 void get_data_filename(char *dst, const char *file);
+
+/*
+ * Get the GameSettings singleton instance. 
+ */
+GameSettings *get_game_settings();

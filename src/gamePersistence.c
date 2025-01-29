@@ -3,8 +3,6 @@
 #include "record_file.h"
 #include "settings.h"
 
-extern GameSettings game_settings;
-
 void load_game_save_data(const char *filename, Enemy *data, int *mission, int *game_modifiers, int slot)
 {
     char rec[100], key[100];
@@ -50,7 +48,7 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
 void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifiers)
 {
     char filename[100];
-    sprintf(filename, SAVE_FILENAME, game_settings.mission_pack);
+    sprintf(filename, SAVE_FILENAME, get_game_settings()->mission_pack);
 
     char rec[100], key[100];
 
@@ -112,7 +110,7 @@ void save_game_save_data(const char *filename, Enemy *data, int mission, int gam
 void save_game(Enemy *autosave, int mission, int game_modifiers, int slot)
 {
     char filename[100];
-    sprintf(filename, SAVE_FILENAME, game_settings.mission_pack);
+    sprintf(filename, SAVE_FILENAME, get_game_settings()->mission_pack);
 
     save_game_save_data(filename, autosave, mission, game_modifiers, slot);
 }
@@ -120,6 +118,6 @@ void save_game(Enemy *autosave, int mission, int game_modifiers, int slot)
 void load_game(Enemy *data, int *mission, int *game_modifiers, int slot)
 {
     char filename[100];
-    sprintf(filename, SAVE_FILENAME, game_settings.mission_pack);
+    sprintf(filename, SAVE_FILENAME, get_game_settings()->mission_pack);
     load_game_save_data(filename, data, mission, game_modifiers, slot);
 }
