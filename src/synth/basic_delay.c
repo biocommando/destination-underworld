@@ -30,6 +30,8 @@ double BasicDelay_process(BasicDelay *bd, double input)
 }
 void BasicDelay_setTime(BasicDelay *bd, double milliseconds)
 {
+    if (milliseconds < 0)
+        milliseconds = 0;
     unsigned long oldDelay = bd->delaySamples;
     bd->delaySamples = (unsigned long)(milliseconds * 0.001 * bd->sampleRate);
     if (bd->delaySamples > bd->bufferLength)

@@ -26,6 +26,9 @@ int check_key(int key)
     return 0;
 }
 
+// Counter for adding a second of silence (or delay tail) after every midi file
+static int midi_track_spacing_counter = 0;
+
 int wait_event()
 {
     ALLEGRO_TIMEOUT tmo;
@@ -59,7 +62,12 @@ int wait_event()
             al_set_audio_stream_fragment(stream, buf);
             if (mp->ended)
             {
-                next_midi_track(-1);
+                midi_track_spacing_counter += 1024;
+                if (midi_track_spacing_counter >= 44100)
+                {
+                    midi_track_spacing_counter = 0;
+                    next_midi_track(-1);
+                }
             }
         }
     }

@@ -13,9 +13,6 @@ void init_midi_player(MidiPlayer *p, float sample_rate)
 
     p->tempo = 120;
     p->sample_rate;
-    p->signature = 4;
-    p->ticks_per_quarter_note = 48;
-    p->samples_per_tick = 0;
     p->pos = 0;
     p->tick_pos = 0;
     p->tracks_at_end = 0;
@@ -49,9 +46,6 @@ void midi_player_set_midi_file(MidiPlayer *p, MidiFile *midi_file)
     p->next_track_event_at = (unsigned *)malloc(sizeof(unsigned) * midi_file->track_count);
     p->next_track_event_idx = (unsigned *)malloc(sizeof(unsigned) * midi_file->track_count);
 
-    p->ticks_per_quarter_note = midi_file->ticks_per_quarter_note;
-    p->samples_per_tick = midi_file->samples_per_tick;
-
     p->pos = 0;
     p->tick_pos = 0;
     p->tracks_at_end = 0;
@@ -67,6 +61,8 @@ void midi_player_set_midi_file(MidiPlayer *p, MidiFile *midi_file)
 
 void midi_player_process_buffer(MidiPlayer *p, float *buf, int size)
 {
+    if (!p->midi_file)
+        return;
     size *= 2; // stereo
     if (p->ended)
     {
@@ -75,9 +71,12 @@ void midi_player_process_buffer(MidiPlayer *p, float *buf, int size)
         return;
     }
     int process_at_idx = 0;
-    for (int i = 0; i < size; i++)
+    // in stereo audio every other sample is for left and every other for right
+    // so let's make sure that we run any logic only when index is at left channel
+    // so we don't need to care about misalignment of the channels
+    for (int i = 0; i < size; i += 2)
     {
-        if (++p->tick_pos == p->samples_per_tick)
+        if (++p->tick_pos == p->midi_file->samples_per_tick)
         {
             Synth_process(&p->synth, &buf[process_at_idx], NULL, i - process_at_idx);
 
@@ -116,10 +115,6 @@ void midi_player_process_buffer(MidiPlayer *p, float *buf, int size)
                     p->ended = 1;
             }
         }
-        // in stereo audio every other sample is for left and every other for right
-        // so let's make sure that we run any logic only when index is at left channel
-        // so we don't need to care about misalignment of the channels
-        i++;
     }
     Synth_process(&p->synth, &buf[process_at_idx], NULL, size - process_at_idx);
 }

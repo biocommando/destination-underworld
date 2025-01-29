@@ -7,7 +7,7 @@ inline static float fast_tanh(float x)
     return x * (27.0 + x2) / (27.0 + 9.0 * x2);
 }
 
-void MicrotrackerMoog_calculateCutoff(MicrotrackerMoog *mm)
+static inline void calculateCutoff(MicrotrackerMoog *mm)
 {
     mm->coCalc = mm->cutoff + mm->cutmod;
     mm->coCalc = mm->coCalc * 44100 / mm->sampleRate; // 6.28318530717 * 1000 / sampleRate;
@@ -52,16 +52,16 @@ void MicrotrackerMoog_setResonance(MicrotrackerMoog *mm, float r)
 void MicrotrackerMoog_setCutoff(MicrotrackerMoog *mm, float c)
 {
     mm->cutoff = c;
-    MicrotrackerMoog_calculateCutoff(mm);
+    calculateCutoff(mm);
 }
 
-void MicrotrackerMoog_setModulation(MicrotrackerMoog *mm, float m)
+inline void MicrotrackerMoog_setModulation(MicrotrackerMoog *mm, float m)
 
 {
     if (mm->cutmod != m)
     {
         mm->cutmod = m;
-        MicrotrackerMoog_calculateCutoff(mm);
+        calculateCutoff(mm);
     }
 }
 
@@ -73,5 +73,5 @@ void MicrotrackerMoog_reset(MicrotrackerMoog *mm)
 void MicrotrackerMoog_setSamplerate(MicrotrackerMoog *mm, int sr)
 {
     mm->sampleRate = sr;
-    MicrotrackerMoog_calculateCutoff(mm);
+    calculateCutoff(mm);
 }

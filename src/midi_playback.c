@@ -114,6 +114,7 @@ void next_midi_track(int index)
         current_playlist_entry = 0;
     Synth_read_instruments(&midi_player.synth, playlist[current_playlist_entry].meta_f);
     init_midi_file(&midi_file);
+    midi_file.sample_rate = midi_player.sample_rate;
     read_midi_file(playlist[current_playlist_entry].path, &midi_file);
     midi_file_ready = 1;
     midi_player_set_midi_file(&midi_player, &midi_file);

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void debug_print_event(MidiEvent *this)
+static void debug_print_event(MidiEvent *this)
 {
     printf("<%s %u %u %u %u>", this->end_of_track ? "y" : "n", this->data[0], this->data[1], this->data[2], this->time_delta);
 }
@@ -25,7 +25,7 @@ void init_midi_file(MidiFile *mf)
 int tick_pos = 0;
 int tracks_at_end = 0;*/
 
-void change_endianness(void *data, int length)
+static void change_endianness(void *data, int length)
 {
     unsigned char temp[4];
     memcpy(temp, data, length);
@@ -36,7 +36,7 @@ void change_endianness(void *data, int length)
     }
 }
 
-void read_chunk_hdr(char *chunk_type, unsigned *length, FILE *f)
+static void read_chunk_hdr(char *chunk_type, unsigned *length, FILE *f)
 {
     /*char hdr[4];
     fread(hdr, 1, 4, f);
@@ -46,7 +46,7 @@ void read_chunk_hdr(char *chunk_type, unsigned *length, FILE *f)
     change_endianness(length, 4);
 }
 
-unsigned read_variable_length_quantity(int *length, FILE *f)
+static unsigned read_variable_length_quantity(int *length, FILE *f)
 {
     unsigned out = 0;
     // std::string debug;
@@ -67,15 +67,15 @@ unsigned read_variable_length_quantity(int *length, FILE *f)
     return out;
 }
 
-void track_push_back(Track *t, MidiEvent evt)
+static void track_push_back(Track *t, MidiEvent evt)
 {
-    t->byte_size = sizeof(MidiEvent) * (t->count + 1);
-    t->events = (MidiEvent *)realloc(t->events, t->byte_size);
+    const size_t byte_size = sizeof(MidiEvent) * (t->count + 1);
+    t->events = (MidiEvent *)realloc(t->events, byte_size);
     memcpy(&t->events[t->count], &evt, sizeof(MidiEvent));
     t->count++;
 }
 
-void read_track(unsigned total_length, FILE *f, MidiFile *midi)
+static void read_track(unsigned total_length, FILE *f, MidiFile *midi)
 {
     Track events;
     events.count = 0;

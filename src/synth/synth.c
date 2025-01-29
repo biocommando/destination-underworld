@@ -108,7 +108,7 @@ void SynthVoice_release(SynthVoice *sv)
     AdsrEnvelope_release(&sv->filter_envelope);
 }
 
-float note_to_hz(float note)
+static inline float note_to_hz(float note)
 {
     return pow(2, note / 12) * 16.352;
 }
@@ -195,6 +195,9 @@ void init_Synth(Synth *s, float sample_rate)
     s->total_volume = 1;
 
     s->diagnostics_max_n_voices = 0;
+
+    for (int i = 0; i < SYNTH_MAX_VOICES; i++)
+        s->voices[i].active = 0;
 }
 
 void free_Synth(Synth *s)
@@ -218,17 +221,10 @@ void Synth_handle_midi_event(Synth *s, unsigned char *event_data, unsigned flags
     {
         int n_active_voices = 0;
         int channel = event_data[0] & 0xF;
-        int inactive_voices[SYNTH_MAX_VOICES];
-        memset(inactive_voices, 1, sizeof(inactive_voices));
-        for (int i = 0; i < SYNTH_MAX_VOICES && s->active_voices[i] >= 0; i++)
-        {
-            inactive_voices[s->active_voices[i]] = 0;
-            n_active_voices++;
-        }
         int new_voice_idx = -1;
         for (int i = 0; i < SYNTH_MAX_VOICES; i++)
         {
-            if (inactive_voices[i])
+            if (!s->voices[i].active)
             {
                 new_voice_idx = i;
                 break;
@@ -257,6 +253,7 @@ void Synth_handle_midi_event(Synth *s, unsigned char *event_data, unsigned flags
         if (flags & 1)
             new_voice->allow_note_stealing = 0;
 
+        new_voice->active = 1;
         for (int i = 0; i < SYNTH_MAX_VOICES; i++)
         {
             if (s->active_voices[i] < 0)
@@ -288,7 +285,7 @@ static inline float soft_clip(const float f)
     return f * (27 + f2) / (27 + 9 * f2);
 }
 
-int Synth_active_voice_sort_function(const void *a, const void *b)
+static int Synth_active_voice_sort_function(const void *a, const void *b)
 {
     int arg1 = *(const int *)a;
     int arg2 = *(const int *)b;
@@ -300,7 +297,7 @@ int Synth_active_voice_sort_function(const void *a, const void *b)
     return 0;
 }
 
-void Synth_rearrange_active_voices(Synth *s)
+static inline void Synth_rearrange_active_voices(Synth *s)
 {
     qsort(s->active_voices, SYNTH_MAX_VOICES, sizeof(int), Synth_active_voice_sort_function);
 }
@@ -322,6 +319,7 @@ void Synth_process(Synth *s, float *buffer_left, float *buffer_right, int buffer
             {
                 s->active_voices[j] = -1;
                 active_voices_modified = 1;
+                voice->active = 0;
             }
         }
         if (active_voices_modified)
@@ -336,6 +334,8 @@ void Synth_process(Synth *s, float *buffer_left, float *buffer_right, int buffer
 void Synth_kill_all_voices(Synth *s)
 {
     memset(s->active_voices, -1, sizeof(s->active_voices));
+    for (int i = 0; i < SYNTH_MAX_VOICES; i++)
+        s->voices[i].active = 0;
 }
 
 void Synth_kill_voices(Synth *s, int channel)
@@ -347,6 +347,7 @@ void Synth_kill_voices(Synth *s, int channel)
         {
             s->active_voices[i] = -1;
             voices_killed = 1;
+            s->voices[s->active_voices[i]].active = 0;
         }
     }
     if (voices_killed)

@@ -14,7 +14,7 @@ void EnvelopeStage_setLength(EnvelopeStage *es, int samples)
     }
 }
 
-void EnvelopeStage_calcuateNext(EnvelopeStage *es)
+inline void EnvelopeStage_calcuateNext(EnvelopeStage *es)
 {
     if (++es->phase >= es->length)
     {
@@ -27,12 +27,12 @@ void EnvelopeStage_calcuateNext(EnvelopeStage *es)
     }
 }
 
-int EnvelopeStage_hasNext(EnvelopeStage *es)
+inline int EnvelopeStage_hasNext(EnvelopeStage *es)
 {
     return es->length == -1 || es->phase < es->length;
 }
 
-float EnvelopeStage_getRatio(EnvelopeStage *es)
+inline float EnvelopeStage_getRatio(EnvelopeStage *es)
 {
     return es->ratio;
 }

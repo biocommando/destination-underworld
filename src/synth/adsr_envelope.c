@@ -1,5 +1,11 @@
 #include "adsr_envelope.h"
 
+static void triggerStage(AdsrEnvelope *env, int stage)
+{
+    env->stage = stage;
+    EnvelopeStage_reset(&env->stages[stage]);
+}
+
 float AdsrEnvelope_getSustain(AdsrEnvelope *env) { return env->sustain; }
 
 void AdsrEnvelope_setCycleOnOff(AdsrEnvelope *env, int on) { env->cycleAttackDecay = on; }
@@ -73,9 +79,9 @@ void AdsrEnvelope_calculateNext(AdsrEnvelope *env)
     {
         // If cycling A-D-S-A-D-S... at the end of decay stage, trigger attack again
         if (env->cycleAttackDecay && env->stage == 1)
-            AdsrEnvelope_triggerStage(env, 0);
+            triggerStage(env, 0);
         else
-            AdsrEnvelope_triggerStage(env, env->stage + 1);
+            triggerStage(env, env->stage + 1);
         AdsrEnvelope_calculateNext(env);
     }
     else
@@ -94,12 +100,7 @@ int AdsrEnvelope_ended(AdsrEnvelope *env)
 void AdsrEnvelope_trigger(AdsrEnvelope *env)
 {
     env->endReached = 0;
-    AdsrEnvelope_triggerStage(env, 0);
-}
-void AdsrEnvelope_triggerStage(AdsrEnvelope *env, int stage)
-{
-    env->stage = stage;
-    EnvelopeStage_reset(&env->stages[stage]);
+    triggerStage(env, 0);
 }
 
 void AdsrEnvelope_release(AdsrEnvelope *env)
@@ -108,7 +109,7 @@ void AdsrEnvelope_release(AdsrEnvelope *env)
     {
         env->releaseLevel = env->envelope;
         env->releaseStage = env->stage;
-        AdsrEnvelope_triggerStage(env, 3);
+        triggerStage(env, 3);
     }
 }
 

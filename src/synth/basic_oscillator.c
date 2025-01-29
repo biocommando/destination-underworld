@@ -6,7 +6,7 @@
 
 static float sine_table[256];
 
-static void init_sine_table()
+static inline void init_sine_table()
 {
     static int sine_table_initialized = 0;
     if (!sine_table_initialized)
@@ -17,11 +17,18 @@ static void init_sine_table()
     }
 }
 
+static inline void set_default_wt(BasicOscillator* bo)
+{
+    BasicOscillator_setWavetable(bo, sine_table, 1);
+    BasicOscillator_setWaveTableParams(bo, 0, 1);
+}
+
 void init_BasicOscillator(BasicOscillator* bo, int sampleRate)
 {
     memset(bo, 0, sizeof(BasicOscillator));
-    bo->hzToF = 1.0f / (float)sampleRate;
+    BasicOscillator_setSamplerate(bo, sampleRate);
     init_sine_table();
+    set_default_wt(bo);
 }
 
 void BasicOscillator_setWaveTableParams(BasicOscillator* bo, float pos, float window)
@@ -37,7 +44,7 @@ void BasicOscillator_setWavetable(BasicOscillator* this, float *wt, int size)
 }
 
 
-void BasicOscillator_setSamplerate(BasicOscillator* bo, int rate)
+inline void BasicOscillator_setSamplerate(BasicOscillator* bo, int rate)
 {
     bo->hzToF = 1.0f / (float)rate;
 }
@@ -87,8 +94,7 @@ void BasicOscillator_calculateNext(BasicOscillator* bo)
         if (bo->wt_oneshot)
         {
             bo->wt_oneshot = 0;
-            BasicOscillator_setWavetable(bo, sine_table, 1);
-            BasicOscillator_setWaveTableParams(bo, 0, 1);
+            set_default_wt(bo);
         }
         bo->phase = bo->phase - 1.0f;
     }
