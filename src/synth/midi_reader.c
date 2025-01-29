@@ -12,8 +12,6 @@ void init_midi_file(MidiFile *mf)
 {
     memset(mf, 0, sizeof(MidiFile));
     mf->tracks = NULL;
-    mf->next_track_event_at = NULL;
-    mf->next_track_event_idx = NULL;
     mf->track_count = 0;
     mf->tempo = 120;
     mf->signature = 4;
@@ -179,10 +177,6 @@ void read_track(unsigned total_length, FILE *f, MidiFile *midi)
     {
         midi->tracks = (Track *)realloc(midi->tracks, sizeof(Track) * (midi->track_count + 1));
         midi->tracks[midi->track_count] = events;
-        midi->next_track_event_at = (unsigned *)realloc(midi->next_track_event_at, sizeof(unsigned) * (midi->track_count + 1));
-        midi->next_track_event_at[midi->track_count] = events.events[0].time_delta;
-        midi->next_track_event_idx = (unsigned *)realloc(midi->next_track_event_idx, sizeof(unsigned) * (midi->track_count + 1));
-        midi->next_track_event_idx[midi->track_count] = 0;
         midi->track_count++;
     }
     // Conversion to samples later...
@@ -239,7 +233,5 @@ void free_midi_file(MidiFile *t)
         free(t->tracks[i].events);
     }
     free(t->tracks);
-    free(t->next_track_event_at);
-    free(t->next_track_event_idx);
     init_midi_file(t);
 }

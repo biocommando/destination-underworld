@@ -26,9 +26,6 @@ typedef struct
     int samples_per_tick;
     float sample_rate;
     size_t file_length_samples;
-
-    unsigned *next_track_event_at;
-    unsigned *next_track_event_idx;
 } MidiFile;
 
 void init_midi_file(MidiFile *mf);
