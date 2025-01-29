@@ -7,6 +7,7 @@
 #include "best_times.h"
 #include "settings.h"
 #include "helpers.h"
+#include "game_playback.h"
 
 void draw_enemy(Enemy *enm, World *world)
 {
@@ -297,8 +298,6 @@ static void draw_explosion_circle(World *world, double x, double y, double inten
     al_draw_filled_circle(x, y, radius, col);
 }
 
-extern double random();
-
 static const double expl_sin_cos_table[2][10] = {
     {0.19866933079506122, 0.7367955455941375, 0.9934909047357762,
      0.8707065057822322, 0.4153418158455323, -0.19866933079506127,
@@ -434,8 +433,8 @@ void display_level_info(World *world, int mission, int mission_count, long compl
                   time_secs, beat_idx == 0 ? "*" : "", time0,
                   beat_idx == 1 ? "*" : "", time1,
                   beat_idx == 2 ? "*" : "", time2);
-    extern int record_mode;
-    if (beat_idx >= 0 && record_mode != RECORD_MODE_PLAYBACK)
+    const int *record_mode = get_playback_mode();
+    if (beat_idx >= 0 && *record_mode != RECORD_MODE_PLAYBACK)
     {
         save_best_times(get_game_settings()->mission_pack, &best_times);
     }

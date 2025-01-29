@@ -35,7 +35,6 @@ Enemy plrautosave;
 
 int fname_counter = 0;
 
-int record_mode = RECORD_MODE_NONE;
 char record_input_filename[256] = "";
 int no_player_damage = 0;
 
@@ -56,14 +55,15 @@ int main(int argc, char **argv)
   read_arg[0] = 0;
 
   read_cmd_line_arg_str("record-mode", argv, argc, read_arg);
+  int *record_mode = get_playback_mode();
   if (!strcmp(read_arg, "record"))
   {
-    record_mode = RECORD_MODE_RECORD;
+    *record_mode = RECORD_MODE_RECORD;
     LOG("Record mode active.\n");
   }
   else if (!strcmp(read_arg, "play"))
   {
-    record_mode = RECORD_MODE_PLAYBACK;
+    *record_mode = RECORD_MODE_PLAYBACK;
     char fname[256];
     FILE *record_input_file = NULL;
     if (read_cmd_line_arg_str("file", argv, argc, fname))
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
     while (mission > 0)
     {
       mission = game(mission, &game_modifiers);
-      if (record_mode == RECORD_MODE_PLAYBACK)
+      if (*record_mode == RECORD_MODE_PLAYBACK)
       {
         mission = 0;
         break;
@@ -742,14 +742,15 @@ int game(int mission, int *game_modifiers)
 
   world.hint.time_shows = 0;
 
-  if (record_mode == RECORD_MODE_RECORD)
+  int *record_mode = get_playback_mode();
+  if (*record_mode == RECORD_MODE_RECORD)
   {
     sprintf(record_input_filename, "recorded-mission%d-take%d.dat", mission, ++fname_counter);
     remove(record_input_filename);
     game_playback_init(record_input_filename, 'w');
     save_game_save_data(record_input_filename, &world.plr, mission, *game_modifiers, 0);
   }
-  else if (record_mode == RECORD_MODE_PLAYBACK)
+  else if (*record_mode == RECORD_MODE_PLAYBACK)
   {
     game_playback_init(record_input_filename, 'r');
     load_game_save_data(record_input_filename, &world.plr, &mission, &world.game_modifiers, 0);
@@ -883,7 +884,7 @@ int game(int mission, int *game_modifiers)
     {
       draw_enemy(&world.plr, &world);
 
-      if (record_mode == RECORD_MODE_PLAYBACK)
+      if (*record_mode == RECORD_MODE_PLAYBACK)
       {
         int has_more = 1;
         if (time_stamp >= playback_next_event_time_stamp)
@@ -962,14 +963,14 @@ int game(int mission, int *game_modifiers)
         show_gold_hint(&world, gold_hint_amount);
       }
 
-      if (check_key(ALLEGRO_KEY_R) && record_mode != RECORD_MODE_PLAYBACK)
+      if (check_key(ALLEGRO_KEY_R) && *record_mode != RECORD_MODE_PLAYBACK)
       {
         restart_requested = 1;
       }
       else if (restart_requested)
         restart_requested = 2;
 
-      if (record_mode == RECORD_MODE_RECORD)
+      if (*record_mode == RECORD_MODE_RECORD)
       {
         long new_key_press_mask = (key_left ? 1 : 0) | (key_right ? 2 : 0) |
                                   (key_up ? 4 : 0) | (key_down ? 8 : 0) |
@@ -1015,7 +1016,7 @@ int game(int mission, int *game_modifiers)
 
       display_level_info(&world, mission, get_game_settings()->mission_count, completetime);
 
-      if (record_mode != RECORD_MODE_PLAYBACK)
+      if (*record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);
 
       if (world.final_level)
@@ -1196,7 +1197,7 @@ int game(int mission, int *game_modifiers)
           }
           rectfill(offx + 5, offy + 5, offx + 340, offy + 125, GRAY(60));
           al_draw_textf(get_font(), WHITE, offx + 10, offy + 10, ALLEGRO_ALIGN_LEFT, "Arena fight over, your kill count: %d", world.kills);
-          if (record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
+          if (*record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
           {
             al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
             al_draw_textf(get_font(), WHITE, offx + 10, offy + 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
@@ -1232,7 +1233,7 @@ int game(int mission, int *game_modifiers)
 
     if (check_key(ALLEGRO_KEY_ESCAPE))
     {
-      if (record_mode == RECORD_MODE_PLAYBACK)
+      if (*record_mode == RECORD_MODE_PLAYBACK)
       {
         break;
       }
@@ -1246,7 +1247,7 @@ int game(int mission, int *game_modifiers)
     }
   }
 
-  if (record_mode == RECORD_MODE_RECORD)
+  if (*record_mode == RECORD_MODE_RECORD)
   {
     game_playback_add_end_event();
   }

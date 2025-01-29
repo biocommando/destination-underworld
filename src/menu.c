@@ -9,8 +9,7 @@
 #include "logging.h"
 #include "sampleRegister.h"
 #include "midi_playback.h"
-
-extern int record_mode;
+#include "game_playback.h"
 
 static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
@@ -605,7 +604,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
     int switch_level = 1;
     ALLEGRO_SAMPLE_ID id;
 
-    if (record_mode == RECORD_MODE_PLAYBACK)
+    if (*get_playback_mode() == RECORD_MODE_PLAYBACK)
     {
         al_clear_to_color(BLACK);
         al_draw_textf(get_font(), WHITE, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");

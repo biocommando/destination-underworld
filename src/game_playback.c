@@ -1,8 +1,10 @@
 #include "game_playback.h"
 #include "record_file.h"
+#include "duConstants.h"
 
 #include <string.h>
 
+static int record_mode = RECORD_MODE_NONE;
 struct game_playback_event
 {
     long time_stamp;
@@ -85,4 +87,9 @@ void game_playback_add_end_event()
 void game_playback_next()
 {
     event_index++;
+}
+
+inline int *get_playback_mode()
+{
+    return &record_mode;
 }

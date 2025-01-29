@@ -39,3 +39,8 @@ void game_playback_add_end_event();
  * Increment the game playback event index.
  */
 void game_playback_next();
+
+/*
+ * Get pointer to the current playback mode (none, play, record).
+ */
+int *get_playback_mode();
