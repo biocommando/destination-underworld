@@ -406,6 +406,20 @@ typedef struct
     Potion potions[POTION_COUNT];
 } World;
 
+// Global state that is persisted over different game(...) calls.
+typedef struct
+{
+    // Game mode
+    int game_modifiers;
+    // Current mission number
+    int mission;
+    // The initial player status at beginning of a level
+    Enemy plrautosave;
+    // Bitmask of cheats active.
+    // Currently only bit at 0 = no player damage
+    int cheats;
+} GlobalGameState;
+
 /*
  * Check if effect with effect_id is active (1 = true, 0 = false).
  */

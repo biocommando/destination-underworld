@@ -589,7 +589,7 @@ static void load_menu_sprites()
     al_convert_mask_to_alpha(menu_sprites, al_map_rgb(255, 0, 255));
 }
 
-int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
+int menu(int ingame, GlobalGameState *ggs)
 {
     // Make these static so that entering the menu mid-game will not forget previous choises
     static int level_set = 0;
@@ -618,7 +618,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
         {
             while (!exit_menu)
             {
-                int ingame_menu_selection = display_in_game_menu(*game_modifiers, *mission);
+                int ingame_menu_selection = display_in_game_menu(ggs->game_modifiers, ggs->mission);
                 // Return game
                 if (ingame_menu_selection == get_menu_item_id("Return"))
                 {
@@ -630,7 +630,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                     int save_slot = display_save_game_menu();
                     if (save_slot != 0)
                     {
-                        save_game(autosave, *mission, *game_modifiers, save_slot - 1);
+                        save_game(&ggs->plrautosave, ggs->mission, ggs->game_modifiers, save_slot - 1);
                     }
                 }
                 else if (ingame_menu_selection == get_menu_item_id("Game options"))
@@ -645,38 +645,39 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 {
                     main_menu = 1;
                     exit_menu = 1;
-                    *game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
+                    ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
                 }
             }
             exit_menu = 0;
         }
         while (main_menu && !exit_menu)
         {
-            int main_menu_selection = display_main_menu(*game_modifiers);
+            int main_menu_selection = display_main_menu(ggs->game_modifiers);
             if (main_menu_selection == get_menu_item_id("Start"))
             {
                 int choice = 0;
                 while (choice != get_menu_item_id("Exit") && !exit_menu)
                 {
-                    choice = display_new_game_menu(*game_modifiers);
+                    choice = display_new_game_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
 
                     if (choice == get_menu_item_id("Change game mode"))
                     {
-                        *game_modifiers = display_game_mode_menu(*game_modifiers);
+                        ggs->game_modifiers = display_game_mode_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
                     }
                     else if (choice == get_menu_item_id("Story"))
                     {
                         exit_menu = 1;
-                        *mission = 1;
-                        autosave->id = NO_OWNER;
+                        ggs->mission = 1;
+                        ggs->plrautosave.id = NO_OWNER;
+                        ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
                     }
                     else if (choice < ARENACONF_MAX_NUMBER_OF_ARENAS)
                     {
                         int arena = choice;
                         exit_menu = 1;
-                        *mission = get_game_settings()->arena_config.arenas[arena].level_number;
-                        *game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
-                        autosave->id = NO_OWNER;
+                        ggs->mission = get_game_settings()->arena_config.arenas[arena].level_number;
+                        ggs->game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
+                        ggs->plrautosave.id = NO_OWNER;
                     }
                 }
             }
@@ -686,7 +687,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
                 if (load_slot != 0)
                 {
                     exit_menu = 1;
-                    do_load_game(autosave, mission, game_modifiers, load_slot - 1);
+                    do_load_game(&ggs->plrautosave, &ggs->mission, &ggs->game_modifiers, load_slot - 1);
                 }
             }
             if (main_menu_selection == get_menu_item_id("Game options"))
@@ -699,7 +700,7 @@ int menu(int ingame, Enemy *autosave, int *mission, int *game_modifiers)
             }
             if (main_menu_selection == get_menu_item_id("Exit"))
             {
-                *mission = 0;
+                ggs->mission = 0;
                 exit_menu = 1;
             }
         }

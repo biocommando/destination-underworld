@@ -2,12 +2,8 @@
 #include "world.h"
 
 /*
- * Play one game mission. Returns next mission to play.
- * -1 = go back to main menu.
+ * Play one game mission.
+ * The way the menus during and after the game are handled is a bit messy and the
+ * game function may be called recursively.
  */
-int game(int mission, int *game_modifiers, Enemy *plrautosave);
-
-/*
- * Enables no player damage mode for debugging purposes.
- */
-void enable_no_player_damage();
+void game(GlobalGameState *ggs);

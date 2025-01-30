@@ -29,9 +29,7 @@
 #include "enemy_logic.h"
 #include "boss_logic.h"
 
-static int no_player_damage = 0;
-
-static void bullet_logic(World *world)
+static void bullet_logic(World *world, GlobalGameState *ggs)
 {
   const int difficulty = GET_DIFFICULTY(world);
   for (int i = 0; i < BULLETCOUNT; i++)
@@ -67,7 +65,7 @@ static void bullet_logic(World *world)
       }
       if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
       {
-        if (no_player_damage)
+        if (ggs->cheats & 1)
           world->plr.health++;
         if (world->powerups.rune_of_protection_active == 1)
         {
@@ -227,7 +225,7 @@ static void bullet_logic(World *world)
   }
 }
 
-int game(int mission, int *game_modifiers, Enemy *plrautosave)
+void game(GlobalGameState *ggs)
 {
   // For playback recording filenames
   static int fname_counter = 0;
@@ -235,10 +233,15 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
 
   long completetime = 0;
 
+  int *mission = &ggs->mission;
+  int *game_modifiers = &ggs->game_modifiers;
+  Enemy *plrautosave = &ggs->plrautosave;
+  int no_player_damage = ggs->cheats & 1;
+
   World world;
   memset(&world, 0, sizeof(World));
   world.game_modifiers = *game_modifiers;
-  world.mission = mission;
+  world.mission = *mission;
   world.boss_fight_config = world.boss_fight_configs;
   if (!get_game_settings()->custom_resources)
   {
@@ -277,22 +280,22 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
   if (*record_mode == RECORD_MODE_RECORD)
   {
     char record_input_filename[256];
-    sprintf(record_input_filename, "recorded-mission%d-take%d.dat", mission, ++fname_counter);
+    sprintf(record_input_filename, "recorded-mission%d-take%d.dat", *mission, ++fname_counter);
     remove(record_input_filename);
 
     game_playback_set_filename(record_input_filename);
     game_playback_init();
-    save_game_save_data(record_input_filename, &world.plr, mission, *game_modifiers, 0);
+    save_game_save_data(record_input_filename, &world.plr, *mission, *game_modifiers, 0);
   }
   else if (*record_mode == RECORD_MODE_PLAYBACK)
   {
     game_playback_init();
-    load_game_save_data(game_playback_get_filename(), &world.plr, &mission, &world.game_modifiers, 0);
+    load_game_save_data(game_playback_get_filename(), &world.plr, mission, &world.game_modifiers, 0);
     playback_next_event_time_stamp = game_playback_get_time_stamp();
   }
   long time_stamp = 0;
 
-  read_level(&world, mission, 1);
+  read_level(&world, *mission, 1);
 
   if (world.boss_fight && world.play_boss_sound)
   {
@@ -433,7 +436,7 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
           world.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-          display_level_info(&world, mission, get_game_settings()->mission_count, completetime);
+          display_level_info(&world, *mission, get_game_settings()->mission_count, completetime);
 
           wait_key_press(ALLEGRO_KEY_ENTER);
           break;
@@ -539,25 +542,25 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
       }
     }
 
-    change_room_if_at_exit_point(&world, mission);
+    change_room_if_at_exit_point(&world, *mission);
 
     if (get_tile_at(&world, world.plr.x, world.plr.y)->is_exit_level && world.plr.health > 0)
     {
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, mission, get_game_settings()->mission_count, completetime);
+      display_level_info(&world, *mission, get_game_settings()->mission_count, completetime);
 
       if (*record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);
 
       if (world.final_level)
       {
-        mission = -1;
+        *mission = -1;
         break;
       }
 
-      mission++;
+      *mission++;
       *plrautosave = world.plr;
       break;
     }
@@ -595,7 +598,7 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
 
     if (world.plr.health > 0)
     {
-      bullet_logic(&world);
+      bullet_logic(&world, ggs);
       potion_logic(&world);
     }
 
@@ -748,13 +751,13 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
           {
             al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Highscore: %d", highscore_kills);
           }
-          al_draw_textf(get_font(), WHITE, offx + 10, offy + 100, ALLEGRO_ALIGN_LEFT, "Press ENTER to continue...");
+          al_draw_textf(get_font(), WHITE, offx + 10, offy + 100, ALLEGRO_ALIGN_LEFT, "ENTER = replay, ESC = go back to menu");
           al_flip_display();
           int wait_keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_ESCAPE};
           int key = wait_key_presses(wait_keys, 2);
           if (key == ALLEGRO_KEY_ESCAPE)
           {
-            menu(0, plrautosave, &mission, game_modifiers);
+            menu(0, ggs);
           }
         }
         break;
@@ -770,7 +773,7 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
         break;
       }
       world.hint.time_shows = 0;
-      int switch_level = menu(1, plrautosave, &mission, game_modifiers);
+      int switch_level = menu(1, ggs);
       if (switch_level)
       {
         break;
@@ -794,10 +797,4 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
     al_identity_transform(&transform);
     al_use_transform(&transform);
   }
-  return mission;
-}
-
-inline void enable_no_player_damage()
-{
-    no_player_damage = 1;
 }

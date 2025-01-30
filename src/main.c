@@ -40,9 +40,10 @@ int main(int argc, char **argv)
   logging_enabled = read_cmd_line_arg_int("logging", argv, argc);
 #endif
   read_cmd_line_arg_str("player-damage", argv, argc, read_arg);
+  int player_damage_off = 0;
   if (!strcmp(read_arg, "off"))
   {
-    enable_no_player_damage();
+    player_damage_off = 1;
   }
   read_arg[0] = 0;
 
@@ -82,7 +83,6 @@ int main(int argc, char **argv)
   init_allegro();
   progress_load_state("Loading game...", 1);
   srand((int)time(NULL));
-  int mission = 1;
   int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc);
 
   progress_load_state("Loading samples...", 1);
@@ -135,16 +135,20 @@ int main(int argc, char **argv)
   randomize_midi_playlist();
   next_midi_track(-1);
 
-  Enemy plrautosave;
-  while (mission != 0)
+  GlobalGameState ggs;
+  memset(&ggs, 0, sizeof(ggs));
+  if (player_damage_off)
+    ggs.cheats |= 1;
+  ggs.mission = 1;
+  while (ggs.mission != 0)
   {
-    menu(0, &plrautosave, &mission, &game_modifiers);
-    while (mission > 0)
+    menu(0, &ggs);
+    while (ggs.mission > 0)
     {
-      mission = game(mission, &game_modifiers, &plrautosave);
+      game(&ggs);
       if (*record_mode == RECORD_MODE_PLAYBACK)
       {
-        mission = 0;
+        ggs.mission = 0;
         break;
       }
     }
