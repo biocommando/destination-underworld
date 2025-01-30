@@ -365,7 +365,7 @@ void game(GlobalGameState *ggs)
         break;
       }
 
-      *mission++;
+      (*mission)++;
       *plrautosave = world.plr;
       break;
     }
