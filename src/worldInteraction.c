@@ -125,7 +125,7 @@ static inline int tile_check_bullet_hit_wall(World *world, int x, int y)
 
 void move_bullet(Bullet *bb, World *world)
 {
-    if (bb->owner_id == NO_OWNER)
+    if (bb->owner == NULL)
         return;
     // Enemy restricts are blockers but not walls, also allows adding e.g. shoot through walls
     if (!tile_check_bullet_hit_wall(world, bb->x + (int)bb->dx, (int)bb->y) &&
@@ -139,7 +139,7 @@ void move_bullet(Bullet *bb, World *world)
     else
     {
         create_shade_around_hit_point((int)bb->x, (int)bb->y, 4, world);
-        bb->owner_id = NO_OWNER;
+        bb->owner = NULL;
     }
 }
 static inline double randomized_bullet_direction(double dir)
@@ -152,7 +152,7 @@ Bullet *get_next_available_bullet(World *world)
     for (int i = 0; i < BULLETCOUNT; i++)
     {
         Bullet *bullet = &world->bullets[i];
-        if (bullet->owner_id == NO_OWNER)
+        if (bullet->owner == NULL)
         {
             return bullet;
         }
@@ -190,7 +190,7 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
         bb->x = x;
         bb->y = y;
 
-        bb->owner_id = enm->id;
+        bb->owner = enm;
 
         bb->hurts_flags = 0;
         if (hurts_monsters)
@@ -243,7 +243,7 @@ int shoot(Enemy *enm, World *world)
 
 int bullet_hit(Enemy *enm, Bullet *bb)
 {
-    if (bb->owner_id == enm->id)
+    if (bb->owner == enm)
     {
         return 0;
     }
@@ -253,7 +253,7 @@ int bullet_hit(Enemy *enm, Bullet *bb)
         return 0;
     }
 
-    bb->owner_id = NO_OWNER;
+    bb->owner = NULL;
 
     if (--enm->health <= 0)
     {
@@ -803,7 +803,7 @@ void change_room_if_at_exit_point(World *world, int mission)
             world->current_room = to_room;
             for (int i = 0; i < BULLETCOUNT; i++)
             {
-                world->bullets[i].owner_id = NO_OWNER;
+                world->bullets[i].owner = NULL;
             }
             for (int i = 0; i < ENEMYCOUNT; i++)
             {

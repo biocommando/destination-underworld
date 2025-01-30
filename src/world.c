@@ -39,7 +39,7 @@ void init_world(World *world)
     clear_visual_fx(world);
     for (int i = 0; i < BULLETCOUNT; i++)
     {
-        world->bullets[i].owner_id = NO_OWNER;
+        world->bullets[i].owner = NULL;
     }
     for (int i = 0; i < ENEMYCOUNT; i++)
     {

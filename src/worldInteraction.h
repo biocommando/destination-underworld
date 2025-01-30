@@ -24,7 +24,7 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world);
  * Moves bullet one position to the direction indicated by the dx, dy vector.
  * Checks the map that the direction is not blocked, otherwise destroys the bullet and creates
  * a "crater" on the floor around the hit point. To see if the bullet exists after this function,
- * one needs to check the owner_id field.
+ * one needs to check the owner field.
  */
 void move_bullet(Bullet *bb, World *world);
 /*

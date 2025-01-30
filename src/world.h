@@ -110,10 +110,11 @@ typedef struct
     double dx;
     // y speed vector
     double dy;
-    // The id of the Enemy that "owns" the bullet. Used for
-    // checking if the bullet exists or not. TODO: Could be simplified to
-    // be just a flag.
-    int owner_id;
+    // The Enemy that "owns" the bullet. Used for
+    // checking if the bullet exists or not.
+    // The bullet needs to know its owner so that it doesn't hurt the owner
+    // although both hurt flags would be set.
+    Enemy *owner;
     // What actor types the bullet can hurt? (see BULLET_HURTS_* definitions)
     int hurts_flags;
     // The bullet type (see BULLET_TYPE_* definitions)

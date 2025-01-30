@@ -17,14 +17,14 @@ void bullet_logic(World *world, GlobalGameState *ggs)
   {
     Bullet *bullet = &world->bullets[i];
 
-    if (bullet->owner_id == NO_OWNER)
+    if (bullet->owner == NULL)
       continue;
     double bullet_orig_x = bullet->x;
     double bullet_orig_y = bullet->y;
     for (int j = 0; j < 12; j++)
     {
       move_bullet(bullet, world);
-      if (bullet->owner_id == NO_OWNER)
+      if (bullet->owner == NULL)
       {
         if (world->playcount == 0)
           trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
