@@ -41,8 +41,8 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
 
     data->hurts_monsters = 1;
     data->sprite = -1;
-    data->id = PLAYER_ID;
-    data->former_id = PLAYER_ID;
+    data->alive = 1;
+    data->killed = 0;
 }
 
 void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifiers)

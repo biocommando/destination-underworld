@@ -14,9 +14,10 @@
 static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
     load_game(autosave, mission, game_modifiers, slot);
-    autosave->id = PLAYER_ID;
+    autosave->alive = 1;
+    autosave->killed = 0;
     if (*mission == 1)
-        autosave->id = NO_OWNER;
+        autosave->alive = 0;
 }
 
 static ALLEGRO_BITMAP *menu_sprites;
@@ -668,7 +669,7 @@ int menu(int ingame, GlobalGameState *ggs)
                     {
                         exit_menu = 1;
                         ggs->mission = 1;
-                        ggs->plrautosave.id = NO_OWNER;
+                        ggs->plrautosave.alive = 0;
                         ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
                     }
                     else if (choice < ARENACONF_MAX_NUMBER_OF_ARENAS)
@@ -677,7 +678,7 @@ int menu(int ingame, GlobalGameState *ggs)
                         exit_menu = 1;
                         ggs->mission = get_game_settings()->arena_config.arenas[arena].level_number;
                         ggs->game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
-                        ggs->plrautosave.id = NO_OWNER;
+                        ggs->plrautosave.alive = 0;
                     }
                 }
             }

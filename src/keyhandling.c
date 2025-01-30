@@ -89,8 +89,8 @@ static inline Enemy *create_turret(World *world)
   enm->gold = 0;
   enm->turret = TURRET_TYPE_PLAYER;
   enm->hurts_monsters = 1;
-  enm->id += 1000;
-  enm->former_id += 1000;
+  enm->alive = 1;
+  enm->killed = 0;
   return enm;
 }
 

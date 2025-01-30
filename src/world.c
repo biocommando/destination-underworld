@@ -44,8 +44,7 @@ void init_world(World *world)
     for (int i = 0; i < ENEMYCOUNT; i++)
     {
         Enemy *enm = &world->enm[i];
-        enm->id = NO_OWNER;
-        enm->former_id = NO_OWNER;
+        enm->alive = enm->killed = 0;
         enm->dx = 1;
         enm->dy = 0;
         enm->reload = 10;
@@ -236,12 +235,12 @@ void cleanup_bodyparts(World *world)
 void init_player(World *world, Enemy *plrautosave)
 {
     Enemy *plr = &world->plr;
-    if (plrautosave->id == NO_OWNER)
+    if (!plrautosave->alive)
     {
         // this initializes the player the same way enemy 0 was initialized
         *plr = world->enm[0];
-        plr->id = PLAYER_ID;
-        plr->former_id = PLAYER_ID;
+        plr->alive = 1;
+        plr->killed = 0;
         plr->sprite = -1;
         plr->shots = 1;
         plr->health = 3;

@@ -47,7 +47,7 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
 /*
  * Checks if bullet hits an enemy. Does not check if the bullet can actually hurt the enemy, but will just
  * decrement its health by one on hit. On hit destroys the bullet. If the enemy's health reaches zero, will
- * start the death animation and set Enemy.id accordingly.
+ * start the death animation and set Enemy.killed/alive flags accordingly.
  * Returns 1 if the bullet hit the enemy, 0 if not.
  */
 int bullet_hit(Enemy *enm, Bullet *bb);
@@ -85,7 +85,7 @@ int read_level(World *world, int mission, int room_to);
  * Tries to first use all enemies from the array before reusing enemies that have already
  * died, before resorting to just the first enemy in the array.
  */
-Enemy *get_next_available_enemy(World *world, int *index);
+Enemy *get_next_available_enemy(World *world);
 /*
  * Places a new enemy of a certain type at x, y (map coordinates) in room room_id.
  * Uses ns_spawn_enemy internally.

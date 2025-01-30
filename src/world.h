@@ -67,14 +67,11 @@ typedef struct
     int ammo;
     // Player gold amount, or the amount of gold the player gets when killing the enemy
     int gold;
-    // Used for checking alive status (formerly also for many more things that have been
-    // then separated to other fields; so this id mechanism is basically just some legacy
-    // burden)
-    int id;
-    // As id is used for checking the alive status for the enemy, this is used for exhausting
-    // the total enemy count before reusing dead enemies so that body parts don't get cleared
-    // from the map. (There might be some room for improvement in this mechanism.)
-    int former_id;
+    // Used for checking alive status
+    int alive;
+    // Used for checking if the enemy has been alive (but now dead). This is used for
+    // showing the "corpse".
+    int killed;
     // The room in which the enemy is located
     int roomid;
     // Fast enemies move at double speed

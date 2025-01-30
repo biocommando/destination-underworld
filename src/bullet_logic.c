@@ -53,7 +53,8 @@ void bullet_logic(World *world, GlobalGameState *ggs)
           world->plr.health++;
           if (world->plr.health < 0)
             world->plr.health = 1;
-          world->plr.id = world->plr.former_id;
+          world->plr.alive = 1;
+          world->plr.killed = 0;
           world->powerups.rune_of_protection_active = -50;
           create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
           if ((world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
@@ -75,8 +76,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
           // As player is not really an "enemy" (not in the same array), the bodypart logic is not
           // run for player object. Copy a vacant enemy to player's place so that the death animation
           // will play for that object instead.
-          int temp;
-          Enemy *substitute = get_next_available_enemy(world, &temp);
+          Enemy *substitute = get_next_available_enemy(world);
           memcpy(substitute, &world->plr, sizeof(Enemy));
 
           wait_delay_ms(1); // The death sample won't play else
@@ -91,7 +91,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
         for (int j = 0; j < ENEMYCOUNT; j++)
         {
           Enemy *enm = &world->enm[j];
-          if (enm->id == NO_OWNER || enm->turret == TURRET_TYPE_PLAYER || enm->roomid != world->current_room)
+          if (!enm->alive || enm->turret == TURRET_TYPE_PLAYER || enm->roomid != world->current_room)
             continue;
 
           if (bullet_hit(world->enm + j, world->bullets + i))
@@ -108,7 +108,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
             }
 
             world->playcount = PLAYDELAY;
-            if (enm->id == NO_OWNER) // enemy was killed (bullet_hit has side effects)
+            if (!enm->alive) // enemy was killed (bullet_hit has side effects)
             {
               create_explosion(enm->x, enm->y, world, 1.8);
 

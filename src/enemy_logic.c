@@ -24,7 +24,7 @@ void enemy_logic(World *world)
   for (int x = 0; x < ENEMYCOUNT; x++)
   {
     Enemy *enm = &world->enm[x];
-    if (enm->id == NO_OWNER)
+    if (!enm->alive)
     {
       const int death_anim_max = 16;
       if (enm->death_animation < death_anim_max)
@@ -163,7 +163,7 @@ void enemy_logic(World *world)
           create_explosion(enm->x, enm->y, world, 2);
           enm->ammo = -1;
           enm->shots = 1;
-          enm->id = NO_OWNER;
+          enm->alive = 0;
         }
       }
     }

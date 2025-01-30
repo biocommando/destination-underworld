@@ -257,7 +257,8 @@ int bullet_hit(Enemy *enm, Bullet *bb)
 
     if (--enm->health <= 0)
     {
-        enm->id = NO_OWNER;
+        enm->alive = 0;
+        enm->killed = 1;
         enm->death_animation = 0;
     }
 
@@ -399,27 +400,19 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
     }
 }
 
-Enemy *get_next_available_enemy(World *world, int *index)
+Enemy *get_next_available_enemy(World *world)
 {
     int fallback = 0;
     for (int i = 0; i < ENEMYCOUNT; i++)
     {
-        if (world->enm[i].former_id == NO_OWNER)
+        if (!world->enm[i].alive)
         {
-            if (index != NULL)
+            if (!world->enm[i].killed)
             {
-                *index = i;
+                return &world->enm[i];
             }
-            return &world->enm[i];
-        }
-        if (world->enm[i].id == NO_OWNER)
-        {
             fallback = i;
         }
-    }
-    if (index != NULL)
-    {
-        *index = fallback;
     }
     return &world->enm[fallback];
 }
@@ -433,11 +426,10 @@ Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
 
 Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
 {
-    int index;
-    Enemy *new_enemy = get_next_available_enemy(world, &index);
+    Enemy *new_enemy = get_next_available_enemy(world);
 
-    new_enemy->id = index + 1;
-    new_enemy->former_id = new_enemy->id;
+    new_enemy->alive = 1;
+    new_enemy->killed = 0;
     new_enemy->x = x;
     new_enemy->y = y;
     new_enemy->move = 0;
@@ -808,7 +800,7 @@ void change_room_if_at_exit_point(World *world, int mission)
             for (int i = 0; i < ENEMYCOUNT; i++)
             {
                 if (world->enm[i].roomid == world->current_room &&
-                    world->enm[i].id == NO_OWNER && world->enm[i].former_id != NO_OWNER)
+                    !world->enm[i].alive && world->enm[i].killed)
                 {
                     get_tile_at(world, world->enm[i].x, world->enm[i].y)->is_blood_stained = 1;
                 }

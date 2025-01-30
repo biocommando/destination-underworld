@@ -28,7 +28,7 @@ void draw_enemy_shadows(World *world)
     for (int i = 0; i < ENEMYCOUNT; i++)
     {
         Enemy *enm = &world->enm[i];
-        if (enm->id != NO_OWNER && enm->roomid == world->current_room)
+        if (enm->alive && enm->roomid == world->current_room)
         {
             draw_enemy_shadow(enm);
         }
@@ -507,7 +507,7 @@ void show_ingame_info_screen(World *world)
         for (int e = 0; e < ENEMYCOUNT; e++)
         {
             Enemy *enm = &world->enm[e];
-            if (enm->id != NO_OWNER && enm->roomid == i + 1 && enm != world->boss)
+            if (enm->alive && enm->roomid == i + 1 && enm != world->boss)
                 num_enemies++;
         }
         al_draw_textf(get_font(), GRAY(200), offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1,
@@ -570,7 +570,7 @@ void show_ingame_info_screen(World *world)
         for (int e = 0; e < ENEMYCOUNT; e++)
         {
             Enemy *enm = &world->enm[e];
-            if (enm->id != NO_OWNER && enm->sprite == et)
+            if (enm->alive && enm->sprite == et)
                 num_enemies++;
         }
         draw_sprite_animated(world->spr, SPRITE_ID_ENEMY, offset_x, offset_y, 0, et);
