@@ -46,7 +46,7 @@ int handle_direction_keys(World *world, int key_up, int key_down, int key_left, 
 int handle_weapon_change_keys(World *world, int key_x, int key_z)
 {
   const int difficulty = GET_DIFFICULTY(world);
-  if (key_x && world->plr.wait == 0) // Power
+  if (key_x && world->plr.reload == 0) // Power
   {
     world->plr.shots = 6;
     world->plr.rate = 200;
@@ -57,10 +57,9 @@ int handle_weapon_change_keys(World *world, int key_x, int key_z)
       world->plr.rate = 30;
     }
     world->plr.reload = 20;
-    world->plr.wait = 20;
     return 1;
   }
-  if (key_z && world->plr.wait == 0) // Speed
+  if (key_z && world->plr.reload == 0) // Speed
   {
     world->plr.shots = 1;
     world->plr.rate = 7;
@@ -69,7 +68,6 @@ int handle_weapon_change_keys(World *world, int key_x, int key_z)
       world->plr.rate = 12;
     }
     world->plr.reload = 20;
-    world->plr.wait = 20;
     return 2;
   }
   return 0;
@@ -107,7 +105,7 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
 
   int *plr_rune_of_protection_active = &world->powerups.rune_of_protection_active;
 
-  if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < (overpowered ? 18 : 6) && world->plr.wait == 0)
+  if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < (overpowered ? 18 : 6) && world->plr.reload == 0)
   {
     *gold_hint_amount = cost_heal;
     world->plr.gold -= cost_heal;
@@ -121,21 +119,19 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
       world->plr.health *= 3;
     }
     world->plr.reload = 40;
-    world->plr.wait = 80;
     trigger_sample(SAMPLE_HEAL, 255);
     return 1;
   }
-  if (key_s && world->plr.gold >= cost_protection && world->plr.wait == 0 && *plr_rune_of_protection_active == 0)
+  if (key_s && world->plr.gold >= cost_protection && world->plr.reload == 0 && *plr_rune_of_protection_active == 0)
   {
     *gold_hint_amount = cost_protection;
     world->plr.gold -= cost_protection;
     *plr_rune_of_protection_active = 1;
     world->plr.reload = 40;
-    world->plr.wait = 80;
     trigger_sample(SAMPLE_PROTECTION, 255);
     return 2;
   }
-  if (key_d && world->plr.gold >= cost_turret && world->plr.wait == 0) // Turret
+  if (key_d && world->plr.gold >= cost_turret && world->plr.reload == 0) // Turret
   {
     *gold_hint_amount = cost_turret;
     create_turret(world);
@@ -148,11 +144,10 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
 
     world->plr.gold -= cost_turret;
     world->plr.reload = 40;
-    world->plr.wait = 80;
     trigger_sample(SAMPLE_TURRET, 255);
     return 3;
   }
-  if (key_f && world->plr.gold >= cost_blast && world->plr.wait == 0)
+  if (key_f && world->plr.gold >= cost_blast && world->plr.reload == 0)
   {
     Bullet *b = get_next_available_bullet(world);
     int did_shoot = shoot_one_shot_at_xy(world->plr.x, world->plr.y, world->plr.dx, world->plr.dy, &world->plr, 1, world);
@@ -168,7 +163,6 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
       }
       world->plr.gold -= cost_blast;
       world->plr.reload = 40;
-      world->plr.wait = 80;
       trigger_sample_with_params(SAMPLE_BLAST, 255, 127, 1000);
       return 4;
     }

@@ -37,7 +37,6 @@ void move_enemy(Enemy *enm, World *world)
 {
     if (enm->reload > 0)
         enm->reload--;
-    enm->wait = enm->reload;
 
     if (!enm->move)
         return;

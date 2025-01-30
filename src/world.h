@@ -52,9 +52,6 @@ typedef struct
     // Set to 'rate' when a shot is fired. The enemy can
     // shoot again only when this field reaches zero.
     int reload;
-    // Not sure what the intention was with this one, but this is
-    // set to same as reload in move_enemy function. TODO: check if this can be removed.
-    int wait;
     // Fire rate (frames between shots)
     int rate;
     // Used for two things:
