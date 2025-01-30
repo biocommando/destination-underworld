@@ -194,19 +194,6 @@ static void enemy_logic(World *world)
   }
 }
 
-static void draw_static_background()
-{
-  rectfill(0, 0, SCREEN_W, SCREEN_H, BLACK);
-  int maxsz = SCREEN_H > SCREEN_W ? SCREEN_H : SCREEN_W;
-  for (int i = 0; i < maxsz / 2; i += maxsz / 80)
-  {
-    al_draw_circle(SCREEN_W / 2,
-                   SCREEN_H / 2,
-                   i,
-                   al_map_rgb(33, 33, 33), 1);
-  }
-}
-
 static void boss_logic(World *world, int boss_died)
 {
   Enemy *boss = world->boss;
@@ -661,8 +648,6 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
     screen_v_offset = (SCREEN_H - screen_height_scaled) / 2;
   }
 
-  draw_static_background();
-
   create_sparkles(world.plr.x, world.plr.y, 30, -1, 10, &world);
 
   clock_t game_loop_clk = clock();
@@ -1063,7 +1048,6 @@ int game(int mission, int *game_modifiers, Enemy *plrautosave)
       {
         break;
       }
-      draw_static_background();
     }
   }
 
