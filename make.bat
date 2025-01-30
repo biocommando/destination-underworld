@@ -27,6 +27,7 @@ src/sprites.c ^
 src/record_file.c ^
 src/best_times.c ^
 src/midi_playback.c ^
+src/boss_logic.c ^
 src/enemy_logic.c ^
 src/potion_logic.c ^
 src/game.c ^
