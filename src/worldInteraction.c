@@ -782,7 +782,7 @@ static void place_player_at_entrance(World *world, int to_room)
     LOG("ERROR: exit point not found!\n");
 }
 
-void change_room_if_at_exit_point(World *world, int mission)
+void change_room_if_at_exit_point(World *world)
 {
     if (get_tile_at(world, world->plr.x, world->plr.y)->is_exit_point && world->plr.health > 0)
     {

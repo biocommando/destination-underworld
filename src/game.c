@@ -347,7 +347,7 @@ void game(GlobalGameState *ggs)
       }
     }
 
-    change_room_if_at_exit_point(&world, *mission);
+    change_room_if_at_exit_point(&world);
 
     if (get_tile_at(&world, world.plr.x, world.plr.y)->is_exit_level && world.plr.health > 0)
     {

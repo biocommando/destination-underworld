@@ -108,9 +108,8 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world);
 void create_cluster_explosion(World *w, double x0, double y0, int num_directions, int intensity, Enemy *enm);
 /*
  * Set the current room to another room if the player is at a room exit point and initialize the next room.
- * TODO: remove unused paramter "mission".
  */
-void change_room_if_at_exit_point(World *world, int mission);
+void change_room_if_at_exit_point(World *world);
 /*
  * Read enemy configurations from file enemy-properties.dat.
  * Uses the record file format with the following structure:
