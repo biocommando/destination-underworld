@@ -124,9 +124,9 @@ try {
                 let trigger_value = x.split(':')[1].split(' do ')[0].trim()
                 if (trigger_type === 'waypoint_reached') {
                     let wp = waypoints.find(y => y.name === trigger_value)
-
-                    if (!wp && x.split(';')[1]) {
-                        wp = { name: x.trim(), x: x.split(';')[0].trim(), y: x.split(';')[1].trim(), value: getNextId() }
+                    const coords = x.split(' do ')[1].split(':')[1]
+                    if (!wp && coords.split(';')[1]) {
+                        wp = { name: coords.trim(), x: coords.split(';')[0].trim(), y: coords.split(';')[1].trim(), value: getNextId() }
                         waypoints.push(wp)
                     }
                     trigger_value = wp.value
