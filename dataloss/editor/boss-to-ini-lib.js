@@ -273,16 +273,9 @@ try {
         }
     })
 
-    events.filter(x => !x.name || !x.name.startsWith('overrides__'))
-        .forEach(evt => {
-            eventToNewFormat(evt)
-            events.filter(x => x.name && x.name.startsWith(`overrides__${evt.name}__for_mode_`))
-                .forEach(eventToNewFormat)
-        })
-    newFormat.push('end')
-
+    // This logic handles the inherit logic
     events.filter(e => e.name && e.name.startsWith('overrides__'))
-        .forEach(e => {
+        .map(e => {
             const mainevt = events.find(e2 => e2.name === e.name.replace(/overrides__(.*)__for_mode_\d*/, '$1'))
             if (!mainevt)
                 throw 'base event not found for override ' + e.name
@@ -292,7 +285,12 @@ try {
             }
             mainevt['mode_override_' + e.name.split('__for_mode_')[1]] = e.name
             if (e.inheritAction) {
-                e = { ...mainevt, name: e.name, trigger_type: e.trigger_type, trigger_value: e.trigger_value }
+                const {name, trigger_type, trigger_value} = e
+                for (prop in mainevt)
+                    e[prop] = mainevt[prop]
+                e.name = name
+                e.trigger_type = trigger_type
+                e.trigger_value = trigger_value
             }
             Object.keys(e).forEach(key => {
                 if (key.startsWith('mode_override'))
@@ -300,6 +298,14 @@ try {
             })
             str += `\r\n[${e.name}]\r\n${objToIni(e, ['name'])}`
         })
+
+    events.filter(x => !x.name || !x.name.startsWith('overrides__'))
+    .forEach(evt => {
+        eventToNewFormat(evt)
+        events.filter(x => x.name && x.name.startsWith(`overrides__${evt.name}__for_mode_`))
+            .forEach(eventToNewFormat)
+    })
+    newFormat.push('end')
 
     events.filter(e => !(e.name && e.name.startsWith('overrides__'))).forEach((e, i) => {
         str += `\r\n[event_${i}]\r\n`

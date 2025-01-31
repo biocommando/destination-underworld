@@ -299,97 +299,97 @@ event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 5 3
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 5 3
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 5 4
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 5 4
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 5 5
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 5 5
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 5 6
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 5 6
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 5 7
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 5 7
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 6 3
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 6 3
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 6 7
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 6 7
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 7 3
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 7 3
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 7 7
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 7 7
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 8 3
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 8 3
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 8 7
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 8 7
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 9 3
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 9 3
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 9 4
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 9 4
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 9 5
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 9 5
 event
 event_trigger time_interval 83
 event_action spawn 50 30 10 10 0 9 6
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 83
 event_action spawn 40 20 5 5 0 9 6
 event
 event_trigger time_interval 125
 event_action spawn 50 30 10 10 0 9 7
 event_override 48
-event_trigger inherit 0
+event_trigger time_interval 125
 event_action spawn 40 20 5 5 0 9 7
 event
 event_trigger time_one_time 291

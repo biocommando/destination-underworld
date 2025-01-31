@@ -262,7 +262,7 @@ event_trigger time_interval 58
 event_action spawn 0 0 0 100 0 11 2
 event_override 48
 event_trigger time_interval 116
-event_action inherit 
+event_action spawn 0 0 0 100 0 11 2
 event
 event_trigger time_interval 58
 event_action spawn 50 50 0 0 0 12 2
@@ -274,7 +274,7 @@ event_trigger time_interval 58
 event_action spawn 0 0 0 100 0 11 9
 event_override 48
 event_trigger time_interval 116
-event_action inherit 
+event_action spawn 0 0 0 100 0 11 9
 event
 event_trigger time_interval 58
 event_action spawn 50 50 0 0 0 12 9
