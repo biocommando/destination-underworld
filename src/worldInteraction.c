@@ -638,7 +638,7 @@ static inline void level_read_new_format(World *world, int room_to, FILE *f)
                 world->boss_fight = 1;
             }
         }
-        else if (*buf != '*')
+        else if (*buf != '*') // Checking this is just defensive coding; all lines starting with * should return 0.
         {
             int id = -1, x = -1, y = -1, room = -1;
             sscanf(buf, "%d %d %d %d", &id, &x, &y, &room);
