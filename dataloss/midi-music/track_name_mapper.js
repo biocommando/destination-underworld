@@ -11,7 +11,8 @@ sytrus presets : Evening Tea at the Local Space Port Lounge
 trance : Elevate
 weird : Trip to the Demon Zoo
 with new wavetables : Nuclear Waste Hangover
-eetteritekno : Relieve Us`
+eetteritekno : Relieve Us
+it tastes funky : Rancid Demon Food`
 
 const fs = require('fs')
 
