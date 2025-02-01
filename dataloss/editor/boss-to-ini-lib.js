@@ -72,6 +72,8 @@ const set_waypoint_sequence = seq => {
     return result
 }
 
+const implicit_arena_game_mode = () => game_mode.arena = 1
+
 const intermediateBossFileForDebug = []
 let lineProcessingDone = false
 

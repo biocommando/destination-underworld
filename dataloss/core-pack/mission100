@@ -215,7 +215,7 @@ X(duedit_compatible)
 *=wall_color"0.7 0 0.3"
 #script 1
 # // Add a hint to the compiler that this is an arena fight
-# {# game_mode.arena = 1 #}
+# {# implicit_arena_game_mode() #}
 # 
 # {# _spawn_interval = 5000 #}
 # 

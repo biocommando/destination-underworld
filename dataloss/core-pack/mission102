@@ -205,7 +205,7 @@ X(duedit_compatible)
 *=mute_bosstalk"1"
 #script 1
 # // Add a hint to the compiler that this is an arena fight
-# {# game_mode.arena = 1 #}
+# {# implicit_arena_game_mode() #}
 # 
 # ////// SPAWN SETUP IN JAVASCRIPT /////////
 # 

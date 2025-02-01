@@ -13,8 +13,7 @@ so there's a transpiler that uses a custom language (BOSS). The language has
 Event definitions have the following format:
 on [event_name] trigger_type: trigger_value do action_type: parameters
 
-The event name is optional. If the name has the format "overrides_OTHER_EVENT_NAME_for_mode_GAME_MODIFIER_FLAGS"
-the event overrides another event but only if the game modifier flags equal the GAME_MODIFIER_FLAGS.
+The event name is optional.
 
 Trigger types and values (if nothing is stated about the value, it's just used as is):
 
@@ -50,6 +49,9 @@ Special event/trigger types don't use the value field for anything. To
 omit the value (and make the syntax less mind boggling) prefix the special
 types with '@'. Example:
 on [evt_mod_terrain_9] @never do @nothing
+
+Events can be overridden but it can be only done using the javascript preprocessing
+functions (see below).
 
 Setting game initialization property:
 
@@ -87,8 +89,8 @@ ms(..) = calculate boss timer value for amount of milliseconds
 Preprocessing is run in this order so you can use {# .. #} inside ms( .. )
 
 For the javascript execution there are a couple of convenience functions/variables available:
-override_event(name, game_mode_name)
-	Creates the overrides_OTHER_EVENT_NAME_for_mode_GAME_MODIFIER_FLAG name tag for the overriding event.
+override_event(base_event, game_mode_name)
+	Creates a mapping that maps the base event to this event if the game mode flags are specified.
 	Example:
 	on {# override_event('SpawnA1', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do @inherit
 disable_event(name, game_mode_name)
@@ -98,11 +100,11 @@ set_waypoint_sequence(sequence)
 	{# set_waypoint_sequence([ '3;3', '9:9' ]) #}
 ms_delta
 	Boss timer tick in milliseconds
-game_mode.arena
-	Set this to 1 so that you don't need to refer to the arena variant of the game mode
-	when overriding events / properties, so instead of having to write
+implicit_arena_game_mode()
+	Calling this function sets arena flag to 1 so that you don't need to refer to the arena variant of the
+	game mode when overriding events / properties, so instead of having to write
 	"set [arena_brutal] health = 20" you can write:
-		{# game_mode.arena = 1 #}
+		{# implicit_arena_game_mode() #}
 		set [brutal] health = 20
 
 You can add line comments by prefixing any line with a single slash ('/'). Of course, also double slashes

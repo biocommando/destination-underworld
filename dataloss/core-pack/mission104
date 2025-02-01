@@ -205,7 +205,7 @@ X(duedit_compatible)
 *=wall_color"0 0.2 0.4"
 #script 1
 # // Add a hint to the compiler that this is an arena fight
-# {# game_mode.arena = 1 #}
+# {# implicit_arena_game_mode() #}
 # 
 # set [powerup_only] player_initial_gold = 99
 # set [over_powerup] player_initial_gold = 10
