@@ -49,7 +49,18 @@ const game_mode = key => {
     return game_modes[key.replace('arena_', '')] | arenaFlag
 }
 
-const override_event = (name, gameMode) => `[overrides__${name}__for_mode_${game_mode(gameMode)}]`
+const overridingEvents = []
+
+const override_event = (name, gameMode) => {
+    const newName = `overrides__${name}__for_mode_${gameMode}`
+    overridingEvents.push({base: name, gameMode: game_mode(gameMode), name: newName})
+    return `[${newName}]`
+}
+
+const getOverrideDetails = e => overridingEvents.find(x => x.name === e.name)
+const isOverridingEvent = e => !!getOverrideDetails(e)
+const getBaseEvent = e => isOverridingEvent(e) ? getOverrideDetails(e).base : undefined
+const getOverridingEventMode = e => isOverridingEvent(e) ? getOverrideDetails(e).gameMode : undefined
 
 const disable_event = (name, gameMode) => `on ${override_event(name, gameMode)} @never do @nothing`
 
@@ -173,21 +184,13 @@ try {
                 x = x.replace('set_event_property ', '')
                 const prop = x.split(':')[1].split('=').map(z => z.trim())
                 const evtName = x.split(':')[0]
-                events.filter(e => e.name && (e.name === evtName || e.name.startsWith('overrides__' + evtName + '__for_mode_')))
+                events.filter(e => e.name === evtName || getBaseEvent(e) === evtName)
                     .forEach(e => e[prop[0]] = prop[1])
             } else if (x === 'ignore_init_properties') {
                 hasInitProperties = false
             }
         })
     lineProcessingDone = true
-
-    const objToIni = (obj, ignoreKeys = []) => {
-        return Object
-            .keys(obj)
-            .filter(key => !ignoreKeys.includes(key))
-            .map(key => key + '=' + obj[key])
-            .join('\r\n') + '\r\n'
-    }
 
     let newFormat = []
 
@@ -201,8 +204,8 @@ try {
     
 
     function eventToNewFormat(event) {
-        if (event.name && event.name.startsWith('overrides__')) {
-            newFormat.push(`event_override ${event.name.split('_').pop()}`)
+        if (isOverridingEvent(event)) {
+            newFormat.push(`event_override ${getOverridingEventMode(event)}`)
         } else {
             newFormat.push(`event`)
         }
@@ -242,8 +245,6 @@ try {
         }
     }
 
-    const isOverridingEvent = e => e.name && e.name.startsWith('overrides__')
-
     // Check that each referenced event id actually exists
     events.forEach(e => {
         if (e.event_id !== undefined) {
@@ -256,15 +257,14 @@ try {
 
     // This logic handles the inherit logic
     events.filter(e => isOverridingEvent(e))
-        .map(e => {
-            const mainevt = events.find(e2 => e2.name === e.name.replace(/overrides__(.*)__for_mode_\d*/, '$1'))
+        .forEach(e => {
+            const mainevt = events.find(e2 => e2.name === getBaseEvent(e))
             if (!mainevt)
                 throw 'base event not found for override ' + e.name
             if (e.trigger_type === 'inherit') {
                 e.trigger_type = mainevt.trigger_type
                 e.trigger_value = mainevt.trigger_value
             }
-            mainevt['mode_override_' + e.name.split('__for_mode_')[1]] = e.name
             if (e.inheritAction) {
                 const {name, trigger_type, trigger_value} = e
                 for (prop in mainevt)
@@ -273,18 +273,16 @@ try {
                 e.trigger_type = trigger_type
                 e.trigger_value = trigger_value
             }
-            Object.keys(e).forEach(key => {
-                if (key.startsWith('mode_override'))
-                    delete e[key]
-            })
         })
 
-    events.filter(x => !x.name || !x.name.startsWith('overrides__')) // returns the "base" events, also those that have no overrides
+    events.filter(x => !isOverridingEvent(x)) // returns the "base" events, also those that have no overrides
     .forEach(evt => {
         eventToNewFormat(evt)
         // Find the events that override this event and serialize them right after so that
         // the overrides reference the correct base event
-        events.filter(x => x.name && x.name.startsWith(`overrides__${evt.name}__for_mode_`))
+        // (note: getBaseEvent returns undefined if event is not overriding event and evt.name
+        // is undefined if not defined so can't just check that these two are equal)
+        events.filter(x => isOverridingEvent(x) && getBaseEvent(x) === evt.name)
             .forEach(eventToNewFormat)
     })
     newFormat.push('end')
