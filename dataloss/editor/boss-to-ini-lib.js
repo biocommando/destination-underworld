@@ -1,4 +1,4 @@
-function bossToIni(fileData, format = 'old') {
+function bossToIni(fileData) {
 const fs = require('fs')
 
 let hasInitProperties = true
@@ -24,8 +24,6 @@ const getNextId = () => ++idCounter
 
 const ms_delta = 40 * 3
 const ms = a => Math.floor(Number(a) / ms_delta)
-
-let output_filename = format === 'old' ? `core-pack/${fileData.replace('.boss', '.ini')}` : ''
 
 const GAMEMODIFIER_DOUBLED_SHOTS = 0x1
 const GAMEMODIFIER_OVERPOWERED_POWERUPS = 0x2
@@ -67,12 +65,7 @@ const intermediateBossFileForDebug = []
 let lineProcessingDone = false
 
 try {
-    let data
-    if (format === 'old') {
-        data = fs.readFileSync(fileData).toString()
-    } else {
-        data = fileData
-    }
+    let data = fileData
     data.replace(/\{#([^#]*)#\}/gm, (whole, a) => {
             try {
                 const result = eval(a)
@@ -196,7 +189,6 @@ try {
             .join('\r\n') + '\r\n'
     }
 
-    let str = `# Generated from ${fileData}\r\n`
     let newFormat = []
 
     if (hasInitProperties) {
@@ -250,17 +242,20 @@ try {
         }
     }
 
+    const isOverridingEvent = e => e.name && e.name.startsWith('overrides__')
+
+    // Check that each referenced event id actually exists
     events.forEach(e => {
         if (e.event_id !== undefined) {
             const name = e.event_id
-            e.event_id = events.filter(e => !(e.name && e.name.startsWith('overrides__'))).findIndex(x => x.name === name)
+            e.event_id = events.filter(e => !isOverridingEvent(e)).findIndex(x => x.name === name)
             if (e.event_id === -1)
                 throw 'event not found with name ' + name
         }
     })
 
     // This logic handles the inherit logic
-    events.filter(e => e.name && e.name.startsWith('overrides__'))
+    events.filter(e => isOverridingEvent(e))
         .map(e => {
             const mainevt = events.find(e2 => e2.name === e.name.replace(/overrides__(.*)__for_mode_\d*/, '$1'))
             if (!mainevt)
@@ -282,32 +277,19 @@ try {
                 if (key.startsWith('mode_override'))
                     delete e[key]
             })
-            str += `\r\n[${e.name}]\r\n${objToIni(e, ['name'])}`
         })
 
-    events.filter(x => !x.name || !x.name.startsWith('overrides__'))
+    events.filter(x => !x.name || !x.name.startsWith('overrides__')) // returns the "base" events, also those that have no overrides
     .forEach(evt => {
         eventToNewFormat(evt)
+        // Find the events that override this event and serialize them right after so that
+        // the overrides reference the correct base event
         events.filter(x => x.name && x.name.startsWith(`overrides__${evt.name}__for_mode_`))
             .forEach(eventToNewFormat)
     })
     newFormat.push('end')
 
-    events.filter(e => !(e.name && e.name.startsWith('overrides__'))).forEach((e, i) => {
-        str += `\r\n[event_${i}]\r\n`
-        str += objToIni(e, ['name'])
-    })
-
-    spawnpoints.forEach((s, i) => {
-        str += `\r\n[spawn_point_${s.value}]\r\n`
-        str += objToIni(s, ['name', 'value'])
-    })
-
-    if (format === 'old') {
-        fs.writeFileSync(output_filename, str)
-    } else {
-        return newFormat.join('\n')
-    }
+    return newFormat.join('\n')
 } catch (e) {
     let err = ''
     if (intermediateBossFileForDebug.length === 0)
