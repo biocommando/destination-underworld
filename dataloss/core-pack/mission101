@@ -213,12 +213,9 @@ X(duedit_compatible)
 # 
 # set player_initial_gold = 5
 # 
-# set [main__powerup_only] player_initial_gold = -1
-# set [main__over_powerup] player_initial_gold = 10
-# set [main__potion_only] player_initial_gold = 0
-# {# set_override_main_setup('powerup_only') #}
-# {# set_override_main_setup('over_powerup') #}
-# {# set_override_main_setup('potion_only') #}
+# set [powerup_only] player_initial_gold = -1
+# set [over_powerup] player_initial_gold = 10
+# set [potion_only] player_initial_gold = 0
 # 
 # {# _spawn_interval = 7000 #}
 # 

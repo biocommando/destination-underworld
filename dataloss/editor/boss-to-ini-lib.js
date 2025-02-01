@@ -50,13 +50,6 @@ const game_mode = key => {
     const arenaFlag = (key.startsWith('arena_') || game_mode.arena) ? GAMEMODIFIER_ARENA_FIGHT : 0
     return game_modes[key.replace('arena_', '')] | arenaFlag
 }
-/*
-    Configuration example using this macro helper:
-    set player_initial_gold = 6
-    set [main__powerup_only] player_initial_gold = -1
-    {# set_override_main_setup('arena_powerup_only') #}
-*/
-const set_override_main_setup = key => `set mode_override_${game_mode(key)} = main__${key}`
 
 const override_event = (name, gameMode) => `[overrides__${name}__for_mode_${game_mode(gameMode)}]`
 
@@ -98,9 +91,7 @@ try {
             // main:
             // set param = value
             // For overriding main settings for different game modes:
-            // set [override_config_name] param = value
-            // These overrides must be taken into use by setting mode_override_X
-            // property to <override_config_name> for the main settings (X = mode code)
+            // set [mode] param = value
             // events:
             // on <trigger_type>: <trigger_value> do <event_type>: <param_name> = <param_value>, ...
             // Events may have name:
@@ -208,16 +199,11 @@ try {
     let str = `# Generated from ${fileData}\r\n`
     let newFormat = []
 
-    main.events = events.filter(e => !(e.name && e.name.startsWith('overrides__'))).length
-
     if (hasInitProperties) {
-        Object.keys(mainSetup).forEach(sect => {
-            str += `\r\n[${sect}]\r\n${objToIni(mainSetup[sect])}`
-            let overrideFor = Object.keys(main).find(x => main[x] === sect)
-            if (!overrideFor) overrideFor = ''
-            else overrideFor = overrideFor.split('_').pop()
-            Object.keys(mainSetup[sect]).filter(x => !x.startsWith('mode_') && x !== 'events')
-                .forEach(key => newFormat.push(`${key} ${mainSetup[sect][key]} ${overrideFor}`))
+        Object.keys(mainSetup).forEach(name => {
+            const gm = name === 'main' ? '' : game_mode(name)
+            Object.keys(mainSetup[name])
+                .forEach(key => newFormat.push(`${key} ${mainSetup[name][key]} ${gm}`))
         })
     }
     

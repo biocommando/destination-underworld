@@ -207,12 +207,9 @@ X(duedit_compatible)
 # // Add a hint to the compiler that this is an arena fight
 # {# game_mode.arena = 1 #}
 # 
-# set [main__powerup_only] player_initial_gold = 99
-# {# set_override_main_setup('powerup_only') #}
-# set [main__over_powerup] player_initial_gold = 10
-# {# set_override_main_setup('over_powerup') #}
-# set [main__explosion_madness] player_initial_gold = 3
-# {# set_override_main_setup('explosion_madness') #}
+# set [powerup_only] player_initial_gold = 99
+# set [over_powerup] player_initial_gold = 10
+# set [explosion_madness] player_initial_gold = 3
 # 
 # {# _interval = 500, _time = 2500 #}
 # {# _nextTime = () => { _time += _interval; return _time }, 0 #}
