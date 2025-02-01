@@ -49,6 +49,7 @@ int main(int argc, char **argv)
 
   read_cmd_line_arg_str("record-mode", argv, argc, read_arg);
   int *record_mode = get_playback_mode();
+  int record_playback_no_user_interaction = 1;
   if (!strcmp(read_arg, "record"))
   {
     *record_mode = RECORD_MODE_RECORD;
@@ -70,6 +71,7 @@ int main(int argc, char **argv)
       return 0;
     }
     fclose(record_input_file);
+    record_playback_no_user_interaction = read_cmd_line_arg_int("start-without-user-interaction", argv, argc);
     LOG("Playback mode active.\n");
   }
   else if (read_arg[0])
@@ -140,9 +142,11 @@ int main(int argc, char **argv)
   if (player_damage_off)
     ggs.cheats |= 1;
   ggs.mission = 1;
+  ggs.no_player_interaction = record_playback_no_user_interaction;
   while (ggs.mission != 0)
   {
-    menu(0, &ggs);
+    if (*record_mode != RECORD_MODE_PLAYBACK || !ggs.no_player_interaction)
+      menu(0, &ggs);
     while (ggs.mission > 0)
     {
       game(&ggs);

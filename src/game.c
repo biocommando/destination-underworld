@@ -243,7 +243,8 @@ void game(GlobalGameState *ggs)
 
           display_level_info(&world, *mission, get_game_settings()->mission_count, completetime);
 
-          wait_key_press(ALLEGRO_KEY_ENTER);
+          if (!ggs->no_player_interaction)
+            wait_key_press(ALLEGRO_KEY_ENTER);
           break;
         }
 
@@ -559,10 +560,13 @@ void game(GlobalGameState *ggs)
           al_draw_textf(get_font(), WHITE, offx + 10, offy + 100, ALLEGRO_ALIGN_LEFT, "ENTER = replay, ESC = go back to menu");
           al_flip_display();
           int wait_keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_ESCAPE};
-          int key = wait_key_presses(wait_keys, 2);
-          if (key == ALLEGRO_KEY_ESCAPE)
+          if (!ggs->no_player_interaction)
           {
-            menu(0, ggs);
+            int key = wait_key_presses(wait_keys, 2);
+            if (key == ALLEGRO_KEY_ESCAPE && *record_mode != RECORD_MODE_PLAYBACK)
+            {
+              menu(0, ggs);
+            }
           }
         }
         break;
@@ -593,6 +597,36 @@ void game(GlobalGameState *ggs)
     game_playback_add_key_event(time_stamp, 0);
     game_playback_next();
     game_playback_add_end_event();
+  }
+
+  if (*record_mode != RECORD_MODE_NONE)
+  {
+    FILE *f = fopen(DATADIR "recording--level-complete-state.dat", "w");
+
+    fprintf(f, "Recording complete\n");
+    fprintf(f, "Mission %d, mode %d\n", world.mission, world.game_modifiers);
+    fprintf(f, "Kills %d\n", world.kills);
+    fprintf(f, "Time %ld\n", time_stamp);
+    fprintf(f, "Enemy states\n");
+    for (int i = -1; i < ENEMYCOUNT; i++)
+    {
+      Enemy *e = &world.plr;
+      if (i >= 0)
+        e = &world.enm[i];
+      if (e->alive || e->killed)
+        fprintf(f, "enemy #%d: alive %d killed %d position %d,%d health %d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
+                i, e->alive, e->killed, e->x, e->y, e->health, e->ammo, e->roomid, e->rate, e->shots, e->turret, e->gold);
+    }
+    fprintf(f, "Potion states\n");
+    for (int i = 0; i < POTION_COUNT; i++)
+    {
+      Potion *p = &world.potions[i];
+      if (p->exists)
+        fprintf(f, "potion #%d: position %d,%d roomid %d effects 0x%x duration_boost %d\n",
+                i, (int)p->location.x, (int)p->location.y, p->room_id, p->effects, p->duration_boost);
+    }
+
+    fclose(f);
   }
 
   al_destroy_bitmap(world.spr);

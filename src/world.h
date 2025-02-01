@@ -413,6 +413,8 @@ typedef struct
     // Bitmask of cheats active.
     // Currently only bit at 0 = no player damage
     int cheats;
+    // Don't require keypresses in record playback mode
+    int no_player_interaction;
 } GlobalGameState;
 
 /*
