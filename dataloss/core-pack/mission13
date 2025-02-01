@@ -921,6 +921,7 @@ X(duedit_compatible)
 #script 4
 # ignore_init_properties
 # on kill_count: 13 do modify_terrain: x = 11, y = 5, terrain_type = floor
+# on kill_count: 13 do modify_terrain: x = 11, y = 6, terrain_type = floor
 #end_script
 $1
 event
@@ -953,4 +954,7 @@ $4
 event
 event_trigger kill_count 13
 event_action modify_terrain 11 5 0 0 0 0 0 floor
+event
+event_trigger kill_count 13
+event_action modify_terrain 11 6 0 0 0 0 0 floor
 end
