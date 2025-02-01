@@ -41,6 +41,7 @@ src/synth/wt_sample_loader.c ^
 src/synth/midi_player.c ^
 src/synth/midi_reader.c ^
 src/synth/moog_filter.c ^
+src/synth/synth_random.c ^
 src/synth/synth.c ^
 -I%allegro_path%\include ^
 %allegro_path%\lib\liballegro_monolith.dll.a ^

@@ -1,4 +1,5 @@
 #include "basic_oscillator.h"
+#include "synth_random.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -51,7 +52,7 @@ inline void BasicOscillator_setSamplerate(BasicOscillator* bo, int rate)
 
 void BasicOscillator_randomizePhase(BasicOscillator* bo, float rndAmount)
 {
-    bo->phase = (float)(rand() % 100000) * 0.00001f;
+    bo->phase = (float)(synth_random() % 100000) * 0.00001f;
     bo->phase *= rndAmount;
 }
 

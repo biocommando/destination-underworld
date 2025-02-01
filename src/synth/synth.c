@@ -1,17 +1,10 @@
 #include "synth.h"
 #include "wt_sample_loader.h"
+#include "synth_random.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
-static inline unsigned _random()
-{
-    static unsigned state = 123;
-    state = (state >> 5) ^ state;
-    state = (state << 7) ^ state;
-    return state;
-}
 
 void init_SynthVoice(SynthVoice *sv, float sample_rate, int key, int channel)
 {
@@ -83,7 +76,7 @@ void SynthVoice_process(SynthVoice *sv, float *delay_sample, float *left, float 
 
     if (sv->noise_amount > 0)
     {
-        v += sv->noise_amount * (1 - _random() / 2147483648.0f);
+        v += sv->noise_amount * (1 - synth_random() / 2147483648.0f);
     }
 
     if (sv->distortion > 0)
