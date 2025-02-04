@@ -193,9 +193,9 @@ no_more_levels  -->
             { name: 'P_heal', id: 304, css: 'potion' },
             { name: 'P_shield_drop', id: 305, css: 'potion' },
             { name: 'p_inst_heal', id: 306, css: 'potion' },
-            { name: 'pos-trig1', id: 600, css: 'pos-trig' },
-            { name: 'pos-trig2', id: 601, css: 'pos-trig' },
-            { name: 'pos-trig3', id: 602, css: 'pos-trig' },
+            { name: 'pos-trig0', id: 600, css: 'pos-trig' },
+            { name: 'pos-trig1', id: 601, css: 'pos-trig' },
+            { name: 'pos-trig2', id: 602, css: 'pos-trig' },
         ];
         let map = { version: 0, width, height, objects: [], metadata: [], levelMetadata: '' };
         let room;
@@ -238,6 +238,7 @@ no_more_levels  -->
         };
 
         const clearScripts = () => {
+            map.metadata = []
             map.scripts = new Array(8).fill(0).map(() => [])
             map.compiledScripts = map.scripts.map(() => '')
         }
@@ -268,8 +269,6 @@ no_more_levels  -->
                 document.getElementById('boss-script').value = map.scripts[room - 1].join('\n')
             } else {
                 document.getElementById('boss-script').value = '// script not defined for this room\n'
-                    + `// To create a new script, add script${room} = "mission-pack\\<new_script>.ini" line to metadata\n`
-                    + `// or use inline scripts (start with ignore_init_properties)`
                 document.getElementById('boss-script-file').innerText = ''
             }
         }
