@@ -69,7 +69,7 @@
 </head>
 
 <body>
-    <button onclick="clearMap(),renderMap()">New</button>
+    <button onclick="clearScripts(),clearMap(),renderMap()">New</button>
     <button onclick="api('save')">Save</button>
     <button onclick="api('load')">Load</button>
     <hr />
@@ -236,6 +236,11 @@ no_more_levels  -->
                 x1++;
             }
         };
+
+        const clearScripts = () => {
+            map.scripts = new Array(8).fill(0).map(() => [])
+            map.compiledScripts = map.scripts.map(() => '')
+        }
 
         const clearMap = () => {
             map.objects = map.objects.filter(o => o.room !== room);
@@ -409,6 +414,7 @@ no_more_levels  -->
             objectTypes.filter(ot => !ot.notSelectable).map(ot => `<option value="${ot.id}">${ot.name}</option>`).join('');
 
         changeRoom(1);
+        clearScripts()
         renderMap();
 
         let mission = ''
