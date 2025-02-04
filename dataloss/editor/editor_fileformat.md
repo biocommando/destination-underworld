@@ -41,6 +41,6 @@ the file is saved.
 
 ## script:
 
-The script definitions in the BOSS script format (see scripting_readme.txt). Start indicated by comment
+The script definitions in the BOSS script format (see scripting_readme.md). Start indicated by comment
 line `#script ROOM_NUMBER` and the script snippet ends with `#end_script`. Each script line is converted
 to a comment line so that the game logic doesn't get messed up by the editor-added metadata.
