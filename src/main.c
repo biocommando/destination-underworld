@@ -44,6 +44,7 @@ int main(int argc, char **argv)
   if (!strcmp(read_arg, "off"))
   {
     player_damage_off = 1;
+    printf("Player damage off\n");
   }
   read_arg[0] = 0;
 
