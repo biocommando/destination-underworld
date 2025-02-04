@@ -234,11 +234,10 @@ X(duedit_compatible)
 *=name"Deepest Abyss"
 *=story1"The corpse of the Arch Evil explodes into 50 shades of"
 *=story2"bloody mess and in the same instant all the beasts of"
-*=story3"Hell disappear."
+*=story3"Hell disappear... Just to regroup around the corner!"
 *=story4" "
-*=story5"Congratulations! Now you're totally alone in the deepest"
-*=story6"abyss with no way back to the surface of Earth."
-*=no_more_levels"1"
+*=story5"You feel how the spirit of the Arch Evil powers you"
+*=story6"as you prepare for the Hell's last stand..."
 #script 1
 # // Boss for "power-up only" mode
 # 
