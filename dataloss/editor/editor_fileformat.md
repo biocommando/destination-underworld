@@ -33,6 +33,14 @@ condition `game_modifiers == 232` is saved to the editor state. The condition na
 Start marked by duscript label `*@metadata`. Each duscript variable definition is added to metadata.
 The variable definitions are modified to a more human-readable format (e.g. `a"1"` would become `a = "1"`).
 
+Supported metadata entries:
+- name = Level name displayed in the info screen and when starting the level
+- wall_color = RGB definition for top-most wall layer
+- storyX (where X = number in range 0-10) = Story lines displayed after level (max length 60 characters)
+- no_more_levels = This level is final level, no more levels will be loaded
+- mute_bosstalk = Don't play the sample associated to the boss if the level has scripting definitions
+- story_image = A custom image displayed after level (file name)
+
 ## compiled_script:
 
 The script definitions read by the game. Start indicated by reading line in format `$NUMBER`.

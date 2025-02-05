@@ -411,7 +411,17 @@ static inline void check_valid_time_for_display(float *f)
 void display_level_info(World *world, int mission, int mission_count, long completetime)
 {
     al_clear_to_color(BLACK);
-    al_draw_scaled_bitmap(world->spr, 105, 0, 160, 100, 0, SCREEN_H - 107 * 2, SCREEN_W, 107 * 2, 0);
+    if (world->custom_story_image[0])
+    {
+        printf("Loading custom image %s\n", world->custom_story_image);
+        ALLEGRO_BITMAP *img = al_load_bitmap(world->custom_story_image);
+        al_draw_scaled_bitmap(img, 0, 0, al_get_bitmap_width(img), al_get_bitmap_height(img), 0, SCREEN_H - 107 * 2, SCREEN_W, 107 * 2, 0);
+        al_destroy_bitmap(img);
+    }
+    else
+    {
+        al_draw_scaled_bitmap(world->spr, 105, 0, 160, 100, 0, SCREEN_H - 107 * 2, SCREEN_W, 107 * 2, 0);
+    }
     int y = 5;
     al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Level '%s' cleared!", world->mission_display_name);
     y += 15;

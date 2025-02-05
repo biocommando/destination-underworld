@@ -679,6 +679,11 @@ static inline void level_read_new_format(World *world, int room_to, FILE *f)
     world->final_level = *var->value ? 1 : 0;
     var = du_script_variable(&state, "mute_bosstalk");
     world->play_boss_sound = *var->value ? 0 : 1;
+    var = du_script_variable(&state, "story_image");
+    if (*var->value)
+    {
+        get_data_filename(world->custom_story_image, var->value);
+    }
 
     if (world->boss && !boss_exists)
     {
@@ -723,6 +728,7 @@ int read_level(World *world, int mission, int room_to)
     world->boss_fight = 0;
     sprintf(world->mission_display_name, "Mission %d", mission);
     world->story_after_mission_lines = 0;
+    world->custom_story_image[0] = 0;
 
     char special_filename[256];
     sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);

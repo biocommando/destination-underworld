@@ -655,6 +655,7 @@ X(duedit_compatible)
 *=story6"although deep inside you know that nothing has changed."
 *=story7"But for you, the joy of knowing what you've done is"
 *=story8"enough of a reward."
+*=story_image"ending.jpg"
 #script 1
 # on kill_count: 21 do modify_terrain: x = 14, y = 6, terrain_type = floor
 # on kill_count: 42 do modify_terrain: x = 13, y = 6, terrain_type = floor

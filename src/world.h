@@ -376,6 +376,7 @@ typedef struct
     int story_after_mission_lines;
     // ~60 characters fit on the screen
     char story_after_mission[10][61];
+    char custom_story_image[512];
     // Total kills in all rooms in the current map
     int kills;
     // Map number
