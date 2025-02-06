@@ -407,6 +407,8 @@ void game(GlobalGameState *ggs)
     draw_map(&world, 1, 0);
 
     vibrations = progress_and_draw_explosions(&world);
+    if (vibrations > MAX_VIBRATIONS)
+      vibrations = MAX_VIBRATIONS;
     if (get_game_settings()->vibration_mode != 1)
     {
       if (get_game_settings()->vibration_mode == 0)

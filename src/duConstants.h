@@ -11,7 +11,9 @@
 #define ROOMCOUNT 8
 #define ENEMY_TYPE_COUNT 5 // all "normal" enemies excluding the special boss type
 #define ENEMYCOUNT 200
-#define EXPLOSIONCOUNT 16
+#define EXPLOSIONCOUNT 32
+// Old value for EXPLOSIONCOUNT was 16
+#define MAX_VIBRATIONS 16
 #define BULLETCOUNT 400
 #define SPARKLE_FX_COUNT 60
 #define SPARKLE_FX_CIRCLE_COUNT 10
