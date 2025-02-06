@@ -413,7 +413,6 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     al_clear_to_color(BLACK);
     if (world->custom_story_image[0])
     {
-        printf("Loading custom image %s\n", world->custom_story_image);
         ALLEGRO_BITMAP *img = al_load_bitmap(world->custom_story_image);
         al_draw_scaled_bitmap(img, 0, 0, al_get_bitmap_width(img), al_get_bitmap_height(img), 0, SCREEN_H - 107 * 2, SCREEN_W, 107 * 2, 0);
         al_destroy_bitmap(img);
