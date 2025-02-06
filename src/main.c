@@ -89,7 +89,6 @@ int main(int argc, char **argv)
   int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc);
 
   progress_load_state("Loading samples...", 1);
-  register_sample(SAMPLE_SELECT, "select_weapon", SAMPLE_PRIORITY(HIGH, 1), 0);
   register_sample(SAMPLE_WARP, "warp", SAMPLE_PRIORITY(HIGH, 1), 0);
   register_sample(SAMPLE_BOSSTALK_1, "boss_level_start", SAMPLE_PRIORITY(HIGH, 2), 0);
   register_sample(SAMPLE_BOSSTALK_2, "boss_level_boss_dies", SAMPLE_PRIORITY(HIGH, 2), 0);

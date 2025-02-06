@@ -41,7 +41,6 @@
 #define RECORD_MODE_RECORD 1
 #define RECORD_MODE_PLAYBACK 2
 
-#define SAMPLE_SELECT 0 // select weapon
 #define SAMPLE_WARP 1
 #define SAMPLE_BOSSTALK_1 2
 #define SAMPLE_BOSSTALK_2 3
