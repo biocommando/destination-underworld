@@ -15,6 +15,11 @@ static ALLEGRO_EVENT_QUEUE *queue = NULL;
 static ALLEGRO_AUDIO_STREAM *audio_stream = NULL;
 static ALLEGRO_EVENT event;
 
+// The buffer size chosen to be as big as possible not to be
+// very much audible when turning music off / switching tracks.
+// As there's no realtime requirement, the latency can be high
+#define AUDIO_BUFFER_SIZE 4096
+
 int check_key(int key)
 {
     if (key >= 0 && key < ALLEGRO_KEY_MAX)
@@ -56,12 +61,12 @@ int wait_event()
         {
             MidiPlayer *mp = get_midi_player();
             mp->synth.total_volume = get_game_settings()->music_vol;
-            midi_player_process_buffer(mp, buf, 1024);
+            midi_player_process_buffer(mp, buf, AUDIO_BUFFER_SIZE);
             al_set_audio_stream_fragment(stream, buf);
             if (mp->ended)
             {
-                midi_track_spacing_counter += 1024;
-                if (midi_track_spacing_counter >= 44100)
+                midi_track_spacing_counter += AUDIO_BUFFER_SIZE;
+                if (midi_track_spacing_counter >= mp->sample_rate)
                 {
                     midi_track_spacing_counter = 0;
                     next_midi_track(-1);
@@ -148,7 +153,7 @@ int init_allegro()
     al_install_audio();
     al_reserve_samples(64);
 
-    audio_stream = al_create_audio_stream(8, 1024, 44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
+    audio_stream = al_create_audio_stream(4, AUDIO_BUFFER_SIZE, 44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
     ALLEGRO_MIXER *mixer = al_get_default_mixer();
     al_attach_audio_stream_to_mixer(audio_stream, mixer);
 
