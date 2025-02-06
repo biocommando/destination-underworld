@@ -26,9 +26,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
       move_bullet(bullet, world);
       if (bullet->owner == NULL)
       {
-        if (world->playcount == 0)
-          trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-        world->playcount = PLAYDELAY;
+        trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
         create_explosion(bullet_orig_x, bullet_orig_y, world, 0.5);
         if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
         {
@@ -62,9 +60,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
             create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
           }
         }
-        if (world->playcount == 0)
-          trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-        world->playcount = PLAYDELAY;
+        trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
         create_shade_around_hit_point(world->plr.x, world->plr.y, 9, world);
         create_explosion(world->plr.x, world->plr.y, world, 1);
         if (world->plr.health <= 0)
@@ -79,13 +75,11 @@ void bullet_logic(World *world, GlobalGameState *ggs)
           Enemy *substitute = get_next_available_enemy(world);
           memcpy(substitute, &world->plr, sizeof(Enemy));
 
-          wait_delay_ms(1); // The death sample won't play else
           trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world->plr.x - 240) / 8, 900 + rand() % 200);
           world->plr.reload = 100;
           break;
         }
       }
-      int deathsample_plays = 0;
       if (bullet->hurts_flags & BULLET_HURTS_MONSTERS)
       {
         for (int j = 0; j < ENEMYCOUNT; j++)
@@ -98,16 +92,13 @@ void bullet_logic(World *world, GlobalGameState *ggs)
           {
             create_shade_around_hit_point(enm->x, enm->y, 9, world);
             create_explosion(enm->x, enm->y, world, 1.2);
-            if (!deathsample_plays)
-              if (world->playcount == 0)
-                trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
+            trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
 
             if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
             {
               create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, &world->plr);
             }
 
-            world->playcount = PLAYDELAY;
             if (!enm->alive) // enemy was killed (bullet_hit has side effects)
             {
               create_explosion(enm->x, enm->y, world, 1.8);
@@ -170,10 +161,8 @@ void bullet_logic(World *world, GlobalGameState *ggs)
               }
               else
               {
-                if (!deathsample_plays)
-                  trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
+                trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
               }
-              deathsample_plays = 1;
             }
             break;
           }

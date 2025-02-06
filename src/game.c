@@ -63,7 +63,6 @@ void game(GlobalGameState *ggs)
   char c;
   int vibrations = 0;
   int x, y, i, additt_anim = 0;
-  world.playcount = 0;
 
   int fly_in_text_x = SCREEN_W;
   char fly_in_text[64];
@@ -209,9 +208,6 @@ void game(GlobalGameState *ggs)
     move_and_draw_body_parts(&world);
     draw_wall_shadows(&world);
     // draw_enemy_shadows(&world); -- doesn't look very good and the shadow physics are f'd up
-
-    if (world.playcount > 0)
-      world.playcount--;
 
     // Draw legend to same position as player
     // Legend cannot be drawn here or it would get obscured

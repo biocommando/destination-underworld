@@ -367,9 +367,6 @@ typedef struct
     // The status of power up effects that do not affect directly
     // some other property.
     struct powerup_status powerups;
-    // Mechanism for not triggering too many of same type sounds
-    // within one frame
-    int playcount;
     // Mission name that is shown in the beginning of the map
     char mission_display_name[64];
     // Number of lines of story to show after the mission

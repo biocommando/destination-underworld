@@ -14,6 +14,7 @@ struct
   ALLEGRO_SAMPLE *sample;
   int priority;
   ALLEGRO_SAMPLE_ID sample_id;
+  int group;
 } sample_register[MAX_NUM_SAMPLES];
 
 static int get_sample_path(char *sample_path, const char *sample_name)
@@ -30,7 +31,7 @@ static int get_sample_path(char *sample_path, const char *sample_name)
   return 1;
 }
 
-void register_sample(int id, const char *sample_name, int priority)
+void register_sample(int id, const char *sample_name, int priority, int group)
 {
   if (sample_reg_idx < MAX_NUM_SAMPLES)
   {
@@ -40,16 +41,16 @@ void register_sample(int id, const char *sample_name, int priority)
       printf("ERROR: Sample mapping not found for \"%s\"\n", sample_name);
       return;
     }
-    sample_register[sample_reg_idx].id = id;
-
     ALLEGRO_SAMPLE *sample = al_load_sample(sample_path);
     if (!sample)
     {
       printf("ERROR: Loading sample \"%s\" from path \"%s\" failed\n", sample_name, sample_path);
       return;
     }
+    sample_register[sample_reg_idx].id = id;
     sample_register[sample_reg_idx].sample = sample;
     sample_register[sample_reg_idx].priority = priority;
+    sample_register[sample_reg_idx].group = group;
     memset(&sample_register[sample_reg_idx].sample_id, 0, sizeof(ALLEGRO_SAMPLE_ID));
     sample_reg_idx++;
   }
@@ -63,20 +64,31 @@ void stop_all_samples()
   }
 }
 
+static inline void mark_group_triggered(int group)
+{
+  for (int i = sample_reg_idx - 1; i >= 0; i--)
+  {
+    if (sample_register[i].group == group)
+    {
+      sample_register[i].triggered = 1;
+    }
+  }
+}
+
 void trigger_sample_with_params(int id, int volume, int pan, int pitch)
 {
   const ALLEGRO_PLAYMODE pm = ALLEGRO_PLAYMODE_ONCE;
   if (get_game_settings()->sfx_vol == 0)
     return;
-  double gain = volume / 255.0 * get_game_settings()->sfx_vol;
-  double normpan = (pan - 127) / 128.0;
-  double normpitch = pitch / 1000.0;
   for (int i = sample_reg_idx - 1; i >= 0; i--)
   {
     if (sample_register[i].id == id)
     {
       if (!sample_register[i].triggered)
       {
+        double gain = volume / 255.0 * get_game_settings()->sfx_vol;
+        double normpan = (pan - 127) / 128.0;
+        double normpitch = pitch / 1000.0;
         if (!al_play_sample(sample_register[i].sample, gain, normpan, normpitch, pm, &sample_register[i].sample_id))
         {
           for (int j = sample_reg_idx - 1; j >= 0; j--)
@@ -88,6 +100,10 @@ void trigger_sample_with_params(int id, int volume, int pan, int pitch)
         }
       }
       sample_register[i].triggered = 1;
+      if (sample_register[i].group)
+      {
+        mark_group_triggered(sample_register[i].group);
+      }
       return;
     }
   }

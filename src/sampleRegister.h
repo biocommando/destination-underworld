@@ -17,8 +17,10 @@
 
 /*
  * Set sample with the given filename to sample registry with the given id and priority.
+ * If the "trigger group" is not zero, the all the samples in the same group will be marked as
+ * triggered when one sample is played from that group.
  */
-void register_sample(int id, const char *fname, int priority);
+void register_sample(int id, const char *fname, int priority, int group);
 
 /*
  * Same as trigger_sample_with_params but only volume can be altered.
