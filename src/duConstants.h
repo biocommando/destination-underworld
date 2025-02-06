@@ -1,13 +1,10 @@
 #pragma once
 
-#define NO_OWNER 0
-#define PLAYER_ID 9999
 #define MAPMAX_X 16
 #define MAPMAX_Y 12
 #define TILESIZE 30
 #define HALFTILESIZE 15
 #define THIRDTILESIZE 10
-#define PLAYDELAY 1
 #define ANIM_FRAME_COUNT 40
 
 #define BODYPARTCOUNT 32
@@ -28,11 +25,6 @@
 
 #define DATADIR ".\\dataloss\\"
 #define SAVE_FILENAME DATADIR "%s\\save.dat"
-#define MENU_BITMAP_FILENAME DATADIR "hell.jpg"
-#define MENU_SAMPLE_FILENAME DATADIR "menuchg.wav"
-#define MENU_SELECT_SAMPLE_FILENAME DATADIR "menusel.wav"
-#define MENU_EXPLODE_FILENAME DATADIR "ex4.wav"
-#define FONT_FILENAME DATADIR "calibri.pcx"
 
 #define DIFFICULTY_NORMAL 0
 #define DIFFICULTY_BRUTAL 1

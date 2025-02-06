@@ -81,7 +81,7 @@ typedef struct
     int sprite;
     // if >= 0, the enemy drops a potion with this effect after death
     int potion;
-    // Body parts for this enemy (shown if id = NO_OWNER)
+    // Body parts for this enemy (shown if !alive && killed)
     BodyPart bodyparts[BODYPARTCOUNT];
     // After death, when this counter reaches a certain value, the enemy will spawn the body parts
     int death_animation;
@@ -456,7 +456,7 @@ Tile *ns_get_tile_at(World *world, int x, int y);
  */
 int ns_get_wall_type_at(World *world, int x, int y);
 /*
- * Inits player. Basically copies plrautosave struct if owner is not set to NO_OWNER.*/
+ * Inits player. Basically copies plrautosave struct if owner is alive.*/
 void init_player(World *world, Enemy *plrautosave);
 /* Checks if there are so many stacked bodyparts on a single tile
  * that some excess parts should be removed. Checks one tile at a time
