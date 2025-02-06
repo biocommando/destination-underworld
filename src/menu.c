@@ -450,6 +450,8 @@ static int display_new_game_menu(int game_modifiers)
     return m.items[m.selected_item].item_id;
 }
 
+static const char *vibration_intensity_fmt(int i);
+
 static int display_game_options(int default_opt)
 {
     struct menu m = create_menu("Options");
@@ -463,8 +465,9 @@ static int display_game_options(int default_opt)
     mi->item_id = get_menu_item_id("m.vol");
     mi = add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * get_game_settings()->sfx_vol));
     mi->item_id = get_menu_item_id("s.vol");
-    mi = add_menu_item(&m, "Set vibration intensity", "Current: %s (%d)",
-                       get_game_settings()->vibration_mode < 12 ? (get_game_settings()->vibration_mode < 5 ? "heavy" : "medium") : "light", get_game_settings()->vibration_mode);
+    char vibr_intensity_text[100];
+    sprintf(vibr_intensity_text, vibration_intensity_fmt(get_game_settings()->vibration_mode), get_game_settings()->vibration_mode);
+    mi = add_menu_item(&m, "Set vibration intensity", "Current: %s", vibr_intensity_text);
     mi->item_id = get_menu_item_id("vibrations");
     mi = add_menu_item(&m, "Window mode", "Current: %s\nThe game needs to be restarted to take new window mode into use.", get_game_settings()->fullscreen ? "Full screen" : "Windowed");
     mi->item_id = get_menu_item_id("Window");
@@ -473,14 +476,14 @@ static int display_game_options(int default_opt)
     return m.items[m.selected_item].item_id;
 }
 
-static int display_range_menu(const char *title, const char *fmt, int range_start, int count, int step, int default_opt)
+static int display_range_menu(const char *title, const char *(*fmt)(int), int range_start, int count, int step, int default_opt)
 {
     struct menu m = create_menu(title);
     for (int i = 0; i < count; i++)
     {
         int val = range_start + i * step;
         char item[100];
-        sprintf(item, fmt, val);
+        sprintf(item, fmt(val), val);
         add_menu_item(&m, item, "");
     }
     m.selected_item = (default_opt - range_start) / step;
@@ -514,6 +517,22 @@ static int display_select_track_menu()
     return m.selected_item == cancel_idx ? -1 : m.selected_item;
 }
 
+static const char *percent_fmt(int i)
+{
+    return "%d %%%%";
+}
+
+static const char *vibration_intensity_fmt(int i)
+{
+    if (i == 0)
+        return "Off";
+    if (i < 5)
+        return "%2d -- Heavy";
+    if (i < 12)
+        return "%2d -- Medium";
+    return "%2d -- Light";
+}
+
 static void game_option_menu()
 {
     GameSettings orig;
@@ -544,18 +563,18 @@ static void game_option_menu()
         else if (choice == get_menu_item_id("m.vol"))
         {
             int default_opt = (int)(get_game_settings()->music_vol * 100 + 0.5f);
-            int vol = display_range_menu("Set music volume", "%d %%%%", 10, 10, 10, default_opt);
+            int vol = display_range_menu("Set music volume", percent_fmt, 10, 10, 10, default_opt);
             get_game_settings()->music_vol = vol / 100.0f;
         }
         else if (choice == get_menu_item_id("s.vol"))
         {
             int default_opt = (int)(get_game_settings()->sfx_vol * 100 + 0.5f);
-            int vol = display_range_menu("Set sound volume", "%d %%%%", 10, 10, 10, default_opt);
+            int vol = display_range_menu("Set sound volume", percent_fmt, 10, 10, 10, default_opt);
             get_game_settings()->sfx_vol = vol / 100.0f;
         }
         else if (choice == get_menu_item_id("vibrations"))
         {
-            get_game_settings()->vibration_mode = display_range_menu("Set vibration intensity", "%d", 1, 16, 1, get_game_settings()->vibration_mode);
+            get_game_settings()->vibration_mode = display_range_menu("Set vibration intensity", vibration_intensity_fmt, 0, 17, 1, get_game_settings()->vibration_mode);
         }
         else if (choice == get_menu_item_id("Window"))
         {
