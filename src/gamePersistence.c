@@ -6,38 +6,47 @@
 void load_game_save_data(const char *filename, Enemy *data, int *mission, int *game_modifiers, int slot)
 {
     char rec[100], key[100];
+    memset(data, 0, sizeof(Enemy));
 
     sprintf(key, "slot_%d--game_modifiers", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", game_modifiers);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", game_modifiers);
 
     sprintf(key, "slot_%d--mission", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", mission);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", mission);
 
     sprintf(key, "slot_%d--health", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", &data->health);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->health);
 
     sprintf(key, "slot_%d--shots", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", &data->shots);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->shots);
 
     sprintf(key, "slot_%d--reload", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", &data->reload);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->reload);
 
     sprintf(key, "slot_%d--rate", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", &data->rate);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->rate);
 
     sprintf(key, "slot_%d--ammo", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", &data->ammo);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->ammo);
 
     sprintf(key, "slot_%d--gold", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", &data->gold);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->gold);
+
+    sprintf(key, "slot_%d--perks", slot);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->perks);
+
+    sprintf(key, "slot_%d--xp", slot);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+        sscanf(rec, "%*s %d", &data->xp);
 
     data->hurts_monsters = 1;
     data->sprite = -1;
@@ -104,6 +113,14 @@ void save_game_save_data(const char *filename, Enemy *data, int mission, int gam
 
     sprintf(key, "slot_%d--gold", slot);
     sprintf(rec, "%s %d", key, data->gold);
+    record_file_set_record(filename, key, rec);
+
+    sprintf(key, "slot_%d--perks", slot);
+    sprintf(rec, "%s %d", key, data->perks);
+    record_file_set_record(filename, key, rec);
+
+    sprintf(key, "slot_%d--xp", slot);
+    sprintf(rec, "%s %d", key, data->xp);
     record_file_set_record(filename, key, rec);
 }
 

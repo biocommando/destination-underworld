@@ -45,6 +45,7 @@ void game(GlobalGameState *ggs)
 
   World world;
   memset(&world, 0, sizeof(World));
+  ggs->player = &world.plr;
   world.game_modifiers = *game_modifiers;
   world.mission = *mission;
   world.boss_fight_config = world.boss_fight_configs;
@@ -64,9 +65,6 @@ void game(GlobalGameState *ggs)
   int vibrations = 0;
   int x, y, i, additt_anim = 0;
 
-  int fly_in_text_x = SCREEN_W;
-  char fly_in_text[64];
-  strcpy(fly_in_text, world.mission_display_name);
   int boss_fight_frame_count = 0;
 
   world.current_room = 1;
@@ -101,6 +99,10 @@ void game(GlobalGameState *ggs)
 
   read_level(&world, *mission, 1);
 
+  int fly_in_text_x = SCREEN_W;
+  char fly_in_text[64];
+  strcpy(fly_in_text, world.mission_display_name);
+
   if (world.boss_fight && world.play_boss_sound)
   {
     trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
@@ -117,6 +119,8 @@ void game(GlobalGameState *ggs)
     excess_gold_limit = 0;
   }
 
+  world.plr_max_health = (world.plr.perks & PERK_INCREASE_MAX_HEALTH) ? 7 : 6;
+
   if (world.plr.gold > excess_gold_limit)
   {
     int excess_gold = world.plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
@@ -127,7 +131,7 @@ void game(GlobalGameState *ggs)
     if (world.game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
       excess_gold /= 3;
     world.plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
-    world.plr.health = world.plr.health > 6 ? 6 : world.plr.health;
+    world.plr.health = world.plr.health > world.plr_max_health ? world.plr_max_health : world.plr.health;
 
     if (world.game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS)
     {
@@ -186,6 +190,17 @@ void game(GlobalGameState *ggs)
 
   clock_t game_loop_clk = clock();
 
+  int next_perk_xp = calculate_next_perk_xp(world.plr.perks);
+
+  if (world.plr.perks & PERK_START_WITH_SHIELD_POWERUP)
+    world.powerups.rune_of_protection_active = 1;
+  if (world.plr.perks & PERK_START_WITH_SPEED_POTION)
+  {
+    world.potion_effect_flags = POTION_EFFECT_FAST_PLAYER;
+    world.potion_duration = POTION_DURATION_BIG_BOOST;
+  }
+
+  int old_perks = world.plr.perks;
   while (restart_requested < 2)
   {
     if (world.plr.health <= 0)
@@ -219,6 +234,10 @@ void game(GlobalGameState *ggs)
     if (world.plr.health > 0)
     {
       draw_enemy(&world.plr, &world);
+      if (world.plr.perks != old_perks)
+      {
+        next_perk_xp = calculate_next_perk_xp(world.plr.perks);
+      }
 
       if (*record_mode == RECORD_MODE_PLAYBACK)
       {
@@ -255,6 +274,8 @@ void game(GlobalGameState *ggs)
         key_s = key_press_mask & 256;
         key_d = key_press_mask & 512;
         key_f = key_press_mask & 1024;
+        if (key_press_mask & 2048)
+          world.plr.perks = (int)((key_press_mask >> 16) & 0xFFFF);
       }
       else
       {
@@ -315,6 +336,8 @@ void game(GlobalGameState *ggs)
                                   (key_z ? 64 : 0) | (key_a ? 128 : 0) |
                                   (key_s ? 256 : 0) | (key_d ? 512 : 0) |
                                   (key_f ? 1024 : 0);
+        if (world.plr.perks != old_perks)
+          new_key_press_mask = new_key_press_mask | 2048 | (world.plr.perks << 16);
         if (new_key_press_mask != key_press_mask)
         {
           key_press_mask = new_key_press_mask;
@@ -328,6 +351,7 @@ void game(GlobalGameState *ggs)
     {
       world.plr.move = 0;
     }
+    old_perks = world.plr.perks;
     {
       int plr_speed = 3;
       if (check_potion_effect(&world, POTION_EFFECT_FAST_PLAYER))
@@ -373,7 +397,7 @@ void game(GlobalGameState *ggs)
     {
       if (world.potion_healing_counter <= 0)
       {
-        if (world.plr.health < 6)
+        if (world.plr.health < world.plr_max_health)
           world.plr.health++;
         world.potion_healing_counter = 25;
       }
@@ -400,7 +424,13 @@ void game(GlobalGameState *ggs)
 
     if (world.plr.health > 0)
     {
+      int prev_xp = world.plr.xp;
       bullet_logic(&world, ggs);
+      if (prev_xp < next_perk_xp && world.plr.xp >= next_perk_xp)
+      {
+        fly_in_text_x = SCREEN_W;
+        strcpy(fly_in_text, "Level up! New perks available!");
+      }
       potion_logic(&world);
     }
 
@@ -478,7 +508,7 @@ void game(GlobalGameState *ggs)
 
     if (fly_in_text_x > -400)
     {
-      al_draw_textf(get_font(), WHITE, fly_in_text_x, 170, -1, world.mission_display_name);
+      al_draw_textf(get_font(), WHITE, fly_in_text_x, 170, -1, fly_in_text);
       if (fly_in_text_x > SCREEN_W / 8 * 3 && fly_in_text_x < SCREEN_W / 8 * 5)
       {
         fly_in_text_x -= 4;
@@ -488,6 +518,8 @@ void game(GlobalGameState *ggs)
         fly_in_text_x -= 10;
       }
     }
+
+    al_draw_textf(get_font(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
 
     if (world.plr.health > 0)
     {

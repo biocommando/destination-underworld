@@ -48,6 +48,9 @@ When a level changes the remaining player souls is capped at 5
 and the remainder is used for maxing out the player's health (player
 health is also carried over from level to another, though it's always
 at least 3).
+
+Killing enemies also grants you experience points. You can spend XP
+in the Perks menu that can be opened using the ESC key.
 #to-line 33
 #color 40 40 160 5
 Press space to continue or esc to return to menu

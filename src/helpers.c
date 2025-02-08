@@ -13,3 +13,14 @@ double random()
 {
     return (double)(rand() % 1000) / 1000;
 }
+
+int calculate_next_perk_xp(int perks)
+{
+    int xp = 300;
+    for (int i = 0; i < 32; i++)
+    {
+        if ((perks >> i) & 1)
+            xp *= 2;
+    }
+    return xp;
+}

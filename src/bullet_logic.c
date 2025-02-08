@@ -42,22 +42,38 @@ void bullet_logic(World *world, GlobalGameState *ggs)
 
         break;
       }
+      if ((world->plr.perks & PERK_IMPROVE_BLAST_POWERUP) && bullet->bullet_type == BULLET_TYPE_CLUSTER)
+      {
+        int frame_cnt = bullet->y;
+        if (bullet->dx > 0.2 || bullet->dx < -0.2)
+          frame_cnt = bullet->x;
+        if (frame_cnt % 64 == 0)
+          create_cluster_explosion(world, bullet->x, bullet->y, 4, 1, &world->plr);
+      }
       if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
       {
         if (ggs->cheats & 1)
           world->plr.health++;
-        if (world->powerups.rune_of_protection_active == 1)
+        if (world->powerups.rune_of_protection_active > 0)
         {
           world->plr.health++;
           if (world->plr.health < 0)
             world->plr.health = 1;
           world->plr.alive = 1;
           world->plr.killed = 0;
-          world->powerups.rune_of_protection_active = -50;
-          create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
-          if ((world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
+          world->powerups.rune_of_protection_active--;
+          if (world->powerups.rune_of_protection_active == 0)
           {
+            world->powerups.rune_of_protection_active = -50;
             create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
+            if ((world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
+            {
+              create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
+            }
+          }
+          else
+          {
+            create_cluster_explosion(world, world->plr.x, world->plr.y, 6, 1, &world->plr);
           }
         }
         trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
@@ -116,6 +132,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
 
               world->kills++;
               world->boss_fight_config->state.player_kills++;
+              world->plr.xp += enm->xp;
               if (enm->gold > 0 || (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
               {
                 if (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)

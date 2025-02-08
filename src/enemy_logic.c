@@ -161,6 +161,8 @@ void enemy_logic(World *world)
           create_explosion(enm->x, enm->y, world, 1);
           create_explosion(enm->x, enm->y, world, 1);
           create_explosion(enm->x, enm->y, world, 2);
+          if (world->plr.perks & PERK_IMPROVE_TURRET_POWERUP)
+            create_cluster_explosion(world, enm->x, enm->y, 32, 1, &world->plr);
           enm->ammo = -1;
           enm->shots = 1;
           enm->alive = 0;

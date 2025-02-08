@@ -416,6 +416,15 @@ Enemy *get_next_available_enemy(World *world)
     return &world->enm[fallback];
 }
 
+static inline int calculate_xp(Enemy *enm)
+{
+    int rate = 30 - enm->rate;
+    if (rate < 0)
+        rate = 0;
+    double power_score = rate / 5 + enm->health / 2 + enm->fast * 2 - enm->turret - enm->hurts_monsters;
+    return pow(power_score, 1.5);
+}
+
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
 {
     x = x * TILESIZE + HALFTILESIZE;
@@ -469,6 +478,8 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     if (difficulty == DIFFICULTY_BRUTAL)
         new_enemy->health++;
 
+    new_enemy->xp = calculate_xp(new_enemy);
+
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
         new_enemy->bodyparts[j].exists = 0;
@@ -506,10 +517,10 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int rang
         return NULL;
     p->location.x = x;
     p->location.y = y;
-    p->duration_boost = 250;
+    p->duration_boost = POTION_DURATION_BIG_BOOST;
     int is_drop = range_start != POTION_PRESET_RANGE_START;
     if (is_drop)
-        p->duration_boost = 50;
+        p->duration_boost = POTION_DURATION_MINI_BOOST;
     p->effects = 0;
     if (type == POTION_ID_SHIELD)
         p->effects = POTION_EFFECT_SHIELD_OF_FIRE | POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS;

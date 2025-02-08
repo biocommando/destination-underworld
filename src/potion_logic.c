@@ -19,9 +19,9 @@ void potion_logic(World *w)
         w->potion_duration += p->duration_boost;
         if (w->potion_duration > POTION_DURATION_CAP)
           w->potion_duration = POTION_DURATION_CAP;
-        if (p->effects & POTION_EFFECT_HEAL_ONCE)
+        if ((p->effects & POTION_EFFECT_HEAL_ONCE) && w->plr.health < w->plr_max_health)
         {
-          w->plr.health = 6;
+          w->plr.health = w->plr_max_health;
         }
         if ((w->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && (w->potion_effect_flags & p->effects) && w->potion_duration == POTION_DURATION_CAP)
         {

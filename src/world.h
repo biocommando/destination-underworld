@@ -34,6 +34,14 @@ enum TurretType
     TURRET_TYPE_PLAYER
 };
 
+#define PERK_INCREASE_MAX_HEALTH 1
+#define PERK_IMPROVE_HEALTH_POWERUP 2
+#define PERK_IMPROVE_TURRET_POWERUP 4
+#define PERK_IMPROVE_SHIELD_POWERUP 8
+#define PERK_IMPROVE_BLAST_POWERUP 16
+#define PERK_START_WITH_SPEED_POTION 32
+#define PERK_START_WITH_SHIELD_POWERUP 64
+
 // An enemy, player or player's powerup turret
 typedef struct
 {
@@ -85,6 +93,11 @@ typedef struct
     BodyPart bodyparts[BODYPARTCOUNT];
     // After death, when this counter reaches a certain value, the enemy will spawn the body parts
     int death_animation;
+    // Experience points for player and the amount of xp that killing one enemy gives the player
+    int xp;
+    // Perks can be bought with experience points. Each perk will cost more than the previously bought.
+    // This adds a lite RPG element to the game.
+    int perks;
 } Enemy;
 
 #define BULLET_TYPE_NORMAL 0
@@ -300,6 +313,8 @@ struct enemy_config
 #define POTION_EFFECT_HEALING (1 << 5)
 #define POTION_EFFECT_HEAL_ONCE (1 << 6)
 #define POTION_DURATION_CAP 400
+#define POTION_DURATION_BIG_BOOST 250
+#define POTION_DURATION_MINI_BOOST 50
 
 // A pickable potion
 typedef struct potion
@@ -397,6 +412,8 @@ typedef struct
     // Shoots fireballs when this is reduced to zero
     int potion_shield_counter;
     Potion potions[POTION_COUNT];
+    // Maximum health that can be obtained using potions
+    int plr_max_health;
 } World;
 
 // Global state that is persisted over different game(...) calls.
@@ -413,6 +430,8 @@ typedef struct
     int cheats;
     // Don't require keypresses in record playback mode
     int no_player_interaction;
+    // Pointer to player for ingame menu (can be null or undefined otherwise)
+    Enemy *player;
 } GlobalGameState;
 
 /*

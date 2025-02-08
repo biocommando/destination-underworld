@@ -19,3 +19,8 @@ typedef struct coordinates
     double x;
     double y;
 } Coordinates;
+
+/*
+ * Calculate the cost of next perk based on current perk status flags.
+ */
+int calculate_next_perk_xp(int perks);

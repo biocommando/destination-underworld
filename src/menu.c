@@ -409,9 +409,11 @@ static int display_in_game_menu(int game_modifiers, int mission)
                                 game_modifiers_to_str(game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT), mission);
     struct menu_item *mi = add_menu_item(&m, "Return", "Close the menu and continue playing");
     m.cancel_menu_item_id = mi->item_id;
+    add_menu_item(&m, "Perks", "Spend experience points for upgrades!");
     add_menu_item(&m, "Save game", "");
     if (game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
     {
+        m.items[m.num_items - 2].selectable = 0;
         m.items[m.num_items - 1].selectable = 0;
     }
     add_menu_item(&m, "Game options", "Change the game options");
@@ -609,6 +611,37 @@ static void load_menu_sprites()
     al_convert_mask_to_alpha(menu_sprites, al_map_rgb(255, 0, 255));
 }
 
+static void add_perk_menu_item(struct menu *m, int perks, int enough_xp, int perk_flag, const char *name, const char *description)
+{
+    struct menu_item *mi = add_menu_item(m, name, (perks & perk_flag) ? "ALREADY UPGRADED" : description);
+    mi->selectable = (perks & perk_flag) == 0 && enough_xp;
+    mi->item_id = perk_flag;
+}
+
+static void display_perk_menu(Enemy *player)
+{
+    char text[100];
+    int required_xp = calculate_next_perk_xp(player->perks);
+    sprintf(text, "Perks -- Available XP: %d | Next upgrade cost: %d", player->xp, required_xp);
+    int enough_xp = required_xp <= player->xp;
+    struct menu m = create_menu(text);
+    m.cancel_menu_item_id = 123;
+    add_menu_item(&m, "Return", "");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_INCREASE_MAX_HEALTH, "Iron skin", "Increases maximum health by one.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_HEALTH_POWERUP, "Healer", "Improves the Heal powerup.\n+1 health per use.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_SHIELD_POWERUP, "Protector", "Improves the Shield powerup.\nGuards from 3 hits instead of 1.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_TURRET_POWERUP, "Engineer", "Improves the Turret powerup.\nThe spawned turret explodes after shooting.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_BLAST_POWERUP, "Annihilator", "Improves the Torrent of Fire powerup.\nMakes the projectile shoot fireballs while traveling.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SPEED_POTION, "Speedrunner", "Start level with Potion of Gotta Go Fast.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SHIELD_POWERUP, "Paranoid", "Start level with Shield powerup active.");
+    display_menu(&m);
+    int selected_id = m.items[m.selected_item].item_id;
+    if (selected_id == m.cancel_menu_item_id || selected_id == get_menu_item_id("Return"))
+        return;
+    player->xp -= required_xp;
+    player->perks |= selected_id;
+}
+
 int menu(int ingame, GlobalGameState *ggs)
 {
     // Make these static so that entering the menu mid-game will not forget previous choises
@@ -644,6 +677,10 @@ int menu(int ingame, GlobalGameState *ggs)
                 {
                     switch_level = 0;
                     exit_menu = 1;
+                }
+                else if (ingame_menu_selection == get_menu_item_id("Perks"))
+                {
+                    display_perk_menu(ggs->player);
                 }
                 else if (ingame_menu_selection == get_menu_item_id("Save"))
                 {

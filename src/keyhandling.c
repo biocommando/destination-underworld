@@ -109,10 +109,13 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
   {
     *gold_hint_amount = cost_heal;
     world->plr.gold -= cost_heal;
-    world->plr.health += difficulty == DIFFICULTY_BRUTAL ? 2 : 3;
-    if (world->plr.health > 6)
+    int health_bonus = difficulty == DIFFICULTY_BRUTAL ? 2 : 3;
+    if (world->plr.perks & PERK_IMPROVE_HEALTH_POWERUP)
+      health_bonus++;
+    world->plr.health += health_bonus;
+    if (world->plr.health > world->plr_max_health)
     {
-      world->plr.health = 6;
+      world->plr.health = world->plr_max_health;
     }
     if (overpowered)
     {
@@ -127,6 +130,8 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
     *gold_hint_amount = cost_protection;
     world->plr.gold -= cost_protection;
     *plr_rune_of_protection_active = 1;
+    if (world->plr.perks & PERK_IMPROVE_SHIELD_POWERUP)
+      *plr_rune_of_protection_active = 3;
     world->plr.reload = 40;
     trigger_sample(SAMPLE_PROTECTION, 255);
     return 2;
