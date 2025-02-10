@@ -1,5 +1,6 @@
 #include "allegro42_compat.h"
 #include "allegro5/allegro_acodec.h"
+#include "allegro5/allegro_ttf.h"
 #include "duConstants.h"
 #include "gen_version_info.h"
 #include "midi_playback.h"
@@ -8,7 +9,9 @@
 
 static char keybuffer[ALLEGRO_KEY_MAX];
 
-static ALLEGRO_FONT *font = NULL;
+static ALLEGRO_FONT *menu_font = NULL;
+static ALLEGRO_FONT *game_font = NULL;
+static ALLEGRO_FONT *game_font_tiny = NULL;
 static ALLEGRO_DISPLAY *display = NULL;
 static ALLEGRO_TIMER *timer = NULL;
 static ALLEGRO_EVENT_QUEUE *queue = NULL;
@@ -137,13 +140,16 @@ int init_allegro()
     al_init_image_addon();
     al_init_primitives_addon();
     al_init_font_addon();
+    al_init_ttf_addon();
     al_init_acodec_addon();
 
     al_set_new_window_title("Destination Underworld " DU_VERSION);
     al_set_new_display_refresh_rate(60);
     int fullscreen_flag = get_game_settings()->fullscreen ? ALLEGRO_FULLSCREEN : 0;
     al_set_new_display_flags(ALLEGRO_OPENGL | fullscreen_flag);
-    font = al_create_builtin_font();
+    menu_font = al_load_ttf_font(get_game_settings()->menu_font, 16, ALLEGRO_TTF_NO_KERNING);
+    game_font = al_load_ttf_font(get_game_settings()->game_font, 12, ALLEGRO_TTF_NO_KERNING);
+    game_font_tiny = al_load_ttf_font(get_game_settings()->game_font, 8, ALLEGRO_TTF_NO_KERNING | ALLEGRO_TTF_MONOCHROME);
     display = al_create_display(DISPLAY_W, DISPLAY_H);
     if (!display)
     {
@@ -179,9 +185,22 @@ void destroy_allegro()
     al_destroy_display(display);
     al_uninstall_keyboard();
     free_midi_playback();
+    al_destroy_font(menu_font);
+    al_destroy_font(game_font);
+    al_destroy_font(game_font_tiny);
 }
 
 ALLEGRO_FONT *get_font()
 {
-    return font;
+    return game_font;
+}
+
+ALLEGRO_FONT *get_font_tiny()
+{
+    return game_font_tiny;
+}
+
+ALLEGRO_FONT *get_menu_font()
+{
+    return menu_font;
 }

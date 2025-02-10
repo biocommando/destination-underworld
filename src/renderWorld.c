@@ -410,20 +410,12 @@ static inline void check_valid_time_for_display(float *f)
 
 void display_level_info(World *world, int mission, int mission_count, long completetime)
 {
+    const int y_margin = al_get_font_line_height(get_menu_font()) + 2;
+    const int y_margin_small_text = al_get_font_line_height(get_font()) + 1;
     al_clear_to_color(BLACK);
-    if (world->custom_story_image[0])
-    {
-        ALLEGRO_BITMAP *img = al_load_bitmap(world->custom_story_image);
-        al_draw_scaled_bitmap(img, 0, 0, al_get_bitmap_width(img), al_get_bitmap_height(img), 0, SCREEN_H - 107 * 2, SCREEN_W, 107 * 2, 0);
-        al_destroy_bitmap(img);
-    }
-    else
-    {
-        al_draw_scaled_bitmap(world->spr, 105, 0, 160, 100, 0, SCREEN_H - 107 * 2, SCREEN_W, 107 * 2, 0);
-    }
     int y = 5;
-    al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Level '%s' cleared!", world->mission_display_name);
-    y += 15;
+    al_draw_text(get_menu_font(), GRAY(200), 5, y, 0, world->mission_display_name);
+    y += y_margin;
     struct best_times best_times;
     best_times.game_modifiers = world->game_modifiers;
     best_times.mission = mission;
@@ -447,17 +439,28 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     {
         save_best_times(get_game_settings()->mission_pack, &best_times);
     }
-    y += 15;
+    y += y_margin_small_text;
     if (mission < mission_count)
         al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Now entering level %d / %d.", mission + 1, mission_count);
-    y += 15;
-    rectfill(0, y - 5, SCREEN_W, y + 15 * world->story_after_mission_lines - 5, GRAY(20));
+    y += y_margin_small_text + 5;
+    rectfill(0, y - 3, SCREEN_W, y + y_margin_small_text * world->story_after_mission_lines + 2, GRAY(20));
     for (int i = 0; i < world->story_after_mission_lines; i++)
     {
         al_draw_textf(get_font(), GRAY(140), 5, y, 0, "%s", world->story_after_mission[i]);
-        y += 15;
+        y += y_margin_small_text;
     }
-    al_draw_textf(get_font(), GRAY(200), 5, SCREEN_H - 15, 0, "Press enter to continue!");
+    y += 2;
+    if (world->custom_story_image[0])
+    {
+        ALLEGRO_BITMAP *img = al_load_bitmap(world->custom_story_image);
+        al_draw_scaled_bitmap(img, 0, 0, al_get_bitmap_width(img), al_get_bitmap_height(img), 0, y, SCREEN_W, SCREEN_H - y, 0);
+        al_destroy_bitmap(img);
+    }
+    else
+    {
+        al_draw_scaled_bitmap(world->spr, 105, 0, 160, 100, 0, y, SCREEN_W, SCREEN_H - y, 0);
+    }
+    al_draw_textf(get_menu_font(), GRAY(200), 5, SCREEN_H - y_margin, 0, "Press enter to continue!");
     al_flip_display();
 }
 
@@ -503,7 +506,7 @@ void show_ingame_info_screen(World *world)
                 al_draw_filled_rectangle(xx, yy, xx + map_tile_size, yy + map_tile_size, color);
                 if (world->map[i][x][y].is_exit_point)
                 {
-                    al_draw_textf(get_font(), GRAY(200), xx, yy, 0, "%d", world->map[i][x][y].data);
+                    al_draw_textf(get_font_tiny(), GRAY(200), xx, yy, 0, "%d", world->map[i][x][y].data);
                 }
             }
         }
@@ -519,7 +522,7 @@ void show_ingame_info_screen(World *world)
             if (enm->alive && enm->roomid == i + 1 && enm != world->boss)
                 num_enemies++;
         }
-        al_draw_textf(get_font(), GRAY(200), offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1,
+        al_draw_textf(get_font_tiny(), GRAY(200), offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1,
                       num_enemies);
         for (int e = 0; e < world->boss_fight_configs[i].num_events; e++)
         {
@@ -528,19 +531,19 @@ void show_ingame_info_screen(World *world)
             {
                 int xx = offset_x + evt->parameters[0] * map_tile_size;
                 int yy = offset_y + evt->parameters[1] * map_tile_size;
-                al_draw_textf(get_font(), GRAY(200), xx, yy, 0, "S");
+                al_draw_textf(get_font_tiny(), GRAY(200), xx, yy, 0, "S");
             }
             else if (evt->event_type == BFCONF_EVENT_TYPE_SPAWN)
             {
                 int xx = offset_x + evt->spawn_point.x * map_tile_size;
                 int yy = offset_y + evt->spawn_point.y * map_tile_size;
-                al_draw_textf(get_font(), GRAY(200), xx, yy, 0, "E");
+                al_draw_textf(get_font_tiny(), GRAY(200), xx, yy, 0, "E");
             }
             else if (evt->event_type == BFCONF_EVENT_TYPE_SPAWN_POTION)
             {
                 int xx = offset_x + evt->parameters[0] * map_tile_size;
                 int yy = offset_y + evt->parameters[1] * map_tile_size;
-                al_draw_textf(get_font(), GRAY(200), xx, yy, 0, "P");
+                al_draw_textf(get_font_tiny(), GRAY(200), xx, yy, 0, "P");
             }
         }
     }
@@ -570,7 +573,7 @@ void show_ingame_info_screen(World *world)
 
     offset_y = map_tile_size * (MAPMAX_Y + 1) * max_minimaps_per_row;
     offset_x = map_tile_size;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "Enemy counts:          Kills: %d", world->kills);
+    al_draw_textf(get_font_tiny(), GRAY(200), offset_x, offset_y, 0, "Enemy counts:          Kills: %d", world->kills);
     offset_y += map_tile_size;
 
     for (int et = 0; et < ENEMY_TYPE_COUNT; et++)
@@ -584,7 +587,7 @@ void show_ingame_info_screen(World *world)
         }
         draw_sprite_animated(world->spr, SPRITE_ID_ENEMY, offset_x, offset_y, 0, et);
         offset_x += TILESIZE;
-        al_draw_textf(get_font(), GRAY(200), offset_x, offset_y + HALFTILESIZE, 0, "%d", num_enemies);
+        al_draw_textf(get_font_tiny(), GRAY(200), offset_x, offset_y + HALFTILESIZE, 0, "%d", num_enemies);
         offset_x += TILESIZE;
     }
 

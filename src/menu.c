@@ -221,8 +221,10 @@ static void display_menu(struct menu *menu_state)
 {
     ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
 
-    const int menu_item_height = 10;
-    const int menu_item_margin = 5;
+    const int font_height = al_get_font_line_height(get_menu_font());
+    const int menu_item_height = font_height + 2;
+    const int small_menu_item_height = al_get_font_line_height(get_font());
+    const int menu_item_margin = 3;
     const int y_offset = 60;
     int key = 0;
     int flicker = 0;
@@ -230,16 +232,16 @@ static void display_menu(struct menu *menu_state)
     while (key != ALLEGRO_KEY_ENTER)
     {
         al_draw_scaled_bitmap(menubg, 0, 0, 480, 360, 0, 0, 480 * 2, 360 * 2, 0);
-        al_draw_textf(get_font(), DARK_RED, 30, 25, 0, menu_state->title);
-        al_draw_textf(get_font(), RED, 28, 23, 0, menu_state->title);
+        al_draw_textf(get_menu_font(), DARK_RED, 30, 25, 0, menu_state->title);
+        al_draw_textf(get_menu_font(), RED, 28, 23, 0, menu_state->title);
         int cursor_y = y_offset;
         for (int i = 0; i < menu_state->num_items; i++)
         {
             struct menu_item *mi = &menu_state->items[i];
-            al_draw_textf(get_font(), mi->selectable ? al_map_rgb(64, 64, 127) : GRAY(127), 40, cursor_y, 0, mi->name);
+            al_draw_textf(get_menu_font(), mi->selectable ? al_map_rgb(64, 64, 127) : GRAY(127), 40, cursor_y, 0, mi->name);
             if (menu_state->selected_item == i)
             {
-                al_draw_filled_circle(30, cursor_y + 3, 6, al_map_rgb(200, 0, 0));
+                al_draw_filled_circle(30, cursor_y + font_height / 2, 6, al_map_rgb(200, 0, 0));
             }
             cursor_y += menu_item_height;
             for (int j = 0; j < 3; j++)
@@ -248,7 +250,7 @@ static void display_menu(struct menu *menu_state)
                 {
                     al_draw_textf(get_font(), mi->selectable ? al_map_rgb(127, 127, 255) : GRAY(127), 80, cursor_y,
                                   0, mi->description[j]);
-                    cursor_y += menu_item_height;
+                    cursor_y += small_menu_item_height;
                 }
             }
             cursor_y += menu_item_margin;
@@ -660,7 +662,7 @@ int menu(int ingame, GlobalGameState *ggs)
     if (*get_playback_mode() == RECORD_MODE_PLAYBACK)
     {
         al_clear_to_color(BLACK);
-        al_draw_textf(get_font(), WHITE, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
+        al_draw_textf(get_menu_font(), WHITE, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
         al_flip_display();
         wait_key_press(ALLEGRO_KEY_ENTER);
     }

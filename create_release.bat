@@ -21,6 +21,9 @@ xcopy dataloss\sprites.dat DestinationUnderworldRelease\dataloss
 xcopy dataloss\sounds.dat DestinationUnderworldRelease\dataloss
 xcopy dataloss\settings.dat DestinationUnderworldRelease\dataloss
 
+xcopy dataloss\white-rabbit.TTF DestinationUnderworldRelease\dataloss
+xcopy dataloss\white-rabbit.TTF-license.txt DestinationUnderworldRelease\dataloss
+
 xcopy dataloss\sprites.png DestinationUnderworldRelease\dataloss
 xcopy dataloss\ending.jpg DestinationUnderworldRelease\dataloss
 xcopy dataloss\hell.jpg DestinationUnderworldRelease\dataloss

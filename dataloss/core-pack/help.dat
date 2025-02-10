@@ -51,7 +51,7 @@ at least 3).
 
 Killing enemies also grants you experience points. You can spend XP
 in the Perks menu that can be opened using the ESC key.
-#to-line 33
+#to-line 32
 #color 40 40 160 5
 Press space to continue or esc to return to menu
 
@@ -114,9 +114,8 @@ Effect: Shoots projectile that explodes into a torrent of fire
 BRUTALLY HARD
 #color 2
 #margin 40
-Fire modes are a bit modified. All enemies have +1 health.
-Heal gives +2 health, Turret costs 4, Torrent of Fire costs 8.
-Player always starts with 0 souls.
+Fire modes are a bit modified. All enemies have +1 health. Heal gives +2 health,
+Turret costs 4, Torrent of Fire costs 8. Player always starts with 0 souls.
 #margin 5
 #color 3
 EXPLOSION MADNESS
@@ -222,7 +221,7 @@ POTION OF INSTANT GRATIFICATION
 Player will instantly heal to 6 health.
 
 #margin 5
-#to-line 33
+#to-line 32
 #color 5
 Press space to continue or esc to return to menu
 #page-end
@@ -284,7 +283,7 @@ unknown whether the aliens and other hell-dwellers are allied or if the
 aliens are just protecting their homes. Nevertheless, their position
 makes them the most motivated fighters and they should be approached with
 extreme caution.
-#to-line 33
+#to-line 32
 #margin 5
 #color 5
 Press space to continue or esc to return to menu
@@ -327,7 +326,7 @@ about him. Does he even acknowledge his own priviledge? Anyway, your
 ultimate goal is to destroy him. Shouldn't be too hard to argue why
 nowadays.
 
-#to-line 33
+#to-line 32
 #margin 5
 #color 5
 Press space to continue or esc to return to menu
@@ -370,7 +369,7 @@ you just want to have fun.
 
 Stop reading already and go kill some demons, you bastard.
 
-#to-line 33
+#to-line 32
 #margin 5
 #color 5
 Press space to continue or esc to return to menu
@@ -402,9 +401,12 @@ Player and enemy sprites based on templates by Charles Gabriel:
 https://opengameart.org/content/twelve-16x18-rpg-sprites-plus-base
 License CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 
+Font "White Rabbit" is created by Matthew Welch. See license under data
+directory (MIT style).
+
 Other art, including music and soundeffects, are created by me,
 Joonas Salonpaa, under license CC-BY 3.0 (see link above).
-#to-line 33
+#to-line 32
 #margin 5
 #color 5
 Press space to continue or esc to return to menu

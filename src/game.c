@@ -519,7 +519,7 @@ void game(GlobalGameState *ggs)
       }
     }
 
-    al_draw_textf(get_font(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
+    al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
 
     if (world.plr.health > 0)
     {

@@ -67,6 +67,16 @@ void wait_key_release(int key);
 int check_key(int key);
 
 /*
- * Get the font initialized in init_allegro.
+ * Get the font for in-game texts.
  */
 ALLEGRO_FONT *get_font();
+
+/*
+ * Get the font for in-game texts but in smaller size.
+ */
+ALLEGRO_FONT *get_font_tiny();
+
+/*
+ * Get the font for menus.
+ */
+ALLEGRO_FONT *get_menu_font();

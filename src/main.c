@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
   read_cmd_line_arg_str("record-mode", argv, argc, read_arg);
   int *record_mode = get_playback_mode();
-  int record_playback_no_user_interaction = 1;
+  int record_playback_no_user_interaction = 0;
   if (!strcmp(read_arg, "record"))
   {
     *record_mode = RECORD_MODE_RECORD;

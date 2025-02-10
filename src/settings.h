@@ -21,6 +21,10 @@ typedef struct
   float music_vol;
   // Sound effect volume 0-1
   float sfx_vol;
+  // Path to font file used for in-game info
+  char game_font[256];
+  // Path to font file used for menus
+  char menu_font[256];
   // If custom resources are in use, this should be set to 1.
   // By default, different mission packs use the core game's sprites and sound effects but
   // if this is set to 1, also they are read from the `datadir\missionpack\` directory.
