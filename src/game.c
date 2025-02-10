@@ -426,7 +426,8 @@ void game(GlobalGameState *ggs)
     {
       int prev_xp = world.plr.xp;
       bullet_logic(&world, ggs);
-      if (prev_xp < next_perk_xp && world.plr.xp >= next_perk_xp)
+      if (prev_xp < next_perk_xp && world.plr.xp >= next_perk_xp &&
+          (world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
       {
         fly_in_text_x = SCREEN_W;
         strcpy(fly_in_text, "Level up! New perks available!");
@@ -519,7 +520,8 @@ void game(GlobalGameState *ggs)
       }
     }
 
-    al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
+    if ((world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
+      al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
 
     if (world.plr.health > 0)
     {
