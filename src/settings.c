@@ -53,6 +53,7 @@ void read_settings(char **argv, int argc)
 
   READ_SETTING(game_settings.music_on, "%d", "audio", "music-on");
   READ_SETTING(game_settings.music_vol, "%f", "audio", "music-vol");
+  READ_SETTING(game_settings.sfx_vol, "%f", "audio", "sfx-vol");
 
   char arena_config_file[256];
   sprintf(arena_config_file, DATADIR "%s\\arenas.dat", game_settings.mission_pack);
@@ -131,5 +132,5 @@ void save_settings()
 
 inline GameSettings *get_game_settings()
 {
-    return &game_settings;
+  return &game_settings;
 }
