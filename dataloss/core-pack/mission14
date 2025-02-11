@@ -986,6 +986,9 @@ X(duedit_compatible)
 500 3 1 2
 502 4 9 3
 502 3 8 3
+510 3 2 2
+510 3 3 2
+510 3 4 2
 #conditions
 *?game_modifiers = 8 COND_+PWUP
 *>+SKIP_COND_+PWUP
