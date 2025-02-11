@@ -105,17 +105,17 @@ static void show_help()
 static const char *game_modifiers_to_str(int game_modifiers)
 {
     if (game_modifiers == 0)
-        return "normal";
+        return "Normal";
     if (game_modifiers == GAMEMODIFIER_BRUTAL)
-        return "brutally hard";
+        return "Brutally hard";
     if (game_modifiers == GAMEMODIFIER_DOUBLED_SHOTS)
-        return "explosion madness";
+        return "Explosion madness";
     if (game_modifiers == (GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS))
-        return "over power up";
+        return "Over power up";
     if (game_modifiers == GAMEMODIFIER_MULTIPLIED_GOLD)
-        return "power up only";
+        return "Power up only";
     if (game_modifiers == (GAMEMODIFIER_POTION_ON_DEATH | GAMEMODIFIER_MULTIPLIED_GOLD | GAMEMODIFIER_NO_GOLD))
-        return "potions only";
+        return "Potions only";
     return "unknown";
 }
 
@@ -133,6 +133,7 @@ struct menu_item
     char description[3][100];
     int selectable;
     int item_id;
+    int meta;
 };
 
 static int get_menu_item_id(const char *id_str)
@@ -179,6 +180,7 @@ static struct menu_item *add_menu_item(struct menu *m, const char *name, const c
 
     int descr_idx = 0;
     struct menu_item *mi = &m->items[m->num_items];
+    mi->meta = 0;
     mi->selectable = 1;
     m->num_items++;
     strcpy(mi->name, name);
@@ -219,6 +221,10 @@ struct menu create_menu(const char *title, ...)
 
 static void display_menu(struct menu *menu_state)
 {
+    while (!menu_state->items[menu_state->selected_item].selectable)
+    {
+        menu_state->selected_item = (menu_state->selected_item + 1) % menu_state->num_items;
+    }
     ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
 
     const int font_height = al_get_font_line_height(get_menu_font());
@@ -226,39 +232,78 @@ static void display_menu(struct menu *menu_state)
     const int small_menu_item_height = al_get_font_line_height(get_font());
     const int menu_item_margin = 3;
     const int y_offset = 60;
-    int key = 0;
-    int flicker = 0;
+    int timer = 0, select_animation_timer = 0;
     wait_key_release(ALLEGRO_KEY_ESCAPE);
-    while (key != ALLEGRO_KEY_ENTER)
+    wait_key_release(ALLEGRO_KEY_ENTER);
+    int key_pressed = 0, key_released = 0;
+    while (1)
     {
+        timer++;
         al_draw_scaled_bitmap(menubg, 0, 0, 480, 360, 0, 0, 480 * 2, 360 * 2, 0);
-        al_draw_textf(get_menu_font(), DARK_RED, 30, 25, 0, menu_state->title);
-        al_draw_textf(get_menu_font(), RED, 28, 23, 0, menu_state->title);
+        al_draw_textf(get_menu_title_font(), DARK_RED, 30, 25, 0, menu_state->title);
+        al_draw_textf(get_menu_title_font(), RED, 28, 23, 0, menu_state->title);
         int cursor_y = y_offset;
         for (int i = 0; i < menu_state->num_items; i++)
         {
             struct menu_item *mi = &menu_state->items[i];
-            al_draw_textf(get_menu_font(), mi->selectable ? al_map_rgb(64, 64, 127) : GRAY(127), 40, cursor_y, 0, mi->name);
+            int cursor_y_offset = 0;
             if (menu_state->selected_item == i)
             {
-                al_draw_filled_circle(30, cursor_y + font_height / 2, 6, al_map_rgb(200, 0, 0));
+                cursor_y_offset = sin(timer * 0.3) * 3;
+                al_draw_filled_circle(30, cursor_y + font_height / 2, 5 + sin(timer * 0.1) * 2, al_map_rgb(150 + sin(timer * 0.1) * 50, 0, 0));
             }
-            cursor_y += menu_item_height;
+            if (!mi->meta)
+            {
+                ALLEGRO_COLOR col = mi->selectable ? al_map_rgb(64, 64, 127) : GRAY(127);
+                if (select_animation_timer > 0 && menu_state->selected_item == i)
+                    col = GRAY(128 + ((select_animation_timer / 2) % 2) * 127);
+                al_draw_textf(get_menu_font(), col, 40, cursor_y + cursor_y_offset, 0, mi->name);
+                cursor_y += menu_item_height;
+            }
+            else
+            {
+                cursor_y += menu_item_height / 2;
+            }
             for (int j = 0; j < 3; j++)
             {
                 if (mi->description[j][0])
                 {
-                    al_draw_textf(get_font(), mi->selectable ? al_map_rgb(127, 127, 255) : GRAY(127), 80, cursor_y,
-                                  0, mi->description[j]);
+                    ALLEGRO_COLOR col = mi->selectable ? al_map_rgb(127, 127, 255) : GRAY(127);
+                    if (mi->meta)
+                        col = al_map_rgb(182, 182, 0);
+                    al_draw_textf(get_font(), col, mi->meta ? 30 : 80, cursor_y, 0, mi->description[j]);
                     cursor_y += small_menu_item_height;
                 }
             }
-            cursor_y += menu_item_margin;
+            if (mi->meta)
+                cursor_y += menu_item_height / 2;
+            else
+                cursor_y += menu_item_margin;
         }
         al_flip_display();
+        wait_delay_ms(30);
+        if (select_animation_timer > 0)
+        {
+            select_animation_timer--;
+            if (select_animation_timer == 0)
+                break;
+            continue;
+        }
+
         int keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_UP, ALLEGRO_KEY_DOWN, ALLEGRO_KEY_ESCAPE};
-        key = wait_key_presses(keys, sizeof(keys) / sizeof(int));
-        if (key == ALLEGRO_KEY_UP)
+        key_released = 0;
+        if (key_pressed && !check_key(key_pressed))
+        {
+            key_released = key_pressed;
+            key_pressed = 0;
+        }
+        else
+        {
+            int key = check_keys(keys, sizeof(keys) / sizeof(int));
+            if (key)
+                key_pressed = key;
+        }
+        if (key_released == ALLEGRO_KEY_UP)
         {
             int initial_item = menu_state->selected_item - 1;
             do
@@ -278,7 +323,7 @@ static void display_menu(struct menu *menu_state)
                 }
             } while (initial_item != 999);
         }
-        if (key == ALLEGRO_KEY_DOWN)
+        if (key_released == ALLEGRO_KEY_DOWN)
         {
             int initial_item = menu_state->selected_item + 1;
             do
@@ -298,13 +343,18 @@ static void display_menu(struct menu *menu_state)
                 }
             } while (initial_item != 999);
         }
-        if (key == ALLEGRO_KEY_ESCAPE && menu_state->cancel_menu_item_id != MENU_ID_CANCEL_OPTION_NOT_SET)
+        if (key_released == ALLEGRO_KEY_ESCAPE && menu_state->cancel_menu_item_id != MENU_ID_CANCEL_OPTION_NOT_SET)
         {
+            menu_play_sample(SAMPLE_MENU_SELECT);
             set_item_by_id(menu_state, menu_state->cancel_menu_item_id);
             break;
         }
+        if (key_released == ALLEGRO_KEY_ENTER)
+        {
+            menu_play_sample(SAMPLE_MENU_SELECT);
+            select_animation_timer = 10;
+        }
     }
-    menu_play_sample(SAMPLE_MENU_SELECT);
     al_destroy_bitmap(menubg);
 }
 
@@ -320,7 +370,7 @@ static int display_load_game_menu()
         peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
         if (current_slot_has_save)
         {
-            add_menu_item(&m, slot_name, "Mode: %s\nMission: %d",
+            add_menu_item(&m, slot_name, "Mode: %s\nLevel: %d",
                           game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
         }
         else
@@ -346,7 +396,7 @@ static int display_save_game_menu()
         peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
         if (current_slot_has_save)
         {
-            add_menu_item(&m, slot_name, "Mode: %s\nMission: %d",
+            add_menu_item(&m, slot_name, "Mode: %s\nLevel: %d",
                           game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
         }
         else
@@ -382,9 +432,9 @@ static int display_game_mode_menu(int game_modifiers)
 
     add_menu_item(&m, game_modifiers_to_str(modifiers[0]), "Normal gameplay");
     add_menu_item(&m, game_modifiers_to_str(modifiers[1]),
-                  "- Tougher enemies                 - More enemies\n"
-                  "- Less souls for buing powerups   - Less effective fireball spells\n"
-                  "- More expensive powerups");
+                  "- More and tougher enemies\n"
+                  "- Less souls for buying powerups\n"
+                  "- More expensive powerups and less effective fireball spells");
     add_menu_item(&m, game_modifiers_to_str(modifiers[2]),
                   "Whenever anything in the game would shoot a fireball\n"
                   "two fireballs are spawned instead of just one.");
@@ -420,7 +470,7 @@ static int display_in_game_menu(int game_modifiers, int mission)
     }
     add_menu_item(&m, "Game options", "Change the game options");
     add_menu_item(&m, "View help", "");
-    add_menu_item(&m, "Exit to main menu", "");
+    add_menu_item(&m, "Exit to main menu", "Abandon current game and lose all progress");
     display_menu(&m);
     return m.items[m.selected_item].item_id;
 }
@@ -434,6 +484,9 @@ static int display_new_game_menu(int game_modifiers)
     add_menu_item(&m, "Story mode", "Begin a new story mode game");
     ArenaHighscore arena_highscore;
     access_arena_highscore(&arena_highscore, 1);
+    mi = add_menu_item(&m, "(meta)", "The levels below are arena fights where you need to kill\nas many enemies as you can before dying yourself.");
+    mi->meta = 1;
+    mi->selectable = 0;
     for (int arena = 0; arena < get_game_settings()->arena_config.number_of_arenas; arena++)
     {
         int kills = 0;
@@ -446,7 +499,7 @@ static int display_new_game_menu(int game_modifiers)
             }
         }
         mi = add_menu_item(&m, get_game_settings()->arena_config.arenas[arena].name,
-                           "Arena fight! Kill as many enemies as you can!\nHighscore: %d kills", kills);
+                           "Highscore: %d kills", kills);
         mi->item_id = arena;
     }
     set_item_by_id(&m, get_menu_item_id("Story"));
@@ -615,19 +668,20 @@ static void load_menu_sprites()
 
 static void add_perk_menu_item(struct menu *m, int perks, int enough_xp, int perk_flag, const char *name, const char *description)
 {
-    struct menu_item *mi = add_menu_item(m, name, (perks & perk_flag) ? "ALREADY UPGRADED" : description);
+    struct menu_item *mi = add_menu_item(m, name, "%s%s", description, (perks & perk_flag) ? "\nALREADY UPGRADED" : "");
     mi->selectable = (perks & perk_flag) == 0 && enough_xp;
     mi->item_id = perk_flag;
 }
 
 static void display_perk_menu(Enemy *player)
 {
-    char text[100];
     int required_xp = calculate_next_perk_xp(player->perks);
-    sprintf(text, "Perks -- Available XP: %d | Next upgrade cost: %d", player->xp, required_xp);
     int enough_xp = required_xp <= player->xp;
-    struct menu m = create_menu(text);
+    struct menu m = create_menu("Perks");
     m.cancel_menu_item_id = 123;
+    struct menu_item *mi = add_menu_item(&m, "(meta)", "Available XP: %d\nNext upgrade cost: %d", player->xp, required_xp);
+    mi->meta = 1;
+    mi->selectable = 0;
     add_menu_item(&m, "Return", "");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_INCREASE_MAX_HEALTH, "Iron skin", "Increases maximum health by one.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_HEALTH_POWERUP, "Healer", "Improves the Heal powerup.\n+1 health per use.");
@@ -642,6 +696,23 @@ static void display_perk_menu(Enemy *player)
         return;
     player->xp -= required_xp;
     player->perks |= selected_id;
+}
+
+static int display_exit_to_main_menu_menu()
+{
+    struct menu m = create_menu("Exit to main menu?");
+    m.cancel_menu_item_id = 123;
+
+    struct menu_item *mi = add_menu_item(&m, "(meta)", "You will lose all progress. Are you sure?");
+    mi->meta = 1;
+    mi->selectable = 0;
+
+    add_menu_item(&m, "No", "Return to in-game menu");
+    add_menu_item(&m, "Yes", "Abandon game and go to main menu");
+
+    display_menu(&m);
+
+    return m.items[m.selected_item].item_id == get_menu_item_id("Yes");
 }
 
 int menu(int ingame, GlobalGameState *ggs)
@@ -702,9 +773,12 @@ int menu(int ingame, GlobalGameState *ggs)
                 }
                 else if (ingame_menu_selection == get_menu_item_id("Exit"))
                 {
-                    main_menu = 1;
-                    exit_menu = 1;
-                    ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
+                    if (display_exit_to_main_menu_menu())
+                    {
+                        main_menu = 1;
+                        exit_menu = 1;
+                        ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
+                    }
                 }
             }
             exit_menu = 0;

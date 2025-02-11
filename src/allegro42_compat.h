@@ -42,7 +42,7 @@ void wait_delay(int v);
 
 /*
  * Waits for ms milliseconds. Note that wait resolution is "tick" which
- * is 100 ms.
+ * is 10 ms.
  */
 void wait_delay_ms(int ms);
 
@@ -67,6 +67,12 @@ void wait_key_release(int key);
 int check_key(int key);
 
 /*
+ * Returns the key pressed if one of the provided keys is pressed, otherwise 0.
+ * If multiple keys are pressed, returns the first one present in the array.
+ */
+int check_keys(const int *keys, int num_keys);
+
+/*
  * Get the font for in-game texts.
  */
 ALLEGRO_FONT *get_font();
@@ -80,3 +86,8 @@ ALLEGRO_FONT *get_font_tiny();
  * Get the font for menus.
  */
 ALLEGRO_FONT *get_menu_font();
+
+/*
+ * Get a large font for menu titles.
+ */
+ALLEGRO_FONT *get_menu_title_font();

@@ -737,7 +737,7 @@ int read_level(World *world, int mission, int room_to)
     sprintf(mission_name, DATADIR "%s\\mission%d", get_game_settings()->mission_pack, mission);
 
     world->boss_fight = 0;
-    sprintf(world->mission_display_name, "Mission %d", mission);
+    sprintf(world->mission_display_name, "Level %d", mission);
     world->story_after_mission_lines = 0;
     world->custom_story_image[0] = 0;
 

@@ -10,6 +10,7 @@
 static char keybuffer[ALLEGRO_KEY_MAX];
 
 static ALLEGRO_FONT *menu_font = NULL;
+static ALLEGRO_FONT *menu_title_font = NULL;
 static ALLEGRO_FONT *game_font = NULL;
 static ALLEGRO_FONT *game_font_tiny = NULL;
 static ALLEGRO_DISPLAY *display = NULL;
@@ -28,6 +29,16 @@ int check_key(int key)
     if (key >= 0 && key < ALLEGRO_KEY_MAX)
     {
         return keybuffer[key];
+    }
+    return 0;
+}
+
+int check_keys(const int *keys, int num_keys)
+{
+    for (int i = 0; i < num_keys; i++)
+    {
+        if (check_key(keys[i]))
+            return keys[i];
     }
     return 0;
 }
@@ -148,6 +159,7 @@ int init_allegro()
     int fullscreen_flag = get_game_settings()->fullscreen ? ALLEGRO_FULLSCREEN : 0;
     al_set_new_display_flags(ALLEGRO_OPENGL | fullscreen_flag);
     menu_font = al_load_ttf_font(get_game_settings()->menu_font, 16, ALLEGRO_TTF_NO_KERNING);
+    menu_title_font = al_load_ttf_font(get_game_settings()->menu_font, 24, ALLEGRO_TTF_NO_KERNING);
     game_font = al_load_ttf_font(get_game_settings()->game_font, 12, ALLEGRO_TTF_NO_KERNING);
     game_font_tiny = al_load_ttf_font(get_game_settings()->game_font, 8, ALLEGRO_TTF_NO_KERNING | ALLEGRO_TTF_MONOCHROME);
     display = al_create_display(DISPLAY_W, DISPLAY_H);
@@ -203,4 +215,9 @@ ALLEGRO_FONT *get_font_tiny()
 ALLEGRO_FONT *get_menu_font()
 {
     return menu_font;
+}
+
+ALLEGRO_FONT *get_menu_title_font()
+{
+    return menu_title_font;
 }

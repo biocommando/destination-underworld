@@ -619,6 +619,8 @@ void game(GlobalGameState *ggs)
       {
         break;
       }
+      // Perks may have been updated
+      world.plr_max_health = (world.plr.perks & PERK_INCREASE_MAX_HEALTH) ? 7 : 6;
     }
   }
 
