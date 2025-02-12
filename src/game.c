@@ -61,9 +61,7 @@ void game(GlobalGameState *ggs)
   }
   al_convert_mask_to_alpha(world.spr, al_map_rgb(255, 0, 255));
 
-  char c;
   int vibrations = 0;
-  int x, y, i, additt_anim = 0;
 
   int boss_fight_frame_count = 0;
 
@@ -172,20 +170,6 @@ void game(GlobalGameState *ggs)
 
   int restart_requested = 0;
 
-  int screen_width_scaled, screen_h_offset, screen_v_offset, screen_height_scaled;
-  {
-    double screen_ratio = 480.0 / 360.0;
-    screen_width_scaled = SCREEN_H * screen_ratio;
-    screen_height_scaled = SCREEN_H;
-    if (screen_width_scaled > SCREEN_W)
-    {
-      screen_width_scaled = SCREEN_W;
-      screen_height_scaled = SCREEN_W / screen_ratio;
-    }
-    screen_h_offset = (SCREEN_W - screen_width_scaled) / 2;
-    screen_v_offset = (SCREEN_H - screen_height_scaled) / 2;
-  }
-
   create_sparkles(world.plr.x, world.plr.y, 30, -1, 10, &world);
 
   clock_t game_loop_clk = clock();
@@ -229,8 +213,8 @@ void game(GlobalGameState *ggs)
     // by walls etc.
     int legend_x = world.plr.x;
     int legend_y = world.plr.y;
-    int key_left, key_right, key_up, key_down, key_space = 0,
-                                               key_x, key_z, key_a, key_s, key_d, key_f;
+    int key_left, key_right, key_up, key_down, key_space,
+        key_x, key_z, key_a, key_s, key_d, key_f;
     if (world.plr.health > 0)
     {
       draw_enemy(&world.plr, &world);
