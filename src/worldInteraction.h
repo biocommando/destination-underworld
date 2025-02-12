@@ -82,14 +82,6 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
  */
 void change_room_if_at_exit_point(World *world);
 /*
- * Read enemy configurations from file enemy-properties.dat.
- * Uses the record file format with the following structure:
- * type-%d turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d
- *
- * Note that the key values are just for human-readability, the key-value order needs to be exactly like this.
- */
-void read_enemy_configs(World *world);
-/*
  * Gets arena highscores from the GameSettings.arena_config.arenas data structure. If the highscore.mode
  * array does not contain the arena/game mode mapping, the function reserves a slot for it.
  *

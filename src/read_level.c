@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "duscript.h"
 #include "logging.h"
+#include "record_file.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -225,4 +226,25 @@ int read_level(World *world, int mission, int room_to)
     }
     level_read_new_format(world, room_to, f);
     return 0;
+}
+
+void read_enemy_configs(World *world)
+{
+    char fname[256];
+    sprintf(fname, DATADIR "%s\\enemy-properties.dat", get_game_settings()->mission_pack);
+    for (int i = 0; i < 5; i++)
+    {
+        char key[10];
+        sprintf(key, "type-%d", i);
+        char rec[256] = "";
+        record_file_get_record(fname, key, rec, sizeof(rec));
+        sscanf(rec, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d",
+               &world->enemy_configs[i].turret,
+               &world->enemy_configs[i].rate,
+               &world->enemy_configs[i].health,
+               &world->enemy_configs[i].gold,
+               &world->enemy_configs[i].fast,
+               &world->enemy_configs[i].hurts_monsters,
+               &world->enemy_configs[i].potion_for_potion_only);
+    }
 }

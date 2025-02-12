@@ -36,3 +36,11 @@
  * - mute_bosstalk = don't play the boss speech sample if there's a script in the level
  */
 int read_level(World *world, int mission, int room_to);
+/*
+ * Read enemy configurations from file enemy-properties.dat.
+ * Uses the record file format with the following structure:
+ * type-%d turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d
+ *
+ * Note that the key values are just for human-readability, the key-value order needs to be exactly like this.
+ */
+void read_enemy_configs(World *world);
