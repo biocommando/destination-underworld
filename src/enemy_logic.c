@@ -5,6 +5,7 @@
 #include "renderWorld.h"
 #include "sprites.h"
 #include "sampleRegister.h"
+#include "vfx.h"
 #include <math.h>
 
 static inline void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)

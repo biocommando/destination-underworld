@@ -2,6 +2,7 @@
 #include "worldInteraction.h"
 #include "sprites.h"
 #include "sampleRegister.h"
+#include "vfx.h"
 #include <math.h>
 
 void potion_logic(World *w)

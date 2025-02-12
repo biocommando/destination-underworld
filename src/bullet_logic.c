@@ -8,6 +8,7 @@
 #include "sampleRegister.h"
 #include "boss_logic.h"
 #include "duColors.h"
+#include "vfx.h"
 #include <math.h>
 
 void bullet_logic(World *world, GlobalGameState *ggs)

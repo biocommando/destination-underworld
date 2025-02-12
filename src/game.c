@@ -29,6 +29,8 @@
 #include "enemy_logic.h"
 #include "boss_logic.h"
 #include "bullet_logic.h"
+#include "read_level.h"
+#include "vfx.h"
 
 void game(GlobalGameState *ggs)
 {

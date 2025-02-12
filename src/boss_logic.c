@@ -4,6 +4,7 @@
 #include "worldInteraction.h"
 #include "sampleRegister.h"
 #include "bossfightconf.h"
+#include "vfx.h"
 #include <math.h>
 
 void boss_logic(World *world, int boss_died)
