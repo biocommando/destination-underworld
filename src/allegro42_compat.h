@@ -6,15 +6,6 @@
 #include "allegro5/allegro_primitives.h"
 #include "allegro5/allegro_audio.h"
 
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-
-// Legacy compatibility
-#define rectfill(x, y, x2, y2, col) al_draw_filled_rectangle(x, y, x2 + 1, y2 + 1, col)
-
-// Legacy compatibility
-#define AL_PI 3.141592653589793
-
 /*
  * Wait for event from allegro event queue and handle the event.
  * Internally handles key up / down events (so that the key states

@@ -363,7 +363,7 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
     static int sparkle_circle_counter = 0;
     for (int i = 0; i < count; i++)
     {
-        double angle = 2 * AL_PI / count * i;
+        double angle = 2 * ALLEGRO_PI / count * i;
         double speed = (rand() % 20) / 10.0 + 1;
         struct sparkle_fx *fx = &world->sparkle_fx[sparkle_counter];
         fx->dir.x = sin(angle);

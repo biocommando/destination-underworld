@@ -206,7 +206,7 @@ void game(GlobalGameState *ggs)
     if (world.plr.health <= 0)
     {
       // Draw well outside of screen so that the zoom in transformation would not look like ass
-      rectfill(0, 0, SCREEN_W * 2, SCREEN_H * 2, BLACK);
+      al_draw_filled_rectangle(0, 0, SCREEN_W * 2, SCREEN_H * 2, BLACK);
     }
     else if (check_key(ALLEGRO_KEY_M))
     {
@@ -566,9 +566,9 @@ void game(GlobalGameState *ggs)
           int offx = (DISPLAY_W - 340) / 2, offy = (DISPLAY_H - 125) / 2;
           for (int grayscale = 0; grayscale < 5; grayscale++)
           {
-            rectfill(offx + grayscale, offy + grayscale, offx + 345 - grayscale, offy + 130 - grayscale, GRAY(255 - grayscale * 40));
+            al_draw_filled_rectangle(offx + grayscale, offy + grayscale, offx + 345 - grayscale + 1, offy + 130 - grayscale + 1, GRAY(255 - grayscale * 40));
           }
-          rectfill(offx + 5, offy + 5, offx + 340, offy + 125, GRAY(60));
+          al_draw_filled_rectangle(offx + 5, offy + 5, offx + 340 + 1, offy + 125 + 1, GRAY(60));
           al_draw_textf(get_font(), WHITE, offx + 10, offy + 10, ALLEGRO_ALIGN_LEFT, "Arena fight over, your kill count: %d", world.kills);
           if (*record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
           {

@@ -2,6 +2,9 @@
 
 #include <time.h>
 
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+
 /*
  * Makes the game loop wait until the start of next animation frame.
  * The wait is clock based so it should be pretty stable.

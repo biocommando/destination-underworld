@@ -72,7 +72,7 @@ static void show_help()
             {
                 int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0;
                 sscanf(s, "%*s %d %d %d %d %d %d %d", &x, &y, &w, &h, &r, &g, &b);
-                rectfill(x, y, x + w, y + h, al_map_rgb(r, g, b));
+                al_draw_filled_rectangle(x, y, x + w + 1, y + h + 1, al_map_rgb(r, g, b));
             }
             if (!strcmp(cmd, "#margin"))
             {

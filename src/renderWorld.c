@@ -87,7 +87,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     {
                         drawn_color = al_map_rgb(0, 0, abs(lava_fluctuations) + 100);
                     }
-                    rectfill((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE - 1, (y + 1) * TILESIZE - 1, drawn_color);
+                    al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color);
                 }
 
                 if (tile->is_blood_stained)
@@ -102,7 +102,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                         {
                             x_pos += dx;
                             y_pos += dy;
-                            rectfill(x_pos - 2, y_pos - 2, x_pos + 2, y_pos + 2, al_map_rgb(floorcol + 30 - i * 5, 0, 0));
+                            al_draw_filled_rectangle(x_pos - 2, y_pos - 2, x_pos + 2 + 1, y_pos + 2 + 1, al_map_rgb(floorcol + 30 - i * 5, 0, 0));
                         }
                     }
                 }
@@ -111,7 +111,7 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                 {
                     for (int i = 0; i < 5; i++)
                     {
-                        double angle = (lava_fluctuations + i * 20) * AL_PI / 50;
+                        double angle = (lava_fluctuations + i * 20) * ALLEGRO_PI / 50;
                         draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES,
                                                       x * TILESIZE + HALFTILESIZE + sin(angle) * 10,
                                                       y * TILESIZE + HALFTILESIZE + cos(angle) * 10, (rand() % 4), 0);
@@ -140,11 +140,11 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     {
                         if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                         {
-                            rectfill(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, col_wall);
+                            al_draw_filled_rectangle(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 15, y * TILESIZE + lev + 15, col_wall);
                         }
                         if (wall_type == WALL_LAVA && (((int)abs(lava_fluctuations) / 5 + (y & x) * (y | x)) % 15 == lev || lev == 15))
                         {
-                            rectfill(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 14, y * TILESIZE + lev + 14, al_map_rgb(colcalc, colcalc >> 1, colcalc >> 2));
+                            al_draw_filled_rectangle(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 15, y * TILESIZE + lev + 15, al_map_rgb(colcalc, colcalc >> 1, colcalc >> 2));
                         }
                     }
                     if (lev == 0)
@@ -158,9 +158,9 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                             Tile *tile = ns_get_tile_at(world, x, y);
                             if (tile->is_exit_point)
                             {
-                                rectfill(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 14, y * TILESIZE + 14, GRAY_A(100, 100));
-                                rectfill(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 9, y * TILESIZE + 9, GRAY_A(100, 128));
-                                rectfill(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 4, y * TILESIZE + 4, GRAY_A(80, 150));
+                                al_draw_filled_rectangle(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 15, y * TILESIZE + 15, GRAY_A(100, 100));
+                                al_draw_filled_rectangle(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 10, y * TILESIZE + 10, GRAY_A(100, 128));
+                                al_draw_filled_rectangle(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 5, y * TILESIZE + 5, GRAY_A(80, 150));
                             }
                             if (tile->durability > 0)
                             {
@@ -443,7 +443,7 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     if (mission < mission_count)
         al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Now entering level %d / %d.", mission + 1, mission_count);
     y += y_margin_small_text + 5;
-    rectfill(0, y - 3, SCREEN_W, y + y_margin_small_text * world->story_after_mission_lines + 2, GRAY(20));
+    al_draw_filled_rectangle(0, y - 3, SCREEN_W + 1, y + y_margin_small_text * world->story_after_mission_lines + 2 + 1, GRAY(20));
     for (int i = 0; i < world->story_after_mission_lines; i++)
     {
         al_draw_textf(get_font(), GRAY(140), 5, y, 0, "%s", world->story_after_mission[i]);
