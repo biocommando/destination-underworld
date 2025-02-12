@@ -1,6 +1,6 @@
 #pragma once
 
-#define NUM_BEST_TIMES 4
+#define NUM_BEST_TIMES 3
 
 // Structure containing best times for one level and one game mode
 struct best_times
