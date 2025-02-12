@@ -60,7 +60,6 @@ static void load_playlist()
                 pe->path = (char *)malloc(strlen(fname) + 1);
                 strcpy(pe->path, fname);
                 pe->meta_f = meta_f_name;
-                // printf("Read playlist entry %d: F=%s; META=%s\n", playlist_entries, playlist[playlist_entries].path, playlist[playlist_entries].meta_f);
                 playlist_entries++;
                 if (playlist_entries == MAX_PLAYLIST_LEN)
                     break;
