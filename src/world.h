@@ -438,22 +438,10 @@ typedef struct
  * Check if effect with effect_id is active (1 = true, 0 = false).
  */
 int check_potion_effect(World *w, int effect_id);
-/*
- * Clears the sparkle FX and explosions.
- */
-void clear_visual_fx(World *);
-/*
- * Set the speed for all bodyparts to 0.
- */
-void stop_bodyparts(World *);
 /**
  * Initializes world for starting a new game (e.g. map change).
  */
 void init_world(World *world);
-/*
- * Create body parts for the dead enemy. Initializes them to move to a random direction.
- */
-void spawn_body_parts(Enemy *enm);
 
 /*
  * Get the tile at x, y position (pixel positions).
@@ -477,7 +465,3 @@ int ns_get_wall_type_at(World *world, int x, int y);
 /*
  * Inits player. Basically copies plrautosave struct if owner is alive.*/
 void init_player(World *world, Enemy *plrautosave);
-/* Checks if there are so many stacked bodyparts on a single tile
- * that some excess parts should be removed. Checks one tile at a time
- * and proceeds automatically to the next tile on each call.*/
-void cleanup_bodyparts(World *world);

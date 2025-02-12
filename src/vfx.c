@@ -1,4 +1,5 @@
 #include "vfx.h"
+#include "logging.h"
 #include <math.h>
 
 #define calc_sqr_distance(x1, y1, x2, y2) (((x1) - (x2)) * ((x1) - (x2)) + ((y1) - (y2)) * ((y1) - (y2)))
@@ -133,4 +134,80 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
     {
         sparkle_circle_counter = 0;
     }
+}
+
+void spawn_body_parts(Enemy *enm)
+{
+    for (int j = 0; j < BODYPARTCOUNT; j++)
+    {
+        BodyPart *bp = &enm->bodyparts[j];
+        bp->exists = 1;
+        bp->type = rand() % 6 + 1;
+        bp->x = enm->x;
+        bp->y = enm->y;
+        bp->anim = rand() % 3;
+        double ang = 2 * M_PI * ((double)(rand() % 1000)) / 1000.0;
+        bp->dx = sin(ang);
+        bp->dy = cos(ang);
+        bp->velocity = 20 + rand() % 10;
+    }
+}
+
+void cleanup_bodyparts(World *world)
+{
+    static int x = 0;
+    static int y = 0;
+
+    Tile *tile = ns_get_tile_at(world, x, y);
+    if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
+    {
+        int bp_count = 0;
+        for (int i = 0; i < ENEMYCOUNT; i++)
+        {
+            for (int j = 0; j < BODYPARTCOUNT; j++)
+            {
+                BodyPart *bp = &world->enm[i].bodyparts[j];
+                if (bp->exists && world->enm[i].roomid == world->current_room &&
+                    bp->x > x * TILESIZE && bp->x < (x + 1) * TILESIZE &&
+                    bp->y > y * TILESIZE && bp->y < (y + 1) * TILESIZE)
+                {
+                    if (++bp_count > 40)
+                    {
+                        bp->exists = 0;
+                        LOG_TRACE("Cleanup@%d,%d!\n", x, y);
+                    }
+                }
+            }
+        }
+    }
+
+    if (++x == MAPMAX_X)
+    {
+        x = 0;
+        if (++y == MAPMAX_Y)
+        {
+            y = 0;
+        }
+    }
+}
+
+void stop_bodyparts(World *world)
+{
+    for (int x = 0; x < ENEMYCOUNT; x++)
+    {
+        for (int j = 0; j < BODYPARTCOUNT; j++)
+        {
+            BodyPart *bp = &world->enm[x].bodyparts[j];
+            bp->dx = 0;
+            bp->dy = 0;
+            bp->velocity = 0;
+        }
+    }
+}
+
+void clear_visual_fx(World *world)
+{
+    memset(world->explosion, 0, sizeof(world->explosion));
+    memset(world->sparkle_fx, 0, sizeof(world->sparkle_fx));
+    memset(world->sparkle_fx_circle, 0, sizeof(world->sparkle_fx_circle));
 }
