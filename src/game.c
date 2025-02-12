@@ -30,6 +30,69 @@
 #include "read_level.h"
 #include "vfx.h"
 
+static void display_arena_fight_end_screen(const World *world, GlobalGameState *ggs, const int *record_mode, int no_player_damage)
+{
+  ArenaHighscore highscore;
+  memset(&highscore, 0, sizeof(highscore));
+  access_arena_highscore(&highscore, 1);
+  int arena_idx, mode_idx;
+  int highscore_kills = parse_highscore_from_world_state(world, &highscore, &arena_idx, &mode_idx);
+  int offx = (DISPLAY_W - 340) / 2, offy = (DISPLAY_H - 125) / 2;
+  for (int grayscale = 0; grayscale < 5; grayscale++)
+  {
+    al_draw_filled_rectangle(offx + grayscale, offy + grayscale, offx + 345 - grayscale + 1, offy + 130 - grayscale + 1, GRAY(255 - grayscale * 40));
+  }
+  al_draw_filled_rectangle(offx + 5, offy + 5, offx + 340 + 1, offy + 125 + 1, GRAY(60));
+  al_draw_textf(get_font(), WHITE, offx + 10, offy + 10, ALLEGRO_ALIGN_LEFT, "Arena fight over, your kill count: %d", world->kills);
+  if (*record_mode == RECORD_MODE_NONE && highscore_kills < world->kills)
+  {
+    al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
+    al_draw_textf(get_font(), WHITE, offx + 10, offy + 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
+    highscore.kills[arena_idx][mode_idx] = world->kills;
+    highscore.dirty[arena_idx][mode_idx] = 1;
+    if (!no_player_damage)
+    {
+      access_arena_highscore(&highscore, 0);
+    }
+    else
+    {
+      LOG("Not saving highscore, no damage mode active");
+    }
+  }
+  else
+  {
+    al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Highscore: %d", highscore_kills);
+  }
+  al_draw_textf(get_font(), WHITE, offx + 10, offy + 100, ALLEGRO_ALIGN_LEFT, "ENTER = replay, ESC = go back to menu");
+  al_flip_display();
+  int wait_keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_ESCAPE};
+  if (!ggs->no_player_interaction)
+  {
+    int key = wait_key_presses(wait_keys, 2);
+    if (key == ALLEGRO_KEY_ESCAPE && *record_mode != RECORD_MODE_PLAYBACK)
+    {
+      menu(0, ggs);
+    }
+  }
+}
+
+static void progress_player_death_animation(World *world)
+{
+  int startx, starty;
+  startx = world->plr.x - TILESIZE * 3 / 2 - world->plr.reload;
+  if (startx < 0)
+    startx = 0;
+  starty = world->plr.y - TILESIZE - world->plr.reload * 0.75;
+  if (starty < 0)
+    starty = 0;
+  double scale = 1 + (100 - world->plr.reload) / 20.0;
+  ALLEGRO_TRANSFORM transform;
+  al_identity_transform(&transform);
+  al_translate_transform(&transform, -startx, -starty);
+  al_scale_transform(&transform, 3 * scale, 3 * scale);
+  al_use_transform(&transform);
+}
+
 void game(GlobalGameState *ggs)
 {
   // For playback recording filenames
@@ -521,69 +584,17 @@ void game(GlobalGameState *ggs)
     }
     else
     {
-      int startx, starty;
-      startx = world.plr.x - TILESIZE * 3 / 2 - world.plr.reload;
-      if (startx < 0)
-        startx = 0;
-      starty = world.plr.y - TILESIZE - world.plr.reload * 0.75;
-      if (starty < 0)
-        starty = 0;
-      double scale = 1 + (100 - world.plr.reload) / 20.0;
-      ALLEGRO_TRANSFORM transform;
-      al_identity_transform(&transform);
-      al_translate_transform(&transform, -startx, -starty);
-      al_scale_transform(&transform, 3 * scale, 3 * scale);
-      al_use_transform(&transform);
+      progress_player_death_animation(&world);
       al_flip_display();
       wait_delay_ms(40);
       if (world.plr.reload <= 0)
       {
+        ALLEGRO_TRANSFORM transform;
         al_identity_transform(&transform);
         al_use_transform(&transform);
         if (world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
         {
-          ArenaHighscore highscore;
-          memset(&highscore, 0, sizeof(highscore));
-          access_arena_highscore(&highscore, 1);
-          int arena_idx, mode_idx;
-          int highscore_kills = parse_highscore_from_world_state(&world, &highscore, &arena_idx, &mode_idx);
-          int offx = (DISPLAY_W - 340) / 2, offy = (DISPLAY_H - 125) / 2;
-          for (int grayscale = 0; grayscale < 5; grayscale++)
-          {
-            al_draw_filled_rectangle(offx + grayscale, offy + grayscale, offx + 345 - grayscale + 1, offy + 130 - grayscale + 1, GRAY(255 - grayscale * 40));
-          }
-          al_draw_filled_rectangle(offx + 5, offy + 5, offx + 340 + 1, offy + 125 + 1, GRAY(60));
-          al_draw_textf(get_font(), WHITE, offx + 10, offy + 10, ALLEGRO_ALIGN_LEFT, "Arena fight over, your kill count: %d", world.kills);
-          if (*record_mode == RECORD_MODE_NONE && highscore_kills < world.kills)
-          {
-            al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
-            al_draw_textf(get_font(), WHITE, offx + 10, offy + 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
-            highscore.kills[arena_idx][mode_idx] = world.kills;
-            highscore.dirty[arena_idx][mode_idx] = 1;
-            if (!no_player_damage)
-            {
-              access_arena_highscore(&highscore, 0);
-            }
-            else
-            {
-              LOG("Not saving highscore, no damage mode active");
-            }
-          }
-          else
-          {
-            al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Highscore: %d", highscore_kills);
-          }
-          al_draw_textf(get_font(), WHITE, offx + 10, offy + 100, ALLEGRO_ALIGN_LEFT, "ENTER = replay, ESC = go back to menu");
-          al_flip_display();
-          int wait_keys[] = {ALLEGRO_KEY_ENTER, ALLEGRO_KEY_ESCAPE};
-          if (!ggs->no_player_interaction)
-          {
-            int key = wait_key_presses(wait_keys, 2);
-            if (key == ALLEGRO_KEY_ESCAPE && *record_mode != RECORD_MODE_PLAYBACK)
-            {
-              menu(0, ggs);
-            }
-          }
+          display_arena_fight_end_screen(&world, ggs, record_mode, no_player_damage);
         }
         break;
       }

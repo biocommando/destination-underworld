@@ -477,7 +477,7 @@ void change_room_if_at_exit_point(World *world)
     }
 }
 
-int parse_highscore_from_world_state(World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
+int parse_highscore_from_world_state(const World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
 {
     int arena_idx, mode_idx;
     int mode = world->game_modifiers & (~GAMEMODIFIER_ARENA_FIGHT);
