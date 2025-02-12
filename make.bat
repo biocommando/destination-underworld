@@ -20,6 +20,7 @@ src/sampleRegister.c ^
 src/settings.c ^
 src/world.c ^
 src/worldInteraction.c ^
+src/read_level.c ^
 src/allegro_management.c ^
 src/loadindicator.c ^
 src/duscript.c ^
