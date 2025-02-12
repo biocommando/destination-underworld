@@ -1,6 +1,6 @@
 #pragma once
 
-#include "allegro42_compat.h"
+#include "allegro_management.h"
 
 #define MAX_NUM_SAMPLES 64
 

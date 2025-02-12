@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "duColors.h"
-#include "allegro42_compat.h"
+#include "allegro_management.h"
 
 void progress_load_state(const char *status, int display_load_state)
 {

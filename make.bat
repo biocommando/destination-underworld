@@ -20,7 +20,7 @@ src/sampleRegister.c ^
 src/settings.c ^
 src/world.c ^
 src/worldInteraction.c ^
-src/allegro42_compat.c ^
+src/allegro_management.c ^
 src/loadindicator.c ^
 src/duscript.c ^
 src/sprites.c ^

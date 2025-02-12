@@ -1,4 +1,4 @@
-#include "allegro42_compat.h"
+#include "allegro_management.h"
 #include "allegro5/allegro_acodec.h"
 #include "allegro5/allegro_ttf.h"
 #include "duConstants.h"

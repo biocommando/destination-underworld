@@ -1,6 +1,6 @@
 #pragma once
 
-#include "allegro42_compat.h"
+#include "allegro_management.h"
 #include "duconstants.h"
 #include "bossfightconf.h"
 #include "helpers.h"

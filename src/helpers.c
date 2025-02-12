@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "helpers.h"
-#include "allegro42_compat.h"
+#include "allegro_management.h"
 
 void game_loop_rest(clock_t *state)
 {
