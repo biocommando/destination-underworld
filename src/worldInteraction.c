@@ -5,7 +5,6 @@
 #include "settings.h"
 #include "helpers.h"
 #include "predictableRandom.h"
-#include "duscript.h"
 #include "vfx.h"
 
 static inline int is_passable(World *world, int x, int y)
