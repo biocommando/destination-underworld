@@ -269,6 +269,7 @@ void game(GlobalGameState *ggs)
     draw_map(&world, 0, vibrations);
     move_and_draw_body_parts(&world);
     draw_wall_shadows(&world);
+    progress_and_draw_flame_fx(&world);
     // draw_enemy_shadows(&world); -- doesn't look very good and the shadow physics are f'd up
 
     // Draw legend to same position as player
@@ -546,9 +547,12 @@ void game(GlobalGameState *ggs)
       }
       else
       {
-        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION,
-                             world.plr.x - TILESIZE * sin(completetime * 0.15),
-                             world.plr.y - TILESIZE * cos(completetime * 0.15));
+        for (int i = 0; i < world.powerups.rune_of_protection_active; i++)
+        {
+          draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION,
+                               world.plr.x - TILESIZE * sin(completetime * 0.15 + i),
+                               world.plr.y - TILESIZE * cos(completetime * 0.15 + i));
+        }
       }
     }
 

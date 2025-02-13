@@ -8,6 +8,7 @@
 #include "settings.h"
 #include "helpers.h"
 #include "game_playback.h"
+#include "vfx.h"
 
 void draw_enemy(Enemy *enm, World *world)
 {
@@ -307,6 +308,42 @@ static const double expl_sin_cos_table[2][10] = {
      -0.49180298981248144, -0.9096654198166136, -0.9800665778412416,
      -0.6761156143683098, -0.11391146653120054, 0.49180298981248133,
      0.9096654198166136}};
+
+void progress_and_draw_flame_fx(World *world)
+{
+    static int flame_phase = 0;
+    flame_phase++;
+    for (int i = 0; i < FLAME_FX_COUNT; i++)
+    {
+        struct flame_fx *f = &world->flames[i];
+        if (f->duration == 0)
+            continue;
+        if (f->duration > 1)
+            f->duration--;
+        int num_circles_left = EMBERS_PER_FLAME_FX;
+        for (int j = 0; j < EMBERS_PER_FLAME_FX; j++)
+        {
+            struct flame_ember_fx *fc = &f->embers[j];
+            if (fc->r == 0)
+            {
+                num_circles_left--;
+                continue;
+            }
+            al_draw_filled_rectangle(fc->loc.x - fc->r / 3, fc->loc.y - fc->r / 3, fc->loc.x + fc->r / 3, fc->loc.y + fc->r / 3, fc->color);
+            fc->loc.x += expl_sin_cos_table[0][(flame_phase + i + j) % 10] * fc->speed / 2;
+            fc->loc.y -= fc->speed * 2;
+            fc->r--;
+            fc->color.r *= 0.9f;
+            fc->color.g *= 0.8f;
+            if (fc->r == 0 && f->duration > j * 10 + 1)
+            {
+                create_flame_fx_circle(f->loc.x, f->loc.y, fc);
+            }
+        }
+        if (!num_circles_left)
+            f->duration = 0;
+    }
+}
 
 int progress_and_draw_explosions(World *world)
 {

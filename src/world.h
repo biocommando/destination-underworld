@@ -251,7 +251,10 @@ struct powerup_status
 {
     // How many shots there are in the "cluster shot"
     int cluster_strength;
-    // 1 = the "rune of protection" powerup is active
+    // >0 = the "rune of protection" powerup is active.
+    // 1 = large blast
+    // >1 = smaller blasts
+    // <0 = animation when the powerup has been depleted
     int rune_of_protection_active;
 };
 
@@ -283,6 +286,34 @@ struct sparkle_fx_circle
     // radius of the circle
     int time;
     ALLEGRO_COLOR color;
+};
+
+// A glowing ember going up in a wavy motion
+struct flame_ember_fx
+{
+    // Circle position
+    Coordinates loc;
+    // Speed (used for both vertical and horizontal movement)
+    double speed;
+    // Current color (gets dimmer all the time)
+    ALLEGRO_COLOR color;
+    // The size of the ember
+    int r;
+};
+
+// A flame that is left behind when anything explodes
+struct flame_fx
+{
+    // Center position
+    Coordinates loc;
+    // When this reaches zero the effect is no longer drawn.
+    // The number of embers drawn depends on duration so the
+    // flame will slowly die out.
+    // When the duration reaches 1 the logic waits for the
+    // last ember to die out too.
+    int duration;
+    // The actual visual effect
+    struct flame_ember_fx embers[EMBERS_PER_FLAME_FX];
 };
 
 // A "template" for an enemy
@@ -362,6 +393,8 @@ typedef struct
     struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
     // Visual effects
     struct sparkle_fx_circle sparkle_fx_circle[SPARKLE_FX_CIRCLE_COUNT];
+    // Visual effects
+    struct flame_fx flames[FLAME_FX_COUNT];
     // Enemy type mapping
     struct enemy_config enemy_configs[ENEMY_TYPE_COUNT];
 

@@ -52,6 +52,47 @@ static inline void bounce_body_parts(int x, int y, World *world)
         }
 }
 
+void create_flame_fx_circle(int x, int y, struct flame_ember_fx *f)
+{
+    f->loc.x = x + rand() % 5 - 2;
+    f->loc.y = y;
+    int is_red = rand() % 2;
+    int col = rand() % 100 + 155;
+    f->color = al_map_rgb(col, is_red ? 0 : col, 0);
+    f->r = 3 + rand() % 6;
+    f->speed = rand() % 2 + 1;
+}
+
+static inline void create_flame_fx(int x, int y, World *world)
+{
+    if (get_tile_at(world, x, y)->is_wall)
+        return;
+    if (get_tile_at(world, x - 4, y)->is_wall)
+        x += 4;
+    if (get_tile_at(world, x, y - 15)->is_wall)
+        y += 15;
+    struct flame_fx *f = world->flames;
+    for (int i = 0; i < FLAME_FX_COUNT; i++)
+    {
+        if (world->flames[i].duration == 0)
+        {
+            f = &world->flames[i];
+            break;
+        }
+        else if (world->flames[i].duration < f->duration)
+        {
+            f = &world->flames[i];
+        }
+    }
+    f->loc.x = x;
+    f->loc.y = y;
+    for (int i = 0; i < EMBERS_PER_FLAME_FX; i++)
+    {
+        create_flame_fx_circle(x, y, &f->embers[i]);
+    }
+    f->duration = EMBERS_PER_FLAME_FX * 10 + rand() % 20;
+}
+
 static inline int comp_expl_circle(const void *elem1, const void *elem2)
 {
     if (((struct explosion_circle *)elem1)->i > ((struct explosion_circle *)elem2)->i)
@@ -92,6 +133,7 @@ void create_explosion(int x, int y, World *world, double intensity)
         explosion_counter = 0;
     }
     bounce_body_parts(x, y, world);
+    create_flame_fx(x + rand() % 11 - 5, y + rand() % 11 - 5, world);
 }
 
 void create_sparkles(int x, int y, int count, int color, int circle_duration, World *world)
@@ -210,4 +252,5 @@ void clear_visual_fx(World *world)
     memset(world->explosion, 0, sizeof(world->explosion));
     memset(world->sparkle_fx, 0, sizeof(world->sparkle_fx));
     memset(world->sparkle_fx_circle, 0, sizeof(world->sparkle_fx_circle));
+    memset(world->flames, 0, sizeof(world->flames));
 }

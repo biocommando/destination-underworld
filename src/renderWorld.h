@@ -47,6 +47,10 @@ int progress_and_draw_explosions(World *world);
  */
 void progress_and_draw_sparkles(World *world);
 /*
+ * Progresses and draws flames.
+ */
+void progress_and_draw_flame_fx(World *world);
+/*
  * Displays the level ending screen that contains e.g. story text and best times.
  */
 void display_level_info(World *world, int mission, int mission_count, long completetime);
