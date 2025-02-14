@@ -573,6 +573,8 @@ void game(GlobalGameState *ggs)
 
     if ((world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
       al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
+    else
+      al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "Kills: %d", world.kills);
 
     if (world.plr.health > 0)
     {
