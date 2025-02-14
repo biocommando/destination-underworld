@@ -51,7 +51,7 @@ void move_enemy(Enemy *enm, World *world)
         enm->x += enm->dx;
         animate = 1;
     }
-    if (enm->dy != 0 && is_passable(world, enm->x, y_check) && is_passable(world, enm->x - THIRDTILESIZE * 1.4, y_check))
+    if (enm->dy != 0 && is_passable(world, enm->x, y_check) && is_passable(world, enm->x - THIRDTILESIZE, y_check) && is_passable(world, enm->x + THIRDTILESIZE, y_check))
     {
         enm->y += enm->dy;
         animate = 1;
