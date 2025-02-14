@@ -82,3 +82,8 @@ ALLEGRO_FONT *get_menu_font();
  * Get a large font for menu titles.
  */
 ALLEGRO_FONT *get_menu_title_font();
+
+/*
+ * Allocate a new bitmap that contains the screen's contents.
+ */
+ALLEGRO_BITMAP *get_screen();

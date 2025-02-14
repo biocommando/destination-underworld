@@ -221,3 +221,8 @@ ALLEGRO_FONT *get_menu_title_font()
 {
     return menu_title_font;
 }
+
+ALLEGRO_BITMAP *get_screen()
+{
+    return al_clone_bitmap(al_get_backbuffer(display));
+}

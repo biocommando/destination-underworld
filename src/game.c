@@ -30,6 +30,48 @@
 #include "read_level.h"
 #include "vfx.h"
 
+static inline void screenshot(int action)
+{
+#define BUF_LEN 16
+  static ALLEGRO_BITMAP *buf[BUF_LEN];
+  static int idx = 0;
+  static int file_idx = 0;
+
+  if (action == -1)
+  {
+    memset(buf, 0, sizeof(buf));
+    idx = 0;
+  }
+  else if (action == 0)
+  {
+    idx = (idx + 1) % BUF_LEN;
+    if (buf[idx])
+      al_destroy_bitmap(buf[idx]);
+    buf[idx] = get_screen();
+  }
+  else if (action == 1)
+  {
+    file_idx++;
+    for (int i = 0; i < BUF_LEN; i++)
+    {
+      int bi = (idx + i + 1) % BUF_LEN;
+      if (!buf[bi])
+        continue;
+      char fname[30];
+      sprintf(fname, "screenshot%d_%c.png", file_idx, 'A' + i);
+      al_save_bitmap(fname, buf[bi]);
+    }
+  }
+  else
+  {
+    for (int i = 0; i < BUF_LEN; i++)
+    {
+      if (buf[i])
+        al_destroy_bitmap(buf[i]);
+    }
+  }
+}
+
 static void display_arena_fight_end_screen(const World *world, GlobalGameState *ggs, const int *record_mode, int no_player_damage)
 {
   ArenaHighscore highscore;
@@ -248,6 +290,8 @@ void game(GlobalGameState *ggs)
   }
 
   int old_perks = world.plr.perks;
+  if (ggs->setup_screenshot_buffer)
+    screenshot(-1);
   while (restart_requested < 2)
   {
     if (world.plr.health <= 0)
@@ -608,6 +652,16 @@ void game(GlobalGameState *ggs)
 
     game_loop_rest(&game_loop_clk);
 
+    if (ggs->setup_screenshot_buffer)
+    {
+      screenshot(0);
+      if (check_key(ALLEGRO_KEY_INSERT))
+      {
+        wait_key_release(ALLEGRO_KEY_INSERT);
+        screenshot(1);
+      }
+    }
+
     if (check_key(ALLEGRO_KEY_ESCAPE))
     {
       if (*record_mode == RECORD_MODE_PLAYBACK)
@@ -634,6 +688,8 @@ void game(GlobalGameState *ggs)
     game_playback_add_end_event();
   }
 
+  if (ggs->setup_screenshot_buffer)
+    screenshot(2);
   if (*record_mode != RECORD_MODE_NONE)
   {
     FILE *f = fopen(DATADIR "recording--level-complete-state.dat", "w");

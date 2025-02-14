@@ -135,6 +135,7 @@ int main(int argc, char **argv)
     ggs.cheats |= 1;
   ggs.mission = 1;
   ggs.no_player_interaction = record_playback_no_user_interaction;
+  ggs.setup_screenshot_buffer = read_cmd_line_arg_int("screenshot-buffer", argv, argc);
   while (ggs.mission != 0)
   {
     if (*record_mode != RECORD_MODE_PLAYBACK || !ggs.no_player_interaction)

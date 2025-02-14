@@ -465,6 +465,8 @@ typedef struct
     int no_player_interaction;
     // Pointer to player for ingame menu (can be null or undefined otherwise)
     Enemy *player;
+    // Set to 1 to allow saving a buffer of screenshots (slow) with a keypress
+    int setup_screenshot_buffer;
 } GlobalGameState;
 
 /*
