@@ -1,0 +1,107 @@
+_record_count 106
+slot_0--game_modifiers 0
+slot_0--mission 2
+slot_0--health 5
+slot_0--shots 1
+slot_0--reload 0
+slot_0--rate 7
+slot_0--ammo 15
+slot_0--gold 0
+slot_0--perks 1
+slot_0--xp 598
+event_0 end=0 time=18 keys=2
+event_1 end=0 time=43 keys=6
+event_2 end=0 time=51 keys=4
+event_3 end=0 time=55 keys=20
+event_4 end=0 time=64 keys=21
+event_5 end=0 time=65 keys=17
+event_6 end=0 time=71 keys=16
+event_7 end=0 time=73 keys=20
+event_8 end=0 time=74 keys=22
+event_9 end=0 time=75 keys=6
+event_10 end=0 time=79 keys=4
+event_11 end=0 time=88 keys=5
+event_12 end=0 time=96 keys=4
+event_13 end=0 time=98 keys=0
+event_14 end=0 time=110 keys=591872
+event_15 end=0 time=111 keys=0
+event_16 end=0 time=119 keys=1
+event_17 end=0 time=124 keys=5
+event_18 end=0 time=129 keys=4
+event_19 end=0 time=143 keys=5
+event_20 end=0 time=188 keys=21
+event_21 end=0 time=203 keys=20
+event_22 end=0 time=209 keys=16
+event_23 end=0 time=210 keys=0
+event_24 end=0 time=213 keys=8
+event_25 end=0 time=214 keys=9
+event_26 end=0 time=249 keys=1
+event_27 end=0 time=253 keys=5
+event_28 end=0 time=256 keys=4
+event_29 end=0 time=257 keys=20
+event_30 end=0 time=271 keys=4
+event_31 end=0 time=302 keys=6
+event_32 end=0 time=312 keys=2
+event_33 end=0 time=320 keys=18
+event_34 end=0 time=328 keys=2
+event_35 end=0 time=338 keys=10
+event_36 end=0 time=351 keys=26
+event_37 end=0 time=352 keys=18
+event_38 end=0 time=361 keys=10
+event_39 end=0 time=365 keys=26
+event_40 end=0 time=374 keys=18
+event_41 end=0 time=385 keys=26
+event_42 end=0 time=390 keys=24
+event_43 end=0 time=402 keys=26
+event_44 end=0 time=404 keys=10
+event_45 end=0 time=407 keys=24
+event_46 end=0 time=409 keys=25
+event_47 end=0 time=414 keys=17
+event_48 end=0 time=415 keys=19
+event_49 end=0 time=416 keys=18
+event_50 end=0 time=417 keys=2
+event_51 end=0 time=418 keys=6
+event_52 end=0 time=423 keys=2
+event_53 end=0 time=426 keys=10
+event_54 end=0 time=440 keys=9
+event_55 end=0 time=441 keys=1
+event_56 end=0 time=450 keys=9
+event_57 end=0 time=451 keys=11
+event_58 end=0 time=452 keys=8
+event_59 end=0 time=502 keys=10
+event_60 end=0 time=510 keys=2
+event_61 end=0 time=518 keys=6
+event_62 end=0 time=521 keys=20
+event_63 end=0 time=529 keys=4
+event_64 end=0 time=566 keys=6
+event_65 end=0 time=602 keys=2
+event_66 end=0 time=605 keys=10
+event_67 end=0 time=608 keys=42
+event_68 end=0 time=611 keys=10
+event_69 end=0 time=617 keys=8
+event_70 end=0 time=625 keys=9
+event_71 end=0 time=630 keys=25
+event_72 end=0 time=633 keys=9
+event_73 end=0 time=652 keys=8
+event_74 end=0 time=676 keys=0
+event_75 end=0 time=689 keys=256
+event_76 end=0 time=691 keys=0
+event_77 end=0 time=698 keys=8
+event_78 end=0 time=707 keys=10
+event_79 end=0 time=711 keys=2
+event_80 end=0 time=720 keys=6
+event_81 end=0 time=761 keys=2
+event_82 end=0 time=762 keys=0
+event_83 end=0 time=770 keys=2
+event_84 end=0 time=777 keys=0
+event_85 end=0 time=779 keys=1
+event_86 end=0 time=790 keys=2
+event_87 end=0 time=807 keys=0
+event_88 end=0 time=823 keys=8
+event_89 end=0 time=825 keys=10
+event_90 end=0 time=830 keys=2
+event_91 end=0 time=837 keys=6
+event_92 end=0 time=838 keys=5
+event_93 end=0 time=849 keys=4
+event_94 end=0 time=862 keys=0
+event_95 end=1 time=0 keys=0
