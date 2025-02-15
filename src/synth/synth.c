@@ -223,6 +223,12 @@ void Synth_handle_midi_event(Synth *s, unsigned char *event_data, unsigned flags
                 break;
             }
         }
+#ifdef SYNTH_COUNT_ACTIVE_VOICES
+for (int i = 0; i < SYNTH_MAX_VOICES; i++)
+{
+    n_active_voices += s->voices[i].active ? 1 : 0;
+}
+#endif
         if (new_voice_idx == SYNTH_MAX_VOICES)
         {
             if (s->diagnostics_max_n_voices != 999)

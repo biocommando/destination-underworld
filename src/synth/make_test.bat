@@ -1,1 +1,1 @@
-gcc -O3 *.c -o test_main.exe
+gcc -O3 *.c -DSYNTH_COUNT_ACTIVE_VOICES -o test_main.exe
