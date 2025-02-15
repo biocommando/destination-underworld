@@ -1,3 +1,4 @@
+@echo off
 gcc test\test-du.c -o test-du.exe
 .\test-du.exe -ctest\normal-complete-state.dat ^
 -rtest\normal-recording.dat ^
@@ -11,3 +12,7 @@ gcc test\test-du.c -o test-du.exe
 -rtest\powerup-only-recording.dat ^
 -ctest\perks-change-mid-level-complete-state.dat ^
 -rtest\perks-change-mid-level-recording.dat
+
+echo ~~ Test synth module ~~
+cd src\synth
+call test_synth.bat
