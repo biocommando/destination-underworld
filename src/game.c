@@ -329,6 +329,14 @@ void game(GlobalGameState *ggs)
       if (world.plr.perks != old_perks)
       {
         next_perk_xp = calculate_next_perk_xp(world.plr.perks);
+        if ((world.plr.perks & PERK_START_WITH_SHIELD_POWERUP) && !(old_perks & PERK_START_WITH_SHIELD_POWERUP) && world.powerups.rune_of_protection_active <= 0)
+        {
+          world.powerups.rune_of_protection_active = 1;
+        }
+        if ((world.plr.perks & PERK_START_WITH_SPEED_POTION) && !(old_perks & PERK_START_WITH_SPEED_POTION))
+        {
+          spawn_potion(world.plr.x, world.plr.y, POTION_ID_FAST, world.plr.roomid, &world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
+        }
       }
 
       if (*record_mode == RECORD_MODE_PLAYBACK)
