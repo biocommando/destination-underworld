@@ -12,7 +12,10 @@ trance : Elevate
 weird : Trip to the Demon Zoo
 with new wavetables : Nuclear Waste Hangover
 eetteritekno : Relieve Us
-it tastes funky : Rancid Demon Food`
+it tastes funky : Rancid Demon Food
+du ost : Ode to Underworld
+du ost 3 : 8-bit Apocalypse
+psykeily : Alien Spacecraft`
 
 const fs = require('fs')
 
