@@ -17,6 +17,7 @@
 #include "gen_version_info.h"
 #include "midi_playback.h"
 #include "synth/wt_sample_loader.h"
+#include "sha1/du_dmac.h"
 
 #ifdef ENABLE_LOGGING
 int logging_enabled = 0;
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
     }
     if (record_input_file == NULL)
     {
-      LOG("Valid input file required (--file=<filename>)!!\n");
+      LOG_FATAL("Valid input file required (--file=<filename>)!!\n");
       return 0;
     }
     fclose(record_input_file);
@@ -69,11 +70,35 @@ int main(int argc, char **argv)
   }
   else if (read_arg[0])
   {
-    printf("Record mode must be either 'play' or 'record'.\n");
+    LOG_FATAL("Record mode must be either 'play' or 'record'.\n");
     return 1;
   }
 
   read_settings(argv, argc);
+
+  if (get_game_settings()->require_authentication && *record_mode == RECORD_MODE_PLAYBACK)
+  {
+    char auth_hash_file[256];
+    if (read_cmd_line_arg_str("auth-hash-file", argv, argc, auth_hash_file))
+    {
+      FILE *f = fopen(auth_hash_file, "rb");
+      char hash[DMAC_SHA1_HASH_SIZE];
+      fread(hash, 1, DMAC_SHA1_HASH_SIZE, f);
+      fclose(f);
+      int res = dmac_sha1_verify_file(game_playback_get_filename(), hash);
+      if (res != 0)
+      {
+        LOG_FATAL("Authentication failed\n");
+        return 1;
+      }
+    }
+    else
+    {
+      LOG_FATAL("Authentication required: please provide a valid auth-hash-file argument.\n");
+      return 1;
+    }
+  }
+
   wt_sample_read_all(DATADIR);
   init_allegro();
   progress_load_state("Loading game...", 1);

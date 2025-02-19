@@ -45,6 +45,7 @@ void read_settings(char **argv, int argc)
   READ_SETTING(game_settings.mission_pack, "%s", "general", "mission-pack");
   READ_SETTING(game_settings.mission_count, "%d", game_settings.mission_pack, "mission-count");
   READ_SETTING(game_settings.custom_resources, "%d", game_settings.mission_pack, "custom-resources");
+  READ_SETTING(game_settings.require_authentication, "%d", game_settings.mission_pack, "require-authentication");
 
   READ_SETTING(game_settings.vibration_mode, "%d", "graphics", "vibration-mode");
   READ_SETTING(game_settings.fullscreen, "%d", "graphics", "fullscreen");

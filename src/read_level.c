@@ -4,10 +4,31 @@
 #include "duscript.h"
 #include "logging.h"
 #include "record_file.h"
+#include "sha1/du_dmac.h"
 
 #include <stdio.h>
 #include <string.h>
 
+static int check_authentication(const char *file_to_check)
+{
+    int err = 0;
+
+    if (get_game_settings()->require_authentication)
+    {
+        char fname[256];
+        sprintf(fname, DATADIR "%s\\auth.dat", get_game_settings()->mission_pack);
+        char rec[256] = "";
+        record_file_get_record(fname, file_to_check, rec, sizeof(rec));
+        char file_hash_hex[256] = "N/A";
+        sscanf(rec, "%*s %s", file_hash_hex);
+        char hash[DMAC_SHA1_HASH_SIZE];
+        memset(hash, 0, sizeof(hash));
+        convert_sha1_hex_to_hash(hash, file_hash_hex);
+        err = dmac_sha1_verify_file(file_to_check, hash);
+    }
+
+    return err;
+}
 
 static inline void combine_tile_properties(Tile *dst, Tile *other)
 {
@@ -210,17 +231,28 @@ int read_level(World *world, int mission, int room_to)
     char special_filename[256];
     sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
     FILE *f = fopen(special_filename, "r");
+    int auth_check_result;
     if (f == NULL)
     {
         f = fopen(mission_name, "r");
         if (f == NULL)
             return -1;
+        auth_check_result = check_authentication(mission_name);
+    }
+    else
+    {
+        auth_check_result = check_authentication(special_filename);
+    }
+    if (auth_check_result)
+    {
+        LOG_FATAL("level authentication failed!!");
+        exit(1);
     }
 
     fgets(buf, 256, f); // version
     if (buf[0] != 'X')
     {
-        printf("ERROR: legacy format file!\n");
+        LOG_FATAL("legacy format file!\n");
         fclose(f);
         return -1;
     }
@@ -232,6 +264,11 @@ void read_enemy_configs(World *world)
 {
     char fname[256];
     sprintf(fname, DATADIR "%s\\enemy-properties.dat", get_game_settings()->mission_pack);
+    if (check_authentication(fname))
+    {
+        LOG_FATAL("enemy config authentication failed!!");
+        exit(1);
+    }
     for (int i = 0; i < 5; i++)
     {
         char key[10];

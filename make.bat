@@ -5,7 +5,16 @@ git log --format=%%h -n 1 > version_info.txt
 node gen_version.js %VERSION%
 del version_info.txt
 
-%compiler% %compiler_flags% ^
+@rem compile the sha1 module as separate step as it's a 3rd party component and we're not so interested
+@rem in the compiler warnings
+
+%compiler% -c src/sha1/sha1.c
+
+%compiler%  %auth_setup% .\src\create_mission_pack_auth_file.c .\src\sha1\sha1.o .\src\sha1\du_dmac.c -o mpauth
+
+%compiler% %compiler_flags% %auth_setup% ^
+src/sha1/sha1.o ^
+src/sha1/du_dmac.c ^
 src/arenaconf.c ^
 src/bossfightconf.c ^
 src/game_playback.c ^

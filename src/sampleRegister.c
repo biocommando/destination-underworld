@@ -38,13 +38,13 @@ void register_sample(int id, const char *sample_name, int priority, int group)
     char sample_path[256] = "";
     if (get_sample_path(sample_path, sample_name) != 0)
     {
-      printf("ERROR: Sample mapping not found for \"%s\"\n", sample_name);
+      LOG_ERROR("Sample mapping not found for \"%s\"\n", sample_name);
       return;
     }
     ALLEGRO_SAMPLE *sample = al_load_sample(sample_path);
     if (!sample)
     {
-      printf("ERROR: Loading sample \"%s\" from path \"%s\" failed\n", sample_name, sample_path);
+      LOG_ERROR("Loading sample \"%s\" from path \"%s\" failed\n", sample_name, sample_path);
       return;
     }
     sample_register[sample_reg_idx].id = id;

@@ -29,6 +29,9 @@ typedef struct
   // By default, different mission packs use the core game's sprites and sound effects but
   // if this is set to 1, also they are read from the `datadir\missionpack\` directory.
   int custom_resources;
+  // If set to true, checks the dmac hashes for mission, configuration, recording and save files.
+  // Refuses to open data and kills the game (not necessarily in a nice way) if hashes differ
+  int require_authentication;
   // Arena fight configurations (cannot be accessed via command line arguments)
   ArenaConfigs arena_config;
 } GameSettings;

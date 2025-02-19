@@ -29,6 +29,7 @@
 #include "bullet_logic.h"
 #include "read_level.h"
 #include "vfx.h"
+#include "sha1/du_dmac.h"
 
 static inline void screenshot(int action)
 {
@@ -694,6 +695,17 @@ void game(GlobalGameState *ggs)
     game_playback_add_key_event(time_stamp, 0);
     game_playback_next();
     game_playback_add_end_event();
+    record_file_flush();
+    if (get_game_settings()->require_authentication)
+    {
+      char hash[DMAC_SHA1_HASH_SIZE];
+      dmac_sha1_calculate_hash_f(hash, game_playback_get_filename());
+      char fname[256 + 10];
+      sprintf(fname, "%s.auth", game_playback_get_filename());
+      FILE *hash_file = fopen(fname, "wb");
+      fwrite(hash, 1, DMAC_SHA1_HASH_SIZE, hash_file);
+      fclose(hash_file);
+    }
   }
 
   if (ggs->setup_screenshot_buffer)
