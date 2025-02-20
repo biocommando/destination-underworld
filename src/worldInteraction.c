@@ -346,6 +346,9 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         new_enemy->health++;
 
     new_enemy->xp = calculate_xp(new_enemy);
+    // A little compensation for killing the boss. Doesn't really add much value so late in game.
+    if (type == ENEMY_TYPE_COUNT)
+        new_enemy->xp += 500;
 
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
