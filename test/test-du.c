@@ -8,7 +8,8 @@ int play_one()
 {
     char cmd[1024];
     sprintf(cmd, "DestinationUnderworld.exe --record-mode=play --file=%s "
-        "--start-without-user-interaction=1 --core-pack--require-authentication=0", recording);
+                 "--start-without-user-interaction=1 --core-pack--require-authentication=0",
+            recording);
     printf("Commandline:\n%s\n", cmd);
     system(cmd);
     FILE *f1, *f2;
@@ -40,7 +41,7 @@ int play_one()
 
 int main(int argc, char **argv)
 {
-    int all_ok = 1;
+    int num_failed = 0;
     for (int i = 0; i < argc; i++)
     {
         if (argv[i][0] == '-' && argv[i][1] == 'r')
@@ -52,11 +53,16 @@ int main(int argc, char **argv)
             printf("Start playback for recording %s and check it against complete state %s...\n", recording, complete_state);
             int ok = play_one();
             printf("%s\n", ok ? "OK" : "FAIL");
-            all_ok = all_ok && ok;
+            if (!ok)
+                num_failed++;
             recording = NULL;
             complete_state = NULL;
         }
     }
-    printf("\n\n\n*****************************\nTest run done. Result: %s\n", all_ok ? "OK" : "FAIL");
+    printf("\n\n\n*****************************\nTest run done. Result: ");
+    if (num_failed == 0)
+        printf("OK\n");
+    else
+        printf("FAIL, number of tests failed: %d\n", num_failed);
     return 0;
 }

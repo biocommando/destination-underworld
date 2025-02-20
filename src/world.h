@@ -500,3 +500,8 @@ int ns_get_wall_type_at(World *world, int x, int y);
 /*
  * Inits player. Basically copies plrautosave struct if owner is alive.*/
 void init_player(World *world, Enemy *plrautosave);
+
+/*
+ * Calculates the player speed (affecting movement and fire rate).
+ */
+int get_plr_speed(World *world);

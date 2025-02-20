@@ -109,30 +109,25 @@ void enemy_logic(World *world)
             enm->dy = 1 - (pr_get_random() % 3);
           }
         }
-        if (is_boss)
+        if (!check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
         {
-          for (int m = 0; m < world->boss_fight_config->speed; m++)
+          enemy_reload(enm, world);
+          int speed = 1;
+          if (is_boss)
+            speed = world->boss_fight_config->speed;
+          else if (enm->turret == TURRET_TYPE_ENEMY)
+            speed = 0;
+          else if (enm->fast)
+            speed = 2;
+
+          for (int m = 0; m < speed; m++)
             move_enemy(enm, world);
-        }
-        else if (enm->turret == TURRET_TYPE_NONE)
-        {
-          if (!check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
-          {
-            if (enm->fast)
-            {
-              move_enemy(enm, world);
-            }
-            move_enemy(enm, world);
-          }
-        }
-        else if (enm->reload > 0)
-        {
-          enm->reload--;
         }
         draw_enemy(enm, world);
       }
       else // turret
       {
+        enemy_reload(enm, world);
         if (enm->move > 0)
         {
           for (int i = 0; i < enm->move; i++)
@@ -151,8 +146,6 @@ void enemy_logic(World *world)
           {
             trigger_sample(SAMPLE_THROW, 255);
           }
-
-          enm->reload--;
         }
         draw_enemy(enm, world);
         if (enm->ammo == 0)

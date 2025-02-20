@@ -30,11 +30,32 @@ void clear_restricted_tiles(World *world, int id)
     }
 }
 
+inline void enemy_reload(Enemy *enm, World *world)
+{
+    int amount = 1;
+    if (enm->turret == TURRET_TYPE_PLAYER)
+    {
+        amount = enm->move;
+    }
+    else if (enm == world->boss)
+    {
+        amount = world->boss_fight_config->speed;
+    }
+    else if (enm == &world->plr)
+    {
+        amount = get_plr_speed(world);
+    }
+    else if (enm->fast && enm->turret == TURRET_TYPE_NONE)
+    {
+        amount = 2;
+    }
+    enm->reload -= amount;
+    if (enm->reload < 0)
+        enm->reload = 0;
+}
+
 void move_enemy(Enemy *enm, World *world)
 {
-    if (enm->reload > 0)
-        enm->reload--;
-
     if (!enm->move)
         return;
     int animate = 0;

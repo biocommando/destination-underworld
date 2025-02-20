@@ -76,7 +76,7 @@ static inline Enemy *create_turret(World *world)
 {
   Enemy *enm = ns_spawn_enemy(world->plr.x, world->plr.y, 9, world->current_room, world);
   enm->ammo = 128;
-  enm->rate = 1;
+  enm->rate = 0;
   enm->shots = 2;
   enm->reload = 10;
   enm->move = 10;

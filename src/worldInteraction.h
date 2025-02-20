@@ -9,12 +9,15 @@
  * Checks the map that the direction is not blocked, otherwise does not do the move.
  * For player, checks the positional trigger tiles and restriction clear tiles.
  *
- * Also progresses walking animation state and reload status. In effect, if the move_enemy
- * function is called multiple times, it also affects the fire rate (technically this is a
- * bug but the game has been play tested so much with this feature in action that I'll let
- * it be).
+ * Also progresses walking animation state
  */
 void move_enemy(Enemy *enm, World *world);
+/*
+ * Progresses reload status. This was in move_enemy and in effect, if the move_enemy
+ * function is called multiple times, it also affects the fire rate. As technically this is a
+ * bug, let's move the logic outside and make it explicit.
+ */
+void enemy_reload(Enemy *enm, World *world);
 /*
  * Moves bullet one position to the direction indicated by the dx, dy vector.
  * Checks the map that the direction is not blocked, otherwise destroys the bullet and creates

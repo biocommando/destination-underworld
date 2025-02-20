@@ -189,3 +189,17 @@ inline int check_potion_effect(World *w, int effect_id)
 {
     return w->potion_duration > 0 && ((w->potion_effect_flags & effect_id) != 0);
 }
+
+inline int get_plr_speed(World *world)
+{
+    int plr_speed = 4;
+    if (check_potion_effect(world, POTION_EFFECT_FAST_PLAYER))
+    {
+      plr_speed++;
+      if (world->potion_turbo_mode)
+      {
+        plr_speed += 2;
+      }
+    }
+    return plr_speed;
+}

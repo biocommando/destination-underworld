@@ -454,16 +454,9 @@ void game(GlobalGameState *ggs)
     }
     old_perks = world.plr.perks;
     {
-      int plr_speed = 3;
-      if (check_potion_effect(&world, POTION_EFFECT_FAST_PLAYER))
-      {
-        plr_speed++;
-        if (world.potion_turbo_mode)
-        {
-          plr_speed += 2;
-        }
-      }
-      for (; plr_speed >= 0; plr_speed--)
+      enemy_reload(&world.plr, &world);
+      int plr_speed = get_plr_speed(&world);
+      for (; plr_speed > 0; plr_speed--)
       {
         move_enemy(&world.plr, &world);
       }
