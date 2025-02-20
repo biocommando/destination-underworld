@@ -95,8 +95,8 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                 {
                     for (int j = 0; j < 10; j++)
                     {
-                        int x_pos = x * TILESIZE + HALFTILESIZE;
-                        int y_pos = y * TILESIZE + HALFTILESIZE;
+                        int x_pos = TO_PIXEL_COORDINATES(x);
+                        int y_pos = TO_PIXEL_COORDINATES(y);
                         int dx = 3 - (x * 13 + y * 7 + j * 3 + world->current_room) % 7;
                         int dy = 3 - (j * 13 + x * 7 + y * 3 + world->current_room) % 7;
                         for (int i = 0; i < 4; i++)
@@ -114,8 +114,8 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                     {
                         double angle = (lava_fluctuations + i * 20) * ALLEGRO_PI / 50;
                         draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES,
-                                                      x * TILESIZE + HALFTILESIZE + sin(angle) * 10,
-                                                      y * TILESIZE + HALFTILESIZE + cos(angle) * 10, (rand() % 4), 0);
+                                                      TO_PIXEL_COORDINATES(x) + sin(angle) * 10,
+                                                      TO_PIXEL_COORDINATES(y) + cos(angle) * 10, (rand() % 4), 0);
                     }
                 }
             }

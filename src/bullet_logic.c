@@ -31,8 +31,8 @@ void bullet_logic(World *world, GlobalGameState *ggs)
         create_explosion(bullet_orig_x, bullet_orig_y, world, 0.5);
         if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
         {
-          bullet->x = ((int)(bullet_orig_x / TILESIZE)) * TILESIZE + HALFTILESIZE;
-          bullet->y = ((int)(bullet_orig_y / TILESIZE)) * TILESIZE + HALFTILESIZE;
+          bullet->x = TO_PIXEL_COORDINATES((int)(bullet_orig_x / TILESIZE));
+          bullet->y = TO_PIXEL_COORDINATES((int)(bullet_orig_y / TILESIZE));
           while (get_tile_at(world, (int)bullet->x, (int)bullet->y)->is_wall)
           {
             bullet->x -= 5 * bullet->dx;

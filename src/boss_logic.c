@@ -44,7 +44,7 @@ void boss_logic(World *world, int boss_died)
         if (random_num >= spawn_point->probability_thresholds[spawn_type][0] && random_num < spawn_point->probability_thresholds[spawn_type][1])
         {
           spawn_enemy(spawn_point->x, spawn_point->y, spawn_type, world->current_room, world);
-          create_sparkles(spawn_point->x * TILESIZE + HALFTILESIZE, spawn_point->y * TILESIZE + HALFTILESIZE, 15, 2, 20, world);
+          create_sparkles(TO_PIXEL_COORDINATES(spawn_point->x), TO_PIXEL_COORDINATES(spawn_point->y), 15, 2, 20, world);
 
           trigger_sample(SAMPLE_SPAWN, 255);
           break;
@@ -109,9 +109,9 @@ void boss_logic(World *world, int boss_died)
       world->boss_fight_config->events[event->parameters[0]].enabled = event->parameters[1];
       break;
     case BFCONF_EVENT_TYPE_SPAWN_POTION:
-      spawn_potion(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE,
+      spawn_potion(TO_PIXEL_COORDINATES(event->parameters[0]), TO_PIXEL_COORDINATES(event->parameters[1]),
                    event->parameters[2], world->current_room, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
-      create_sparkles(event->parameters[0] * TILESIZE + HALFTILESIZE, event->parameters[1] * TILESIZE + HALFTILESIZE, 15, 2, 15, world);
+      create_sparkles(TO_PIXEL_COORDINATES(event->parameters[0]), TO_PIXEL_COORDINATES(event->parameters[1]), 15, 2, 15, world);
       break;
     }
   }

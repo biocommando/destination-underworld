@@ -49,9 +49,9 @@ void move_enemy(Enemy *enm, World *world)
         is_passable(world, x_check, enm->y) && is_passable(world, x_check, enm->y - THIRDTILESIZE) && is_passable(world, x_check, enm->y + THIRDTILESIZE))
     {
         if (!is_passable(world, x_check, enm->y - THIRDTILESIZE * 1.3))
-            enm->y = (enm->y + TILESIZE / 2) / TILESIZE * TILESIZE + HALFTILESIZE;
+            enm->y = TO_PIXEL_COORDINATES((enm->y + TILESIZE / 2) / TILESIZE);
         if (!is_passable(world, x_check, enm->y + THIRDTILESIZE * 1.3))
-            enm->y = enm->y / TILESIZE * TILESIZE + HALFTILESIZE;
+            enm->y = TO_PIXEL_COORDINATES(enm->y / TILESIZE);
         enm->x += enm->dx;
         animate = 1;
     }
@@ -301,8 +301,8 @@ static inline int calculate_xp(Enemy *enm)
 
 Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
 {
-    x = x * TILESIZE + HALFTILESIZE;
-    y = y * TILESIZE + HALFTILESIZE;
+    x = TO_PIXEL_COORDINATES(x);
+    y = TO_PIXEL_COORDINATES(y);
     ns_spawn_enemy(x, y, type, room_id, world);
 }
 

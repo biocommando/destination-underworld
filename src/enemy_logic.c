@@ -82,8 +82,8 @@ void enemy_logic(World *world)
           enm->dx = enm->dy = 0;
           if (is_boss && world->boss_fight_config->state.boss_waypoint.x >= 0)
           {
-            aim_at.x = world->boss_fight_config->state.boss_waypoint.x * TILESIZE + HALFTILESIZE;
-            aim_at.y = world->boss_fight_config->state.boss_waypoint.y * TILESIZE + HALFTILESIZE;
+            aim_at.x = TO_PIXEL_COORDINATES(world->boss_fight_config->state.boss_waypoint.x);
+            aim_at.y = TO_PIXEL_COORDINATES(world->boss_fight_config->state.boss_waypoint.y);
             aim_window = 0;
             if (enm->x / TILESIZE == (int)world->boss_fight_config->state.boss_waypoint.x && enm->y / TILESIZE == (int)world->boss_fight_config->state.boss_waypoint.y)
             {
