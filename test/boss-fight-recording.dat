@@ -1,0 +1,26 @@
+_record_count 25
+slot_0--game_modifiers 0
+slot_0--mission 16
+slot_0--health 5
+slot_0--shots 6
+slot_0--reload 0
+slot_0--rate 200
+slot_0--ammo 15
+slot_0--gold 10
+slot_0--perks 75
+slot_0--xp 712
+slot_0--hash 898461f71afc106a2833e2d1f024d22dbd5d7ba0
+event_0 end=0 time=32 keys=8
+event_1 end=0 time=80 keys=9
+event_2 end=0 time=86 keys=1
+event_3 end=0 time=101 keys=9
+event_4 end=0 time=103 keys=8
+event_5 end=0 time=113 keys=9
+event_6 end=0 time=117 keys=8
+event_7 end=0 time=123 keys=10
+event_8 end=0 time=127 keys=8
+event_9 end=0 time=131 keys=0
+event_10 end=0 time=145 keys=4
+event_11 end=0 time=146 keys=5
+event_12 end=0 time=191 keys=0
+event_13 end=1 time=0 keys=0

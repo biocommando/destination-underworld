@@ -13,7 +13,9 @@ gcc test\test-du.c -o test-du.exe
 -ctest\powerup-only-complete-state.dat ^
 -rtest\powerup-only-recording.dat ^
 -ctest\perks-change-mid-level-complete-state.dat ^
--rtest\perks-change-mid-level-recording.dat
+-rtest\perks-change-mid-level-recording.dat ^
+-ctest\boss-fight-complete-state.dat ^
+-rtest\boss-fight-recording.dat
 
 echo ~~ Test synth module ~~
 cd src\synth
