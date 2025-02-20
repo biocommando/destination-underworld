@@ -354,7 +354,7 @@ Custom enemy profiles
 
         enemyProperties += `type-${e} turret=${turret} rate=${rate} health=${health} gold=${gold} fast=${fast} hurts-monsters=${hurtsMonsters} potion-for-potion-only=${potionForPotionOnly}
 `
-        enemyHelp += `Health: ${health}, Fire rate: ${Math.round(400 / rate) / 10} / sec, ${turret ? 'Stationary' : (fast ? 'Moves fast' : 'Moves slow')}${hurtsMonsters ? ', Friendly fire' : ''}${gold ? ', Possesses a soul' : ''}
+        enemyHelp += `Health: ${health}, Fire rate: ${Math.round(400 / rate * (fast + 1)) / 10} / sec, ${turret ? 'Stationary' : (fast ? 'Moves fast' : 'Moves slow')}${hurtsMonsters ? ', Friendly fire' : ''}${gold ? ', Possesses a soul' : ''}
 
 `
         console.log(`Enemy ${e} created with power score ${powerScore}`)

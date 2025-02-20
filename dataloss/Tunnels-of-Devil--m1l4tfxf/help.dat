@@ -15,9 +15,9 @@ Health: 3, Fire rate: 1.4 / sec, Moves slow
 
 Health: 5, Fire rate: 1.4 / sec, Moves slow
 
-Health: 3, Fire rate: 2.9 / sec, Moves fast, Possesses a soul
+Health: 3, Fire rate: 5.8 / sec, Moves fast, Possesses a soul
 
-Health: 7, Fire rate: 5 / sec, Moves fast, Friendly fire, Possesses a soul
+Health: 7, Fire rate: 10 / sec, Moves fast, Friendly fire, Possesses a soul
 
 Health: 6, Fire rate: 6.7 / sec, Stationary, Possesses a soul
 

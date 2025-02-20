@@ -262,7 +262,7 @@ Imp
 #sprite 6 10 243 0 2
 #margin 40
 #color 4
-Health: 5, Fire rate: 2.7 / sec, Moves fast, Possesses a soul
+Health: 5, Fire rate: 5.3 / sec, Moves fast, Possesses a soul
 #color 2
 In the modern godless times, imps have become more busy at boasting about
 themselves than actually protecting the core values of Hell which has also
@@ -276,7 +276,7 @@ Extraterrestial Alien
 #sprite 6 10 371 0 3
 #margin 40
 #color 4
-Health: 6, Fire rate: 4.0 / sec, Moves fast, Possesses a soul
+Health: 6, Fire rate: 8.0 / sec, Moves fast, Possesses a soul
 #color 2
 In 1950's a specimen from the Area 51 escaped and colonialized Hell. It is
 unknown whether the aliens and other hell-dwellers are allied or if the
