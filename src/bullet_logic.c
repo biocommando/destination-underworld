@@ -43,11 +43,13 @@ void bullet_logic(World *world, GlobalGameState *ggs)
 
         break;
       }
+      int frame_cnt = bullet->y;
+      if (bullet->dx > 0.2 || bullet->dx < -0.2)
+        frame_cnt = bullet->x;
+      if (rand() % 400 == 0)
+        create_flame_fx(bullet->x, bullet->y, world);
       if ((world->plr.perks & PERK_IMPROVE_BLAST_POWERUP) && bullet->bullet_type == BULLET_TYPE_CLUSTER)
       {
-        int frame_cnt = bullet->y;
-        if (bullet->dx > 0.2 || bullet->dx < -0.2)
-          frame_cnt = bullet->x;
         if (frame_cnt % 64 == 0)
           create_cluster_explosion(world, bullet->x, bullet->y, 4, 1, &world->plr);
       }

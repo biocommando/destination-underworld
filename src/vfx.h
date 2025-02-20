@@ -34,4 +34,9 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
  */
 void create_shade_around_hit_point(int x, int y, int spread, World *world);
 
-void create_flame_fx_circle(int x, int y, struct flame_ember_fx *f);
+/*
+ * Create a single flame ember
+ */
+void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f);
+
+void create_flame_fx(int x, int y, World *world);

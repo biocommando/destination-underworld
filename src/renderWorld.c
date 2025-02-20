@@ -337,7 +337,7 @@ void progress_and_draw_flame_fx(World *world)
             fc->color.g *= 0.8f;
             if (fc->r == 0 && f->duration > j * 10 + 1)
             {
-                create_flame_fx_circle(f->loc.x, f->loc.y, fc);
+                create_flame_fx_ember(f->loc.x, f->loc.y, fc);
             }
         }
         if (!num_circles_left)

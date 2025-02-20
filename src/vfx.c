@@ -52,7 +52,7 @@ static inline void bounce_body_parts(int x, int y, World *world)
         }
 }
 
-void create_flame_fx_circle(int x, int y, struct flame_ember_fx *f)
+void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f)
 {
     f->loc.x = x + rand() % 5 - 2;
     f->loc.y = y;
@@ -63,7 +63,7 @@ void create_flame_fx_circle(int x, int y, struct flame_ember_fx *f)
     f->speed = rand() % 2 + 1;
 }
 
-static inline void create_flame_fx(int x, int y, World *world)
+void create_flame_fx(int x, int y, World *world)
 {
     if (get_tile_at(world, x, y)->is_wall)
         return;
@@ -88,7 +88,7 @@ static inline void create_flame_fx(int x, int y, World *world)
     f->loc.y = y;
     for (int i = 0; i < EMBERS_PER_FLAME_FX; i++)
     {
-        create_flame_fx_circle(x, y, &f->embers[i]);
+        create_flame_fx_ember(x, y, &f->embers[i]);
     }
     f->duration = EMBERS_PER_FLAME_FX * 10 + rand() % 20;
 }
