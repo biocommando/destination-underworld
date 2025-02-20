@@ -74,18 +74,21 @@ void move_enemy(Enemy *enm, World *world)
         enm->y = ey;
     }
 
-    Tile *t = get_tile_at(world, enm->x, enm->y);
-    if (enm == &world->plr && t->is_clear_restriction)
+    if (enm == &world->plr)
     {
-        clear_restricted_tiles(world, t->data);
-    }
-    if (enm == &world->plr && t->is_positional_trigger)
-    {
-        LOG_TRACE("pos trigger current state %x\n", world->boss_fight_config->state.positional_trigger_flags);
-        world->boss_fight_config->state.positional_trigger_flags |= 1 << t->data;
-        // No point in having the flag set anymore as the condition can trigger only once
-        t->is_positional_trigger = 0;
-        LOG_TRACE("pos trigger, new state %x\n", world->boss_fight_config->state.positional_trigger_flags);
+        Tile *t = get_tile_at(world, enm->x, enm->y);
+        if (t->is_clear_restriction)
+        {
+            clear_restricted_tiles(world, t->data);
+        }
+        if (t->is_positional_trigger)
+        {
+            LOG_TRACE("pos trigger current state %x\n", world->boss_fight_config->state.positional_trigger_flags);
+            world->boss_fight_config->state.positional_trigger_flags |= 1 << t->data;
+            // No point in having the flag set anymore as the condition can trigger only once
+            t->is_positional_trigger = 0;
+            LOG_TRACE("pos trigger, new state %x\n", world->boss_fight_config->state.positional_trigger_flags);
+        }
     }
 }
 
