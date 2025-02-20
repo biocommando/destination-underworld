@@ -24,6 +24,10 @@ There's a batch file `make.bat` in the root directory that compiles the program.
 To create a release package, use `create_release.bat` that copies all the required
 files to run the game under `.\DestinationUnderworldRelease` directory.
 
+You'll need to have a separate `environment-release.txt` file for creating release.
+This is to allow different compile flags than in debug mode, and injecting a secret
+dmac key. For testing, you can just copy `environment.txt` to `environment-release.txt`.
+
 ## Level editor
 
 Run the level editor using the `run-level-editor.bat` under the root directory.

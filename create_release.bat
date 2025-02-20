@@ -1,5 +1,8 @@
 for /F "tokens=*" %%i in ('type environment.txt') do set %%i
 
+ren environment.txt environment.txt.tmp
+ren environment-release.txt environment.txt
+
 rd /s /q DestinationUnderworldRelease
 call make.bat
 
@@ -14,7 +17,7 @@ xcopy dataloss\core-pack\best_times.dat DestinationUnderworldRelease\dataloss\co
 xcopy dataloss\core-pack\enemy-properties.dat DestinationUnderworldRelease\dataloss\core-pack
 xcopy dataloss\core-pack\arenas.dat DestinationUnderworldRelease\dataloss\core-pack
 xcopy dataloss\core-pack\help.dat DestinationUnderworldRelease\dataloss\core-pack
-xcopy dataloss\core-pack\auth.dat DestinationUnderworldRelease\dataloss\core-pack
+.\mpauth.exe core-pack ./dataloss/core-pack/ > DestinationUnderworldRelease\dataloss\core-pack\auth.dat
 
 xcopy dataloss\editor DestinationUnderworldRelease\dataloss\editor
 
@@ -71,3 +74,6 @@ xcopy dataloss\wt_sample_slot_*.wav DestinationUnderworldRelease\dataloss
 
 xcopy %allegro_path%\bin\allegro_monolith-5.2.dll DestinationUnderworldRelease
 xcopy DestinationUnderworld.exe DestinationUnderworldRelease
+
+ren environment.txt environment-release.txt
+ren environment.txt.tmp environment.txt
