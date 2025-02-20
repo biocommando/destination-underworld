@@ -17,7 +17,7 @@ void move_enemy(Enemy *enm, World *world);
  * function is called multiple times, it also affects the fire rate. As technically this is a
  * bug, let's move the logic outside and make it explicit.
  */
-void enemy_reload(Enemy *enm, World *world);
+void enemy_reload(Enemy *enm, int amount);
 /*
  * Moves bullet one position to the direction indicated by the dx, dy vector.
  * Checks the map that the direction is not blocked, otherwise destroys the bullet and creates

@@ -454,8 +454,8 @@ void game(GlobalGameState *ggs)
     }
     old_perks = world.plr.perks;
     {
-      enemy_reload(&world.plr, &world);
       int plr_speed = get_plr_speed(&world);
+      enemy_reload(&world.plr, plr_speed);
       for (; plr_speed > 0; plr_speed--)
       {
         move_enemy(&world.plr, &world);

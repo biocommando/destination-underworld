@@ -30,25 +30,8 @@ void clear_restricted_tiles(World *world, int id)
     }
 }
 
-inline void enemy_reload(Enemy *enm, World *world)
+inline void enemy_reload(Enemy *enm, int amount)
 {
-    int amount = 1;
-    if (enm->turret == TURRET_TYPE_PLAYER)
-    {
-        amount = enm->move;
-    }
-    else if (enm == world->boss)
-    {
-        amount = world->boss_fight_config->speed;
-    }
-    else if (enm == &world->plr)
-    {
-        amount = get_plr_speed(world);
-    }
-    else if (enm->fast && enm->turret == TURRET_TYPE_NONE)
-    {
-        amount = 2;
-    }
     enm->reload -= amount;
     if (enm->reload < 0)
         enm->reload = 0;

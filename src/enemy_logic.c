@@ -111,7 +111,6 @@ void enemy_logic(World *world)
         }
         if (!check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
         {
-          enemy_reload(enm, world);
           int speed = 1;
           if (is_boss)
             speed = world->boss_fight_config->speed;
@@ -120,6 +119,8 @@ void enemy_logic(World *world)
           else if (enm->fast)
             speed = 2;
 
+          enemy_reload(enm, speed ? speed : 1);
+
           for (int m = 0; m < speed; m++)
             move_enemy(enm, world);
         }
@@ -127,7 +128,7 @@ void enemy_logic(World *world)
       }
       else // turret
       {
-        enemy_reload(enm, world);
+        enemy_reload(enm, enm->move);
         if (enm->move > 0)
         {
           for (int i = 0; i < enm->move; i++)
