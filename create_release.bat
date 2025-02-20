@@ -14,6 +14,7 @@ xcopy dataloss\core-pack\best_times.dat DestinationUnderworldRelease\dataloss\co
 xcopy dataloss\core-pack\enemy-properties.dat DestinationUnderworldRelease\dataloss\core-pack
 xcopy dataloss\core-pack\arenas.dat DestinationUnderworldRelease\dataloss\core-pack
 xcopy dataloss\core-pack\help.dat DestinationUnderworldRelease\dataloss\core-pack
+xcopy dataloss\core-pack\auth.dat DestinationUnderworldRelease\dataloss\core-pack
 
 xcopy dataloss\editor DestinationUnderworldRelease\dataloss\editor
 
