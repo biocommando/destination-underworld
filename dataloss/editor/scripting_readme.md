@@ -2,6 +2,8 @@ It's possible to create scripted events to every room in the game.
 The scripts are room-specific. The scripting was originally created
 just for boss fights but has been extended to be more generic.
 
+For more documentation on the actions and trigger conditions, see bossfightconf.h.
+
 # BOSS syntax
 
 The format that the game itself reads isn't very easy to program directly
@@ -52,6 +54,14 @@ each enemy type (should sum up to 100).
 - toggle_event_enabled, keys: event_id (= event's name)
 
 - spawn_potion: keys: x, y, type
+
+- allow_firing
+
+- disallow_firing
+
+- clear_waypoint
+
+- stop_secondary_timer
 
 **Special trigger types:**
 - never = event not triggered unless overridden with valid trigger
@@ -114,22 +124,22 @@ This way the default properties won't be added to the resulting script file.
 Preprocessing is run in this order so you can use {# .. #} inside ms( .. )
 
 For the javascript execution there are a couple of convenience functions/variables available:
-- override_event(base_event, game_mode_name)
+- `override_event(base_event, game_mode_name)`
 	* Creates a mapping that maps the base event to this event if the game mode flags are specified.
 	Example:
 	```
 	on {# override_event('SpawnA1', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do @inherit
 	```
-- disable_event(name, game_mode_name)
+- `disable_event(name, game_mode_name)`
 	* Disables an event for certain mode
-- set_waypoint_sequence(sequence)
+- `set_waypoint_sequence(sequence)`
 	* Sets boss a route with waypoints. E.g. boss walking between two points:
 	```
-	{# set_waypoint_sequence([ '3;3', '9:9' ]) #}
+	{# set_waypoint_sequence([ '3;3', '9;9' ]) #}
 	```
-- ms_delta
+- `ms_delta`
 	* Boss timer tick in milliseconds
-- implicit_arena_game_mode()
+- `implicit_arena_game_mode()`
 	* Calling this function sets arena flag to 1 so that you don't need to refer to the arena variant of the
 	game mode when overriding events / properties, so instead of having to write
 	`set [arena_brutal] health = 20` you can write:
@@ -154,3 +164,5 @@ explosion_madness
 powerup_only
 potion_only
 ```
+
+For arena fights the game mode names are prefixed with `arena_` if `implicit_arena_game_mode()` is not called.

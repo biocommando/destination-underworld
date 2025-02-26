@@ -8,30 +8,60 @@
 
 #define BFCONF_MAX_EVENTS 100
 
+// Never triggers. This is a placeholder used for overriding the event
+// for a different game mode
 #define BFCONF_TRIGGER_TYPE_NEVER 0
+// Trigger always when the primary timer has counted this many ticks
 #define BFCONF_TRIGGER_TYPE_TIME_INTERVAL 1
+// Trigger only when primary timer has exactly this total tick count
 #define BFCONF_TRIGGER_TYPE_TIME_ONE_TIME 2
+// Trigger when boss enemy's health reaches this or below
 #define BFCONF_TRIGGER_TYPE_HEALTH 3
+// Trigger when boss enemy reaches its waypoint tile
 #define BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED 4
+// Trigger only when secondary timer has exactly this total tick count
 #define BFCONF_TRIGGER_TYPE_SECONDARY_TIMER 5
+// Trigger when player's kill count (in this room) has reached this or above
 #define BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED 6
+// Trigger when player enters a tile containing the corresponding positional trigger
 #define BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER 7
 
+// Does nothing. This is a placeholder used for overriding the event
+// for a different game mode
 #define BFCONF_EVENT_TYPE_NO_OP 0
+// Spawn an enemy using a probability mapper for choosing the enemy
+// type that will be spawned
 #define BFCONF_EVENT_TYPE_SPAWN 1
+// Makes the boss enemy fire at will
 #define BFCONF_EVENT_TYPE_ALLOW_FIRING 2
+// Makes the boss enemy not fire at will
 #define BFCONF_EVENT_TYPE_DISALLOW_FIRING 3
+// Makes the boss enemy shoot a circle of fireballs
 #define BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE 4
+// Turn tiles to floor/wall/level exit
 #define BFCONF_EVENT_TYPE_MODIFY_TERRAIN 5
+// Set a waypoint for the boss enemy
 #define BFCONF_EVENT_TYPE_SET_WAYPOINT 6
+// Clear the current waypoint for the boss (return default behaviour)
 #define BFCONF_EVENT_TYPE_CLEAR_WAYPOINT 7
+// Start the secondary timer (initially stopped). The secondary timer differs
+// from the primary timer in that:
+// - it can be started and stopped
+// - the start time can be set (primary timer is monotonous)
+// - does not have interval triggering
 #define BFCONF_EVENT_TYPE_START_SECONDARY_TIMER 8
+// Stop the secondary timer
 #define BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER 9
+// Set a different event to enabled/disabled (won't trigger when disabled)
 #define BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED 10
+// Spawn a potion
 #define BFCONF_EVENT_TYPE_SPAWN_POTION 11
 
+// Terrain type for floor (for event type BFCONF_EVENT_TYPE_MODIFY_TERRAIN)
 #define BFCONF_MODIFY_TERRAIN_FLOOR 1
+// Terrain type for wall (for event type BFCONF_EVENT_TYPE_MODIFY_TERRAIN)
 #define BFCONF_MODIFY_TERRAIN_WALL 2
+// Terrain type for exit level (for event type BFCONF_EVENT_TYPE_MODIFY_TERRAIN)
 #define BFCONF_MODIFY_TERRAIN_EXIT 3
 
 /*
