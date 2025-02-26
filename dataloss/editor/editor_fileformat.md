@@ -24,9 +24,9 @@ skip label. Example:
 305 7 6 1
 *@+SKIP_COND_potion
 ```
-Here if the object definition `305 7 6 1` is marked as having condition named `COND_potion`. The
-condition `game_modifiers == 232` is saved to the editor state. The condition names must begin with
-`COND_`.
+Here the object definition `305 7 6 1` is marked as having condition named `COND_potion`. The corresponding
+representation in editor's metadata field is `condition: COND_potion: game_modifiers = 232` is saved to the
+editor state. The condition names must begin with `COND_`.
 
 ## metadata:
 
@@ -35,7 +35,7 @@ The variable definitions are modified to a more human-readable format (e.g. `a"1
 
 Supported metadata entries:
 - name = Level name displayed in the info screen and when starting the level
-- wall_color = RGB definition for top-most wall layer
+- wall_color = RGB definition for top-most wall layer (example: "0.5 1 0.8")
 - storyX (where X = number in range 0-10) = Story lines displayed after level (max length 60 characters)
 - no_more_levels = This level is final level, no more levels will be loaded
 - mute_bosstalk = Don't play the sample associated to the boss if the level has scripting definitions
