@@ -119,7 +119,7 @@ static void display_arena_fight_end_screen(const World *world, GlobalGameState *
   }
 }
 
-static void progress_player_death_animation(World *world)
+static void progress_player_death_animation(const World *world)
 {
   int startx, starty;
   startx = world->plr.x - TILESIZE * 3 / 2 - world->plr.reload;

@@ -7,16 +7,28 @@
 
 void create_verification_hash(char *hash_hex, int mission, int game_modifiers, const Enemy *data)
 {
-    char s[200];
-    memset(s, 0, sizeof(s));
-    sprintf(s, "game data %d %d %d %d %d %d %d %d %d %d",
+    char state_string[200];
+    memset(state_string, 0, sizeof(state_string));
+    sprintf(state_string, "game data %d %d %d %d %d %d %d %d %d %d",
             game_modifiers, mission,
             data->health, data->shots, data->reload,
             data->rate, data->ammo, data->gold, data->perks,
             data->xp);
     char hash[DMAC_SHA1_HASH_SIZE];
-    dmac_sha1_calculate_hash(hash, s, sizeof(s));
+    dmac_sha1_calculate_hash(hash, state_string, sizeof(state_string));
     convert_sha1_hash_to_hex(hash_hex, hash);
+}
+
+static inline void read_save_data_record(const char *filename, int slot, const char *suffix, const char *format, void *dst)
+{
+    char rec[100], key[100];
+    sprintf(key, "slot_%d--%s", slot, suffix);
+    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
+    {
+        char fullfmt[32];
+        sprintf(fullfmt, "%%*s %s", format);
+        sscanf(rec, fullfmt, dst);
+    }
 }
 
 void load_game_save_data(const char *filename, Enemy *data, int *mission, int *game_modifiers, int slot)
@@ -24,45 +36,16 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
     char rec[100], key[100];
     memset(data, 0, sizeof(Enemy));
 
-    sprintf(key, "slot_%d--game_modifiers", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", game_modifiers);
-
-    sprintf(key, "slot_%d--mission", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", mission);
-
-    sprintf(key, "slot_%d--health", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->health);
-
-    sprintf(key, "slot_%d--shots", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->shots);
-
-    sprintf(key, "slot_%d--reload", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->reload);
-
-    sprintf(key, "slot_%d--rate", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->rate);
-
-    sprintf(key, "slot_%d--ammo", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->ammo);
-
-    sprintf(key, "slot_%d--gold", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->gold);
-
-    sprintf(key, "slot_%d--perks", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->perks);
-
-    sprintf(key, "slot_%d--xp", slot);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-        sscanf(rec, "%*s %d", &data->xp);
+    read_save_data_record(filename, slot, "game_modifiers", "%d", game_modifiers);
+    read_save_data_record(filename, slot, "mission", "%d", mission);
+    read_save_data_record(filename, slot, "health", "%d", &data->health);
+    read_save_data_record(filename, slot, "shots", "%d", &data->shots);
+    read_save_data_record(filename, slot, "reload", "%d", &data->reload);
+    read_save_data_record(filename, slot, "rate", "%d", &data->rate);
+    read_save_data_record(filename, slot, "ammo", "%d", &data->ammo);
+    read_save_data_record(filename, slot, "gold", "%d", &data->gold);
+    read_save_data_record(filename, slot, "perks", "%d", &data->perks);
+    read_save_data_record(filename, slot, "xp", "%d", &data->xp);
 
     data->hurts_monsters = 1;
     data->sprite = -1;
@@ -74,9 +57,7 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
         char read_hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1] = "";
         char saved_hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
         create_verification_hash(saved_hash_hex, *mission, *game_modifiers, data);
-        sprintf(key, "slot_%d--hash", slot);
-        if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-            sscanf(rec, "%*s %40s", read_hash_hex);
+        read_save_data_record(filename, slot, "hash", "%40s", read_hash_hex);
         if (strcmp(read_hash_hex, saved_hash_hex) != 0)
         {
             data->alive = 0;
@@ -120,49 +101,28 @@ void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifi
     *has_save = 1;
 }
 
+static inline void write_int_save_data(const char *filename, int slot, const char *suffix, int value)
+{
+    char rec[100], key[100];
+    sprintf(key, "slot_%d--%s", slot, suffix);
+    sprintf(rec, "%s %d", key, value);
+    record_file_set_record(filename, key, rec);
+}
+
 void save_game_save_data(const char *filename, Enemy *data, int mission, int game_modifiers, int slot)
 {
     char rec[100], key[100];
 
-    sprintf(key, "slot_%d--game_modifiers", slot);
-    sprintf(rec, "%s %d", key, game_modifiers);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--mission", slot);
-    sprintf(rec, "%s %d", key, mission);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--health", slot);
-    sprintf(rec, "%s %d", key, data->health);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--shots", slot);
-    sprintf(rec, "%s %d", key, data->shots);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--reload", slot);
-    sprintf(rec, "%s %d", key, data->reload);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--rate", slot);
-    sprintf(rec, "%s %d", key, data->rate);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--ammo", slot);
-    sprintf(rec, "%s %d", key, data->ammo);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--gold", slot);
-    sprintf(rec, "%s %d", key, data->gold);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--perks", slot);
-    sprintf(rec, "%s %d", key, data->perks);
-    record_file_set_record(filename, key, rec);
-
-    sprintf(key, "slot_%d--xp", slot);
-    sprintf(rec, "%s %d", key, data->xp);
-    record_file_set_record(filename, key, rec);
+    write_int_save_data(filename, slot, "game_modifiers", game_modifiers);
+    write_int_save_data(filename, slot, "mission", mission);
+    write_int_save_data(filename, slot, "health", data->health);
+    write_int_save_data(filename, slot, "shots", data->shots);
+    write_int_save_data(filename, slot, "reload", data->reload);
+    write_int_save_data(filename, slot, "rate", data->rate);
+    write_int_save_data(filename, slot, "ammo", data->ammo);
+    write_int_save_data(filename, slot, "gold", data->gold);
+    write_int_save_data(filename, slot, "perks", data->perks);
+    write_int_save_data(filename, slot, "xp", data->xp);
 
     if (get_game_settings()->require_authentication)
     {
