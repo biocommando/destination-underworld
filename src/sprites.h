@@ -9,7 +9,7 @@
 #define SPRITE_ID_POTION_BUBBLE 3
 #define SPRITE_ID_HEALTH 4
 #define SPRITE_ID_RUNE_OF_PROTECTION 5
-#define SPRITE_ID_ENEMY 6
+#define SPRITE_ID_SKELETON 6
 #define SPRITE_ID_AMMO 7
 #define SPRITE_ID_TURRET 8
 #define SPRITE_ID_SPARKLES 9
@@ -19,10 +19,10 @@
 #define SPRITE_ID_POTION_DURATION 13
 #define SPRITE_ID_BODY_PART 14
 #define SPRITE_ID_POTION_EFFECT 15
-#define SPRITE_ID_SKELETON 16
+#define SPRITE_ID_ENEMY(type) (17 + type)
 
 #define SPRITE_ID_MIN SPRITE_ID_BULLET
-#define SPRITE_ID_MAX SPRITE_ID_SKELETON
+#define SPRITE_ID_MAX SPRITE_ID_ENEMY(5)
 
 // A struct for sprite definition in a spritesheet.
 typedef struct

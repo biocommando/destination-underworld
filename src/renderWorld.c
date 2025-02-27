@@ -15,7 +15,7 @@ void draw_enemy(Enemy *enm, World *world)
     if (enm->sprite == 9)
         draw_sprite_centered(world->spr, SPRITE_ID_TURRET, enm->x, enm->y);
     else
-        draw_sprite_animated_centered(world->spr, SPRITE_ID_ENEMY, enm->x, enm->y, enm->anim > 20, enm->sprite);
+        draw_sprite_animated_centered(world->spr, SPRITE_ID_ENEMY(enm->sprite), enm->x, enm->y, enm->anim > 20, 0);
 }
 
 static void draw_enemy_shadow(Enemy *enm)
@@ -622,7 +622,7 @@ void show_ingame_info_screen(World *world)
             if (enm->alive && enm->sprite == et)
                 num_enemies++;
         }
-        draw_sprite_animated(world->spr, SPRITE_ID_ENEMY, offset_x, offset_y, 0, et);
+        draw_sprite_animated(world->spr, SPRITE_ID_ENEMY(et), offset_x, offset_y, 0, 0);
         offset_x += TILESIZE;
         al_draw_textf(get_font_tiny(), GRAY(200), offset_x, offset_y + HALFTILESIZE, 0, "%d", num_enemies);
         offset_x += TILESIZE;

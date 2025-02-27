@@ -10,8 +10,8 @@ sprite_3 x=153 y=176 w=4 h=5
 sprite_4 x=60 y=0 w=7 h=6
 # Rune of protection
 sprite_5 x=140 y=165 w=13 h=13
-# Enemy
-sprite_6 x=0 y=29 w=23 h=29
+# Skeleton
+sprite_6 x=79 y=0 w=25 h=29
 # Ammo indicator
 sprite_7 x=67 y=0 w=6 h=3
 # Turret
@@ -30,5 +30,17 @@ sprite_13 x=48 y=186 w=7 h=9
 sprite_14 x=311 y=129 w=11 h=11 
 # Potion effect
 sprite_15 x=184 y=144 w=5 h=5
-# Skeleton
-sprite_16 x=79 y=0 w=25 h=29
+# Player
+sprite_16 x=0 y=0 w=23 h=29
+# Enemy 1
+sprite_17 x=0 y=29 w=23 h=29
+# Enemy 2
+sprite_18 x=0 y=58 w=23 h=29
+# Enemy 3
+sprite_19 x=0 y=87 w=23 h=29
+# Enemy 4
+sprite_20 x=0 y=116 w=23 h=29
+# Enemy 5
+sprite_21 x=0 y=145 w=23 h=29
+# Enemy, boss
+sprite_22 x=0 y=174 w=23 h=29
