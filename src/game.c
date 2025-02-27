@@ -136,6 +136,24 @@ static void progress_player_death_animation(World *world)
   al_use_transform(&transform);
 }
 
+static inline void display_plr_dir_helper(const World *world, int *plr_dir_helper_intensity)
+{
+  if (*plr_dir_helper_intensity > 0)
+  {
+    int cx = world->plr.x + world->plr.dx * TILESIZE * 3 / 2;
+    int cy = world->plr.y + world->plr.dy * TILESIZE * 3 / 2;
+    ALLEGRO_COLOR col = al_map_rgb(2 * *plr_dir_helper_intensity, 0, 0);
+    al_draw_circle(cx, cy, *plr_dir_helper_intensity * TILESIZE / 600, col, 1);
+    if (*plr_dir_helper_intensity > PLR_DIR_HELPER_INITIAL_INTENSITY / 2)
+    {
+      int line_offs = *plr_dir_helper_intensity / 20;
+      al_draw_line(cx - line_offs, cy, cx + line_offs, cy, col, 1);
+      al_draw_line(cx, cy - line_offs, cx, cy + line_offs, col, 1);
+    }
+    *plr_dir_helper_intensity -= 3;
+  }
+}
+
 void game(GlobalGameState *ggs)
 {
   // For playback recording filenames
@@ -573,14 +591,7 @@ void game(GlobalGameState *ggs)
       }
     }
 
-    if (plr_dir_helper_intensity > 0)
-    {
-      al_draw_circle(world.plr.x + world.plr.dx * TILESIZE * 3 / 2,
-                     world.plr.y + world.plr.dy * TILESIZE * 3 / 2,
-                     plr_dir_helper_intensity * TILESIZE / 600,
-                     al_map_rgb(2 * plr_dir_helper_intensity, 0, 0), 1);
-      plr_dir_helper_intensity -= 3;
-    }
+    display_plr_dir_helper(&world, &plr_dir_helper_intensity);
 
     if (world.powerups.rune_of_protection_active)
     {
