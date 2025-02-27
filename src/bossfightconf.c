@@ -32,6 +32,14 @@ static void print_configs(BossFightConfig *config)
   }
 }
 
+static void read_property_set_cmd(int *dst, const char *buf, int game_modifiers)
+{
+  int val, override = -1;
+  sscanf(buf, "%*s %d %d", &val, &override);
+  if (override == -1 || override == game_modifiers)
+    *dst = val;
+}
+
 void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
 {
   memset(config, 0, sizeof(BossFightConfig));
@@ -51,38 +59,23 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
     sscanf(buf, "%s", cmd);
     if (!strcmp(cmd, "health"))
     {
-      int val, override = -1;
-      sscanf(buf, "%*s %d %d", &val, &override);
-      if (override == -1 || override == game_modifiers)
-        config->health = val;
+      read_property_set_cmd(&config->health, buf, game_modifiers);
     }
     else if (!strcmp(cmd, "speed"))
     {
-      int val, override = -1;
-      sscanf(buf, "%*s %d %d", &val, &override);
-      if (override == -1 || override == game_modifiers)
-        config->speed = val;
+      read_property_set_cmd(&config->speed, buf, game_modifiers);
     }
     else if (!strcmp(cmd, "fire_rate"))
     {
-      int val, override = -1;
-      sscanf(buf, "%*s %d %d", &val, &override);
-      if (override == -1 || override == game_modifiers)
-        config->fire_rate = val;
+      read_property_set_cmd(&config->fire_rate, buf, game_modifiers);
     }
     else if (!strcmp(cmd, "player_initial_gold"))
     {
-      int val, override = -1;
-      sscanf(buf, "%*s %d %d", &val, &override);
-      if (override == -1 || override == game_modifiers)
-        config->player_initial_gold = val;
+      read_property_set_cmd(&config->player_initial_gold, buf, game_modifiers);
     }
     else if (!strcmp(cmd, "time_starts_at"))
     {
-      int val, override = -1;
-      sscanf(buf, "%*s %d %d", &val, &override);
-      if (override == -1 || override == game_modifiers)
-        config->state.timer_value = val;
+      read_property_set_cmd(&config->state.timer_value, buf, game_modifiers);
     }
     else if (!strcmp(cmd, "event"))
     {
