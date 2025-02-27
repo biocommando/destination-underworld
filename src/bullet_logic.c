@@ -175,6 +175,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
                   int col = xx % 4;
                   col = col == 0 ? 255 : (col == 2 ? 64 : 128);
                   al_draw_filled_rectangle(0, 0, SCREEN_W + 1, SCREEN_H + 1, GRAY(col));
+                  al_flip_display();
                   wait_delay_ms(25);
                 }
                 create_cluster_explosion(world, enm->x, enm->y, 48, 1, &world->plr);
