@@ -632,7 +632,8 @@ void game(GlobalGameState *ggs)
       al_translate_transform(&transform, offset_x, offset_y);
       al_scale_transform(&transform, 3, 3);
       al_use_transform(&transform);
-      al_flip_display();
+      if (time_stamp > 1) // Removes the glitch when starting the game; most visible when restarting the level
+        al_flip_display();
     }
     else
     {
