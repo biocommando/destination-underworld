@@ -93,14 +93,14 @@ static inline Enemy *create_turret(World *world)
 
 int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount)
 {
-  const int price_bonus = (world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
+  const int price_bonus = (*world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
   const int cost_heal = 1 + price_bonus;
   const int cost_protection = 2 + price_bonus;
   const int difficulty = GET_DIFFICULTY(world);
   const int cost_turret = (difficulty == DIFFICULTY_BRUTAL ? 4 : 3) + price_bonus;
   const int cost_blast = (difficulty == DIFFICULTY_BRUTAL ? 8 : 6) + price_bonus;
 
-  const int overpowered = (world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0;
+  const int overpowered = (*world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0;
 
   int *plr_rune_of_protection_active = &world->powerups.rune_of_protection_active;
 

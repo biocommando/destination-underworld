@@ -69,7 +69,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
           {
             world->powerups.rune_of_protection_active = -50;
             create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
-            if ((world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
+            if ((ggs->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
             {
               create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
             }
@@ -130,15 +130,15 @@ void bullet_logic(World *world, GlobalGameState *ggs)
               }
 
               get_tile_at(world, enm->x, enm->y)->is_blood_stained = 1;
-              if ((world->game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
+              if ((ggs->game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
                 world->plr.gold += enm->gold;
 
               world->kills++;
               world->boss_fight_config->state.player_kills++;
               world->plr.xp += enm->xp;
-              if (enm->gold > 0 || (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
+              if (enm->gold > 0 || (ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
               {
-                if (world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+                if (ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
                   sprintf(world->hint.text, "%d", world->kills);
                 else
                   sprintf(world->hint.text, "+ %d", enm->gold);
@@ -147,7 +147,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
                 world->hint.dim = 6;
                 world->hint.time_shows = 40;
               }
-              if ((world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
+              if ((ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
               {
                 if (world->plr.health < 3 && world->plr.health > 0)
                   world->plr.health++;

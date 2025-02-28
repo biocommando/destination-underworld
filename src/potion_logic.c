@@ -24,7 +24,7 @@ void potion_logic(World *w)
         {
           w->plr.health = w->plr_max_health;
         }
-        if ((w->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && (w->potion_effect_flags & p->effects) && w->potion_duration == POTION_DURATION_CAP)
+        if ((*w->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && (w->potion_effect_flags & p->effects) && w->potion_duration == POTION_DURATION_CAP)
         {
           create_cluster_explosion(w, w->plr.x, w->plr.y, 8, 2, &w->plr);
         }

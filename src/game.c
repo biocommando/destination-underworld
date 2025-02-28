@@ -154,15 +154,15 @@ static inline void display_plr_dir_helper(const World *world, int *plr_dir_helpe
   }
 }
 
-static void set_player_start_state(World *world)
+static void set_player_start_state(World *world, GlobalGameState *ggs)
 {
   int difficulty = GET_DIFFICULTY(world);
   int excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 0 : 5;
-  if (world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
+  if (ggs->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
   {
     excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 2 : 7;
   }
-  if (world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
+  if (ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
   {
     excess_gold_limit = 0;
   }
@@ -172,16 +172,16 @@ static void set_player_start_state(World *world)
   if (world->plr.gold > excess_gold_limit)
   {
     int excess_gold = world->plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
-    if (world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
+    if (ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
     {
       excess_gold = world->plr.gold;
     }
-    if (world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
+    if (ggs->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
       excess_gold /= 3;
     world->plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
     world->plr.health = world->plr.health > world->plr_max_health ? world->plr_max_health : world->plr.health;
 
-    if (world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS)
+    if (ggs->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS)
     {
       world->plr.health *= 3;
     }
@@ -196,14 +196,14 @@ static void set_player_start_state(World *world)
 
   world->powerups.cluster_strength = 16;
 
-  if ((world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
+  if ((ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
   {
     world->powerups.cluster_strength = 5;
     world->plr.gold = 20;
   }
   else if (difficulty == DIFFICULTY_BRUTAL)
     world->plr.gold = 0;
-  if (world->game_modifiers & GAMEMODIFIER_NO_GOLD)
+  if (ggs->game_modifiers & GAMEMODIFIER_NO_GOLD)
   {
     world->plr.gold = 0;
     world->plr.ammo = 0;
@@ -238,7 +238,7 @@ void game(GlobalGameState *ggs)
   World world;
   memset(&world, 0, sizeof(World));
   ggs->player = &world.plr;
-  world.game_modifiers = ggs->game_modifiers;
+  world.game_modifiers = &ggs->game_modifiers;
   world.mission = ggs->mission;
   world.boss_fight_config = world.boss_fight_configs;
   if (!get_game_settings()->custom_resources)
@@ -282,7 +282,7 @@ void game(GlobalGameState *ggs)
   else if (*record_mode == RECORD_MODE_PLAYBACK)
   {
     game_playback_init();
-    load_game_save_data(game_playback_get_filename(), &world.plr, &ggs->mission, &world.game_modifiers, 0);
+    load_game_save_data(game_playback_get_filename(), &world.plr, &ggs->mission, &ggs->game_modifiers, 0);
     playback_next_event_time_stamp = game_playback_get_time_stamp();
   }
   long time_stamp = 0;
@@ -298,7 +298,7 @@ void game(GlobalGameState *ggs)
     trigger_sample_with_params(SAMPLE_BOSSTALK_1, 255, 127, 1000);
   }
 
-  set_player_start_state(&world);
+  set_player_start_state(&world, ggs);
 
   int plr_dir_helper_intensity = 0;
 
@@ -413,7 +413,7 @@ void game(GlobalGameState *ggs)
         key_f = check_key(ALLEGRO_KEY_F);
       }
 
-      world.potion_turbo_mode = (world.game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && key_space && world.potion_duration > 0;
+      world.potion_turbo_mode = (ggs->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && key_space && world.potion_duration > 0;
 
       int player_did_change_dir = handle_direction_keys(&world, key_up, key_down, key_left, key_right);
       if (player_did_change_dir)
@@ -541,7 +541,7 @@ void game(GlobalGameState *ggs)
       int prev_xp = world.plr.xp;
       bullet_logic(&world, ggs);
       if (prev_xp < next_perk_xp && world.plr.xp >= next_perk_xp &&
-          (world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
+          (ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
       {
         fly_in_text_x = SCREEN_W;
         strcpy(fly_in_text, "Level up! New perks available!");
@@ -630,7 +630,7 @@ void game(GlobalGameState *ggs)
       }
     }
 
-    if ((world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
+    if ((ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
       al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
     else
       al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "Kills: %d", world.kills);
@@ -658,7 +658,7 @@ void game(GlobalGameState *ggs)
         ALLEGRO_TRANSFORM transform;
         al_identity_transform(&transform);
         al_use_transform(&transform);
-        if (world.game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+        if (ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
         {
           display_arena_fight_end_screen(&world, ggs, record_mode, no_player_damage);
         }
@@ -722,7 +722,7 @@ void game(GlobalGameState *ggs)
     FILE *f = fopen(DATADIR "recording--level-complete-state.dat", "w");
 
     fprintf(f, "Recording complete\n");
-    fprintf(f, "Mission %d, mode %d\n", world.mission, world.game_modifiers);
+    fprintf(f, "Mission %d, mode %d\n", world.mission, ggs->game_modifiers);
     fprintf(f, "Kills %d\n", world.kills);
     fprintf(f, "Time %ld\n", time_stamp);
     fprintf(f, "Enemy states\n");

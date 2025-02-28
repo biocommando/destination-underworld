@@ -171,7 +171,7 @@ void init_player(World *world, Enemy *plrautosave)
         plr->shots = 1;
         plr->health = 3;
         plr->rate = 7;
-        if ((world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
+        if ((*world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
         {
             plr->rate = 12;
         }

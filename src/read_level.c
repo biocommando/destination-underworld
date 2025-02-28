@@ -100,7 +100,7 @@ static inline void level_read_new_format(World *world, int room_to, FILE *f)
     int boss_exists = world->boss != NULL;
 
     var = du_script_variable(&state, "game_modifiers");
-    sprintf(var->value, "%d", world->game_modifiers);
+    sprintf(var->value, "%d", *world->game_modifiers);
     var->read_only = 1;
 
     while (!feof(f))
@@ -132,7 +132,7 @@ static inline void level_read_new_format(World *world, int room_to, FILE *f)
             if (room >= 1 && room <= ROOMCOUNT)
             {
                 LOG_TRACE("Reading bossfight for room %d\n", room);
-                read_bfconfig_new(f, &world->boss_fight_configs[room - 1], world->game_modifiers);
+                read_bfconfig_new(f, &world->boss_fight_configs[room - 1], *world->game_modifiers);
                 world->boss_fight = 1;
             }
         }
@@ -229,7 +229,7 @@ int read_level(World *world, int mission, int room_to)
     world->custom_story_image[0] = 0;
 
     char special_filename[256];
-    sprintf(special_filename, "%s-mode-%d", mission_name, world->game_modifiers);
+    sprintf(special_filename, "%s-mode-%d", mission_name, *world->game_modifiers);
     FILE *f = fopen(special_filename, "r");
     int auth_check_result;
     if (f == NULL)

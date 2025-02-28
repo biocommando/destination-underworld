@@ -454,7 +454,7 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     al_draw_text(get_menu_font(), GRAY(200), 5, y, 0, world->mission_display_name);
     y += y_margin;
     struct best_times best_times;
-    best_times.game_modifiers = world->game_modifiers;
+    best_times.game_modifiers = *world->game_modifiers;
     best_times.mission = mission;
     populate_best_times(get_game_settings()->mission_pack, &best_times);
     float time_secs = (float)completetime / 40;

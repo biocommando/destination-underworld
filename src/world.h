@@ -152,7 +152,7 @@ typedef struct
 #define GAMEMODIFIER_POTION_ON_DEATH 0x40
 #define GAMEMODIFIER_NO_GOLD 0x80
 
-#define GET_DIFFICULTY(world) (((world)->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : DIFFICULTY_NORMAL)
+#define GET_DIFFICULTY(world) ((*(world)->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : DIFFICULTY_NORMAL)
 
 // Map tile defining all the information for a single tile on a map
 typedef struct
@@ -404,8 +404,8 @@ typedef struct
     int boss_fight;
     // Set to 1 if the boss call sound is wanted 
     int play_boss_sound;
-    // Game modifier flags (see GAMEMODIFIER_* definitions)
-    int game_modifiers;
+    // Game modifier flags (see GAMEMODIFIER_* definitions). Points to GlobalGameState.
+    int *game_modifiers;
     // Points to current room's config
     BossFightConfig *boss_fight_config;
     // Script configs for each room

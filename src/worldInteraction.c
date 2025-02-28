@@ -149,7 +149,7 @@ Bullet *get_next_available_bullet(World *world)
 
 int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, int hurts_monsters, World *world)
 {
-    int num_shots = (world->game_modifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? 2 : 1;
+    int num_shots = (*world->game_modifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? 2 : 1;
     if (enm == &world->plr && check_potion_effect(world, POTION_EFFECT_BOOSTED_SHOTS))
     {
         num_shots *= 2;
@@ -327,11 +327,11 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         new_enemy->fast = world->enemy_configs[type].fast;
         new_enemy->gold = world->enemy_configs[type].gold;
         new_enemy->hurts_monsters = world->enemy_configs[type].hurts_monsters;
-        if (world->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH)
+        if (*world->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH)
         {
             new_enemy->potion = world->enemy_configs[type].potion_for_potion_only;
             // Healing potions are "banned" because otherwise the fights will keep on going forever
-            if ((world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) && new_enemy->potion == POTION_ID_HEAL)
+            if ((*world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) && new_enemy->potion == POTION_ID_HEAL)
             {
                 new_enemy->potion = POTION_ID_INSTANT_HEAL;
             }
@@ -347,7 +347,7 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
         // rate and health are set in boss config
     }
 
-    int difficulty = (world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
+    int difficulty = (*world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
 
     if (difficulty == DIFFICULTY_BRUTAL)
         new_enemy->health++;
@@ -492,7 +492,7 @@ void change_room_if_at_exit_point(World *world)
 int parse_highscore_from_world_state(const World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
 {
     int arena_idx, mode_idx;
-    int mode = world->game_modifiers & (~GAMEMODIFIER_ARENA_FIGHT);
+    int mode = *world->game_modifiers & (~GAMEMODIFIER_ARENA_FIGHT);
     for (arena_idx = 0; arena_idx < get_game_settings()->arena_config.number_of_arenas; arena_idx++)
     {
         if (get_game_settings()->arena_config.arenas[arena_idx].level_number == world->mission)
