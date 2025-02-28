@@ -233,16 +233,13 @@ void game(GlobalGameState *ggs)
 
   long completetime = 0;
 
-  int *mission = &ggs->mission;
-  int *game_modifiers = &ggs->game_modifiers;
-  Enemy *plrautosave = &ggs->plrautosave;
   int no_player_damage = ggs->cheats & 1;
 
   World world;
   memset(&world, 0, sizeof(World));
   ggs->player = &world.plr;
-  world.game_modifiers = *game_modifiers;
-  world.mission = *mission;
+  world.game_modifiers = ggs->game_modifiers;
+  world.mission = ggs->mission;
   world.boss_fight_config = world.boss_fight_configs;
   if (!get_game_settings()->custom_resources)
   {
@@ -264,7 +261,7 @@ void game(GlobalGameState *ggs)
 
   init_world(&world);
   read_enemy_configs(&world);
-  init_player(&world, plrautosave);
+  init_player(&world, &ggs->plrautosave);
 
   long playback_next_event_time_stamp = 0;
   long key_press_mask = 0;
@@ -275,22 +272,22 @@ void game(GlobalGameState *ggs)
   if (*record_mode == RECORD_MODE_RECORD)
   {
     char record_input_filename[256];
-    sprintf(record_input_filename, "recorded-mission%d-take%d.dat", *mission, ++fname_counter);
+    sprintf(record_input_filename, "recorded-mission%d-take%d.dat", ggs->mission, ++fname_counter);
     remove(record_input_filename);
 
     game_playback_set_filename(record_input_filename);
     game_playback_init();
-    save_game_save_data(record_input_filename, &world.plr, *mission, *game_modifiers, 0);
+    save_game_save_data(record_input_filename, &world.plr, ggs->mission, ggs->game_modifiers, 0);
   }
   else if (*record_mode == RECORD_MODE_PLAYBACK)
   {
     game_playback_init();
-    load_game_save_data(game_playback_get_filename(), &world.plr, mission, &world.game_modifiers, 0);
+    load_game_save_data(game_playback_get_filename(), &world.plr, &ggs->mission, &world.game_modifiers, 0);
     playback_next_event_time_stamp = game_playback_get_time_stamp();
   }
   long time_stamp = 0;
 
-  read_level(&world, *mission, 1);
+  read_level(&world, ggs->mission, 1);
 
   int fly_in_text_x = SCREEN_W;
   char fly_in_text[64];
@@ -380,7 +377,7 @@ void game(GlobalGameState *ggs)
           world.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-          display_level_info(&world, *mission, get_game_settings()->mission_count, completetime);
+          display_level_info(&world, ggs->mission, get_game_settings()->mission_count, completetime);
 
           if (!ggs->no_player_interaction)
             wait_key_press(ALLEGRO_KEY_ENTER);
@@ -492,19 +489,19 @@ void game(GlobalGameState *ggs)
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, *mission, get_game_settings()->mission_count, completetime);
+      display_level_info(&world, ggs->mission, get_game_settings()->mission_count, completetime);
 
       if (*record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);
 
       if (world.final_level)
       {
-        *mission = -1;
+        ggs->mission = -1;
         break;
       }
 
-      (*mission)++;
-      *plrautosave = world.plr;
+      ggs->mission++;
+      ggs->plrautosave = world.plr;
       break;
     }
 
