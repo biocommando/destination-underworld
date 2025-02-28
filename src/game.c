@@ -263,6 +263,35 @@ long init_playback(World *world, GlobalGameState *ggs, int record_mode)
   return 0;
 }
 
+struct fly_in_text
+{
+  int x;
+  char text[64];
+};
+
+static void set_fly_in_text(struct fly_in_text *fit, const char *text)
+{
+  fit->x = SCREEN_W;
+  strcpy(fit->text, text);
+}
+
+static inline void draw_fly_in_text(struct fly_in_text *fly_in_text)
+{
+  int *x = &fly_in_text->x;
+  if (*x > -400)
+  {
+    al_draw_textf(get_font(), WHITE, *x, 170, -1, fly_in_text->text);
+    if (*x > SCREEN_W / 8 * 3 && *x < SCREEN_W / 8 * 5)
+    {
+      *x -= 4;
+    }
+    else
+    {
+      *x -= 10;
+    }
+  }
+}
+
 void game(GlobalGameState *ggs)
 {
   pr_reset_random();
@@ -298,9 +327,8 @@ void game(GlobalGameState *ggs)
 
   read_level(&world, ggs->mission, 1);
 
-  int fly_in_text_x = SCREEN_W;
-  char fly_in_text[64];
-  strcpy(fly_in_text, world.mission_display_name);
+  struct fly_in_text fly_in_text;
+  set_fly_in_text(&fly_in_text, world.mission_display_name);
 
   if (world.boss_fight && world.play_boss_sound)
   {
@@ -552,8 +580,7 @@ void game(GlobalGameState *ggs)
       if (prev_xp < next_perk_xp && world.plr.xp >= next_perk_xp &&
           (ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
       {
-        fly_in_text_x = SCREEN_W;
-        strcpy(fly_in_text, "Level up! New perks available!");
+        set_fly_in_text(&fly_in_text, "Level up! New perks available!");
       }
       potion_logic(&world);
     }
@@ -626,18 +653,7 @@ void game(GlobalGameState *ggs)
 
     progress_and_draw_sparkles(&world);
 
-    if (fly_in_text_x > -400)
-    {
-      al_draw_textf(get_font(), WHITE, fly_in_text_x, 170, -1, fly_in_text);
-      if (fly_in_text_x > SCREEN_W / 8 * 3 && fly_in_text_x < SCREEN_W / 8 * 5)
-      {
-        fly_in_text_x -= 4;
-      }
-      else
-      {
-        fly_in_text_x -= 10;
-      }
-    }
+    draw_fly_in_text(&fly_in_text);
 
     if ((ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
       al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
