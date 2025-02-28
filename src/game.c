@@ -79,7 +79,7 @@ static void display_arena_fight_end_screen(const World *world, GlobalGameState *
   memset(&highscore, 0, sizeof(highscore));
   access_arena_highscore(&highscore, 1);
   int arena_idx, mode_idx;
-  int highscore_kills = parse_highscore_from_world_state(world, &highscore, &arena_idx, &mode_idx);
+  int highscore_kills = parse_highscore_from_world_state(world, ggs->mission, &highscore, &arena_idx, &mode_idx);
   int offx = (DISPLAY_W - 340) / 2, offy = (DISPLAY_H - 125) / 2;
   for (int grayscale = 0; grayscale < 5; grayscale++)
   {
@@ -239,7 +239,6 @@ void game(GlobalGameState *ggs)
   memset(&world, 0, sizeof(World));
   ggs->player = &world.plr;
   world.game_modifiers = &ggs->game_modifiers;
-  world.mission = ggs->mission;
   world.boss_fight_config = world.boss_fight_configs;
   if (!get_game_settings()->custom_resources)
   {
@@ -722,7 +721,7 @@ void game(GlobalGameState *ggs)
     FILE *f = fopen(DATADIR "recording--level-complete-state.dat", "w");
 
     fprintf(f, "Recording complete\n");
-    fprintf(f, "Mission %d, mode %d\n", world.mission, ggs->game_modifiers);
+    fprintf(f, "Mission %d, mode %d\n", ggs->mission, ggs->game_modifiers);
     fprintf(f, "Kills %d\n", world.kills);
     fprintf(f, "Time %ld\n", time_stamp);
     fprintf(f, "Enemy states\n");

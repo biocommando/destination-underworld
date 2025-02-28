@@ -489,13 +489,13 @@ void change_room_if_at_exit_point(World *world)
     }
 }
 
-int parse_highscore_from_world_state(const World *world, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
+int parse_highscore_from_world_state(const World *world, int mission, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
 {
     int arena_idx, mode_idx;
     int mode = *world->game_modifiers & (~GAMEMODIFIER_ARENA_FIGHT);
     for (arena_idx = 0; arena_idx < get_game_settings()->arena_config.number_of_arenas; arena_idx++)
     {
-        if (get_game_settings()->arena_config.arenas[arena_idx].level_number == world->mission)
+        if (get_game_settings()->arena_config.arenas[arena_idx].level_number == mission)
             break;
     }
     int highscore_kills = 0;
