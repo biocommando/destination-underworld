@@ -225,10 +225,46 @@ static void set_player_start_state(World *world, GlobalGameState *ggs)
   }
 }
 
-void game(GlobalGameState *ggs)
+static void init_spritesheet(World *world)
+{
+  if (!get_game_settings()->custom_resources)
+  {
+    world->spr = al_load_bitmap(DATADIR "sprites.png");
+  }
+  else
+  {
+    char path[256];
+    sprintf(path, DATADIR "\\%s\\sprites.png", get_game_settings()->mission_pack);
+    world->spr = al_load_bitmap(path);
+  }
+  al_convert_mask_to_alpha(world->spr, al_map_rgb(255, 0, 255));
+}
+
+long init_playback(World *world, GlobalGameState *ggs, int record_mode)
 {
   // For playback recording filenames
   static int fname_counter = 0;
+  if (record_mode == RECORD_MODE_RECORD)
+  {
+    char record_input_filename[256];
+    sprintf(record_input_filename, "recorded-mission%d-take%d.dat", ggs->mission, ++fname_counter);
+    remove(record_input_filename);
+
+    game_playback_set_filename(record_input_filename);
+    game_playback_init();
+    save_game_save_data(record_input_filename, &world->plr, ggs->mission, ggs->game_modifiers, 0);
+  }
+  else if (record_mode == RECORD_MODE_PLAYBACK)
+  {
+    game_playback_init();
+    load_game_save_data(game_playback_get_filename(), &world->plr, &ggs->mission, &ggs->game_modifiers, 0);
+    return game_playback_get_time_stamp();
+  }
+  return 0;
+}
+
+void game(GlobalGameState *ggs)
+{
   pr_reset_random();
 
   long completetime = 0;
@@ -240,17 +276,7 @@ void game(GlobalGameState *ggs)
   ggs->player = &world.plr;
   world.game_modifiers = &ggs->game_modifiers;
   world.boss_fight_config = world.boss_fight_configs;
-  if (!get_game_settings()->custom_resources)
-  {
-    world.spr = al_load_bitmap(DATADIR "sprites.png");
-  }
-  else
-  {
-    char path[256];
-    sprintf(path, DATADIR "\\%s\\sprites.png", get_game_settings()->mission_pack);
-    world.spr = al_load_bitmap(path);
-  }
-  al_convert_mask_to_alpha(world.spr, al_map_rgb(255, 0, 255));
+  init_spritesheet(&world);
 
   int vibrations = 0;
 
@@ -262,28 +288,12 @@ void game(GlobalGameState *ggs)
   read_enemy_configs(&world);
   init_player(&world, &ggs->plrautosave);
 
-  long playback_next_event_time_stamp = 0;
   long key_press_mask = 0;
 
   world.hint.time_shows = 0;
 
   int *record_mode = get_playback_mode();
-  if (*record_mode == RECORD_MODE_RECORD)
-  {
-    char record_input_filename[256];
-    sprintf(record_input_filename, "recorded-mission%d-take%d.dat", ggs->mission, ++fname_counter);
-    remove(record_input_filename);
-
-    game_playback_set_filename(record_input_filename);
-    game_playback_init();
-    save_game_save_data(record_input_filename, &world.plr, ggs->mission, ggs->game_modifiers, 0);
-  }
-  else if (*record_mode == RECORD_MODE_PLAYBACK)
-  {
-    game_playback_init();
-    load_game_save_data(game_playback_get_filename(), &world.plr, &ggs->mission, &ggs->game_modifiers, 0);
-    playback_next_event_time_stamp = game_playback_get_time_stamp();
-  }
+  long playback_next_event_time_stamp = init_playback(&world, ggs, *record_mode);
   long time_stamp = 0;
 
   read_level(&world, ggs->mission, 1);
