@@ -56,7 +56,7 @@ in the Perks menu that can be opened using the ESC key.
 Press space to continue or esc to return to menu
 
 # Draw player reference
-#sprite 6 540 230 0 -1
+#sprite 17 540 230 0 -1
 #sprite 7 565 230 
 #sprite 7 565 233 
 #sprite 7 565 236 
@@ -234,7 +234,7 @@ Press space to continue or esc to return to menu
 Enemy Profiles
 #color 3
 Common Goblin (lat. Communis Lemures)
-#sprite 6 10 35
+#sprite 17 10 35
 #margin 40
 #color 4
 Health: 2, Fire rate: 1.6 / sec, Moves slow
@@ -245,7 +245,7 @@ in folklore. Relatively easy to kill. Dangerous in large groups, though.
 #margin 5
 #color 3
 Ancient Protector
-#sprite 6 10 115 0 1
+#sprite 17 10 115 0 1
 #margin 40
 #color 4
 Health: 3, Fire rate: 2.0 / sec, Moves slow
@@ -259,7 +259,7 @@ depending on your viewpoint.
 #margin 5
 #color 3
 Imp
-#sprite 6 10 243 0 2
+#sprite 17 10 243 0 2
 #margin 40
 #color 4
 Health: 5, Fire rate: 5.3 / sec, Moves fast, Possesses a soul
@@ -273,7 +273,7 @@ lethal and their fast movement speed makes their charges annoying to evade.
 #margin 5
 #color 3
 Extraterrestial Alien
-#sprite 6 10 371 0 3
+#sprite 17 10 371 0 3
 #margin 40
 #color 4
 Health: 6, Fire rate: 8.0 / sec, Moves fast, Possesses a soul
@@ -298,7 +298,7 @@ Enemy Profiles (cont.)
 #color 3
 Alien Defensive Turret UF-0 mk II
 #rect 7 33 27 33 66 66 66
-#sprite 6 10 35 0 4
+#sprite 17 10 35 0 4
 #margin 40
 #color 4
 Health: 8, Fire rate: 8.0 / sec, Stationary, Possesses a soul
@@ -315,7 +315,7 @@ be used as a tactical advantage.
 #margin 5
 #color 3
 Arch Evil
-#sprite 6 10 211 0 5
+#sprite 17 10 211 0 5
 #margin 40
 #color 4
 Health: ?, Fire rate: ??? / sec
