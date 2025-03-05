@@ -99,8 +99,14 @@ int main(int argc, char **argv)
     }
   }
 
+  int al_init_res = init_allegro();
+  if (al_init_res == 1)
+  {
+    LOG_FATAL("Initializing Allegro failed\n");
+    return 1;
+  }
+
   wt_sample_read_all(DATADIR);
-  init_allegro();
   progress_load_state("Loading game...", 1);
   srand((int)time(NULL));
   int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc);

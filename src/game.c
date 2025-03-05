@@ -692,6 +692,7 @@ void game(GlobalGameState *ggs)
     }
 
     game_loop_rest(&game_loop_clk);
+    consume_event_queue();
 
     if (ggs->setup_screenshot_buffer)
     {

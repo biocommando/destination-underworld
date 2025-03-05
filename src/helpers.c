@@ -4,8 +4,11 @@
 
 void game_loop_rest(clock_t *state)
 {
-    while (clock() - *state < 25)
+    while (clock() - *state < 25) // because of timer resolution the actual game tick rate is 30 ms
+    {
         wait_delay(1);
+        consume_event_queue();
+    }
     *state = clock();
 }
 

@@ -15,9 +15,9 @@ static ALLEGRO_FONT *game_font = NULL;
 static ALLEGRO_FONT *game_font_tiny = NULL;
 static ALLEGRO_DISPLAY *display = NULL;
 static ALLEGRO_TIMER *timer = NULL;
-static ALLEGRO_EVENT_QUEUE *queue = NULL;
+static ALLEGRO_EVENT_QUEUE *io_queue = NULL;
+static ALLEGRO_EVENT_QUEUE *timer_queue = NULL;
 static ALLEGRO_AUDIO_STREAM *audio_stream = NULL;
-static ALLEGRO_EVENT event;
 
 // The buffer size chosen to be as big as possible not to be
 // very much audible when turning music off / switching tracks.
@@ -46,57 +46,61 @@ int check_keys(const int *keys, int num_keys)
 // Counter for adding a second of silence (or delay tail) after every midi file
 static int midi_track_spacing_counter = 0;
 
-int wait_event()
+void wait_timer_event()
 {
+    ALLEGRO_EVENT event;
     ALLEGRO_TIMEOUT tmo;
     al_init_timeout(&tmo, 0.1);
-    int res = al_wait_for_event_until(queue, &event, &tmo);
-    if (!res)
-        return 0;
-    if (event.type == ALLEGRO_EVENT_KEY_DOWN)
+    al_wait_for_event_until(timer_queue, &event, &tmo);
+}
+
+void consume_event_queue()
+{
+    ALLEGRO_EVENT event;
+
+    while (al_get_next_event(io_queue, &event))
     {
-        keybuffer[event.keyboard.keycode] = 1;
-    }
-    else if (event.type == ALLEGRO_EVENT_KEY_UP)
-    {
-        keybuffer[event.keyboard.keycode] = 0;
-    }
-    else if (event.type == ALLEGRO_EVENT_TIMER)
-    {
-        return 1;
-    }
-    else if (event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
-    {
-        if (!get_game_settings()->music_on)
-            return 2;
-        ALLEGRO_AUDIO_STREAM *stream = (ALLEGRO_AUDIO_STREAM *)event.any.source;
-        float *buf = (float *)al_get_audio_stream_fragment(stream);
-        if (buf)
+        if (event.type == ALLEGRO_EVENT_KEY_DOWN)
         {
-            MidiPlayer *mp = get_midi_player();
-            mp->synth.total_volume = get_game_settings()->music_vol;
-            midi_player_process_buffer(mp, buf, AUDIO_BUFFER_SIZE);
-            al_set_audio_stream_fragment(stream, buf);
-            if (mp->ended)
+            keybuffer[event.keyboard.keycode] = 1;
+        }
+        else if (event.type == ALLEGRO_EVENT_KEY_UP)
+        {
+            keybuffer[event.keyboard.keycode] = 0;
+        }
+        else if (event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
+        {
+            if (!get_game_settings()->music_on)
+                continue;
+            ALLEGRO_AUDIO_STREAM *stream = (ALLEGRO_AUDIO_STREAM *)event.any.source;
+            float *buf = (float *)al_get_audio_stream_fragment(stream);
+            if (buf)
             {
-                midi_track_spacing_counter += AUDIO_BUFFER_SIZE;
-                if (midi_track_spacing_counter >= mp->sample_rate)
+                MidiPlayer *mp = get_midi_player();
+                mp->synth.total_volume = get_game_settings()->music_vol;
+                midi_player_process_buffer(mp, buf, AUDIO_BUFFER_SIZE);
+                al_set_audio_stream_fragment(stream, buf);
+                if (mp->ended)
                 {
-                    midi_track_spacing_counter = 0;
-                    next_midi_track(-1);
+                    midi_track_spacing_counter += AUDIO_BUFFER_SIZE;
+                    if (midi_track_spacing_counter >= mp->sample_rate)
+                    {
+                        midi_track_spacing_counter = 0;
+                        next_midi_track(-1);
+                    }
                 }
             }
         }
     }
-    return 2;
 }
 
 void wait_delay(int v)
 {
     while (v > 0)
     {
-        if (wait_event() == 1)
-            v--;
+        wait_timer_event();
+        consume_event_queue();
+        v--;
     }
 }
 
@@ -115,6 +119,7 @@ int wait_key_presses(const int *keys, int num_keys)
     int key = -1;
     while (key == -1)
     {
+        consume_event_queue();
         for (int i = 0; i < num_keys; i++)
         {
             if (check_key(keys[i]))
@@ -124,7 +129,7 @@ int wait_key_presses(const int *keys, int num_keys)
         }
         if (key == -1)
         {
-            wait_event();
+            wait_timer_event();
         }
     }
     wait_key_release(key);
@@ -135,7 +140,8 @@ void wait_key_release(int key)
 {
     while (keybuffer[key])
     {
-        wait_event();
+        consume_event_queue();
+        wait_timer_event();
     }
 }
 
@@ -178,19 +184,26 @@ int init_allegro()
     init_midi_playback(44100);
 
     timer = al_create_timer(1.0 / 100);
-    queue = al_create_event_queue();
-    al_register_event_source(queue, al_get_keyboard_event_source());
+    io_queue = al_create_event_queue();
+    timer_queue = al_create_event_queue();
+    al_register_event_source(io_queue, al_get_keyboard_event_source());
     // al_register_event_source(queue, al_get_mouse_event_source());
-    al_register_event_source(queue, al_get_display_event_source(display));
-    al_register_event_source(queue, al_get_timer_event_source(timer));
-    al_register_event_source(queue, al_get_audio_stream_event_source(audio_stream));
+    // al_register_event_source(queue, al_get_display_event_source(display));
+    al_register_event_source(timer_queue, al_get_timer_event_source(timer));
+    al_register_event_source(io_queue, al_get_audio_stream_event_source(audio_stream));
     al_start_timer(timer);
+    if (al_get_display_refresh_rate(display) < 50)
+    {
+        printf("NOTE! Display rate %d Hz discovered. Game is optimized for 50 Hz or above.\n"
+            "Game will run but with a slower speed\n", al_get_display_refresh_rate(display));
+    }
     return 0;
 }
 
 void destroy_allegro()
 {
-    al_destroy_event_queue(queue);
+    al_destroy_event_queue(io_queue);
+    al_destroy_event_queue(timer_queue);
     al_destroy_timer(timer);
     al_destroy_audio_stream(audio_stream);
     al_uninstall_audio();

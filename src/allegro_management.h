@@ -7,14 +7,16 @@
 #include "allegro5/allegro_audio.h"
 
 /*
- * Wait for event from allegro event queue and handle the event.
+ * Handle all pending events (other than timer events) from allegro event queue.
  * Internally handles key up / down events (so that the key states
  * can be just checked using the check_key function) and music playback.
- *
- * Returns 0 if waiting fails, 1 if event type is ALLEGRO_EVENT_TIMER and 2
- * otherwise.
  */
-int wait_event();
+void consume_event_queue();
+
+/*
+ * Wait for a timer event from allegro event queue.
+ */
+void wait_timer_event();
 
 /*
  * Initializes allegro library. Also initializes the midi playback engine.
