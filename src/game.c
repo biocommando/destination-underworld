@@ -292,11 +292,195 @@ static inline void draw_fly_in_text(struct fly_in_text *fly_in_text)
   }
 }
 
+static inline int calc_vibrations(int vibrations)
+{
+  if (vibrations > MAX_VIBRATIONS)
+    vibrations = MAX_VIBRATIONS;
+  if (get_game_settings()->vibration_mode != 1)
+  {
+    if (get_game_settings()->vibration_mode == 0)
+    {
+      vibrations = 0;
+    }
+    else
+    {
+      vibrations /= get_game_settings()->vibration_mode;
+    }
+  }
+  return vibrations;
+}
+
+static inline void move_and_reload_plr(World *world)
+{
+  int plr_speed = get_plr_speed(world);
+  enemy_reload(&world->plr, plr_speed);
+  for (; plr_speed > 0; plr_speed--)
+  {
+    move_enemy(&world->plr, world);
+  }
+}
+
+static inline void check_perks_changed(World *world, int old_perks, int *next_perk_xp)
+{
+  if (world->plr.perks != old_perks)
+  {
+    *next_perk_xp = calculate_next_perk_xp(world->plr.perks);
+    if ((world->plr.perks & PERK_START_WITH_SHIELD_POWERUP) && !(old_perks & PERK_START_WITH_SHIELD_POWERUP) && world->powerups.rune_of_protection_active <= 0)
+    {
+      world->powerups.rune_of_protection_active = 1;
+    }
+    if ((world->plr.perks & PERK_START_WITH_SPEED_POTION) && !(old_perks & PERK_START_WITH_SPEED_POTION))
+    {
+      spawn_potion(world->plr.x, world->plr.y, POTION_ID_FAST, world->plr.roomid, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
+    }
+  }
+}
+
+static inline void draw_hint(World *world)
+{
+  if (world->hint.time_shows > 0)
+  {
+    world->hint.time_shows--;
+    int hint_col = world->hint.time_shows * world->hint.dim;
+    al_draw_textf(get_font(), GRAY(hint_col), world->hint.loc.x, world->hint.loc.y, -1, world->hint.text);
+  }
+}
+
+static inline void apply_timed_potion_effects(World *world)
+{
+
+  int potion_effect_divider = world->potion_turbo_mode ? 2 : 1;
+
+  if (world->plr.health > 0 && check_potion_effect(world, POTION_EFFECT_HEALING))
+  {
+    if (world->potion_healing_counter <= 0)
+    {
+      if (world->plr.health < world->plr_max_health)
+        world->plr.health++;
+      world->potion_healing_counter = 25;
+    }
+    else
+    {
+      world->potion_healing_counter -= potion_effect_divider;
+    }
+  }
+
+  if (world->plr.health > 0 && check_potion_effect(world, POTION_EFFECT_SHIELD_OF_FIRE))
+  {
+    if (world->potion_shield_counter <= 0)
+    {
+      create_cluster_explosion(world, world->plr.x, world->plr.y, 4, 1, &world->plr);
+      world->potion_shield_counter = 15;
+    }
+    else
+    {
+      world->potion_shield_counter -= potion_effect_divider;
+    }
+  }
+}
+
+static void write_recording_complete_state_file(World *world, GlobalGameState *ggs, long time_stamp)
+{
+  FILE *f = fopen(DATADIR "recording--level-complete-state.dat", "w");
+
+  fprintf(f, "Recording complete\n");
+  fprintf(f, "Mission %d, mode %d\n", ggs->mission, ggs->game_modifiers);
+  fprintf(f, "Kills %d\n", world->kills);
+  fprintf(f, "Time %ld\n", time_stamp);
+  fprintf(f, "Enemy states\n");
+  for (int i = -1; i < ENEMYCOUNT; i++)
+  {
+    Enemy *e = &world->plr;
+    if (i >= 0)
+      e = &world->enm[i];
+    if (e->alive || e->killed)
+      fprintf(f, "enemy #%d: alive %d killed %d position %d,%d health %d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
+              i, e->alive, e->killed, e->x, e->y, e->health, e->ammo, e->roomid, e->rate, e->shots, e->turret, e->gold);
+  }
+  fprintf(f, "Potion states\n");
+  for (int i = 0; i < POTION_COUNT; i++)
+  {
+    Potion *p = &world->potions[i];
+    if (p->exists)
+      fprintf(f, "potion #%d: position %d,%d roomid %d effects 0x%x duration_boost %d\n",
+              i, (int)p->location.x, (int)p->location.y, p->room_id, p->effects, p->duration_boost);
+  }
+
+  fclose(f);
+}
+
+static void finalize_recording(long time_stamp)
+{
+  // This needs to be added so that the game does not end abruptly
+  // if there are no key events near the recording end
+  game_playback_add_key_event(time_stamp, 0);
+  game_playback_next();
+  game_playback_add_end_event();
+  record_file_flush();
+  if (get_game_settings()->require_authentication)
+  {
+    char hash[DMAC_SHA1_HASH_SIZE];
+    dmac_sha1_calculate_hash_f(hash, game_playback_get_filename());
+    char fname[256 + 10];
+    sprintf(fname, "%s.auth", game_playback_get_filename());
+    FILE *hash_file = fopen(fname, "wb");
+    fwrite(hash, 1, DMAC_SHA1_HASH_SIZE, hash_file);
+    fclose(hash_file);
+  }
+}
+
+static inline void draw_boss_health_bar(const World *world)
+{
+  if (world->boss && world->boss->roomid == world->current_room)
+  {
+    for (int i = 0; i < 6; i++)
+    {
+      if (world->boss->health >= (world->boss_fight_config->health * (i + 1) / 6))
+        draw_sprite(world->spr, SPRITE_ID_HEALTH, world->boss->x - 23, world->boss->y - 18 + 4 * i);
+    }
+  }
+}
+
+static inline void draw_rune_of_protection_indicator(World *world)
+{
+  static int phase = 0;
+  phase++;
+  if (world->powerups.rune_of_protection_active)
+  {
+    if (world->powerups.rune_of_protection_active < 0)
+    {
+      world->powerups.rune_of_protection_active++;
+      draw_sprite_centered(world->spr, SPRITE_ID_RUNE_OF_PROTECTION,
+                           world->plr.x + world->powerups.rune_of_protection_active * sin(phase * 0.15),
+                           world->plr.y + world->powerups.rune_of_protection_active * cos(phase * 0.15));
+    }
+    else
+    {
+      for (int i = 0; i < world->powerups.rune_of_protection_active; i++)
+      {
+        draw_sprite_centered(world->spr, SPRITE_ID_RUNE_OF_PROTECTION,
+                             world->plr.x - TILESIZE * sin(phase * 0.15 + i),
+                             world->plr.y - TILESIZE * cos(phase * 0.15 + i));
+      }
+    }
+  }
+}
+
+static inline void shake_screen(int vibrations)
+{
+  int offset_x = 2 * vibrations - rand() % (1 + 2 * vibrations);
+  int offset_y = 2 * vibrations - rand() % (1 + 2 * vibrations);
+  ALLEGRO_TRANSFORM transform;
+  al_identity_transform(&transform);
+
+  al_translate_transform(&transform, offset_x, offset_y);
+  al_scale_transform(&transform, 3, 3);
+  al_use_transform(&transform);
+}
+
 void game(GlobalGameState *ggs)
 {
   pr_reset_random();
-
-  long completetime = 0;
 
   int no_player_damage = ggs->cheats & 1;
 
@@ -308,8 +492,6 @@ void game(GlobalGameState *ggs)
   init_spritesheet(&world);
 
   int vibrations = 0;
-
-  int boss_fight_frame_count = 0;
 
   world.current_room = 1;
 
@@ -339,8 +521,6 @@ void game(GlobalGameState *ggs)
 
   int plr_dir_helper_intensity = 0;
 
-  int restart_requested = 0;
-
   create_sparkles(world.plr.x, world.plr.y, 30, -1, 10, &world);
 
   clock_t game_loop_clk = clock();
@@ -350,7 +530,7 @@ void game(GlobalGameState *ggs)
   int old_perks = world.plr.perks;
   if (ggs->setup_screenshot_buffer)
     screenshot(-1);
-  while (restart_requested < 2)
+  while (1)
   {
     if (world.plr.health <= 0)
     {
@@ -384,18 +564,7 @@ void game(GlobalGameState *ggs)
     if (world.plr.health > 0)
     {
       draw_enemy(&world.plr, &world);
-      if (world.plr.perks != old_perks)
-      {
-        next_perk_xp = calculate_next_perk_xp(world.plr.perks);
-        if ((world.plr.perks & PERK_START_WITH_SHIELD_POWERUP) && !(old_perks & PERK_START_WITH_SHIELD_POWERUP) && world.powerups.rune_of_protection_active <= 0)
-        {
-          world.powerups.rune_of_protection_active = 1;
-        }
-        if ((world.plr.perks & PERK_START_WITH_SPEED_POTION) && !(old_perks & PERK_START_WITH_SPEED_POTION))
-        {
-          spawn_potion(world.plr.x, world.plr.y, POTION_ID_FAST, world.plr.roomid, &world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
-        }
-      }
+      check_perks_changed(&world, old_perks, &next_perk_xp);
 
       if (*record_mode == RECORD_MODE_PLAYBACK)
       {
@@ -414,7 +583,7 @@ void game(GlobalGameState *ggs)
           world.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-          display_level_info(&world, ggs->mission, get_game_settings()->mission_count, completetime);
+          display_level_info(&world, ggs->mission, get_game_settings()->mission_count, time_stamp - 1);
 
           if (!ggs->no_player_interaction)
             wait_key_press(ALLEGRO_KEY_ENTER);
@@ -481,10 +650,9 @@ void game(GlobalGameState *ggs)
 
       if (check_key(ALLEGRO_KEY_R) && *record_mode != RECORD_MODE_PLAYBACK)
       {
-        restart_requested = 1;
+        wait_key_release(ALLEGRO_KEY_R);
+        break;
       }
-      else if (restart_requested)
-        restart_requested = 2;
 
       if (*record_mode == RECORD_MODE_RECORD)
       {
@@ -510,14 +678,7 @@ void game(GlobalGameState *ggs)
       world.plr.move = 0;
     }
     old_perks = world.plr.perks;
-    {
-      int plr_speed = get_plr_speed(&world);
-      enemy_reload(&world.plr, plr_speed);
-      for (; plr_speed > 0; plr_speed--)
-      {
-        move_enemy(&world.plr, &world);
-      }
-    }
+    move_and_reload_plr(&world);
 
     change_room_if_at_exit_point(&world);
 
@@ -526,7 +687,7 @@ void game(GlobalGameState *ggs)
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, ggs->mission, get_game_settings()->mission_count, completetime);
+      display_level_info(&world, ggs->mission, get_game_settings()->mission_count, time_stamp - 1);
 
       if (*record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);
@@ -542,34 +703,7 @@ void game(GlobalGameState *ggs)
       break;
     }
 
-    int potion_effect_divider = world.potion_turbo_mode ? 2 : 1;
-
-    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_HEALING))
-    {
-      if (world.potion_healing_counter <= 0)
-      {
-        if (world.plr.health < world.plr_max_health)
-          world.plr.health++;
-        world.potion_healing_counter = 25;
-      }
-      else
-      {
-        world.potion_healing_counter -= potion_effect_divider;
-      }
-    }
-
-    if (world.plr.health > 0 && check_potion_effect(&world, POTION_EFFECT_SHIELD_OF_FIRE))
-    {
-      if (world.potion_shield_counter <= 0)
-      {
-        create_cluster_explosion(&world, world.plr.x, world.plr.y, 4, 1, &world.plr);
-        world.potion_shield_counter = 15;
-      }
-      else
-      {
-        world.potion_shield_counter -= potion_effect_divider;
-      }
-    }
+    apply_timed_potion_effects(&world);
 
     enemy_logic(&world);
 
@@ -587,69 +721,21 @@ void game(GlobalGameState *ggs)
 
     draw_map(&world, 1, 0);
 
-    vibrations = progress_and_draw_explosions(&world);
-    if (vibrations > MAX_VIBRATIONS)
-      vibrations = MAX_VIBRATIONS;
-    if (get_game_settings()->vibration_mode != 1)
-    {
-      if (get_game_settings()->vibration_mode == 0)
-      {
-        vibrations = 0;
-      }
-      else
-      {
-        vibrations /= get_game_settings()->vibration_mode;
-      }
-    }
+    vibrations = calc_vibrations(progress_and_draw_explosions(&world));
 
     draw_player_legend(&world, legend_x, legend_y);
 
-    completetime++;
-
-    // Draw hint
-
-    if (world.hint.time_shows > 0)
+    draw_hint(&world);
+    if (world.boss_fight && time_stamp % 3 == 0)
     {
-      world.hint.time_shows--;
-      int hint_col = world.hint.time_shows * world.hint.dim;
-      al_draw_textf(get_font(), GRAY(hint_col), world.hint.loc.x, world.hint.loc.y, -1, world.hint.text);
-    }
-    if (world.boss_fight && ++boss_fight_frame_count >= 3)
-    {
-      boss_fight_frame_count = 0;
       boss_logic(&world, 0);
     }
 
-    if (world.boss && world.boss->roomid == world.current_room)
-    {
-      for (int i = 0; i < 6; i++)
-      {
-        if (world.boss->health >= (world.boss_fight_config->health * (i + 1) / 6))
-          draw_sprite(world.spr, SPRITE_ID_HEALTH, world.boss->x - 23, world.boss->y - 18 + 4 * i);
-      }
-    }
+    draw_boss_health_bar(&world);
 
     display_plr_dir_helper(&world, &plr_dir_helper_intensity);
 
-    if (world.powerups.rune_of_protection_active)
-    {
-      if (world.powerups.rune_of_protection_active < 0)
-      {
-        world.powerups.rune_of_protection_active++;
-        draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION,
-                             world.plr.x + world.powerups.rune_of_protection_active * sin(completetime * 0.15),
-                             world.plr.y + world.powerups.rune_of_protection_active * cos(completetime * 0.15));
-      }
-      else
-      {
-        for (int i = 0; i < world.powerups.rune_of_protection_active; i++)
-        {
-          draw_sprite_centered(world.spr, SPRITE_ID_RUNE_OF_PROTECTION,
-                               world.plr.x - TILESIZE * sin(completetime * 0.15 + i),
-                               world.plr.y - TILESIZE * cos(completetime * 0.15 + i));
-        }
-      }
-    }
+    draw_rune_of_protection_indicator(&world);
 
     progress_and_draw_sparkles(&world);
 
@@ -662,14 +748,7 @@ void game(GlobalGameState *ggs)
 
     if (world.plr.health > 0)
     {
-      int offset_x = 2 * vibrations - rand() % (1 + 2 * vibrations);
-      int offset_y = 2 * vibrations - rand() % (1 + 2 * vibrations);
-      ALLEGRO_TRANSFORM transform;
-      al_identity_transform(&transform);
-
-      al_translate_transform(&transform, offset_x, offset_y);
-      al_scale_transform(&transform, 3, 3);
-      al_use_transform(&transform);
+      shake_screen(vibrations);
       if (time_stamp > 1) // Removes the glitch when starting the game; most visible when restarting the level
         al_flip_display();
     }
@@ -722,56 +801,12 @@ void game(GlobalGameState *ggs)
   }
 
   if (*record_mode == RECORD_MODE_RECORD)
-  {
-    // This needs to be added so that the game does not end abruptly
-    // if there are no key events near the recording end
-    game_playback_add_key_event(time_stamp, 0);
-    game_playback_next();
-    game_playback_add_end_event();
-    record_file_flush();
-    if (get_game_settings()->require_authentication)
-    {
-      char hash[DMAC_SHA1_HASH_SIZE];
-      dmac_sha1_calculate_hash_f(hash, game_playback_get_filename());
-      char fname[256 + 10];
-      sprintf(fname, "%s.auth", game_playback_get_filename());
-      FILE *hash_file = fopen(fname, "wb");
-      fwrite(hash, 1, DMAC_SHA1_HASH_SIZE, hash_file);
-      fclose(hash_file);
-    }
-  }
+    finalize_recording(time_stamp);
 
   if (ggs->setup_screenshot_buffer)
     screenshot(2);
   if (*record_mode != RECORD_MODE_NONE)
-  {
-    FILE *f = fopen(DATADIR "recording--level-complete-state.dat", "w");
-
-    fprintf(f, "Recording complete\n");
-    fprintf(f, "Mission %d, mode %d\n", ggs->mission, ggs->game_modifiers);
-    fprintf(f, "Kills %d\n", world.kills);
-    fprintf(f, "Time %ld\n", time_stamp);
-    fprintf(f, "Enemy states\n");
-    for (int i = -1; i < ENEMYCOUNT; i++)
-    {
-      Enemy *e = &world.plr;
-      if (i >= 0)
-        e = &world.enm[i];
-      if (e->alive || e->killed)
-        fprintf(f, "enemy #%d: alive %d killed %d position %d,%d health %d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
-                i, e->alive, e->killed, e->x, e->y, e->health, e->ammo, e->roomid, e->rate, e->shots, e->turret, e->gold);
-    }
-    fprintf(f, "Potion states\n");
-    for (int i = 0; i < POTION_COUNT; i++)
-    {
-      Potion *p = &world.potions[i];
-      if (p->exists)
-        fprintf(f, "potion #%d: position %d,%d roomid %d effects 0x%x duration_boost %d\n",
-                i, (int)p->location.x, (int)p->location.y, p->room_id, p->effects, p->duration_boost);
-    }
-
-    fclose(f);
-  }
+    write_recording_complete_state_file(&world, ggs, time_stamp);
 
   al_destroy_bitmap(world.spr);
 
