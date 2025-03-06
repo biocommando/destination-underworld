@@ -186,16 +186,11 @@ void draw_player_legend(World *world, int x, int y)
             draw_sprite_animated(world->spr, SPRITE_ID_AMMO, x + 17, y - 18 + 2 * n, world->plr.reload != 0, 0);
         }
 
-        // 'S' or 'L'
-        draw_sprite_animated(world->spr, SPRITE_ID_PLR_LEGEND_FONT, x - 21, y - 14 + 4 * world->plr.health, 10 + (world->plr.shots > 1), 0);
+        al_draw_text(get_font_tiny(), al_map_rgb(255, 240, 0), x - 21, y - 14 + 4 * world->plr.health, 0, world->plr.shots > 1 ? "L" : "S");
         int gold = world->plr.gold;
         if (gold > 99)
             gold = 99;
-        if (gold > 9)
-        {
-            draw_sprite_animated(world->spr, SPRITE_ID_PLR_LEGEND_FONT, x - 25, y - 5 + 4 * world->plr.health, gold / 10, 0);
-        }
-        draw_sprite_animated(world->spr, SPRITE_ID_PLR_LEGEND_FONT, x - 21, y - 5 + 4 * world->plr.health, gold % 10, 0);
+        al_draw_textf(get_font_tiny(), al_map_rgb(255, 240, 0), x - 25, y - 5 + 4 * world->plr.health, 0, "%d", gold);
 
         if (world->potion_duration > 0)
         {
