@@ -105,3 +105,11 @@ int parse_highscore_from_world_state(const World *world, int mission, ArenaHighs
  */
 Potion *spawn_potion(int x, int y, int type, int room_id, World *world,
                      int range_start, int range_end);
+
+/*
+ * Modifies the player start state so that it takes game mode, perks and
+ * possible scripted property overrides into account. The player's state
+ * without calling this would be the same as the end state when exiting a
+ * level.
+ */
+void set_player_start_state(World *world, GlobalGameState *ggs);

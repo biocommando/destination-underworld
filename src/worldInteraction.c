@@ -523,3 +523,74 @@ int parse_highscore_from_world_state(const World *world, int mission, ArenaHighs
     *hs_mode = mode_idx;
     return highscore_kills;
 }
+
+void set_player_start_state(World *world, GlobalGameState *ggs)
+{
+  int difficulty = GET_DIFFICULTY(world);
+  int excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 0 : 5;
+  if (ggs->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
+  {
+    excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 2 : 7;
+  }
+  if (ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
+  {
+    excess_gold_limit = 0;
+  }
+
+  world->plr_max_health = (world->plr.perks & PERK_INCREASE_MAX_HEALTH) ? 7 : 6;
+
+  if (world->plr.gold > excess_gold_limit)
+  {
+    int excess_gold = world->plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
+    if (ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
+    {
+      excess_gold = world->plr.gold;
+    }
+    if (ggs->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
+      excess_gold /= 3;
+    world->plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
+    world->plr.health = world->plr.health > world->plr_max_health ? world->plr_max_health : world->plr.health;
+
+    if (ggs->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS)
+    {
+      world->plr.health *= 3;
+    }
+  }
+
+  world->plr.gold = world->plr.gold > 5 ? 5 : world->plr.gold;
+
+  if (world->plr.health < 3)
+    world->plr.health = 3;
+  if (world->plr.ammo < 10)
+    world->plr.ammo = 10;
+
+  world->powerups.cluster_strength = 16;
+
+  if ((ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
+  {
+    world->powerups.cluster_strength = 5;
+    world->plr.gold = 20;
+  }
+  else if (difficulty == DIFFICULTY_BRUTAL)
+    world->plr.gold = 0;
+  if (ggs->game_modifiers & GAMEMODIFIER_NO_GOLD)
+  {
+    world->plr.gold = 0;
+    world->plr.ammo = 0;
+  }
+
+  if (world->boss_fight && world->boss_fight_config->player_initial_gold >= 0)
+  {
+    world->plr.gold = world->boss_fight_config->player_initial_gold;
+  }
+
+  world->powerups.rune_of_protection_active = 0;
+
+  if (world->plr.perks & PERK_START_WITH_SHIELD_POWERUP)
+    world->powerups.rune_of_protection_active = 1;
+  if (world->plr.perks & PERK_START_WITH_SPEED_POTION)
+  {
+    world->potion_effect_flags = POTION_EFFECT_FAST_PLAYER;
+    world->potion_duration = POTION_DURATION_BIG_BOOST;
+  }
+}

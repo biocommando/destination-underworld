@@ -10,12 +10,47 @@
 #include "game_playback.h"
 #include "vfx.h"
 
+void set_fly_in_text(struct fly_in_text *fit, const char *text)
+{
+  fit->x = SCREEN_W;
+  strcpy(fit->text, text);
+}
+
+inline void draw_fly_in_text(struct fly_in_text *fly_in_text)
+{
+  int *x = &fly_in_text->x;
+  if (*x > -400)
+  {
+    al_draw_textf(get_font(), WHITE, *x, 170, -1, fly_in_text->text);
+    if (*x > SCREEN_W / 8 * 3 && *x < SCREEN_W / 8 * 5)
+    {
+      *x -= 4;
+    }
+    else
+    {
+      *x -= 10;
+    }
+  }
+}
+
 void draw_enemy(Enemy *enm, World *world)
 {
     if (enm->sprite == 9)
         draw_sprite_centered(world->spr, SPRITE_ID_TURRET, enm->x, enm->y);
     else
         draw_sprite_animated_centered(world->spr, SPRITE_ID_ENEMY(enm->sprite), enm->x, enm->y, enm->anim > 20, 0);
+}
+
+inline void draw_boss_health_bar(const World *world)
+{
+  if (world->boss && world->boss->roomid == world->current_room)
+  {
+    for (int i = 0; i < 6; i++)
+    {
+      if (world->boss->health >= (world->boss_fight_config->health * (i + 1) / 6))
+        draw_sprite(world->spr, SPRITE_ID_HEALTH, world->boss->x - 23, world->boss->y - 18 + 4 * i);
+    }
+  }
 }
 
 static void draw_enemy_shadow(Enemy *enm)
@@ -218,6 +253,78 @@ void draw_player_legend(World *world, int x, int y)
             }
         }
     }
+}
+
+inline void draw_rune_of_protection_indicator(World *world)
+{
+  static int phase = 0;
+  phase++;
+  if (world->powerups.rune_of_protection_active)
+  {
+    if (world->powerups.rune_of_protection_active < 0)
+    {
+      world->powerups.rune_of_protection_active++;
+      draw_sprite_centered(world->spr, SPRITE_ID_RUNE_OF_PROTECTION,
+                           world->plr.x + world->powerups.rune_of_protection_active * sin(phase * 0.15),
+                           world->plr.y + world->powerups.rune_of_protection_active * cos(phase * 0.15));
+    }
+    else
+    {
+      for (int i = 0; i < world->powerups.rune_of_protection_active; i++)
+      {
+        draw_sprite_centered(world->spr, SPRITE_ID_RUNE_OF_PROTECTION,
+                             world->plr.x - TILESIZE * sin(phase * 0.15 + i),
+                             world->plr.y - TILESIZE * cos(phase * 0.15 + i));
+      }
+    }
+  }
+}
+
+inline void display_plr_dir_helper(const World *world, int *plr_dir_helper_intensity)
+{
+  if (*plr_dir_helper_intensity > 0)
+  {
+    int cx = world->plr.x + world->plr.dx * TILESIZE * 3 / 2;
+    int cy = world->plr.y + world->plr.dy * TILESIZE * 3 / 2;
+    ALLEGRO_COLOR col = al_map_rgb(2 * *plr_dir_helper_intensity, 0, 0);
+    al_draw_circle(cx, cy, *plr_dir_helper_intensity * TILESIZE / 600, col, 1);
+    if (*plr_dir_helper_intensity > PLR_DIR_HELPER_INITIAL_INTENSITY / 2)
+    {
+      int line_offs = *plr_dir_helper_intensity / 20;
+      al_draw_line(cx - line_offs, cy, cx + line_offs, cy, col, 1);
+      al_draw_line(cx, cy - line_offs, cx, cy + line_offs, col, 1);
+    }
+    *plr_dir_helper_intensity -= 3;
+  }
+}
+
+void progress_player_death_animation(const World *world)
+{
+  int startx, starty;
+  startx = world->plr.x - TILESIZE * 3 / 2 - world->plr.reload;
+  if (startx < 0)
+    startx = 0;
+  starty = world->plr.y - TILESIZE - world->plr.reload * 0.75;
+  if (starty < 0)
+    starty = 0;
+  double scale = 1 + (100 - world->plr.reload) / 20.0;
+  ALLEGRO_TRANSFORM transform;
+  al_identity_transform(&transform);
+  al_translate_transform(&transform, -startx, -starty);
+  al_scale_transform(&transform, 3 * scale, 3 * scale);
+  al_use_transform(&transform);
+}
+
+inline void apply_game_screen_transform(int vibrations)
+{
+  int offset_x = 2 * vibrations - rand() % (1 + 2 * vibrations);
+  int offset_y = 2 * vibrations - rand() % (1 + 2 * vibrations);
+  ALLEGRO_TRANSFORM transform;
+  al_identity_transform(&transform);
+
+  al_translate_transform(&transform, offset_x, offset_y);
+  al_scale_transform(&transform, 3, 3);
+  al_use_transform(&transform);
 }
 
 void move_and_draw_body_parts(World *world)
@@ -503,6 +610,16 @@ void show_gold_hint(World *world, int number)
     world->hint.loc.y = world->plr.y - 30;
     world->hint.dim = 4;
     world->hint.time_shows = 60;
+}
+
+inline void draw_hint(World *world)
+{
+  if (world->hint.time_shows > 0)
+  {
+    world->hint.time_shows--;
+    int hint_col = world->hint.time_shows * world->hint.dim;
+    al_draw_textf(get_font(), GRAY(hint_col), world->hint.loc.x, world->hint.loc.y, -1, world->hint.text);
+  }
 }
 
 void show_ingame_info_screen(World *world)

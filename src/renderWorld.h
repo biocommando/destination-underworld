@@ -2,15 +2,54 @@
 
 #include "world.h"
 
+// Text that "flies" across the screen
+struct fly_in_text
+{
+  int x;
+  char text[64];
+};
+/*
+ * Set the "fly-in" text and set the position to right screen edge.
+ */
+void set_fly_in_text(struct fly_in_text *fit, const char *text);
+/*
+ * Draws the "fly-in" text and progesses its state (moves it to left on screen).
+ */
+void draw_fly_in_text(struct fly_in_text *fly_in_text);
 /*
  * Draw the enemy sprite. Takes care of walking animation.
  */
 void draw_enemy(Enemy *enm, World *world);
 /*
+ * Draws a similar health bar as is used for player for the boss
+ * enemy if it exists in the current room. The health bar has max. 6 hearts
+ * but each heart represents one 6th of the original health.
+ */
+void draw_boss_health_bar(const World *world);
+/*
  * Draws the legend that has the health meter, ammo counter / reload status indicator,
  * gold count and weapon mode.
  */
 void draw_player_legend(World *world, int x, int y);
+/*
+ * Draw and progress the rune of protection powerup animation.
+ */
+void draw_rune_of_protection_indicator(World *world);
+/*
+ * Displays the fading crosshair that indicates the player's (new) direction and
+ * progresses its state.
+ */
+void display_plr_dir_helper(const World *world, int *plr_dir_helper_intensity);
+/*
+ * Progress and apply the zoom-in transformation that happens when the player dies.
+ */
+void progress_player_death_animation(const World *world);
+/*
+ * Does the transformations used in the main game loop:
+ * shakes the screen, scales it 3 times larger and possibly centers the play area
+ * in full screen mode.
+ */
+void apply_game_screen_transform(int vibrations);
 /*
  * Draws the map. Has two modes:
  * 1. draw_walls = 0:
@@ -58,6 +97,10 @@ void display_level_info(World *world, int mission, int mission_count, long compl
  * Shows a hint text near player sprite that tells how much gold was used on a powerup.
  */
 void show_gold_hint(World *world, int number);
+/*
+ * Draws the hint text and progresses its fading away.
+ */
+void draw_hint(World *world);
 /*
  * Displays a level info screen that contains the mini map and some metadata on the level.
  */
