@@ -42,9 +42,10 @@ int handle_direction_keys(World *world, int key_up, int key_down, int key_left, 
   return orig_dx != world->plr.dx || orig_dy != world->plr.dy;
 }
 
-int handle_weapon_change_keys(World *world, int key_x, int key_z)
+void handle_weapon_change_keys(World *world, int key_x, int key_z)
 {
   const int difficulty = GET_DIFFICULTY(world);
+  int play_sample = 0;
   if (key_x && world->plr.reload == 0) // Power
   {
     world->plr.shots = 6;
@@ -56,9 +57,9 @@ int handle_weapon_change_keys(World *world, int key_x, int key_z)
       world->plr.rate = 30;
     }
     world->plr.reload = 20;
-    return 1;
+    play_sample = 1;
   }
-  if (key_z && world->plr.reload == 0) // Speed
+  else if (key_z && world->plr.reload == 0) // Speed
   {
     world->plr.shots = 1;
     world->plr.rate = 7;
@@ -67,9 +68,10 @@ int handle_weapon_change_keys(World *world, int key_x, int key_z)
       world->plr.rate = 12;
     }
     world->plr.reload = 20;
-    return 2;
+    play_sample = 1;
   }
-  return 0;
+  if (play_sample)
+    trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
 }
 
 static inline Enemy *create_turret(World *world)
@@ -176,11 +178,12 @@ void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key
   }
 }
 
-int handle_shoot_key(World *world, int key_space)
+void handle_shoot_key(World *world, int key_space)
 {
   if (key_space)
   {
-    return shoot(&world->plr, world);
+    int play_sample = shoot(&world->plr, world);
+    if (play_sample)
+      trigger_sample(SAMPLE_THROW, 255);
   }
-  return 0;
 }

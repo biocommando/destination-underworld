@@ -339,18 +339,9 @@ void game(GlobalGameState *ggs)
         plr_dir_helper_intensity = PLR_DIR_HELPER_INITIAL_INTENSITY;
       }
 
-      int play_sample = handle_shoot_key(&world, key_space);
+      handle_shoot_key(&world, key_space);
 
-      if (play_sample)
-      {
-        trigger_sample(SAMPLE_THROW, 255);
-      }
-
-      play_sample = handle_weapon_change_keys(&world, key_x, key_z);
-      if (play_sample)
-      {
-        trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
-      }
+      handle_weapon_change_keys(&world, key_x, key_z);
 
       int gold_hint_amount = 0;
       handle_power_up_keys(&world, key_a, key_s, key_d, key_f, &gold_hint_amount);
