@@ -79,21 +79,6 @@ static void display_arena_fight_end_screen(const World *world, GlobalGameState *
   }
 }
 
-static void init_spritesheet(World *world)
-{
-  if (!get_game_settings()->custom_resources)
-  {
-    world->spr = al_load_bitmap(DATADIR "sprites.png");
-  }
-  else
-  {
-    char path[256];
-    sprintf(path, DATADIR "\\%s\\sprites.png", get_game_settings()->mission_pack);
-    world->spr = al_load_bitmap(path);
-  }
-  al_convert_mask_to_alpha(world->spr, al_map_rgb(255, 0, 255));
-}
-
 long init_playback(World *world, GlobalGameState *ggs, int record_mode)
 {
   // For playback recording filenames
@@ -222,7 +207,6 @@ void game(GlobalGameState *ggs)
   ggs->player = &world.plr;
   world.game_modifiers = &ggs->game_modifiers;
   world.boss_fight_config = world.boss_fight_configs;
-  init_spritesheet(&world);
 
   int vibrations = 0;
 

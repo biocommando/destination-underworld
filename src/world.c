@@ -2,11 +2,29 @@
 #include "predictableRandom.h"
 #include "logging.h"
 #include "vfx.h"
+#include "settings.h"
 #include <math.h>
 #include <stdio.h>
 
+static void init_spritesheet(World *world)
+{
+  if (!get_game_settings()->custom_resources)
+  {
+    world->spr = al_load_bitmap(DATADIR "sprites.png");
+  }
+  else
+  {
+    char path[256];
+    sprintf(path, DATADIR "\\%s\\sprites.png", get_game_settings()->mission_pack);
+    world->spr = al_load_bitmap(path);
+  }
+  al_convert_mask_to_alpha(world->spr, al_map_rgb(255, 0, 255));
+}
+
 void init_world(World *world)
 {
+    init_spritesheet(world);
+
     world->kills = 0;
     world->play_boss_sound = 1;
     world->final_level = 0;
