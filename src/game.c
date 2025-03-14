@@ -161,39 +161,6 @@ static inline void check_perks_changed(World *world, int old_perks, int *next_pe
   }
 }
 
-static inline void apply_timed_potion_effects(World *world)
-{
-
-  int potion_effect_divider = world->potion_turbo_mode ? 2 : 1;
-
-  if (world->plr.health > 0 && check_potion_effect(world, POTION_EFFECT_HEALING))
-  {
-    if (world->potion_healing_counter <= 0)
-    {
-      if (world->plr.health < world->plr_max_health)
-        world->plr.health++;
-      world->potion_healing_counter = 25;
-    }
-    else
-    {
-      world->potion_healing_counter -= potion_effect_divider;
-    }
-  }
-
-  if (world->plr.health > 0 && check_potion_effect(world, POTION_EFFECT_SHIELD_OF_FIRE))
-  {
-    if (world->potion_shield_counter <= 0)
-    {
-      create_cluster_explosion(world, world->plr.x, world->plr.y, 4, 1, &world->plr);
-      world->potion_shield_counter = 15;
-    }
-    else
-    {
-      world->potion_shield_counter -= potion_effect_divider;
-    }
-  }
-}
-
 static void write_recording_complete_state_file(World *world, GlobalGameState *ggs, long time_stamp)
 {
   FILE *f = fopen(DATADIR "recording--level-complete-state.dat", "w");

@@ -113,3 +113,8 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world,
  * level.
  */
 void set_player_start_state(World *world, GlobalGameState *ggs);
+
+/*
+ * Apply potion effects for healing and shield of fire where the effects are time based.
+ */
+void apply_timed_potion_effects(World *world);
