@@ -61,6 +61,9 @@ void init_world(World *world)
     world->potion_healing_counter = 0;
     world->potion_shield_counter = 0;
     memset(world->flames, 0, sizeof(world->flames));
+
+    world->boss_fight_config = world->boss_fight_configs;
+    world->current_room = 1;
 }
 
 Tile create_tile(int symbol)

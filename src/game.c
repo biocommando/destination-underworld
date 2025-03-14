@@ -206,19 +206,14 @@ void game(GlobalGameState *ggs)
   memset(&world, 0, sizeof(World));
   ggs->player = &world.plr;
   world.game_modifiers = &ggs->game_modifiers;
-  world.boss_fight_config = world.boss_fight_configs;
 
   int vibrations = 0;
-
-  world.current_room = 1;
 
   init_world(&world);
   read_enemy_configs(&world);
   init_player(&world, &ggs->plrautosave);
 
   long key_press_mask = 0;
-
-  world.hint.time_shows = 0;
 
   int *record_mode = get_playback_mode();
   long playback_next_event_time_stamp = init_playback(&world, ggs, *record_mode);
