@@ -30,48 +30,7 @@
 #include "read_level.h"
 #include "vfx.h"
 #include "sha1/du_dmac.h"
-
-static inline void screenshot(int action)
-{
-#define BUF_LEN 16
-  static ALLEGRO_BITMAP *buf[BUF_LEN];
-  static int idx = 0;
-  static int file_idx = 0;
-
-  if (action == -1)
-  {
-    memset(buf, 0, sizeof(buf));
-    idx = 0;
-  }
-  else if (action == 0)
-  {
-    idx = (idx + 1) % BUF_LEN;
-    if (buf[idx])
-      al_destroy_bitmap(buf[idx]);
-    buf[idx] = get_screen();
-  }
-  else if (action == 1)
-  {
-    file_idx++;
-    for (int i = 0; i < BUF_LEN; i++)
-    {
-      int bi = (idx + i + 1) % BUF_LEN;
-      if (!buf[bi])
-        continue;
-      char fname[30];
-      sprintf(fname, "screenshot%d_%c.png", file_idx, 'A' + i);
-      al_save_bitmap(fname, buf[bi]);
-    }
-  }
-  else
-  {
-    for (int i = 0; i < BUF_LEN; i++)
-    {
-      if (buf[i])
-        al_destroy_bitmap(buf[i]);
-    }
-  }
-}
+#include "screenshot.h"
 
 static void display_arena_fight_end_screen(const World *world, GlobalGameState *ggs, const int *record_mode, int no_player_damage)
 {
@@ -335,7 +294,7 @@ void game(GlobalGameState *ggs)
 
   int old_perks = world.plr.perks;
   if (ggs->setup_screenshot_buffer)
-    screenshot(-1);
+    screenshot(SCREENSHOT_ACT_INIT);
   while (1)
   {
     if (world.plr.health <= 0)
@@ -581,11 +540,11 @@ void game(GlobalGameState *ggs)
 
     if (ggs->setup_screenshot_buffer)
     {
-      screenshot(0);
+      screenshot(SCREENSHOT_ACT_CAPTURE);
       if (check_key(ALLEGRO_KEY_INSERT))
       {
         wait_key_release(ALLEGRO_KEY_INSERT);
-        screenshot(1);
+        screenshot(SCREENSHOT_ACT_DUMP_TO_DISK);
       }
     }
 
@@ -610,7 +569,7 @@ void game(GlobalGameState *ggs)
     finalize_recording(time_stamp);
 
   if (ggs->setup_screenshot_buffer)
-    screenshot(2);
+    screenshot(SCREENSHOT_ACT_DESTROY);
   if (*record_mode != RECORD_MODE_NONE)
     write_recording_complete_state_file(&world, ggs, time_stamp);
 

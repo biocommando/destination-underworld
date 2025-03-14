@@ -42,6 +42,7 @@ src/boss_logic.c ^
 src/bullet_logic.c ^
 src/enemy_logic.c ^
 src/potion_logic.c ^
+src/screenshot.c ^
 src/game.c ^
 src/synth/adsr_envelope.c ^
 src/synth/basic_delay.c ^
