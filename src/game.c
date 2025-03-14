@@ -73,7 +73,8 @@ static void display_arena_fight_end_screen(const World *world, GlobalGameState *
     int key = wait_key_presses(wait_keys, 2);
     if (key == ALLEGRO_KEY_ESCAPE && *record_mode != RECORD_MODE_PLAYBACK)
     {
-      menu(0, ggs);
+      // Break out of the loop in main.c
+      ggs->mission = -1;
     }
   }
 }
