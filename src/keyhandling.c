@@ -91,7 +91,7 @@ static inline Enemy *create_turret(World *world)
   return enm;
 }
 
-int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount)
+void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount)
 {
   const int price_bonus = (*world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
   const int cost_heal = 1 + price_bonus;
@@ -125,7 +125,7 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
     }
     world->plr.reload = 40;
     trigger_sample(SAMPLE_HEAL, 255);
-    return 1;
+    return;
   }
   if (key_s && world->plr.gold >= cost_protection && world->plr.reload == 0 && *plr_rune_of_protection_active == 0)
   {
@@ -136,7 +136,7 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
       *plr_rune_of_protection_active = 3;
     world->plr.reload = 40;
     trigger_sample(SAMPLE_PROTECTION, 255);
-    return 2;
+    return;
   }
   if (key_d && world->plr.gold >= cost_turret && world->plr.reload == 0) // Turret
   {
@@ -152,7 +152,7 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
     world->plr.gold -= cost_turret;
     world->plr.reload = 40;
     trigger_sample(SAMPLE_TURRET, 255);
-    return 3;
+    return;
   }
   if (key_f && world->plr.gold >= cost_blast && world->plr.reload == 0)
   {
@@ -171,10 +171,9 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
       world->plr.gold -= cost_blast;
       world->plr.reload = 40;
       trigger_sample_with_params(SAMPLE_BLAST, 255, 127, 1000);
-      return 4;
+      return;
     }
   }
-  return 0;
 }
 
 int handle_shoot_key(World *world, int key_space)

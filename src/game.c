@@ -353,8 +353,7 @@ void game(GlobalGameState *ggs)
       }
 
       int gold_hint_amount = 0;
-      int activated_powerup = handle_power_up_keys(&world, key_a, key_s, key_d, key_f, &gold_hint_amount);
-      play_sample = activated_powerup || play_sample;
+      handle_power_up_keys(&world, key_a, key_s, key_d, key_f, &gold_hint_amount);
       if (gold_hint_amount)
       {
         show_gold_hint(&world, gold_hint_amount);
