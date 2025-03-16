@@ -730,112 +730,102 @@ int menu(int ingame, GlobalGameState *ggs)
     int switch_level = 1;
     ALLEGRO_SAMPLE_ID id;
 
-    if (*get_playback_mode() == RECORD_MODE_PLAYBACK)
+    int exit_menu = 0, main_menu = !ingame;
+    if (ingame)
     {
-        al_clear_to_color(BLACK);
-        al_draw_textf(get_menu_font(), WHITE, SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
-        al_flip_display();
-        wait_key_press(ALLEGRO_KEY_ENTER);
-    }
-    else
-    {
-        int exit_menu = 0, main_menu = !ingame;
-        if (ingame)
+        while (!exit_menu)
         {
-            while (!exit_menu)
+            int ingame_menu_selection = display_in_game_menu(ggs->game_modifiers, ggs->mission);
+            // Return game
+            if (ingame_menu_selection == get_menu_item_id("Return"))
             {
-                int ingame_menu_selection = display_in_game_menu(ggs->game_modifiers, ggs->mission);
-                // Return game
-                if (ingame_menu_selection == get_menu_item_id("Return"))
+                switch_level = 0;
+                exit_menu = 1;
+            }
+            else if (ingame_menu_selection == get_menu_item_id("Perks"))
+            {
+                display_perk_menu(ggs->player);
+            }
+            else if (ingame_menu_selection == get_menu_item_id("Save"))
+            {
+                int save_slot = display_save_game_menu();
+                if (save_slot != 0)
                 {
-                    switch_level = 0;
-                    exit_menu = 1;
-                }
-                else if (ingame_menu_selection == get_menu_item_id("Perks"))
-                {
-                    display_perk_menu(ggs->player);
-                }
-                else if (ingame_menu_selection == get_menu_item_id("Save"))
-                {
-                    int save_slot = display_save_game_menu();
-                    if (save_slot != 0)
-                    {
-                        save_game(&ggs->plrautosave, ggs->mission, ggs->game_modifiers, save_slot - 1);
-                    }
-                }
-                else if (ingame_menu_selection == get_menu_item_id("Game options"))
-                {
-                    game_option_menu();
-                }
-                else if (ingame_menu_selection == get_menu_item_id("View help"))
-                {
-                    show_help();
-                }
-                else if (ingame_menu_selection == get_menu_item_id("Exit"))
-                {
-                    if (display_exit_to_main_menu_menu())
-                    {
-                        main_menu = 1;
-                        exit_menu = 1;
-                        ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
-                    }
+                    save_game(&ggs->plrautosave, ggs->mission, ggs->game_modifiers, save_slot - 1);
                 }
             }
-            exit_menu = 0;
-        }
-        while (main_menu && !exit_menu)
-        {
-            int main_menu_selection = display_main_menu(ggs->game_modifiers);
-            if (main_menu_selection == get_menu_item_id("Start"))
-            {
-                int choice = 0;
-                while (choice != get_menu_item_id("Exit") && !exit_menu)
-                {
-                    choice = display_new_game_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
-
-                    if (choice == get_menu_item_id("Change game mode"))
-                    {
-                        ggs->game_modifiers = display_game_mode_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
-                    }
-                    else if (choice == get_menu_item_id("Story"))
-                    {
-                        exit_menu = 1;
-                        ggs->mission = 1;
-                        ggs->plrautosave.alive = 0;
-                        ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
-                    }
-                    else if (choice < ARENACONF_MAX_NUMBER_OF_ARENAS)
-                    {
-                        int arena = choice;
-                        exit_menu = 1;
-                        ggs->mission = get_game_settings()->arena_config.arenas[arena].level_number;
-                        ggs->game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
-                        ggs->plrautosave.alive = 0;
-                    }
-                }
-            }
-            if (main_menu_selection == get_menu_item_id("Load"))
-            {
-                int load_slot = display_load_game_menu();
-                if (load_slot != 0)
-                {
-                    exit_menu = 1;
-                    do_load_game(&ggs->plrautosave, &ggs->mission, &ggs->game_modifiers, load_slot - 1);
-                }
-            }
-            if (main_menu_selection == get_menu_item_id("Game options"))
+            else if (ingame_menu_selection == get_menu_item_id("Game options"))
             {
                 game_option_menu();
             }
-            if (main_menu_selection == get_menu_item_id("View help"))
+            else if (ingame_menu_selection == get_menu_item_id("View help"))
             {
                 show_help();
             }
-            if (main_menu_selection == get_menu_item_id("Exit"))
+            else if (ingame_menu_selection == get_menu_item_id("Exit"))
             {
-                ggs->mission = 0;
-                exit_menu = 1;
+                if (display_exit_to_main_menu_menu())
+                {
+                    main_menu = 1;
+                    exit_menu = 1;
+                    ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
+                }
             }
+        }
+        exit_menu = 0;
+    }
+    while (main_menu && !exit_menu)
+    {
+        int main_menu_selection = display_main_menu(ggs->game_modifiers);
+        if (main_menu_selection == get_menu_item_id("Start"))
+        {
+            int choice = 0;
+            while (choice != get_menu_item_id("Exit") && !exit_menu)
+            {
+                choice = display_new_game_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
+
+                if (choice == get_menu_item_id("Change game mode"))
+                {
+                    ggs->game_modifiers = display_game_mode_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
+                }
+                else if (choice == get_menu_item_id("Story"))
+                {
+                    exit_menu = 1;
+                    ggs->mission = 1;
+                    ggs->plrautosave.alive = 0;
+                    ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
+                }
+                else if (choice < ARENACONF_MAX_NUMBER_OF_ARENAS)
+                {
+                    int arena = choice;
+                    exit_menu = 1;
+                    ggs->mission = get_game_settings()->arena_config.arenas[arena].level_number;
+                    ggs->game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
+                    ggs->plrautosave.alive = 0;
+                }
+            }
+        }
+        if (main_menu_selection == get_menu_item_id("Load"))
+        {
+            int load_slot = display_load_game_menu();
+            if (load_slot != 0)
+            {
+                exit_menu = 1;
+                do_load_game(&ggs->plrautosave, &ggs->mission, &ggs->game_modifiers, load_slot - 1);
+            }
+        }
+        if (main_menu_selection == get_menu_item_id("Game options"))
+        {
+            game_option_menu();
+        }
+        if (main_menu_selection == get_menu_item_id("View help"))
+        {
+            show_help();
+        }
+        if (main_menu_selection == get_menu_item_id("Exit"))
+        {
+            ggs->mission = 0;
+            exit_menu = 1;
         }
     }
     al_destroy_bitmap(menu_sprites);

@@ -169,8 +169,15 @@ int main(int argc, char **argv)
   ggs.setup_screenshot_buffer = read_cmd_line_arg_int("screenshot-buffer", argv, argc);
   while (ggs.mission != 0)
   {
-    if (*record_mode != RECORD_MODE_PLAYBACK || !ggs.no_player_interaction)
+    if (*record_mode != RECORD_MODE_PLAYBACK)
       menu(0, &ggs);
+    else if (!ggs.no_player_interaction)
+    {
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_textf(get_menu_title_font(), al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
+        al_flip_display();
+        wait_key_press(ALLEGRO_KEY_ENTER);
+    }
     while (ggs.mission > 0)
     {
       game(&ggs);
