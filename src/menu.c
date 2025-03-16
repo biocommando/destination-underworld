@@ -9,7 +9,6 @@
 #include "logging.h"
 #include "sampleRegister.h"
 #include "midi_playback.h"
-#include "game_playback.h"
 
 static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
