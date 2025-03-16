@@ -17,3 +17,7 @@ int record_file_get_record(const char *file, const char *id, char *record, size_
 // Writes the new data to the file only when one of the get/set functions is called with
 // a different filename or the file is flushed.
 int record_file_set_record(const char *file, const char *id, const char *record);
+
+// Similar to record_file_set_record but it formats the record within the call and reads the
+// id from the resulting string.
+int record_file_set_record_f(const char *file, const char *format, ...);

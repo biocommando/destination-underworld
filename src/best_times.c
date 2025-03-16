@@ -64,9 +64,7 @@ int save_best_times(const char *mission_pack, struct best_times *best_times)
     for (int i = 0; i < NUM_BEST_TIMES; i++)
     {
         get_id(id, best_times, i);
-        char record[1024];
-        sprintf(record, "%s %f", id, best_times->times[i]);
-        if (record_file_set_record(file, id, record))
+        if (record_file_set_record_f(file, "%s %f", id, best_times->times[i]))
         {
             return 1;
         }

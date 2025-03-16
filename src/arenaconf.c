@@ -62,10 +62,8 @@ void write_arena_highscores(const char *filename, ArenaHighscore *highscore)
         {
             if (highscore->dirty[i][mi])
             {
-                char key[100], rec[100];
-                sprintf(key, "arena_%d_item_%d", i, mi);
-                sprintf(rec, "%s mode=%d kills=%d", key, highscore->mode[i][mi], highscore->kills[i][mi]);
-                record_file_set_record(filename, key, rec);
+                record_file_set_record_f(filename, "arena_%d_item_%d mode=%d kills=%d",
+                                         i, mi, highscore->mode[i][mi], highscore->kills[i][mi]);
             }
         }
     }

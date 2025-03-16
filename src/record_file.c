@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "record_file.h"
 
@@ -149,4 +150,15 @@ int record_file_set_record(const char *file, const char *id, const char *record)
 
     state.dirty = 1;
     return 0;
+}
+
+int record_file_set_record_f(const char *file, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    char record[REC_MAX_LENGTH];
+    vsnprintf(record, REC_MAX_LENGTH, format, args);
+    char id[REC_MAX_LENGTH];
+    sscanf(record, "%s", id);
+    return record_file_set_record(file, id, record);
 }

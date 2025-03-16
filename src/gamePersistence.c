@@ -103,16 +103,11 @@ void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifi
 
 static inline void write_int_save_data(const char *filename, int slot, const char *suffix, int value)
 {
-    char rec[100], key[100];
-    sprintf(key, "slot_%d--%s", slot, suffix);
-    sprintf(rec, "%s %d", key, value);
-    record_file_set_record(filename, key, rec);
+    record_file_set_record_f(filename, "slot_%d--%s %d", slot, suffix, value);
 }
 
 void save_game_save_data(const char *filename, Enemy *data, int mission, int game_modifiers, int slot)
 {
-    char rec[100], key[100];
-
     write_int_save_data(filename, slot, "game_modifiers", game_modifiers);
     write_int_save_data(filename, slot, "mission", mission);
     write_int_save_data(filename, slot, "health", data->health);
@@ -126,13 +121,10 @@ void save_game_save_data(const char *filename, Enemy *data, int mission, int gam
 
     if (get_game_settings()->require_authentication)
     {
-        sprintf(key, "slot_%d--hash", slot);
-
         char hash[DMAC_SHA1_HASH_SIZE * 2 + 1];
         create_verification_hash(hash, mission, game_modifiers, data);
 
-        sprintf(rec, "%s %s", key, hash);
-        record_file_set_record(filename, key, rec);
+        record_file_set_record_f(filename, "slot_%d--hash %s", slot, hash);
     }
 }
 

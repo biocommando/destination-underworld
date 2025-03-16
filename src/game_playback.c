@@ -40,8 +40,8 @@ void game_playback_set_event(const struct game_playback_event *evt)
 {
     char id[20], value[100];
     format_id(id);
-    sprintf(value, "%s end=%d time=%ld keys=%ld", id, evt->end, evt->time_stamp, evt->key_mask);
-    record_file_set_record(filename, id, value);
+    record_file_set_record_f(filename, "%s end=%d time=%ld keys=%ld",
+                             id, evt->end, evt->time_stamp, evt->key_mask);
 }
 
 long game_playback_get_time_stamp()

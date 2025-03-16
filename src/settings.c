@@ -117,18 +117,11 @@ void get_data_filename(char *dst, const char *file)
 
 void save_settings()
 {
-  char buf[100];
-
-  sprintf(buf, "graphics--vibration-mode %d", game_settings.vibration_mode);
-  record_file_set_record(game_settings.settings_file, "graphics--vibration-mode", buf);
-  sprintf(buf, "graphics--fullscreen %d", game_settings.fullscreen);
-  record_file_set_record(game_settings.settings_file, "graphics--fullscreen", buf);
-  sprintf(buf, "audio--music-on %d", game_settings.music_on);
-  record_file_set_record(game_settings.settings_file, "audio--music-on", buf);
-  sprintf(buf, "audio--music-vol %lf", game_settings.music_vol);
-  record_file_set_record(game_settings.settings_file, "audio--music-vol", buf);
-  sprintf(buf, "audio--sfx-vol %lf", game_settings.sfx_vol);
-  record_file_set_record(game_settings.settings_file, "audio--sfx-vol", buf);
+  record_file_set_record_f(game_settings.settings_file, "graphics--vibration-mode %d", game_settings.vibration_mode);
+  record_file_set_record_f(game_settings.settings_file, "graphics--fullscreen %d", game_settings.fullscreen);
+  record_file_set_record_f(game_settings.settings_file, "audio--music-on %d", game_settings.music_on);
+  record_file_set_record_f(game_settings.settings_file, "audio--music-vol %lf", game_settings.music_vol);
+  record_file_set_record_f(game_settings.settings_file, "audio--sfx-vol %lf", game_settings.sfx_vol);
 }
 
 inline GameSettings *get_game_settings()
