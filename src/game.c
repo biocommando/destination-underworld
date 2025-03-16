@@ -196,6 +196,13 @@ static void finalize_recording(long time_stamp)
   }
 }
 
+static void reset_screen_transform()
+{
+  ALLEGRO_TRANSFORM transform;
+  al_identity_transform(&transform);
+  al_use_transform(&transform);
+}
+
 void game(GlobalGameState *ggs)
 {
   pr_reset_random();
@@ -460,9 +467,7 @@ void game(GlobalGameState *ggs)
       wait_delay_ms(40);
       if (world.plr.reload <= 0)
       {
-        ALLEGRO_TRANSFORM transform;
-        al_identity_transform(&transform);
-        al_use_transform(&transform);
+        reset_screen_transform();
         if (ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
         {
           display_arena_fight_end_screen(&world, ggs, record_mode, no_player_damage);
@@ -511,9 +516,5 @@ void game(GlobalGameState *ggs)
 
   al_destroy_bitmap(world.spr);
 
-  {
-    ALLEGRO_TRANSFORM transform;
-    al_identity_transform(&transform);
-    al_use_transform(&transform);
-  }
+  reset_screen_transform();
 }
