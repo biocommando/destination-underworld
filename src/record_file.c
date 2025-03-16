@@ -73,10 +73,14 @@ void record_file_read(const char *file)
         {
             continue;
         }
-        if (line[strlen(line) - 1] == '\n')
+        size_t line_len = strlen(line);
+        if (line[line_len - 1] == '\n')
         {
-            line[strlen(line) - 1] = '\0';
+            line_len--;
+            line[line_len] = '\0';
         }
+        if (line_len == 0)
+            continue;
         if (state.recs == NULL && sscanf(line, "_record_count %d", &state.sz) == 1)
         {
             state.recs = (struct mem_record *)calloc(state.sz, sizeof(struct mem_record));
