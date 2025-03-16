@@ -93,7 +93,7 @@ static inline Enemy *create_turret(World *world)
   return enm;
 }
 
-void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount)
+int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f)
 {
   const int price_bonus = (*world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
   const int cost_heal = 1 + price_bonus;
@@ -111,7 +111,6 @@ void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key
     max_health *= 3;
   if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < max_health && world->plr.reload == 0)
   {
-    *gold_hint_amount = cost_heal;
     world->plr.gold -= cost_heal;
     int health_bonus = difficulty == DIFFICULTY_BRUTAL ? 2 : 3;
     if (world->plr.perks & PERK_IMPROVE_HEALTH_POWERUP)
@@ -127,22 +126,20 @@ void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key
     }
     world->plr.reload = 40;
     trigger_sample(SAMPLE_HEAL, 255);
-    return;
+    return cost_heal;
   }
   if (key_s && world->plr.gold >= cost_protection && world->plr.reload == 0 && *plr_rune_of_protection_active == 0)
   {
-    *gold_hint_amount = cost_protection;
     world->plr.gold -= cost_protection;
     *plr_rune_of_protection_active = 1;
     if (world->plr.perks & PERK_IMPROVE_SHIELD_POWERUP)
       *plr_rune_of_protection_active = 3;
     world->plr.reload = 40;
     trigger_sample(SAMPLE_PROTECTION, 255);
-    return;
+    return cost_protection;
   }
   if (key_d && world->plr.gold >= cost_turret && world->plr.reload == 0) // Turret
   {
-    *gold_hint_amount = cost_turret;
     create_turret(world);
     if (overpowered)
     {
@@ -154,7 +151,7 @@ void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key
     world->plr.gold -= cost_turret;
     world->plr.reload = 40;
     trigger_sample(SAMPLE_TURRET, 255);
-    return;
+    return cost_turret;
   }
   if (key_f && world->plr.gold >= cost_blast && world->plr.reload == 0)
   {
@@ -162,7 +159,6 @@ void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key
     int did_shoot = shoot_one_shot_at_xy(world->plr.x, world->plr.y, world->plr.dx, world->plr.dy, &world->plr, 1, world);
     if (did_shoot)
     {
-      *gold_hint_amount = cost_blast;
       b->bullet_type = BULLET_TYPE_CLUSTER;
       b->dx *= 0.5;
       b->dy *= 0.5;
@@ -173,9 +169,10 @@ void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key
       world->plr.gold -= cost_blast;
       world->plr.reload = 40;
       trigger_sample_with_params(SAMPLE_BLAST, 255, 127, 1000);
-      return;
+      return cost_blast;
     }
   }
+  return 0;
 }
 
 void handle_shoot_key(World *world, int key_space)

@@ -16,10 +16,11 @@ void handle_weapon_change_keys(World *world, int key_x, int key_z);
 /*
  * Checks the A, S, D and F keys, and applies powerups and handles the gold economics accordingly.
  * The gold_hint_amount parameter is set to the powerup cost value if one of the powerups is selected.
+ * Returns the amount of gold spent.
  *
  * This function also handles sample playback.
  */
-void handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f, int *gold_hint_amount);
+int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f);
 /*
  * Checks the space key and makes the player shoot using the shoot(Enemy*, World*) function.
  *

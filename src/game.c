@@ -343,8 +343,7 @@ void game(GlobalGameState *ggs)
 
       handle_weapon_change_keys(&world, key_x, key_z);
 
-      int gold_hint_amount = 0;
-      handle_power_up_keys(&world, key_a, key_s, key_d, key_f, &gold_hint_amount);
+      int gold_hint_amount = handle_power_up_keys(&world, key_a, key_s, key_d, key_f);
       if (gold_hint_amount)
       {
         show_gold_hint(&world, gold_hint_amount);
