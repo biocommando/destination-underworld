@@ -53,12 +53,10 @@ int read_sprites_from_file(const char *filename, int min_id, int max_id)
     init_sprites();
     for (int i = SPRITE_ID_MIN; i <= SPRITE_ID_MAX; i++)
     {
-        char rec[256] = "";
         char key[] = "sprite_xxx";
         sprintf(key, "sprite_%d", i);
-        record_file_get_record(filename, key, rec, sizeof(rec));
         DuSprite *s = &sprites[i];
-        sscanf(rec, "%*s x=%d y=%d w=%d h=%d", &s->sx, &s->sy, &s->width, &s->height);
+        record_file_scanf(filename, key, "%*s x=%d y=%d w=%d h=%d", &s->sx, &s->sy, &s->width, &s->height);
         if (s->width != 0 && s->height != 0)
         {
             sprite_ok[i] = 1;

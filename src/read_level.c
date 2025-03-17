@@ -17,10 +17,8 @@ static int check_authentication(const char *file_to_check)
     {
         char fname[256];
         sprintf(fname, DATADIR "%s\\auth.dat", get_game_settings()->mission_pack);
-        char rec[256] = "";
-        record_file_get_record(fname, file_to_check, rec, sizeof(rec));
         char file_hash_hex[256] = "N/A";
-        sscanf(rec, "%*s %s", file_hash_hex);
+        record_file_scanf(fname, file_to_check, "%*s %s", file_hash_hex);
         char hash[DMAC_SHA1_HASH_SIZE];
         memset(hash, 0, sizeof(hash));
         convert_sha1_hex_to_hash(hash, file_hash_hex);
@@ -273,9 +271,7 @@ void read_enemy_configs(World *world)
     {
         char key[10];
         sprintf(key, "type-%d", i);
-        char rec[256] = "";
-        record_file_get_record(fname, key, rec, sizeof(rec));
-        sscanf(rec, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d",
+        record_file_scanf(fname, key, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d",
                &world->enemy_configs[i].turret,
                &world->enemy_configs[i].rate,
                &world->enemy_configs[i].health,

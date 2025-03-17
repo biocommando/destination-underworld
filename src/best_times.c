@@ -44,10 +44,7 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
     {
         get_id(id, best_times, i);
         best_times->times[i] = 1e10;
-        if (record_file_get_record(file, id, record, sizeof(record)) == 0)
-        {
-            sscanf(record, "%*s %f", &best_times->times[i]);
-        }
+        record_file_scanf(file, id, "%*s %f", &best_times->times[i]);
     }
 
     qsort(best_times->times, NUM_BEST_TIMES, sizeof(float), compare_floats);

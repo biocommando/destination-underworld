@@ -17,9 +17,7 @@ static void read_setting(const char *filename, char **argv, int argc, char *resu
 
   if (!read_cmd_line_arg_str(cmd_line_arg, argv, argc, result))
   {
-    char temp[256] = "";
-    record_file_get_record(filename, cmd_line_arg, temp, sizeof(temp));
-    sscanf(temp, "%*s %s", result);
+    record_file_scanf(filename, cmd_line_arg, "%*s %s", result);
   }
   LOG("Setting %s = %s\n", cmd_line_arg, result);
 }

@@ -7,10 +7,8 @@
 
 void read_arena_configs(const char *filename, ArenaConfigs *config)
 {
-    char rec[256] = "";
     int num = 0;
-    record_file_get_record(filename, "number_of_arenas", rec, sizeof(rec));
-    sscanf(rec, "%*s %d", &num);
+    record_file_scanf(filename, "number_of_arenas", "%*s %d", &num);
     if (num < 0 || num > ARENACONF_MAX_NUMBER_OF_ARENAS)
     {
         LOG("Invalid number of arenas %d\n", num);
@@ -22,10 +20,7 @@ void read_arena_configs(const char *filename, ArenaConfigs *config)
     {
         char arena_key[100];
         sprintf(arena_key, "arena_%d", i);
-        *rec = 0;
-        record_file_get_record(filename, arena_key, rec, sizeof(rec));
-
-        sscanf(rec, "%*s %s level_number=%d", config->arenas[i].name, &config->arenas[i].level_number);
+        record_file_scanf(filename, arena_key, "%*s %s level_number=%d", config->arenas[i].name, &config->arenas[i].level_number);
 
         for (char *p = config->arenas[i].name; *p; p++)
         {
@@ -46,10 +41,9 @@ void read_arena_highscores(const char *filename, ArenaHighscore *highscore)
             highscore->mode[i][mi] = 0;
             highscore->kills[i][mi] = 0;
             highscore->dirty[i][mi] = 0;
-            char key[100], rec[100] = "";
+            char key[100];
             sprintf(key, "arena_%d_item_%d", i, mi);
-            record_file_get_record(filename, key, rec, sizeof(rec));
-            sscanf(rec, "%*s mode=%d kills=%d", &highscore->mode[i][mi], &highscore->kills[i][mi]);
+            record_file_scanf(filename, key, "%*s mode=%d kills=%d", &highscore->mode[i][mi], &highscore->kills[i][mi]);
         }
     }
 }

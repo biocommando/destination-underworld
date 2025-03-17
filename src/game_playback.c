@@ -27,18 +27,15 @@ static inline void format_id(char *id)
 
 static void get_event(struct game_playback_event *evt)
 {
-    char id[20], value[100];
+    char id[20];
     format_id(id);
-    if (record_file_get_record(filename, id, value, sizeof(value)) == 0)
-    {
-        sscanf(value, "%*s end=%d time=%ld keys=%ld",
-               &evt->end, &evt->time_stamp, &evt->key_mask);
-    }
+    record_file_scanf(filename, id, "%*s end=%d time=%ld keys=%ld",
+                      &evt->end, &evt->time_stamp, &evt->key_mask);
 }
 
 void game_playback_set_event(const struct game_playback_event *evt)
 {
-    char id[20], value[100];
+    char id[20];
     format_id(id);
     record_file_set_record_f(filename, "%s end=%d time=%ld keys=%ld",
                              id, evt->end, evt->time_stamp, evt->key_mask);

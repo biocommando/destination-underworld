@@ -21,3 +21,7 @@ int record_file_set_record(const char *file, const char *id, const char *record)
 // Similar to record_file_set_record but it formats the record within the call and reads the
 // id from the resulting string.
 int record_file_set_record_f(const char *file, const char *format, ...);
+
+// Get the record with given id and does a sscanf to it (so the format will probably start like "%*s ...").
+// Returns the number of variables scanned successfully.
+int record_file_scanf(const char *file, const char *id, const char *format, ...);

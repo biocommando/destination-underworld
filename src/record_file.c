@@ -162,3 +162,14 @@ int record_file_set_record_f(const char *file, const char *format, ...)
     sscanf(record, "%s", id);
     return record_file_set_record(file, id, record);
 }
+
+int record_file_scanf(const char *file, const char *id, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    char record[REC_MAX_LENGTH];
+    int err = record_file_get_record(file, id, record, REC_MAX_LENGTH);
+    if (err)
+        return 0;
+    return vsscanf(record, format, args);
+}

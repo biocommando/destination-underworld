@@ -21,9 +21,8 @@ static int get_sample_path(char *sample_path, const char *sample_name)
 {
   char sample_mappings_filename[256];
   get_data_filename(sample_mappings_filename, "sounds.dat");
-  char record[256] = "", value[256] = "";
-  if (record_file_get_record(sample_mappings_filename, sample_name, record, sizeof(record)) == 0 &&
-      sscanf(record, "%*s %s", value) == 1)
+  char value[256] = "";
+  if (record_file_scanf(sample_mappings_filename, sample_name, "%*s %s", value) == 1)
   {
     get_data_filename(sample_path, value);
     return 0;

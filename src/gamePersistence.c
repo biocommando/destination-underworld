@@ -21,14 +21,11 @@ void create_verification_hash(char *hash_hex, int mission, int game_modifiers, c
 
 static inline void read_save_data_record(const char *filename, int slot, const char *suffix, const char *format, void *dst)
 {
-    char rec[100], key[100];
+    char key[100];
     sprintf(key, "slot_%d--%s", slot, suffix);
-    if (!record_file_get_record(filename, key, rec, sizeof(rec)))
-    {
-        char fullfmt[32];
-        sprintf(fullfmt, "%%*s %s", format);
-        sscanf(rec, fullfmt, dst);
-    }
+    char fullfmt[32];
+    sprintf(fullfmt, "%%*s %s", format);
+    record_file_scanf(filename, key, fullfmt, dst);
 }
 
 void load_game_save_data(const char *filename, Enemy *data, int *mission, int *game_modifiers, int slot)
@@ -95,8 +92,7 @@ void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifi
     sscanf(rec, "%*s %d", game_modifiers);
 
     sprintf(key, "slot_%d--mission", slot);
-    record_file_get_record(filename, key, rec, sizeof(rec));
-    sscanf(rec, "%*s %d", mission);
+    record_file_scanf(filename, key, "%*s %d", mission);
 
     *has_save = 1;
 }
