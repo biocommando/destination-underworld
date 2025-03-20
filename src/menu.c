@@ -708,10 +708,15 @@ static int display_exit_to_main_menu_menu()
 
     add_menu_item(&m, "No", "Return to in-game menu");
     add_menu_item(&m, "Yes", "Abandon game and go to main menu");
+    add_menu_item(&m, "Exit game", "Exit the game completely");
 
     display_menu(&m);
 
-    return m.items[m.selected_item].item_id == get_menu_item_id("Yes");
+    if (m.items[m.selected_item].item_id == get_menu_item_id("Yes"))
+        return 1;
+    if (m.items[m.selected_item].item_id == get_menu_item_id("Exit"))
+        return 2;
+    return 0;
 }
 
 int menu(int ingame, GlobalGameState *ggs)
@@ -763,11 +768,14 @@ int menu(int ingame, GlobalGameState *ggs)
             }
             else if (ingame_menu_selection == get_menu_item_id("Exit"))
             {
-                if (display_exit_to_main_menu_menu())
+                int choice = display_exit_to_main_menu_menu();
+                if (choice)
                 {
-                    main_menu = 1;
+                    main_menu = choice == 1;
                     exit_menu = 1;
                     ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
+                    if (choice == 2)
+                        ggs->mission = 0;
                 }
             }
         }
