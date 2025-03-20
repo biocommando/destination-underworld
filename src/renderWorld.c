@@ -495,6 +495,8 @@ int progress_and_draw_explosions(World *world)
                 }
             }
         }
+        if (ex->emit_blast_wave && ex->phase < 12)
+            al_draw_filled_circle(ex->x, ex->y, ex->phase * 7, al_map_rgba(0, 0, 0, (12 - ex->phase) * 6.6));
 
         if (++ex->phase >= 30)
         {

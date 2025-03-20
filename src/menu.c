@@ -686,7 +686,7 @@ static void display_perk_menu(Enemy *player)
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_HEALTH_POWERUP, "Healer", "Improves the Heal powerup.\n+1 health per use.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_SHIELD_POWERUP, "Protector", "Improves the Shield powerup.\nGuards from 3 hits instead of 1.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_TURRET_POWERUP, "Engineer", "Improves the Turret powerup.\nThe spawned turret explodes after shooting.");
-    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_BLAST_POWERUP, "Annihilator", "Improves the Torrent of Fire powerup.\nMakes the projectile shoot fireballs while traveling.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_BLAST_POWERUP, "Annihilator", "Improves the Torrent of Fire powerup.\nMakes the projectile shoot fireballs while traveling\nand spawn a turret when it explodes.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SPEED_POTION, "Speedrunner", "Start level with Potion of Gotta Go Fast.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SHIELD_POWERUP, "Paranoid", "Start level with Shield powerup active.");
     display_menu(&m);

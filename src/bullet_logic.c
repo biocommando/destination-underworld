@@ -11,6 +11,18 @@
 #include "vfx.h"
 #include <math.h>
 
+static inline void create_blast_powerup_explosion(const Bullet *bullet, World *world)
+{
+  if (world->plr.perks & PERK_IMPROVE_BLAST_POWERUP)
+  {
+    Enemy *e = create_turret(world);
+    e->x = bullet->x;
+    e->y = bullet->y;
+    e->dx = e->dy = 0;
+  }
+  create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, &world->plr);
+}
+
 void bullet_logic(World *world, GlobalGameState *ggs)
 {
   const int difficulty = GET_DIFFICULTY(world);
@@ -38,7 +50,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
             bullet->x -= 5 * bullet->dx;
             bullet->y -= 5 * bullet->dy;
           }
-          create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, &world->plr);
+          create_blast_powerup_explosion(bullet, world);
         }
 
         break;
@@ -115,7 +127,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
 
             if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
             {
-              create_cluster_explosion(world, bullet->x, bullet->y, 16, world->powerups.cluster_strength, &world->plr);
+              create_blast_powerup_explosion(bullet, world);
             }
 
             if (!enm->alive) // enemy was killed (bullet_hit has side effects)

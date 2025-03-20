@@ -118,3 +118,8 @@ void set_player_start_state(World *world, GlobalGameState *ggs);
  * Apply potion effects for healing and shield of fire where the effects are time based.
  */
 void apply_timed_potion_effects(World *world);
+
+/*
+ * Create a powerup turret at player's location.
+ */
+Enemy *create_turret(World *world);

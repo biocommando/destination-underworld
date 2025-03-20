@@ -110,6 +110,7 @@ void create_explosion(int x, int y, World *world, double intensity)
     ex->x = x - 16 + rand() % 32;
     ex->y = y - 16 + rand() % 32;
     ex->phase = rand() % 5;
+    ex->emit_blast_wave = rand() % 5 == 0;
 
     ex->intensity = intensity;
 

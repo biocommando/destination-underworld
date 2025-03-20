@@ -74,25 +74,6 @@ void handle_weapon_change_keys(World *world, int key_x, int key_z)
     trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
 }
 
-static inline Enemy *create_turret(World *world)
-{
-  Enemy *enm = ns_spawn_enemy(world->plr.x, world->plr.y, 9, world->current_room, world);
-  enm->ammo = 128;
-  enm->rate = 0;
-  enm->shots = 2;
-  enm->reload = 10;
-  enm->move = 10;
-  enm->dx = world->plr.dx;
-  enm->dy = world->plr.dy;
-  enm->health = 20;
-  enm->gold = 0;
-  enm->turret = TURRET_TYPE_PLAYER;
-  enm->hurts_monsters = 1;
-  enm->alive = 1;
-  enm->killed = 0;
-  return enm;
-}
-
 int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f)
 {
   const int price_bonus = (*world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;

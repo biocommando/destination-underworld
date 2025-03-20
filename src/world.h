@@ -229,6 +229,8 @@ typedef struct
     double intensity;
     // Each individual "circle group"
     struct explosion_circle circles[10];
+    // Does the explosion have a blast wave effect? This is change based.
+    int emit_blast_wave;
 } Explosion;
 
 /*

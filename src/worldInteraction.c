@@ -627,3 +627,22 @@ inline void apply_timed_potion_effects(World *world)
     }
   }
 }
+
+inline Enemy *create_turret(World *world)
+{
+  Enemy *enm = ns_spawn_enemy(world->plr.x, world->plr.y, 9, world->current_room, world);
+  enm->ammo = 128;
+  enm->rate = 0;
+  enm->shots = 2;
+  enm->reload = 10;
+  enm->move = 10;
+  enm->dx = world->plr.dx;
+  enm->dy = world->plr.dy;
+  enm->health = 20;
+  enm->gold = 0;
+  enm->turret = TURRET_TYPE_PLAYER;
+  enm->hurts_monsters = 1;
+  enm->alive = 1;
+  enm->killed = 0;
+  return enm;
+}
