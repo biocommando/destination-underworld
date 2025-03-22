@@ -1,9 +1,10 @@
 @echo off
 gcc test\test-du.c -o test-du.exe
-.\test-du.exe -ctest\normal-complete-state.dat ^
--rtest\normal-recording.dat ^
+.\test-du.exe ^
 -ctest\explosion-madness-complete-state.dat ^
 -rtest\explosion-madness-recording.dat ^
+-ctest\normal-complete-state.dat ^
+-rtest\normal-recording.dat ^
 -ctest\brutally-hard-complete-state.dat ^
 -rtest\brutally-hard-recording.dat ^
 -ctest\overpowerup-complete-state.dat ^
