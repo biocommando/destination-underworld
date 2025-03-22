@@ -30,9 +30,9 @@ int main(int argc, char **argv)
 
   char read_arg[256] = "";
 #ifdef ENABLE_LOGGING
-  logging_enabled = read_cmd_line_arg_int("logging", argv, argc);
+  logging_enabled = read_cmd_line_arg_int("logging", argv, argc, "Set to 1 to enable logging");
 #endif
-  read_cmd_line_arg_str("player-damage", argv, argc, read_arg);
+  read_cmd_line_arg_str("player-damage", argv, argc, read_arg, "Set to 1 to enable no damage cheat");
   int player_damage_off = 0;
   if (!strcmp(read_arg, "off"))
   {
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   }
   read_arg[0] = 0;
 
-  read_cmd_line_arg_str("record-mode", argv, argc, read_arg);
+  read_cmd_line_arg_str("record-mode", argv, argc, read_arg, "Gameplay recording mode: record or play");
   int *record_mode = get_playback_mode();
   int record_playback_no_user_interaction = 0;
   if (!strcmp(read_arg, "record"))
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     *record_mode = RECORD_MODE_PLAYBACK;
     char fname[256];
     FILE *record_input_file = NULL;
-    if (read_cmd_line_arg_str("file", argv, argc, fname))
+    if (read_cmd_line_arg_str("file", argv, argc, fname, "Gameplay recording file for playback"))
     {
       record_input_file = fopen(fname, "r");
       game_playback_set_filename(fname);
@@ -65,7 +65,8 @@ int main(int argc, char **argv)
       return 0;
     }
     fclose(record_input_file);
-    record_playback_no_user_interaction = read_cmd_line_arg_int("start-without-user-interaction", argv, argc);
+    record_playback_no_user_interaction = read_cmd_line_arg_int("start-without-user-interaction", argv, argc,
+      "Set to 1 so that user doesn't need to press any key to start gameplay recording playback.");
     LOG("Playback mode active.\n");
   }
   else if (read_arg[0])
@@ -79,7 +80,7 @@ int main(int argc, char **argv)
   if (get_game_settings()->require_authentication && *record_mode == RECORD_MODE_PLAYBACK)
   {
     char auth_hash_file[256];
-    if (read_cmd_line_arg_str("auth-hash-file", argv, argc, auth_hash_file))
+    if (read_cmd_line_arg_str("auth-hash-file", argv, argc, auth_hash_file, "Gameplay recording authentication file"))
     {
       FILE *f = fopen(auth_hash_file, "rb");
       char hash[DMAC_SHA1_HASH_SIZE];
@@ -109,7 +110,7 @@ int main(int argc, char **argv)
   wt_sample_read_all(DATADIR);
   progress_load_state("Loading game...", 1);
   srand((int)time(NULL));
-  int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc);
+  int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc, "Set default game mode (integer, see source for mapping)");
 
   progress_load_state("Loading samples...", 1);
   register_sample(SAMPLE_WARP, "warp", SAMPLE_PRIORITY(HIGH, 1), 0);
@@ -166,7 +167,8 @@ int main(int argc, char **argv)
     ggs.cheats |= 1;
   ggs.mission = 1;
   ggs.no_player_interaction = record_playback_no_user_interaction;
-  ggs.setup_screenshot_buffer = read_cmd_line_arg_int("screenshot-buffer", argv, argc);
+  ggs.setup_screenshot_buffer = read_cmd_line_arg_int("screenshot-buffer", argv, argc,
+    "Set to 1 to enable screenshot capturing");
   while (ggs.mission != 0)
   {
     if (*record_mode != RECORD_MODE_PLAYBACK)

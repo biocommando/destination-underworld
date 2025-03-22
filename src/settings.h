@@ -59,7 +59,7 @@ void save_settings();
  * Reads an argument using read_cmd_line_arg_str. Parses the output
  * as integer and returns the value. Returns 0 as the default value.
  */
-int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
+int read_cmd_line_arg_int(const char *arg, char **argv, int argc, const char *documentation);
 /*
  * Read command line argument from argv and argc passed from main function.
  * If there's an argument in format:
@@ -67,7 +67,7 @@ int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
  * the value is set to output variable.
  * On success returns 1, otherwise 0.
  */
-int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output);
+int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output, const char *documentation);
 /*
  * Read or write ArenaHighscore structure from arena_highscores.dat.
  * The file uses record file format and the structure is:

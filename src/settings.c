@@ -15,7 +15,7 @@ static void read_setting(const char *filename, char **argv, int argc, char *resu
 
   result[0] = 0;
 
-  if (!read_cmd_line_arg_str(cmd_line_arg, argv, argc, result))
+  if (!read_cmd_line_arg_str(cmd_line_arg, argv, argc, result, "Setting read from settings.dat"))
   {
     record_file_scanf(filename, cmd_line_arg, "%*s %s", result);
   }
@@ -35,7 +35,7 @@ void read_settings(char **argv, int argc)
 {
   char buf[256], file_name[256] = DATADIR "settings.dat";
 
-  read_cmd_line_arg_str("settings-dat", argv, argc, file_name);
+  read_cmd_line_arg_str("settings-dat", argv, argc, file_name, "Filename (relative to work dir) to override settings.dat");
   strcpy(game_settings.settings_file, file_name);
 
   LOG("Settings file: %s\n", file_name);
@@ -59,12 +59,14 @@ void read_settings(char **argv, int argc)
   read_arena_configs(arena_config_file, &game_settings.arena_config);
 }
 
-int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output)
+int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output, const char *documentation)
 {
   char format_str[256];
   sprintf(format_str, "--%s=%%s", arg);
 
   printf(format_str, "<value>\n");
+  if (documentation)
+    printf("  %s\n", documentation);
 
   while (argc--)
   {
@@ -75,10 +77,10 @@ int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output)
   return 0;
 }
 
-int read_cmd_line_arg_int(const char *arg, char **argv, int argc)
+int read_cmd_line_arg_int(const char *arg, char **argv, int argc, const char *documentation)
 {
   char str[256];
-  int success = read_cmd_line_arg_str(arg, argv, argc, str);
+  int success = read_cmd_line_arg_str(arg, argv, argc, str, documentation);
   if (success)
   {
     int value;
