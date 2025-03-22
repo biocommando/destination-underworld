@@ -9,5 +9,10 @@ screenshot*_*.png
 **/Old/
 allegro/
 *.dll
-dataloss/*-save1.dat
+dataloss/**/save.dat
+dataloss/**/arena_highscores.dat
 dataloss/recording--level-complete-state.dat
+environment-release.txt
+local/
+open-du-edit.html
+.vscode/
