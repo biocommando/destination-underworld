@@ -8,7 +8,8 @@ int play_one()
 {
     char cmd[1024];
     sprintf(cmd, "DestinationUnderworld.exe --record-mode=play --file=%s "
-                 "--start-without-user-interaction=1 --core-pack--require-authentication=0",
+                 "--start-without-user-interaction=1 --core-pack--require-authentication=0 "
+                 "--screenshot-buffer=1",
             recording);
     printf("Commandline:\n%s\n", cmd);
     system(cmd);
