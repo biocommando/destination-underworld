@@ -3,14 +3,15 @@
 #include <string.h>
 
 const char *recording = NULL, *complete_state = NULL;
+char cmdl_extra[1024] = "";
 
 int play_one()
 {
     char cmd[1024];
     sprintf(cmd, "DestinationUnderworld.exe --record-mode=play --file=%s "
                  "--start-without-user-interaction=1 --core-pack--require-authentication=0 "
-                 "--screenshot-buffer=1",
-            recording);
+                 "--screenshot-buffer=1 %s",
+            recording, cmdl_extra);
     printf("Commandline:\n%s\n", cmd);
     system(cmd);
     FILE *f1, *f2;
@@ -59,10 +60,12 @@ int main(int argc, char **argv)
             recording = argv[i] + 2;
         if (argv[i][0] == '-' && argv[i][1] == 'c')
             complete_state = argv[i] + 2;
+        if (argv[i][0] == '-' && argv[i][1] == 'x')
+            strcpy(cmdl_extra, argv[i] + 2);
         if (recording && complete_state)
         {
             printf("Start playback for recording %s and check it against complete state %s...\n", recording, complete_state);
-            WRITE_TRES("Start test run with command line:\n%s \"-r%s\" \"-c%s\"\n", argv[0], recording, complete_state);
+            WRITE_TRES("Start test run with command line:\n%s \"-x%s\" \"-r%s\" \"-c%s\"\n", argv[0], cmdl_extra, recording, complete_state);
             int ok = play_one();
             WRITE_TRES("    Result: %s\n", ok ? "OK" : "FAIL");
             printf("%s\n", ok ? "OK" : "FAIL");
