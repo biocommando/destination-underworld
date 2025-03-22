@@ -39,8 +39,18 @@ int play_one()
     return ok;
 }
 
+#define WRITE_TRES(...)                           \
+    do                                            \
+    {                                             \
+        FILE *f = fopen("test-results.txt", "a"); \
+        fprintf(f, __VA_ARGS__);                  \
+        fclose(f);                                \
+    } while (0)
+
 int main(int argc, char **argv)
 {
+    remove("test-results.txt");
+    WRITE_TRES("Start tests with %d arguments\n", argc - 1);
     int num_failed = 0;
     for (int i = 0; i < argc; i++)
     {
@@ -51,7 +61,9 @@ int main(int argc, char **argv)
         if (recording && complete_state)
         {
             printf("Start playback for recording %s and check it against complete state %s...\n", recording, complete_state);
+            WRITE_TRES("Start test run with command line:\n%s \"-r%s\" \"-c%s\"\n", argv[0], recording, complete_state);
             int ok = play_one();
+            WRITE_TRES("    Result: %s\n", ok ? "OK" : "FAIL");
             printf("%s\n", ok ? "OK" : "FAIL");
             if (!ok)
                 num_failed++;
@@ -64,5 +76,6 @@ int main(int argc, char **argv)
         printf("OK\n");
     else
         printf("FAIL, number of tests failed: %d\n", num_failed);
+    WRITE_TRES("Number of failed tests %d.\n", num_failed);
     return 0;
 }
