@@ -86,6 +86,7 @@ int main(int argc, char **argv)
       char hash[DMAC_SHA1_HASH_SIZE];
       fread(hash, 1, DMAC_SHA1_HASH_SIZE, f);
       fclose(f);
+      dmac_sha1_set_ctx(AUTH_CTX_GAMEPLAY_RECORDING);
       int res = dmac_sha1_verify_file(game_playback_get_filename(), hash);
       if (res != 0)
       {

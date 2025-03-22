@@ -4,6 +4,8 @@
 #include "sha1.h"
 #include "../logging.h"
 
+static int key_ctx = 0;
+
 void convert_sha1_hash_to_hex(char *hex, const char *hash)
 {
     for (int i = 0; i < DMAC_SHA1_HASH_SIZE; i++)
@@ -27,17 +29,21 @@ void convert_sha1_hex_to_hash(char *hash, const char *hex)
     }
 }
 
-void dmac_sha1_default_key_fn(char *key)
+void dmac_sha1_default_key_fn(char *key, int ctx)
 {
-    const char *secret = "SecretKey--??ASC^W9T-*6R)L84^_A-3<9E";
     memset(key, 0, 64);
-    memcpy(key, secret, sizeof(secret));
+    sprintf(key, "SecretKe%c", ctx);
+}
+
+void dmac_sha1_set_ctx(int ctx)
+{
+    key_ctx = ctx;
 }
 
 void dmac_sha1_calculate_hash(char *hash, const char *str, size_t size)
 {
     char key[64];
-    DMAC_SHA1_KEY_FN(key);
+    DMAC_SHA1_KEY_FN(key, key_ctx);
 
     char inner_key[64], outer_key[64];
     for (int i = 0; i < 64; i++)

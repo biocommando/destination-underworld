@@ -22,6 +22,7 @@ static int check_authentication(const char *file_to_check)
         char hash[DMAC_SHA1_HASH_SIZE];
         memset(hash, 0, sizeof(hash));
         convert_sha1_hex_to_hash(hash, file_hash_hex);
+        dmac_sha1_set_ctx(AUTH_CTX_CONF);
         err = dmac_sha1_verify_file(file_to_check, hash);
     }
 

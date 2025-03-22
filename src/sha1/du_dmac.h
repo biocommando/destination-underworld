@@ -4,7 +4,7 @@
 #ifndef DMAC_SHA1_KEY_FN
 #define DMAC_SHA1_KEY_FN dmac_sha1_default_key_fn
 #else
-extern void DMAC_SHA1_KEY_FN(char *key);
+extern void DMAC_SHA1_KEY_FN(char *key, int ctx);
 #endif
 
 #define DMAC_SHA1_HASH_SIZE 20
@@ -12,7 +12,12 @@ extern void DMAC_SHA1_KEY_FN(char *key);
 /*
  * Sets a default 64 byte DMAC-SHA1 key to the key pointer.
  */
-void dmac_sha1_default_key_fn(char *key);
+void dmac_sha1_default_key_fn(char *key, int ctx);
+
+/*
+ * Allows using different keys for different uses.
+ */
+void dmac_sha1_set_ctx(int ctx);
 
 /*
  * Produces the 20 byte hash for the string.

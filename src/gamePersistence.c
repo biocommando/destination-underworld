@@ -15,6 +15,7 @@ void create_verification_hash(char *hash_hex, int mission, int game_modifiers, c
             data->rate, data->ammo, data->gold, data->perks,
             data->xp, salt);
     char hash[DMAC_SHA1_HASH_SIZE];
+    dmac_sha1_set_ctx(AUTH_CTX_SAVE_GAME);
     dmac_sha1_calculate_hash(hash, state_string, sizeof(state_string));
     convert_sha1_hash_to_hex(hash_hex, hash);
 }

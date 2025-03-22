@@ -21,6 +21,7 @@ static inline void read_save_data_record(const char *filename, int slot, const c
 
 int main(int argc, char **argv)
 {
+    dmac_sha1_set_ctx(2);
     if (argc < 2)
     {
         printf("Save data filename required\n");

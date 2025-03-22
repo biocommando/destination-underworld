@@ -187,6 +187,7 @@ static void finalize_recording(long time_stamp)
   if (get_game_settings()->require_authentication)
   {
     char hash[DMAC_SHA1_HASH_SIZE];
+    dmac_sha1_set_ctx(AUTH_CTX_GAMEPLAY_RECORDING);
     dmac_sha1_calculate_hash_f(hash, game_playback_get_filename());
     char fname[256 + 10];
     sprintf(fname, "%s.auth", game_playback_get_filename());
