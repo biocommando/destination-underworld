@@ -1,0 +1,13 @@
+DestinationUnderworldRelease
+test-results.txt
+files.txt
+recorded-mission*-take*.dat*
+screenshot*_*.png
+*.exe
+**/*.o
+**/intermediate_debug.boss
+**/Old/
+allegro/
+*.dll
+dataloss/*-save1.dat
+dataloss/recording--level-complete-state.dat

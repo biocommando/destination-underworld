@@ -5,15 +5,15 @@
 
 #include "sha1/du_dmac.h"
 
-void create_verification_hash(char *hash_hex, int mission, int game_modifiers, const Enemy *data)
+void create_verification_hash(char *hash_hex, int mission, int game_modifiers, const Enemy *data, int salt)
 {
     char state_string[200];
     memset(state_string, 0, sizeof(state_string));
-    sprintf(state_string, "game data %d %d %d %d %d %d %d %d %d %d",
+    sprintf(state_string, "game data %d %d %d %d %d %d %d %d %d %d salt=%d",
             game_modifiers, mission,
             data->health, data->shots, data->reload,
             data->rate, data->ammo, data->gold, data->perks,
-            data->xp);
+            data->xp, salt);
     char hash[DMAC_SHA1_HASH_SIZE];
     dmac_sha1_calculate_hash(hash, state_string, sizeof(state_string));
     convert_sha1_hash_to_hex(hash_hex, hash);
@@ -43,6 +43,8 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
     read_save_data_record(filename, slot, "gold", "%d", &data->gold);
     read_save_data_record(filename, slot, "perks", "%d", &data->perks);
     read_save_data_record(filename, slot, "xp", "%d", &data->xp);
+    int salt = 0;
+    read_save_data_record(filename, slot, "salt", "%d", &salt);
 
     data->hurts_monsters = 1;
     data->sprite = -1;
@@ -53,7 +55,7 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
     {
         char read_hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1] = "";
         char saved_hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
-        create_verification_hash(saved_hash_hex, *mission, *game_modifiers, data);
+        create_verification_hash(saved_hash_hex, *mission, *game_modifiers, data, salt);
         read_save_data_record(filename, slot, "hash", "%40s", read_hash_hex);
         if (strcmp(read_hash_hex, saved_hash_hex) != 0)
         {
@@ -118,9 +120,11 @@ void save_game_save_data(const char *filename, Enemy *data, int mission, int gam
     if (get_game_settings()->require_authentication)
     {
         char hash[DMAC_SHA1_HASH_SIZE * 2 + 1];
-        create_verification_hash(hash, mission, game_modifiers, data);
+        int salt = rand();
+        create_verification_hash(hash, mission, game_modifiers, data, salt);
 
         record_file_set_record_f(filename, "slot_%d--hash %s", slot, hash);
+        record_file_set_record_f(filename, "slot_%d--salt %d", slot, salt);
     }
 }
 
