@@ -151,6 +151,7 @@ typedef struct
 #define GAMEMODIFIER_ARENA_FIGHT 0x20
 #define GAMEMODIFIER_POTION_ON_DEATH 0x40
 #define GAMEMODIFIER_NO_GOLD 0x80
+#define GAMEMODIFIER_UBER_WIZARD 0x100
 
 #define GET_DIFFICULTY(world) ((*(world)->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : DIFFICULTY_NORMAL)
 
@@ -368,6 +369,15 @@ typedef struct potion
     int sample;
 } Potion;
 
+// Visual FX for Uber Wizard's weapon
+typedef struct 
+{
+    Coordinates start;
+    Coordinates end;
+    int dim;
+    int type;
+} UberWizardWeaponFx;
+
 // Structure that contains most of the game state
 typedef struct
 {
@@ -397,6 +407,8 @@ typedef struct
     struct sparkle_fx_circle sparkle_fx_circle[SPARKLE_FX_CIRCLE_COUNT];
     // Visual effects
     struct flame_fx flames[FLAME_FX_COUNT];
+    // Visual effects
+    UberWizardWeaponFx uber_wizard_weapon_fx;
     // Enemy type mapping
     struct enemy_config enemy_configs[ENEMY_TYPE_COUNT];
 
@@ -468,6 +480,7 @@ typedef struct
     // Set to 1 to allow saving a buffer of screenshots (slow) with a keypress
     int setup_screenshot_buffer;
 } GlobalGameState;
+
 
 /*
  * Check if effect with effect_id is active (1 = true, 0 = false).

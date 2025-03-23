@@ -6,6 +6,9 @@
 #include "helpers.h"
 #include "predictableRandom.h"
 #include "vfx.h"
+#include "boss_logic.h"
+#include "sampleRegister.h"
+#include "duColors.h"
 
 static inline int is_passable(World *world, int x, int y)
 {
@@ -245,8 +248,6 @@ int bullet_hit(Enemy *enm, Bullet *bb)
     if (--enm->health <= 0)
     {
         enm->alive = 0;
-        enm->killed = 1;
-        enm->death_animation = 0;
     }
 
     return 1;
@@ -645,4 +646,77 @@ inline Enemy *create_turret(World *world)
   enm->alive = 1;
   enm->killed = 0;
   return enm;
+}
+
+void kill_enemy(Enemy *enm, World *world)
+{
+    enm->health = 0;
+    enm->alive = 0;
+    enm->killed = 1;
+    enm->death_animation = 0;
+
+    create_explosion(enm->x, enm->y, world, 1.8);
+
+    if (check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
+    {
+      world->potion_effect_flags &= ~POTION_EFFECT_STOP_ENEMIES;
+      if (!world->potion_effect_flags)
+        world->potion_duration = 0;
+    }
+
+    get_tile_at(world, enm->x, enm->y)->is_blood_stained = 1;
+    if ((*world->game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
+      world->plr.gold += enm->gold;
+
+    world->kills++;
+    world->boss_fight_config->state.player_kills++;
+    world->plr.xp += enm->xp;
+    if (enm->gold > 0 || (*world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
+    {
+      if (*world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+        sprintf(world->hint.text, "%d", world->kills);
+      else
+        sprintf(world->hint.text, "+ %d", enm->gold);
+      world->hint.loc.x = enm->x - 15;
+      world->hint.loc.y = enm->y - 15;
+      world->hint.dim = 6;
+      world->hint.time_shows = 40;
+    }
+    if ((*world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
+    {
+      if (world->plr.health < 3 && world->plr.health > 0)
+        world->plr.health++;
+      world->plr.ammo += 7;
+      if (world->plr.ammo > 15)
+        world->plr.ammo = 15;
+    }
+    if (enm->potion >= POTION_ID_SHIELD)
+    {
+      int potion = enm->potion;
+      // if almost out of health, spawn healing potion
+      if (world->plr.health == 1)
+        potion = POTION_ID_INSTANT_HEAL;
+      spawn_potion(enm->x, enm->y, potion, world->current_room, world, POTION_DROP_RANGE_START, POTION_DROP_RANGE_END);
+    }
+
+    if (enm == world->boss) // Archmage dies
+    {
+      LOG_TRACE("boss die logic\n");
+      boss_logic(world, 1);
+      stop_all_samples();
+      trigger_sample_with_params(SAMPLE_BOSSTALK_2, 255, 127 + (enm->x - 240) / 8, 1000);
+      for (int xx = 0; xx < 40; xx++)
+      {
+        int col = xx % 4;
+        col = col == 0 ? 255 : (col == 2 ? 64 : 128);
+        al_draw_filled_rectangle(0, 0, SCREEN_W + 1, SCREEN_H + 1, GRAY(col));
+        al_flip_display();
+        wait_delay_ms(25);
+      }
+      create_cluster_explosion(world, enm->x, enm->y, 48, 1, &world->plr);
+    }
+    else
+    {
+      trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
+    }
 }

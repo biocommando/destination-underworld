@@ -3,6 +3,7 @@
 #include "duConstants.h"
 #include "worldInteraction.h"
 #include "sampleRegister.h"
+#include "vfx.h"
 
 int handle_direction_keys(World *world, int key_up, int key_down, int key_left, int key_right)
 {
@@ -44,6 +45,26 @@ int handle_direction_keys(World *world, int key_up, int key_down, int key_left, 
 
 void handle_weapon_change_keys(World *world, int key_x, int key_z)
 {
+  if (*world->game_modifiers | GAMEMODIFIER_UBER_WIZARD)
+  {
+    if (world->plr.reload != 0 || (!key_x && !key_z))
+      return;
+    if (key_x)
+    {
+      world->plr.reload = 20;
+      world->plr.shots++;
+      if (world->plr.shots > 4)
+        world->plr.shots = 1;
+    }
+    if (key_z)
+    {
+      world->plr.reload = 20;
+      world->plr.shots--;
+      if (world->plr.shots < 1)
+        world->plr.shots = 4;
+    }
+    trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
+  }
   const int difficulty = GET_DIFFICULTY(world);
   int play_sample = 0;
   if (key_x && world->plr.reload == 0) // Power
@@ -156,10 +177,118 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
   return 0;
 }
 
+void handle_uber_wizard_weapon(World *world)
+{
+  if (world->plr.reload > 0)
+    return;
+  //  TODO
+  if (world->plr.dx != 0 || world->plr.dy != 0)
+  {
+    world->plr.reload = 200;
+    double x = world->plr.x - world->plr.dx * HALFTILESIZE;
+    double y = world->plr.y - world->plr.dy * HALFTILESIZE;
+    int count = 0;
+    while (x > 0 && !get_tile_at(world, x, y)->is_wall)
+    {
+      x += world->plr.dx;
+      y += world->plr.dy;
+      count++;
+      for (int i = 0; i < ENEMYCOUNT; i++)
+      {
+        Enemy *enm = &world->enm[i];
+        if (!enm->alive || enm->roomid != world->current_room)
+          continue;
+        if (enm->x - HALFTILESIZE < x && enm->x + HALFTILESIZE > x &&
+            enm->y - HALFTILESIZE < y && enm->y + HALFTILESIZE > y)
+        {
+          create_uber_wizard_weapon_fx(world, x, y, 0);
+          if (world->plr.shots == 1)
+          {
+            kill_enemy(enm, world);
+            trigger_sample(SAMPLE_BLAST, 200);
+          }
+          if (world->plr.shots == 2)
+          {
+            for (x = -2; x <= 2; x++)
+            {
+              for (y = -2; y <= 2; y++)
+              {
+                int tx = enm->x + x * TILESIZE;
+                int ty = enm->y + y * TILESIZE;
+                int xx = enm->x;
+                int yy = enm->y;
+                while (xx != tx && yy != ty && !get_tile_at(world, xx, yy)->is_wall)
+                {
+                  if (tx > enm->x)
+                    xx++;
+                  else if (tx < enm->x)
+                    xx--;
+                  if (ty > enm->y)
+                    yy++;
+                  else if (ty < enm->y)
+                    yy--;
+                }
+                if (xx == tx && yy == ty)
+                {
+                  create_cluster_explosion(world, enm->x + x * TILESIZE, enm->y + y * TILESIZE, 8, 1, &world->plr);
+                }
+              }
+            }
+            create_cluster_explosion(world, enm->x, enm->y, 16, 3, enm);
+            trigger_sample(SAMPLE_WARP, 200);
+          }
+          if (world->plr.shots == 3)
+          {
+            world->plr.reload = 100;
+            for (int i = 0; i < 2 && enm->health > 0; i++)
+            {
+              enm->health--;
+              world->plr.health++;
+            }
+            if (world->plr.health > world->plr_max_health)
+              world->plr.health = world->plr_max_health;
+            if (enm->health <= 0)
+            {
+              kill_enemy(enm, world);
+              spawn_potion(enm->x, enm->y, POTION_ID_INSTANT_HEAL, world->current_room, world, POTION_DROP_RANGE_START, POTION_DROP_RANGE_END);
+            }
+            trigger_sample(SAMPLE_HEAL, 200);
+          }
+          if (world->plr.shots == 4)
+          {
+            enm->x = world->plr.x;
+            enm->y = world->plr.y;
+            int move = world->plr.move;
+            world->plr.move = 1;
+            for (; count > 0; count--)
+              move_enemy(&world->plr, world);
+            world->plr.move = move;
+    
+            create_cluster_explosion(world, world->plr.x, world->plr.y, 16, 2, &world->plr);
+
+            trigger_sample(SAMPLE_WARP, 200);
+          }
+          x = -1;
+          break;
+        }
+      }
+    }
+    if (x > 0)
+    {
+      create_uber_wizard_weapon_fx(world, x, y, 1);
+    }
+  }
+}
+
 void handle_shoot_key(World *world, int key_space)
 {
   if (key_space)
   {
+    if (*world->game_modifiers & GAMEMODIFIER_UBER_WIZARD)
+    {
+      handle_uber_wizard_weapon(world);
+      return;
+    }
     int play_sample = shoot(&world->plr, world);
     if (play_sample)
       trigger_sample(SAMPLE_THROW, 255);

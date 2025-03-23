@@ -110,3 +110,4 @@ void show_ingame_info_screen(World *world);
  * isometric perspective.
  */
 void draw_enemy_shadows(World *world);
+void draw_uber_wizard_weapon_fx(World *world);

@@ -40,3 +40,5 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world);
 void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f);
 
 void create_flame_fx(int x, int y, World *world);
+
+void create_uber_wizard_weapon_fx(World *world, int x2, int y2, int type);

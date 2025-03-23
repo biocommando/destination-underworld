@@ -9,6 +9,8 @@
 #include "logging.h"
 #include "sampleRegister.h"
 #include "midi_playback.h"
+#include "record_file.h"
+#include "sha1/du_dmac.h"
 
 static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
@@ -115,6 +117,8 @@ static const char *game_modifiers_to_str(int game_modifiers)
         return "Power up only";
     if (game_modifiers == (GAMEMODIFIER_POTION_ON_DEATH | GAMEMODIFIER_MULTIPLIED_GOLD | GAMEMODIFIER_NO_GOLD))
         return "Potions only";
+    if (game_modifiers == (GAMEMODIFIER_UBER_WIZARD | GAMEMODIFIER_NO_GOLD | GAMEMODIFIER_MULTIPLIED_GOLD))
+        return "Uber wizard";
     return "unknown";
 }
 
@@ -407,6 +411,45 @@ static int display_save_game_menu()
     return m.selected_item;
 }
 
+static int check_game_modes_beaten(const int *modifiers, int sz)
+{
+    if (!get_game_settings()->require_authentication)
+        return 0;
+
+    LOG("check_game_modes_beaten\n");
+    dmac_sha1_set_ctx(AUTH_CTX_COMPLETED_GAME_MODES);
+
+    char path[256];
+    get_data_filename(path, "completed-game-modes.dat");
+
+    int beaten_modes = 0;
+    for (int i = 0; i < sz; i++)
+    {
+        int mode = modifiers[i];
+        char id[20];
+        sprintf(id, "game_modifiers_%d", mode);
+        char key[101], hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
+        if (record_file_scanf(path, id, "%*s %100s %40s", key, hash_hex) != 2)
+        {
+            LOG("Record not found for %s\n", game_modifiers_to_str(mode));
+            continue;
+        }
+        char check_str[200];
+        sprintf(check_str, "%s %s ", id, key);
+
+        char hash[DMAC_SHA1_HASH_SIZE];
+        convert_sha1_hex_to_hash(hash, hash_hex);
+        if (dmac_sha1_verify_string(check_str, strlen(check_str), hash) != 0)
+        {
+            LOG("DMAC hash verification failed for %s\n", game_modifiers_to_str(mode));
+            continue;
+        }
+        LOG("game mode %s beaten\n", game_modifiers_to_str(mode));
+        beaten_modes++;
+    }
+    return beaten_modes == sz;
+}
+
 static int display_game_mode_menu(int game_modifiers)
 {
     const int modifiers[] = {
@@ -416,6 +459,7 @@ static int display_game_mode_menu(int game_modifiers)
         GAMEMODIFIER_OVERPOWERED_POWERUPS | GAMEMODIFIER_OVERPRICED_POWERUPS,
         GAMEMODIFIER_MULTIPLIED_GOLD,
         (GAMEMODIFIER_POTION_ON_DEATH | GAMEMODIFIER_NO_GOLD | GAMEMODIFIER_MULTIPLIED_GOLD),
+        (GAMEMODIFIER_UBER_WIZARD | GAMEMODIFIER_NO_GOLD | GAMEMODIFIER_MULTIPLIED_GOLD),
         -1};
 
     struct menu m = create_menu("Change game mode");
@@ -446,6 +490,18 @@ static int display_game_mode_menu(int game_modifiers)
                   "Player does not regenerate health or mana.\n"
                   "Player does not have access to powerups.\n"
                   "Player uses potions to survive.");
+    if (check_game_modes_beaten(modifiers, 6))
+    {
+        add_menu_item(&m, game_modifiers_to_str(modifiers[6]), "Player does not have access to powerups\n"
+                                         "but the base weapon is super powerful with multiple modes\n"
+                                         "that can be switched using X and L.");
+    }
+    else
+    {
+        struct menu_item *mi = add_menu_item(&m, "????",
+                                             "Beat the game in all other game modes to unlock the secret game mode.");
+        mi->selectable = 0;
+    }
 
     m.cancel_menu_item_id = m.items[m.selected_item].item_id;
 

@@ -714,6 +714,9 @@ X(duedit_compatible)
 # ignore_init_properties
 # on positional_trigger: 0 do modify_terrain: x = 11, y = 6, terrain_type = floor
 # on positional_trigger: 0 do modify_terrain: x = 10, y = 6, terrain_type = floor
+# 
+# on [destroy_cracked] @never do @nothing
+# on {# override_event('destroy_cracked', 'uber_wizard') #} kill_count: 8 do modify_terrain: x = 3, y = 10, terrain_type = floor
 #end_script
 $1
 end
@@ -726,4 +729,8 @@ event_action modify_terrain 11 6 0 0 0 0 0 floor
 event
 event_trigger positional_trigger 0
 event_action modify_terrain 10 6 0 0 0 0 0 floor
+event
+event_override 392
+event_trigger kill_count 8
+event_action modify_terrain 3 10 0 0 0 0 0 floor
 end

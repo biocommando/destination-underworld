@@ -32,6 +32,40 @@
 #include "sha1/du_dmac.h"
 #include "screenshot.h"
 
+static void set_game_mode_beaten_flag(int game_modifiers)
+{
+  if (!get_game_settings()->require_authentication)
+    return;
+
+  char path[256];
+  get_data_filename(path, "completed-game-modes.dat");
+
+  char id[20];
+  sprintf(id, "game_modifiers_%d", game_modifiers);
+
+  char record[200];
+  strcpy(record, id);
+  int len = strlen(record);
+  record[len] = ' ';
+  len++;
+  for (int i = 0; i < 100; i++)
+  {
+    record[len] = 'A' + (rand() + time(NULL)) % 26;
+    len++;
+  }
+  record[len] = ' ';
+  len++;
+  record[len] = 0;
+  char hash[DMAC_SHA1_HASH_SIZE];
+  dmac_sha1_set_ctx(AUTH_CTX_COMPLETED_GAME_MODES);
+  dmac_sha1_calculate_hash(hash, record, len);
+  char hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
+  convert_sha1_hash_to_hex(hash_hex, hash);
+  strcat(record, hash_hex);
+
+  record_file_set_record(path, id, record);
+}
+
 static void display_arena_fight_end_screen(const World *world, GlobalGameState *ggs, const int *record_mode, int no_player_damage)
 {
   ArenaHighscore highscore;
@@ -404,6 +438,7 @@ void game(GlobalGameState *ggs)
       if (world.final_level)
       {
         ggs->mission = -1;
+        set_game_mode_beaten_flag(*world.game_modifiers);
         break;
       }
 
@@ -447,6 +482,8 @@ void game(GlobalGameState *ggs)
     draw_rune_of_protection_indicator(&world);
 
     progress_and_draw_sparkles(&world);
+
+    draw_uber_wizard_weapon_fx(&world);
 
     draw_fly_in_text(&fly_in_text);
 

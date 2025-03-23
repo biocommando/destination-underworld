@@ -123,3 +123,8 @@ void apply_timed_potion_effects(World *world);
  * Create a powerup turret at player's location.
  */
 Enemy *create_turret(World *world);
+
+/*
+ * Does all the required actions when an enemy dies.
+ */
+void kill_enemy(Enemy *enm, World *world);

@@ -254,4 +254,15 @@ void clear_visual_fx(World *world)
     memset(world->sparkle_fx, 0, sizeof(world->sparkle_fx));
     memset(world->sparkle_fx_circle, 0, sizeof(world->sparkle_fx_circle));
     memset(world->flames, 0, sizeof(world->flames));
+    memset(&world->uber_wizard_weapon_fx, 0, sizeof(world->uber_wizard_weapon_fx));
+}
+
+void create_uber_wizard_weapon_fx(World *world, int x2, int y2, int type)
+{
+    world->uber_wizard_weapon_fx.start.x = world->plr.x;
+    world->uber_wizard_weapon_fx.start.y = world->plr.y;
+    world->uber_wizard_weapon_fx.end.x = x2;
+    world->uber_wizard_weapon_fx.end.y = y2;
+    world->uber_wizard_weapon_fx.dim = 20;
+    world->uber_wizard_weapon_fx.type = type;
 }
