@@ -494,7 +494,7 @@ static int display_game_mode_menu(int game_modifiers)
     {
         add_menu_item(&m, game_modifiers_to_str(modifiers[6]), "Player does not have access to powerups\n"
                                          "but the base weapon is super powerful with multiple modes\n"
-                                         "that can be switched using X and L.");
+                                         "that can be switched using X and L, or using the powerup keys.");
     }
     else
     {

@@ -231,7 +231,7 @@ void draw_player_legend(World *world, int x, int y)
             if (world->plr.shots == 3)
                 weapon_text = "Leech";
             if (world->plr.shots == 4)
-                weapon_text = "Teleport";
+                weapon_text = "Shield";
     
             if (world->plr.reload)
                 weapon_text = "Wait";

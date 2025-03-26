@@ -97,6 +97,25 @@ void handle_weapon_change_keys(World *world, int key_x, int key_z)
 
 int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_f)
 {
+  if (*world->game_modifiers & GAMEMODIFIER_UBER_WIZARD)
+  {
+    int orig = world->plr.shots;
+    if (key_a)
+      world->plr.shots = 1;
+    else if (key_s)
+      world->plr.shots = 2;
+    else if (key_d)
+      world->plr.shots = 3;
+    else if (key_f)
+      world->plr.shots = 4;
+    if (orig != world->plr.shots)
+    {
+      world->plr.reload = 20;
+      trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
+    }
+    return 0;
+  }
+
   const int price_bonus = (*world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
   const int cost_heal = 1 + price_bonus;
   const int cost_protection = 2 + price_bonus;
@@ -181,7 +200,18 @@ void handle_uber_wizard_weapon(World *world)
 {
   if (world->plr.reload > 0)
     return;
-  //  TODO
+  if (world->plr.shots == 4)
+  {
+    int *plr_rune_of_protection_active = &world->powerups.rune_of_protection_active;
+    if (*plr_rune_of_protection_active != 0)
+      return;
+    *plr_rune_of_protection_active = 1;
+    if (world->plr.perks & PERK_IMPROVE_SHIELD_POWERUP)
+      *plr_rune_of_protection_active = 3;
+    world->plr.reload = 200;
+    trigger_sample(SAMPLE_PROTECTION, 255);
+    return;
+  }
   if (world->plr.dx != 0 || world->plr.dy != 0)
   {
     world->plr.reload = 200;
@@ -253,20 +283,6 @@ void handle_uber_wizard_weapon(World *world)
               spawn_potion(enm->x, enm->y, POTION_ID_INSTANT_HEAL, world->current_room, world, POTION_DROP_RANGE_START, POTION_DROP_RANGE_END);
             }
             trigger_sample(SAMPLE_HEAL, 200);
-          }
-          if (world->plr.shots == 4)
-          {
-            enm->x = world->plr.x;
-            enm->y = world->plr.y;
-            int move = world->plr.move;
-            world->plr.move = 1;
-            for (; count > 0; count--)
-              move_enemy(&world->plr, world);
-            world->plr.move = move;
-    
-            create_cluster_explosion(world, world->plr.x, world->plr.y, 16, 2, &world->plr);
-
-            trigger_sample(SAMPLE_WARP, 200);
           }
           x = -1;
           break;
