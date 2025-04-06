@@ -8,12 +8,12 @@ del version_info.txt
 @rem compile the sha1 module as separate step as it's a 3rd party component and we're not so interested
 @rem in the compiler warnings
 
-%compiler% -c src/sha1/sha1.c
+%compiler% %compiler_flags% -w -c src/sha1/sha1.c
 
 %compiler%  %auth_setup% .\src\create_mission_pack_auth_file.c .\src\sha1\sha1.o .\src\sha1\du_dmac.c -o mpauth
 
 %compiler% %compiler_flags% %auth_setup% ^
-src/sha1/sha1.o ^
+sha1.o ^
 src/sha1/du_dmac.c ^
 src/arenaconf.c ^
 src/bossfightconf.c ^
