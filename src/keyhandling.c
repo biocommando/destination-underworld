@@ -45,7 +45,7 @@ int handle_direction_keys(World *world, int key_up, int key_down, int key_left, 
 
 void handle_weapon_change_keys(World *world, int key_x, int key_z)
 {
-  if (*world->game_modifiers | GAMEMODIFIER_UBER_WIZARD)
+  if (*world->game_modifiers & GAMEMODIFIER_UBER_WIZARD)
   {
     if (world->plr.reload != 0 || (!key_x && !key_z))
       return;
@@ -64,6 +64,7 @@ void handle_weapon_change_keys(World *world, int key_x, int key_z)
         world->plr.shots = 4;
     }
     trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
+    return;
   }
   const int difficulty = GET_DIFFICULTY(world);
   int play_sample = 0;
