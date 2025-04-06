@@ -12,6 +12,10 @@ del version_info.txt
 
 %compiler%  %auth_setup% .\src\create_mission_pack_auth_file.c .\src\sha1\sha1.o .\src\sha1\du_dmac.c -o mpauth
 
+cd src/synth
+%compiler% %compiler_flags% -Ofast -c *.c
+cd ../..
+
 %compiler% %compiler_flags% %auth_setup% ^
 sha1.o ^
 src/sha1/du_dmac.c ^
@@ -44,17 +48,17 @@ src/enemy_logic.c ^
 src/potion_logic.c ^
 src/screenshot.c ^
 src/game.c ^
-src/synth/adsr_envelope.c ^
-src/synth/basic_delay.c ^
-src/synth/basic_oscillator.c ^
-src/synth/envelope_stage.c ^
-src/synth/wav_handler.c ^
-src/synth/wt_sample_loader.c ^
-src/synth/midi_player.c ^
-src/synth/midi_reader.c ^
-src/synth/moog_filter.c ^
-src/synth/synth_random.c ^
-src/synth/synth.c ^
+src/synth/adsr_envelope.o ^
+src/synth/basic_delay.o ^
+src/synth/basic_oscillator.o ^
+src/synth/envelope_stage.o ^
+src/synth/wav_handler.o ^
+src/synth/wt_sample_loader.o ^
+src/synth/midi_player.o ^
+src/synth/midi_reader.o ^
+src/synth/moog_filter.o ^
+src/synth/synth_random.o ^
+src/synth/synth.o ^
 -I%allegro_path%\include ^
 %allegro_path%\lib\liballegro_monolith.dll.a ^
 -o DestinationUnderworld.exe
