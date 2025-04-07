@@ -1,0 +1,418 @@
+X(duedit_compatible)
+*@tiles
+120 2 0 1
+120 3 0 1
+120 4 0 1
+120 5 0 1
+120 6 0 1
+120 7 0 1
+120 8 0 1
+120 9 0 1
+120 10 0 1
+120 11 0 1
+120 12 0 1
+120 13 0 1
+120 14 0 1
+120 15 0 1
+120 15 1 1
+120 15 2 1
+120 15 3 1
+120 15 4 1
+120 15 5 1
+120 15 6 1
+120 15 7 1
+120 15 8 1
+120 15 9 1
+120 15 10 1
+120 1 11 1
+120 2 11 1
+120 3 11 1
+120 4 11 1
+120 5 11 1
+120 6 11 1
+120 7 11 1
+120 8 11 1
+120 9 11 1
+120 10 11 1
+120 11 11 1
+120 12 11 1
+120 13 11 1
+120 14 11 1
+120 15 11 1
+120 0 2 1
+120 0 3 1
+120 0 4 1
+120 0 5 1
+120 0 6 1
+120 0 7 1
+120 0 8 1
+120 0 9 1
+120 0 10 1
+120 0 11 1
+120 0 1 1
+120 0 0 1
+120 1 0 1
+46 1 1 1
+46 1 2 1
+46 1 3 1
+46 1 4 1
+46 1 6 1
+46 1 7 1
+46 1 8 1
+46 1 9 1
+46 1 10 1
+46 2 1 1
+46 2 3 1
+46 2 4 1
+46 2 6 1
+46 2 7 1
+46 2 9 1
+46 2 10 1
+46 3 1 1
+46 3 2 1
+46 3 3 1
+46 3 4 1
+46 3 6 1
+46 3 7 1
+46 3 8 1
+46 3 9 1
+46 3 10 1
+46 4 1 1
+46 4 2 1
+46 4 3 1
+46 4 4 1
+46 4 6 1
+46 4 7 1
+46 4 8 1
+46 4 9 1
+46 4 10 1
+46 5 1 1
+46 5 2 1
+46 5 4 1
+46 5 6 1
+46 5 7 1
+46 5 8 1
+46 5 9 1
+46 5 10 1
+46 6 1 1
+46 6 2 1
+46 6 4 1
+46 6 5 1
+46 6 6 1
+46 6 7 1
+46 6 8 1
+46 6 9 1
+46 6 10 1
+46 7 4 1
+46 7 5 1
+46 7 6 1
+46 7 7 1
+46 7 8 1
+46 7 9 1
+46 7 10 1
+46 8 1 1
+46 8 2 1
+46 8 4 1
+46 8 5 1
+46 8 6 1
+46 8 7 1
+46 8 8 1
+46 8 9 1
+46 8 10 1
+46 9 1 1
+46 9 2 1
+46 9 4 1
+46 9 5 1
+46 9 6 1
+46 9 7 1
+46 9 8 1
+46 9 9 1
+46 9 10 1
+46 10 1 1
+46 10 2 1
+46 10 4 1
+46 10 6 1
+46 10 7 1
+46 10 8 1
+46 10 9 1
+46 10 10 1
+46 11 1 1
+46 11 2 1
+46 11 3 1
+46 11 4 1
+46 11 6 1
+46 11 7 1
+46 11 8 1
+46 11 9 1
+46 11 10 1
+46 12 1 1
+46 12 2 1
+46 12 3 1
+46 12 4 1
+46 12 6 1
+46 12 7 1
+46 12 8 1
+46 12 9 1
+46 12 10 1
+46 13 1 1
+46 13 2 1
+46 13 3 1
+46 13 4 1
+46 13 6 1
+46 13 7 1
+46 13 8 1
+46 13 9 1
+46 13 10 1
+46 14 1 1
+46 14 2 1
+46 14 3 1
+46 14 4 1
+46 14 6 1
+46 14 7 1
+46 14 8 1
+46 14 9 1
+46 14 10 1
+120 1 5 1
+120 4 5 1
+120 5 5 1
+120 10 5 1
+120 11 5 1
+120 14 5 1
+120 6 3 1
+120 7 3 1
+120 8 3 1
+120 9 3 1
+46 2 8 1
+205 2 8 1
+46 2 2 1
+46 5 3 1
+46 10 3 1
+46 3 5 1
+46 2 5 1
+46 12 5 1
+46 13 5 1
+204 1 6 1
+204 2 6 1
+204 3 6 1
+204 4 6 1
+204 5 6 1
+204 6 6 1
+204 7 6 1
+204 8 6 1
+204 9 6 1
+204 10 6 1
+204 11 6 1
+204 12 6 1
+204 13 6 1
+204 14 6 1
+46 7 1 1
+1001 7 2 1
+*@metadata
+*=name"Deepest Abyss"
+*=story1"You enter the portal and you see a light."
+*=story2"The magician has done its job and the exhausted"
+*=story3"body quickly withers and turns into dust."
+*=story4"Hell is free of monsters and patriarchy is dead."
+*=story5"Your soul returns to your own body feeling accomplished,"
+*=story6"although deep inside you know that nothing has changed."
+*=story7"But for you, the joy of knowing what you've done is"
+*=story8"enough of a reward."
+*=story_image"ending.jpg"
+*=no_more_levels"1"
+#script 1
+# set speed = 10
+# set fire_rate = 1
+# set health = 1000
+# on time_one_time: 1 do allow_firing: 0
+# on time_one_time: 1 do set_waypoint: 13;8
+# on waypoint_reached: 13;8 do set_waypoint: 2;8
+# on waypoint_reached: 2;8 do set_waypoint: 13;8
+# 
+# {#
+#   _event_creator = (start, end, action) => {
+#     const ret = []
+#     for (let x = start; x <= end; x++)
+#       ret.push(`on health: 0 do ${action}`.replace(/XX/g, x))
+#     return ret
+#   }
+# 
+#   _spawner = y => {
+#     return _event_creator(1, 14, `spawn: XX, ${y}, 40, 50, 10, 0, 0`)
+#   }
+#   output = ''
+# #}
+# 
+# {# _spawner(7) #}
+# {# _spawner(8) #}
+# {# _spawner(9) #}
+# {# _event_creator(6, 9, 'modify_terrain: x = XX, y = 9, terrain_type = level_exit') #}
+# {# _event_creator(6, 9, 'modify_terrain: x = XX, y = 10, terrain_type = level_exit') #}
+#end_script
+$1
+health 1000 
+fire_rate 1 
+speed 10 
+player_initial_gold -1 
+event
+event_trigger time_one_time 1
+event_action allow_firing 
+event
+event_trigger time_one_time 1
+event_action set_waypoint 13 8 1
+event
+event_trigger waypoint_reached 1
+event_action set_waypoint 2 8 2
+event
+event_trigger waypoint_reached 2
+event_action set_waypoint 13 8 1
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 1 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 2 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 3 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 4 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 5 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 6 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 7 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 8 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 9 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 10 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 11 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 12 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 13 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 14 7
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 1 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 2 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 3 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 4 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 5 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 6 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 7 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 8 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 9 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 10 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 11 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 12 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 13 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 14 8
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 1 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 2 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 3 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 4 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 5 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 6 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 7 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 8 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 9 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 10 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 11 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 12 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 13 9
+event
+event_trigger health 0
+event_action spawn 40 50 10 0 0 14 9
+event
+event_trigger health 0
+event_action modify_terrain 6 9 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 7 9 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 8 9 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 9 9 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 6 10 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 7 10 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 8 10 0 0 0 0 0 level_exit
+event
+event_trigger health 0
+event_action modify_terrain 9 10 0 0 0 0 0 level_exit
+end
