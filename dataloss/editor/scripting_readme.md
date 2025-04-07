@@ -119,6 +119,7 @@ This way the default properties won't be added to the resulting script file.
 # Preprocessing
 
 - `{#..#}` = execute javascript and replace the snippet with the returned string or list of strings (=lines).
+  - Instead of returning the replacement code, the script can set a special `output` variable instead
 - `ms(..)` = calculate boss timer value for amount of milliseconds
 
 Preprocessing is run in this order so you can use {# .. #} inside ms( .. )

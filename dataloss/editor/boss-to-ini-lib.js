@@ -83,7 +83,10 @@ try {
     let data = fileData
     data.replace(/\{#([^#]*)#\}/gm, (whole, a) => {
             try {
+                let output
                 const result = eval(a)
+                if (output)
+                    result = output
                 if (result.map)
                     return result.join('\n')
                 return result
