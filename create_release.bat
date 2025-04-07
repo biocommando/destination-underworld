@@ -17,6 +17,7 @@ xcopy dataloss\core-pack\best_times.dat DestinationUnderworldRelease\dataloss\co
 xcopy dataloss\core-pack\enemy-properties.dat DestinationUnderworldRelease\dataloss\core-pack
 xcopy dataloss\core-pack\arenas.dat DestinationUnderworldRelease\dataloss\core-pack
 xcopy dataloss\core-pack\help.dat DestinationUnderworldRelease\dataloss\core-pack
+xcopy dataloss\core-pack\mission-counts.dat DestinationUnderworldRelease\dataloss\core-pack
 .\mpauth.exe core-pack ./dataloss/core-pack/ no-debug-prints > DestinationUnderworldRelease\dataloss\core-pack\auth.dat
 
 xcopy dataloss\editor DestinationUnderworldRelease\dataloss\editor
