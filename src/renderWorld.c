@@ -227,7 +227,7 @@ void draw_player_legend(World *world, int x, int y)
             if (world->plr.shots == 1)
                 weapon_text = "Death ray";
             if (world->plr.shots == 2)
-                weapon_text = "Blast grid";
+                weapon_text = "Blast";
             if (world->plr.shots == 3)
                 weapon_text = "Leech";
             if (world->plr.shots == 4)
