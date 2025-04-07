@@ -9,8 +9,6 @@ typedef struct
   char settings_file[256];
   // Mission pack name (directory name added to data files)
   char mission_pack[64];
-  // Number of missions in the mission pack
-  int mission_count;
   // How violently the screen shakes on explosions. Smaller number means heavier shaking.
   int vibration_mode;
   // Window mode, 0 = windowed, 1 = fullscreen. Game must be restarted for this to take effect.

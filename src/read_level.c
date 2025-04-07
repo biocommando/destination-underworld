@@ -282,3 +282,18 @@ void read_enemy_configs(World *world)
                &world->enemy_configs[i].potion_for_potion_only);
     }
 }
+
+int read_mission_count(int game_mode)
+{
+    char fname[256];
+    sprintf(fname, DATADIR "%s\\mission-counts.dat", get_game_settings()->mission_pack);
+
+    char key[20];
+    sprintf(key, "mode-%d", game_mode);
+    int count = 0;
+    if (record_file_scanf(fname, key, "%*s %d", &count))
+        return count;
+
+    record_file_scanf(fname, "base", "%*s %d", &count);
+    return count;
+}

@@ -253,6 +253,7 @@ void game(GlobalGameState *ggs)
 
   init_world(&world);
   read_enemy_configs(&world);
+  int mission_count = read_mission_count(ggs->game_modifiers);
   init_player(&world, &ggs->plrautosave);
 
   long key_press_mask = 0;
@@ -337,7 +338,7 @@ void game(GlobalGameState *ggs)
           world.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-          display_level_info(&world, ggs->mission, get_game_settings()->mission_count, time_stamp - 1);
+          display_level_info(&world, ggs->mission, mission_count, time_stamp - 1);
 
           if (!ggs->no_player_interaction)
             wait_key_press(ALLEGRO_KEY_ENTER);
@@ -430,7 +431,7 @@ void game(GlobalGameState *ggs)
       world.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, ggs->mission, get_game_settings()->mission_count, time_stamp - 1);
+      display_level_info(&world, ggs->mission, mission_count, time_stamp - 1);
 
       if (*record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);

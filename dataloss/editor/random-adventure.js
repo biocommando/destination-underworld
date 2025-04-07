@@ -418,6 +418,8 @@ IF EXIST mission1 (
     cd ..
     cd ..
 )
-DestinationUnderworld.exe --general--mission-pack=${packName} --${packName}--mission-count=${numMissions} --default-game-mode=${params.defaultGameMode}`)
+DestinationUnderworld.exe --general--mission-pack=${packName} --default-game-mode=${params.defaultGameMode}`)
+
+fs.writeFileSync(packName + '/mission-counts.dat', 'base ' + numMissions)
 
 console.log(`Created files for pack named ${packName}`)

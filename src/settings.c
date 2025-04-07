@@ -41,7 +41,6 @@ void read_settings(char **argv, int argc)
   LOG("Settings file: %s\n", file_name);
 
   READ_SETTING(game_settings.mission_pack, "%s", "general", "mission-pack");
-  READ_SETTING(game_settings.mission_count, "%d", game_settings.mission_pack, "mission-count");
   READ_SETTING(game_settings.custom_resources, "%d", game_settings.mission_pack, "custom-resources");
   READ_SETTING(game_settings.require_authentication, "%d", game_settings.mission_pack, "require-authentication");
 

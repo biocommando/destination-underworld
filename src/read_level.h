@@ -44,3 +44,9 @@ int read_level(World *world, int mission, int room_to);
  * Note that the key values are just for human-readability, the key-value order needs to be exactly like this.
  */
 void read_enemy_configs(World *world);
+/*
+ * Read mission count for the provided game mode.
+ * Uses the record file format. The record id is either "base" or if game mode overrides the base count,
+ * mode-<game_mode> (e.g. "mode-0").
+ */
+int read_mission_count(int game_mode);
