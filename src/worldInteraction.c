@@ -304,7 +304,7 @@ Enemy *spawn_enemy(int x, int y, int type, int room_id, World *world)
 {
     x = TO_PIXEL_COORDINATES(x);
     y = TO_PIXEL_COORDINATES(y);
-    ns_spawn_enemy(x, y, type, room_id, world);
+    return ns_spawn_enemy(x, y, type, room_id, world);
 }
 
 Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)

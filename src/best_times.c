@@ -34,7 +34,6 @@ static inline void get_file(char *file, const char *mission_pack)
 int populate_best_times(const char *mission_pack, struct best_times *best_times)
 {
     memset(best_times->times, 0, sizeof(best_times->times));
-    char record[1024];
 
     char file[1024];
     get_file(file, mission_pack);

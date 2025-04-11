@@ -12,7 +12,6 @@ void init_midi_player(MidiPlayer *p, float sample_rate)
     p->next_track_event_idx = NULL;
 
     p->tempo = 120;
-    p->sample_rate;
     p->pos = 0;
     p->tick_pos = 0;
     p->tracks_at_end = 0;

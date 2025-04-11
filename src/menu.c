@@ -196,7 +196,6 @@ static struct menu_item *add_menu_item(struct menu *m, const char *name, const c
         {
             cont = *c != 0;
             *c = 0;
-            char *descr;
             if (descr_idx < 3)
             {
                 strcpy(mi->description[descr_idx], start);
@@ -611,7 +610,7 @@ static int display_select_track_menu()
     struct menu m = create_menu("Select track");
     const char *fname;
     const char *current = get_midi_playlist_entry_file_name(-1);
-    for (int i = 0; fname = get_midi_playlist_entry_file_name(i); i++)
+    for (int i = 0; (fname = get_midi_playlist_entry_file_name(i)); i++)
     {
         add_menu_item(&m, fname, "");
         if (!strcmp(current, fname))
@@ -777,9 +776,6 @@ static int display_exit_to_main_menu_menu()
 
 int menu(int ingame, GlobalGameState *ggs)
 {
-    // Make these static so that entering the menu mid-game will not forget previous choises
-    static int level_set = 0;
-
     load_menu_sprites();
 
     ALLEGRO_TRANSFORM transform;
@@ -788,7 +784,6 @@ int menu(int ingame, GlobalGameState *ggs)
     al_use_transform(&transform);
 
     int switch_level = 1;
-    ALLEGRO_SAMPLE_ID id;
 
     int exit_menu = 0, main_menu = !ingame;
     if (ingame)

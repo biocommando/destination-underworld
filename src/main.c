@@ -166,6 +166,7 @@ int main(int argc, char **argv)
   memset(&ggs, 0, sizeof(ggs));
   if (player_damage_off)
     ggs.cheats |= 1;
+  ggs.game_modifiers = game_modifiers;
   ggs.mission = 1;
   ggs.no_player_interaction = record_playback_no_user_interaction;
   ggs.setup_screenshot_buffer = read_cmd_line_arg_int("screenshot-buffer", argv, argc,

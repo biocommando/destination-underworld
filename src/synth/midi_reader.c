@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void debug_print_event(MidiEvent *this)
+[[maybe_unused]] static void debug_print_event(MidiEvent *this)
 {
     printf("<%s %u %u %u %u>", this->end_of_track ? "y" : "n", this->data[0], this->data[1], this->data[2], this->time_delta);
 }

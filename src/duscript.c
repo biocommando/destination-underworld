@@ -15,7 +15,7 @@ DuScriptState du_script_init()
 
 int du_script_execute_line(DuScriptState *state, const char *line)
 {
-    DuScriptVariable *var;
+    DuScriptVariable *var = NULL;
     if (*line != '*')
         return *state->goto_label ? 0 : -1;
     if (line[1] == '@' && *state->goto_label)

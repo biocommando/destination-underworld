@@ -31,7 +31,6 @@ static inline void read_save_data_record(const char *filename, int slot, const c
 
 void load_game_save_data(const char *filename, Enemy *data, int *mission, int *game_modifiers, int slot)
 {
-    char rec[100], key[100];
     memset(data, 0, sizeof(Enemy));
 
     read_save_data_record(filename, slot, "game_modifiers", "%d", game_modifiers);

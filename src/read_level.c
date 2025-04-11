@@ -193,8 +193,6 @@ int read_level(World *world, int mission, int room_to)
 {
     char buf[256];
 
-    int room_from = world->current_room;
-
     memset(world->map, 0, sizeof(world->map));
 
     // Default colors

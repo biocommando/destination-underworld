@@ -344,9 +344,9 @@ void Synth_kill_voices(Synth *s, int channel)
     {
         if (s->voices[s->active_voices[i]].channel == channel)
         {
+            s->voices[s->active_voices[i]].active = 0;
             s->active_voices[i] = -1;
             voices_killed = 1;
-            s->voices[s->active_voices[i]].active = 0;
         }
     }
     if (voices_killed)

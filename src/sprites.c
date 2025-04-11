@@ -34,6 +34,7 @@ int set_sprite(int sprite_id, DuSprite sprite)
     init_sprites();
     sprites[sprite_id] = sprite;
     sprite_ok[sprite_id] = 1;
+    return 0;
 }
 
 DuSprite *get_sprite(int sprite_id)

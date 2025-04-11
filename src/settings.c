@@ -26,7 +26,7 @@ static void read_setting(const char *filename, char **argv, int argc, char *resu
   do                                                                          \
   {                                                                           \
     read_setting(game_settings.settings_file, argv, argc, buf, segment, key); \
-    if (!buf[0] || sscanf(buf, format_str, &result_var) == 0)                 \
+    if (!buf[0] || sscanf(buf, format_str, result_var) == 0)                  \
       LOG("Read error\n");                                                    \
                                                                               \
   } while (0)
@@ -41,17 +41,17 @@ void read_settings(char **argv, int argc)
   LOG("Settings file: %s\n", file_name);
 
   READ_SETTING(game_settings.mission_pack, "%s", "general", "mission-pack");
-  READ_SETTING(game_settings.custom_resources, "%d", game_settings.mission_pack, "custom-resources");
-  READ_SETTING(game_settings.require_authentication, "%d", game_settings.mission_pack, "require-authentication");
+  READ_SETTING(&game_settings.custom_resources, "%d", game_settings.mission_pack, "custom-resources");
+  READ_SETTING(&game_settings.require_authentication, "%d", game_settings.mission_pack, "require-authentication");
 
-  READ_SETTING(game_settings.vibration_mode, "%d", "graphics", "vibration-mode");
-  READ_SETTING(game_settings.fullscreen, "%d", "graphics", "fullscreen");
+  READ_SETTING(&game_settings.vibration_mode, "%d", "graphics", "vibration-mode");
+  READ_SETTING(&game_settings.fullscreen, "%d", "graphics", "fullscreen");
   READ_SETTING(game_settings.menu_font, "%s", "graphics", "menu-font");
   READ_SETTING(game_settings.game_font, "%s", "graphics", "game-font");
 
-  READ_SETTING(game_settings.music_on, "%d", "audio", "music-on");
-  READ_SETTING(game_settings.music_vol, "%f", "audio", "music-vol");
-  READ_SETTING(game_settings.sfx_vol, "%f", "audio", "sfx-vol");
+  READ_SETTING(&game_settings.music_on, "%d", "audio", "music-on");
+  READ_SETTING(&game_settings.music_vol, "%f", "audio", "music-vol");
+  READ_SETTING(&game_settings.sfx_vol, "%f", "audio", "sfx-vol");
 
   char arena_config_file[256];
   sprintf(arena_config_file, DATADIR "%s\\arenas.dat", game_settings.mission_pack);

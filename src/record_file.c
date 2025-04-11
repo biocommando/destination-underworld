@@ -59,7 +59,7 @@ void record_file_flush()
 void record_file_read(const char *file)
 {
     record_file_flush();
-    strncpy(state.current_file, file, 1024);
+    strncpy(state.current_file, file, 1023);
 
     char line[REC_MAX_LENGTH];
     FILE *f = fopen(file, "r");
