@@ -284,10 +284,6 @@ function createOneMission(mission) {
         'mute_bosstalk = "1"',
     ]
 
-    if (mission === numMissions) {
-        metadata.push('no_more_levels = "1"')
-    }
-
     const compiledScripts = scripts.map(s => compileScript(s.join('\n'), 'new'))
 
     const serialized = serializeTileMap({

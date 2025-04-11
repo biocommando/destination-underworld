@@ -645,7 +645,6 @@ X(duedit_compatible)
 *@metadata
 *=name"Hell's Last Stand"
 *=mute_bosstalk"1"
-*=no_more_levels"1"
 *=wall_color"0.94 0.89 0.69"
 *=story1"You enter the portal and you see a light."
 *=story2"The magician has done its job and the exhausted"

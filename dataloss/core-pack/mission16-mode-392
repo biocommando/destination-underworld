@@ -218,7 +218,6 @@ X(duedit_compatible)
 *=story7"But for you, the joy of knowing what you've done is"
 *=story8"enough of a reward."
 *=story_image"ending.jpg"
-*=no_more_levels"1"
 #script 1
 # set speed = 10
 # set fire_rate = 1

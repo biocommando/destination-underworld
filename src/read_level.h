@@ -32,7 +32,6 @@
  * - storyX = lines of story text that is displayed after level (max 60 characters. X is a number
  *   from 0 to 10)
  * - wall_color = the RGB color (color values 0-1) of the walls, in format `RED GREEN BLUE` (e.g. `1.0 0.0 0.0` for red)
- * - no_more_levels = this is the final level; no more levels attempted to read
  * - mute_bosstalk = don't play the boss speech sample if there's a script in the level
  */
 int read_level(World *world, int mission, int room_to);

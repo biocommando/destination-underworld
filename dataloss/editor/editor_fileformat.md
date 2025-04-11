@@ -37,7 +37,6 @@ Supported metadata entries:
 - name = Level name displayed in the info screen and when starting the level
 - wall_color = RGB definition for top-most wall layer (example: "0.5 1 0.8")
 - storyX (where X = number in range 0-10) = Story lines displayed after level (max length 60 characters)
-- no_more_levels = This level is final level, no more levels will be loaded
 - mute_bosstalk = Don't play the sample associated to the boss if the level has scripting definitions
 - story_image = A custom image displayed after level (file name)
 

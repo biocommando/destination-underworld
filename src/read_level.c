@@ -172,8 +172,6 @@ static inline void level_read_new_format(World *world, int room_to, FILE *f)
         world->map_wall_color[1] = g;
         world->map_wall_color[2] = b;
     }
-    var = du_script_variable(&state, "no_more_levels");
-    world->final_level = *var->value ? 1 : 0;
     var = du_script_variable(&state, "mute_bosstalk");
     world->play_boss_sound = *var->value ? 0 : 1;
     var = du_script_variable(&state, "story_image");

@@ -1634,7 +1634,6 @@ X(duedit_compatible)
 *=name"Tunnels of Devil 4 / 4"
 *=wall_color"0.45415108610057564 0.8934045401886914 0.9875354327717567"
 *=mute_bosstalk"1"
-*=no_more_levels"1"
 #script 1
 # ignore_init_properties
 #end_script

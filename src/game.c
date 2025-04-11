@@ -436,7 +436,7 @@ void game(GlobalGameState *ggs)
       if (*record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);
 
-      if (world.final_level)
+      if (ggs->mission == mission_count)
       {
         ggs->mission = -1;
         set_game_mode_beaten_flag(*world.game_modifiers);

@@ -438,8 +438,6 @@ typedef struct
     char custom_story_image[512];
     // Total kills in all rooms in the current map
     int kills;
-    // True if there are no more levels
-    int final_level;
     // RGB color for map's walls
     float map_wall_color[3];
 
