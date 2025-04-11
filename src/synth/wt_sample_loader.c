@@ -36,7 +36,7 @@ int wt_sample_read_all(const char *directory)
         // fprintf(df, "reporting sample data...\n");
         wt_sample_slots[slot].size = wav.num_frames;
         float sample[128];
-        for (int i = 0; i < wav.num_frames; i++)
+        for (unsigned i = 0; i < wav.num_frames; i++)
         {
             wav_get_normalized(&wav, i, sample);
             // fprintf(df, "%.1f ", sample[0]);

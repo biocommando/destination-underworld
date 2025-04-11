@@ -5,6 +5,16 @@
 #include <fcntl.h>
 #include "wav_handler.h"
 
+inline static int check_file_not_at_end(FILE *f, unsigned file_total_size)
+{
+    long pos = ftell(f);
+    if (pos > 0)
+    {
+        return (unsigned long)pos < file_total_size;
+    }
+    return 1;
+}
+
 int read_until_header(FILE *f, unsigned file_total_size, const char *hdr, unsigned *data_length, struct wav_file_custom_header_data *chdr)
 {
     int found = 0;
@@ -12,7 +22,7 @@ int read_until_header(FILE *f, unsigned file_total_size, const char *hdr, unsign
     temp_data[4] = 0;
     while (!found &&
            // feof doesn't seem to work here for some reason
-           ftell(f) < file_total_size)
+           check_file_not_at_end(f, file_total_size))
     {
         fread(temp_data, 1, 4, f);
         if (!strcmp(temp_data, hdr))

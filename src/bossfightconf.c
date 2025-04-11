@@ -329,6 +329,7 @@ void bossfight_trigger_to_str(char *dst, int value)
     break;
   case BFCONF_TRIGGER_TYPE_NEVER:
     strcpy(dst, "Never");
+    break;
   default:
     dst[0] = 0;
     break;

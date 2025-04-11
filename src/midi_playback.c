@@ -26,7 +26,7 @@ static int check_file_type(const char *fn, const char *type)
     size_t fn_len = strlen(fn);
     if (fn_len < type_len)
         return -1;
-    for (int i = 0; i < type_len; i++)
+    for (size_t i = 0; i < type_len; i++)
     {
         if (fn[fn_len - type_len + i] != type[i])
             return -2;
@@ -119,7 +119,7 @@ void next_midi_track(int index)
     midi_player_set_midi_file(&midi_player, &midi_file);
 }
 
-static int randomize_midi_playlist_sorter(const void *a, const void *b)
+static int randomize_midi_playlist_sorter([[maybe_unused]] const void *a, [[maybe_unused]] const void *b)
 {
     return rand() & 1 ? 1 : -1;
 }

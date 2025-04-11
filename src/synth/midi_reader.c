@@ -118,7 +118,8 @@ static void read_track(unsigned total_length, FILE *f, MidiFile *midi)
             unsigned data_len = read_variable_length_quantity(&length, f);
             if (type == 0x2F)
             {
-                MidiEvent e = {1};
+                MidiEvent e;
+                e.end_of_track = 1;
                 track_push_back(&events, e);
             }
             // "Set tempo"
@@ -228,7 +229,7 @@ void read_midi_file(const char *file, MidiFile *midi)
 
 void free_midi_file(MidiFile *t)
 {
-    for (size_t i = 0; i < t->track_count; i++)
+    for (int i = 0; i < t->track_count; i++)
     {
         free(t->tracks[i].events);
     }

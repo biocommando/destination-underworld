@@ -301,7 +301,7 @@ static inline void Synth_rearrange_active_voices(Synth *s)
     qsort(s->active_voices, SYNTH_MAX_VOICES, sizeof(int), Synth_active_voice_sort_function);
 }
 
-void Synth_process(Synth *s, float *buffer_left, float *buffer_right, int buffer_size)
+void Synth_process(Synth *s, float *buffer_left, [[maybe_unused]] float *buffer_right, int buffer_size)
 {
     for (int i = 0; i < buffer_size; i++)
     {

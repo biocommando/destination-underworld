@@ -628,7 +628,7 @@ static int display_select_track_menu()
     return m.selected_item == cancel_idx ? -1 : m.selected_item;
 }
 
-static const char *percent_fmt(int i)
+static const char *percent_fmt([[maybe_unused]] int i)
 {
     return "%d %%%%";
 }
@@ -700,7 +700,7 @@ static void game_option_menu()
     }
 }
 
-static int display_main_menu(int game_modifiers)
+static int display_main_menu()
 {
     struct menu m = create_menu("DESTINATION UNDERWORLD");
     add_menu_item(&m, "Start new game", "");
@@ -834,7 +834,7 @@ int menu(int ingame, GlobalGameState *ggs)
     }
     while (main_menu && !exit_menu)
     {
-        int main_menu_selection = display_main_menu(ggs->game_modifiers);
+        int main_menu_selection = display_main_menu();
         if (main_menu_selection == get_menu_item_id("Start"))
         {
             int choice = 0;

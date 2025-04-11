@@ -150,7 +150,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
       unsigned limit = bullet->duration;
       if (limit > 4)
         limit = 4;
-      for (int j = 0; j < limit; j++)
+      for (unsigned j = 0; j < limit; j++)
       {
         draw_sprite_animated_centered(world->spr, SPRITE_ID_BULLET,
                                       bullet_orig_x + dx * j + rand() % 3 - 1, bullet_orig_y + dy * j + rand() % 3 - 1,

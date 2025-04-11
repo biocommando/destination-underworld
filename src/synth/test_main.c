@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     create_wav_file(&wf, mf.file_length_samples + 44100 * 5, 2, 16, 44100);
 
     int show_progress_counter = 44100 * 20;
-    for (int i = 0; i < wf.num_frames; i += 2048)
+    for (unsigned i = 0; i < wf.num_frames; i += 2048)
     {
         float buf[2 * 2048];
         midi_player_process_buffer(&mp, buf, 2048);
