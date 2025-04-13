@@ -119,6 +119,7 @@ static void read_track(unsigned total_length, FILE *f, MidiFile *midi)
             if (type == 0x2F)
             {
                 MidiEvent e;
+                memset(&e, 0, sizeof(e));
                 e.end_of_track = 1;
                 track_push_back(&events, e);
             }
