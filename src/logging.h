@@ -9,7 +9,10 @@
             printf(__VA_ARGS__);    \
     } while (0)
 #else
-#define LOG(...)
+#define LOG(...)       \
+    do                 \
+    { /* do nothing */ \
+    } while (0)
 #endif
 
 #ifdef TRACE_LOG
