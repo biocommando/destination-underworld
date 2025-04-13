@@ -57,3 +57,14 @@ void read_arena_highscores(const char *filename, ArenaHighscore *highscore);
  * Write highscore file. See access_arena_highscore.
  */
 void write_arena_highscores(const char *filename, ArenaHighscore *highscore);
+
+/*
+ * Get the highscore for requested mission and game mode. If they don't exist
+ * return 0.
+ */
+int get_arena_highscore(int mission, int game_mode);
+
+/*
+ * Set the highscore for requested mission and game mode.
+ */
+void set_arena_highscore(int mission, int game_mode, int score);

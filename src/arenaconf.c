@@ -1,5 +1,8 @@
 #include "arenaconf.h"
 
+#include "duConstants.h"
+#include "world.h"
+#include "settings.h"
 #include "record_file.h"
 #include "logging.h"
 #include <stdlib.h>
@@ -61,4 +64,34 @@ void write_arena_highscores(const char *filename, ArenaHighscore *highscore)
             }
         }
     }
+}
+
+static void get_arena_highscores_path(char *path)
+{
+    sprintf(path, DATADIR "%s\\arcade_mode_highscores.dat", get_game_settings()->mission_pack);
+}
+
+static void get_arena_highscore_key(char *result, int mission, int game_mode)
+{
+    sprintf(result, "mission=%d;mode=%d;", mission, game_mode & ~GAMEMODIFIER_ARENA_FIGHT);
+}
+
+int get_arena_highscore(int mission, int game_mode)
+{
+    char path[256];
+    get_arena_highscores_path(path);
+    char key[64];
+    get_arena_highscore_key(key, mission, game_mode);
+    int score = 0;
+    record_file_scanf(path, key, "%*s %d", &score);
+    return score;
+}
+
+void set_arena_highscore(int mission, int game_mode, int score)
+{
+    char path[256];
+    get_arena_highscores_path(path);
+    char key[64];
+    get_arena_highscore_key(key, mission, game_mode);
+    record_file_set_record_f(path, "%s %d", key, score);
 }
