@@ -10,6 +10,7 @@
 
 void read_arena_configs(const char *filename, ArenaConfigs *config)
 {
+    memset(config, 0, sizeof(ArenaConfigs));
     int num = 0;
     record_file_scanf(filename, "number_of_arenas", "%*s %d", &num);
     if (num < 0 || num > ARENACONF_MAX_NUMBER_OF_ARENAS)
@@ -23,14 +24,20 @@ void read_arena_configs(const char *filename, ArenaConfigs *config)
     {
         char arena_key[100];
         sprintf(arena_key, "arena_%d", i);
-        record_file_scanf(filename, arena_key, "%*s %s level_number=%d", config->arenas[i].name, &config->arenas[i].level_number);
-
-        for (char *p = config->arenas[i].name; *p; p++)
+        char record[256];
+        if (record_file_get_record(filename, arena_key, record, sizeof(record)) != 0)
+            continue;
+        sscanf(record, "%*s level_number=%d", &config->arenas[i].level_number);
+        char *name = strstr(record, "name=");
+        if (name && strlen(name + 5) < sizeof(config->arenas[i].name))
         {
-            if (*p == '_')
-                *p = ' ';
+            name += 5;
+            strcpy(config->arenas[i].name, name);
         }
-
+        else
+        {
+            sprintf(config->arenas[i].name, "Arena level %d", i + 1);
+        }
         LOG("Read arena config: '%s' = %d\n", config->arenas[i].name, config->arenas[i].level_number);
     }
 }

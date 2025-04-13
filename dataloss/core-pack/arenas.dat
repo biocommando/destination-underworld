@@ -1,6 +1,6 @@
 number_of_arenas 5
-arena_0 Imp_Pit level_number=100
-arena_1 Area_51 level_number=101
-arena_2 Dungeon level_number=102
-arena_3 Mage's_Maze level_number=103
-arena_4 Slaughterhouse level_number=104
+arena_0 level_number=100 name=Imp Pit
+arena_1 level_number=101 name=Area 51
+arena_2 level_number=102 name=Dungeon
+arena_3 level_number=103 name=Mage's Maze
+arena_4 level_number=104 name=Slaughterhouse
