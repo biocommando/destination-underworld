@@ -22,45 +22,26 @@ typedef struct
     ArenaConfig arenas[ARENACONF_MAX_NUMBER_OF_ARENAS];
 } ArenaConfigs;
 
-// Highscores for all arenas and all game modes.
-// The arrays are indexed so that the first index corresponds to the
-// arena index in ArenaConfigs and the second index is just a running number
-// for different game modifier flag combinations (so that each game mode can
-// have unique highscore).
-typedef struct
-{
-    // Number of kills
-    int kills[ARENACONF_MAX_NUMBER_OF_ARENAS][ARENACONF_HIGHSCORE_MAP_SIZE];
-    // Game modifier flags
-    int mode[ARENACONF_MAX_NUMBER_OF_ARENAS][ARENACONF_HIGHSCORE_MAP_SIZE];
-    // Record file is only accessed if the entry is marked as "dirty"
-    int dirty[ARENACONF_MAX_NUMBER_OF_ARENAS][ARENACONF_HIGHSCORE_MAP_SIZE];
-} ArenaHighscore;
-
 /*
  * Read the ArenaConfigs structure. Uses record file format.
  * Expects to find following types of records:
  * number_of_arenas amount
  *   Read this many ArenaConfigs from the file
- * arena_%d name level_number=%d
- *   Populates ArenaConfig structure. The underscores in the name parameter
- *   are substituted with spaces.
+ * arena_%d level_number=%d name=%s
+ *   Populates ArenaConfig structure. The name can have spaces etc.
  */
 void read_arena_configs(const char *filename, ArenaConfigs *config);
 
 /*
- * Read highscore file. See access_arena_highscore.
- */
-void read_arena_highscores(const char *filename, ArenaHighscore *highscore);
-
-/*
- * Write highscore file. See access_arena_highscore.
- */
-void write_arena_highscores(const char *filename, ArenaHighscore *highscore);
-
-/*
  * Get the highscore for requested mission and game mode. If they don't exist
  * return 0.
+ *
+ * Uses record file format. The records have the following format:
+ * level_number=%d;mode=%d; %d
+ * Where the placeholders are:
+ * - level number that corresponds to the level_number field read in read_arena_configs.
+ * - the game modifiers flags
+ * - the highscore (number of kills)
  */
 int get_arena_highscore(int mission, int game_mode);
 

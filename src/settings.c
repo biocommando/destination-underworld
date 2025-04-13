@@ -90,18 +90,6 @@ int read_cmd_line_arg_int(const char *arg, char **argv, int argc, const char *do
   return 0;
 }
 
-void access_arena_highscore(ArenaHighscore *arena_highscore, int load)
-{
-  char path[256];
-  sprintf(path, DATADIR "%s\\arena_highscores.dat", game_settings.mission_pack);
-  if (!load)
-  {
-    write_arena_highscores(path, arena_highscore);
-    return;
-  }
-  read_arena_highscores(path, arena_highscore);
-}
-
 void get_data_filename(char *dst, const char *file)
 {
   if (game_settings.custom_resources)

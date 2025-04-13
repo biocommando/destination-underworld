@@ -536,24 +536,14 @@ static int display_new_game_menu(int game_modifiers)
     m.cancel_menu_item_id = mi->item_id;
     add_menu_item(&m, "Change game mode", "Current: %s", game_modifiers_to_str(game_modifiers));
     add_menu_item(&m, "Story mode", "Begin a new story mode game");
-    ArenaHighscore arena_highscore;
-    access_arena_highscore(&arena_highscore, 1);
     mi = add_menu_item(&m, "(meta)", "The levels below are arena fights where you need to kill\nas many enemies as you can before dying yourself.");
     mi->meta = 1;
     mi->selectable = 0;
     for (int arena = 0; arena < get_game_settings()->arena_config.number_of_arenas; arena++)
     {
-        int kills = 0;
-        for (int i = 0; i < ARENACONF_HIGHSCORE_MAP_SIZE; i++)
-        {
-            if (arena_highscore.mode[arena][i] == game_modifiers)
-            {
-                kills = arena_highscore.kills[arena][i];
-                break;
-            }
-        }
-        mi = add_menu_item(&m, get_game_settings()->arena_config.arenas[arena].name,
-                           "Highscore: %d kills", kills);
+        const ArenaConfig *ac = &get_game_settings()->arena_config.arenas[arena];
+        int kills = get_arena_highscore(ac->level_number, game_modifiers);
+        mi = add_menu_item(&m, ac->name, "Highscore: %d kills", kills);
         mi->item_id = arena;
     }
     set_item_by_id(&m, get_menu_item_id("Story"));

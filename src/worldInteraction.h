@@ -85,15 +85,6 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
  */
 void change_room_if_at_exit_point(World *world);
 /*
- * Gets arena highscores from the GameSettings.arena_config.arenas data structure. If the highscore.mode
- * array does not contain the arena/game mode mapping, the function reserves a slot for it.
- *
- * hs_arena and hs_mode are set to the indices in ArenaHighscore arrays so that the data can be accessed
- * by the caller like:
- * `highscore->kills[*hs_arena][*hs_mode] = 100;`
- */
-int parse_highscore_from_world_state(const World *world, int mission, ArenaHighscore *highscore, int *hs_arena, int *hs_mode);
-/*
  * Spawns a potion of a certain type at x, y (screen coordinates) in room room_id. The first indices in the
  * World.potions array are reserved for the potions that come from the level file and the rest can be used for
  * potion drops. Therefore, the range start and end should be provided. They must be either:

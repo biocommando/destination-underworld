@@ -490,41 +490,6 @@ void change_room_if_at_exit_point(World *world)
     }
 }
 
-int parse_highscore_from_world_state(const World *world, int mission, ArenaHighscore *highscore, int *hs_arena, int *hs_mode)
-{
-    int arena_idx, mode_idx;
-    int mode = *world->game_modifiers & (~GAMEMODIFIER_ARENA_FIGHT);
-    for (arena_idx = 0; arena_idx < get_game_settings()->arena_config.number_of_arenas; arena_idx++)
-    {
-        if (get_game_settings()->arena_config.arenas[arena_idx].level_number == mission)
-            break;
-    }
-    int highscore_kills = 0;
-    for (mode_idx = 0; mode_idx < ARENACONF_HIGHSCORE_MAP_SIZE; mode_idx++)
-    {
-        if (highscore->mode[arena_idx][mode_idx] == mode)
-        {
-            highscore_kills = highscore->kills[arena_idx][mode_idx];
-            break;
-        }
-    }
-    if (mode_idx == ARENACONF_HIGHSCORE_MAP_SIZE)
-    {
-        for (mode_idx = 0; mode_idx < ARENACONF_HIGHSCORE_MAP_SIZE; mode_idx++)
-        {
-            if (highscore->mode[arena_idx][mode_idx] == -1)
-            {
-                // Reserve this index in the map for the new entry
-                highscore->mode[arena_idx][mode_idx] = mode;
-                break;
-            }
-        }
-    }
-    *hs_arena = arena_idx;
-    *hs_mode = mode_idx;
-    return highscore_kills;
-}
-
 void set_player_start_state(World *world, GlobalGameState *ggs)
 {
   int difficulty = GET_DIFFICULTY(world);

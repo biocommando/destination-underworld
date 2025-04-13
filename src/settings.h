@@ -67,17 +67,6 @@ int read_cmd_line_arg_int(const char *arg, char **argv, int argc, const char *do
  */
 int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output, const char *documentation);
 /*
- * Read or write ArenaHighscore structure from arena_highscores.dat.
- * The file uses record file format and the structure is:
- * arena_[arena_index]_item_[item_index] mode=%d kills=%d
- *
- * The format is not very friendly to access but it's only read and wrote automatically
- * by this function.
- *
- * Note that the key values are just for human-readability, the key-value order needs to be exactly like this.
- */
-void access_arena_highscore(ArenaHighscore *arena_highscore, int load);
-/*
  * Gets filename for a data file that may be a custom resource.
  * If custom resources are in use, sets the path to datadir\mission_pack\file,
  * otherwise sets to datadir\file.

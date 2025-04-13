@@ -68,11 +68,7 @@ static void set_game_mode_beaten_flag(int game_modifiers)
 
 static void display_arena_fight_end_screen(const World *world, GlobalGameState *ggs, const int *record_mode, int no_player_damage)
 {
-  ArenaHighscore highscore;
-  memset(&highscore, 0, sizeof(highscore));
-  access_arena_highscore(&highscore, 1);
-  int arena_idx, mode_idx;
-  int highscore_kills = parse_highscore_from_world_state(world, ggs->mission, &highscore, &arena_idx, &mode_idx);
+  int highscore_kills = get_arena_highscore(ggs->mission, ggs->game_modifiers);
   int offx = (DISPLAY_W - 340) / 2, offy = (DISPLAY_H - 125) / 2;
   for (int grayscale = 0; grayscale < 5; grayscale++)
   {
@@ -84,11 +80,9 @@ static void display_arena_fight_end_screen(const World *world, GlobalGameState *
   {
     al_draw_textf(get_font(), WHITE, offx + 10, offy + 30, ALLEGRO_ALIGN_LEFT, "Previous highscore: %d", highscore_kills);
     al_draw_textf(get_font(), WHITE, offx + 10, offy + 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
-    highscore.kills[arena_idx][mode_idx] = world->kills;
-    highscore.dirty[arena_idx][mode_idx] = 1;
     if (!no_player_damage)
     {
-      access_arena_highscore(&highscore, 0);
+      set_arena_highscore(ggs->mission, ggs->game_modifiers, world->kills);
     }
     else
     {
