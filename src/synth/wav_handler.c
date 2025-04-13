@@ -8,7 +8,7 @@
 inline static int check_file_not_at_end(FILE *f, unsigned file_total_size)
 {
     long pos = ftell(f);
-    if (pos > 0)
+    if (pos >= 0)
     {
         return (unsigned long)pos < file_total_size;
     }
