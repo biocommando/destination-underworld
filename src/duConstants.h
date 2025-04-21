@@ -28,8 +28,8 @@
 
 #define PLR_DIR_HELPER_INITIAL_INTENSITY 100
 
-#define DATADIR ".\\dataloss\\"
-#define SAVE_FILENAME DATADIR "%s\\save.dat"
+#define DATADIR "./dataloss/"
+#define SAVE_FILENAME DATADIR "%s/save.dat"
 
 #define DIFFICULTY_NORMAL 0
 #define DIFFICULTY_BRUTAL 1

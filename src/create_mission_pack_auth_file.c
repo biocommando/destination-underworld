@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         dmac_sha1_calculate_hash_f(hash, fullpath);
         char hex[100];
         convert_sha1_hash_to_hex(hex, hash);
-        printf(".\\dataloss\\%s\\%s %s\n", argv[1], path, hex);
+        printf("./dataloss/%s/%s %s\n", argv[1], path, hex);
     }
     fclose(f);
     return 0;

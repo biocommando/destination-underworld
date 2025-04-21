@@ -143,7 +143,7 @@ const char *get_midi_playlist_entry_file_name(int index)
     char *ret = playlist[index].path;
     for (char *c = ret; *c; c++)
     {
-        if (*c == '\\')
+        if (*c == '\\' || *c == '/')
             ret = c + 1;
     }
     return ret;

@@ -26,7 +26,7 @@ static ALLEGRO_BITMAP *menu_sprites;
 static void show_help()
 {
     char help_path[256];
-    sprintf(help_path, DATADIR "%s\\help.dat", get_game_settings()->mission_pack);
+    sprintf(help_path, DATADIR "%s/help.dat", get_game_settings()->mission_pack);
     FILE *f = fopen(help_path, "r");
     ALLEGRO_COLOR color = al_map_rgb(255, 255, 255);
     ALLEGRO_COLOR saved_colors[10];
@@ -227,7 +227,7 @@ static void display_menu(struct menu *menu_state)
     {
         menu_state->selected_item = (menu_state->selected_item + 1) % menu_state->num_items;
     }
-    ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "\\hell.jpg");
+    ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "/hell.jpg");
 
     const int font_height = al_get_font_line_height(get_menu_font());
     const int menu_item_height = font_height + 2;

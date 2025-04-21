@@ -44,7 +44,7 @@ void read_arena_configs(const char *filename, ArenaConfigs *config)
 
 static void get_arena_highscores_path(char *path)
 {
-    sprintf(path, DATADIR "%s\\arcade_mode_highscores.dat", get_game_settings()->mission_pack);
+    sprintf(path, DATADIR "%s/arcade_mode_highscores.dat", get_game_settings()->mission_pack);
 }
 
 static void get_arena_highscore_key(char *result, int mission, int game_mode)

@@ -23,7 +23,7 @@ int wt_sample_read_all(const char *directory)
     int slot;
     for (slot = 0; slot < MAX_WT_SAMPLE_SLOTS; slot++)
     {
-        sprintf(path, "%s\\wt_sample_slot_%d.wav", directory, slot);
+        sprintf(path, "%s/wt_sample_slot_%d.wav", directory, slot);
         // fprintf(df, "reading path '%s'\n", path);
         struct wav_file wav;
         if (read_wav_file(path, &wav) != 0)

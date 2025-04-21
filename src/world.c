@@ -15,7 +15,7 @@ static void init_spritesheet(World *world)
   else
   {
     char path[256];
-    sprintf(path, DATADIR "\\%s\\sprites.png", get_game_settings()->mission_pack);
+    sprintf(path, DATADIR "/%s/sprites.png", get_game_settings()->mission_pack);
     world->spr = al_load_bitmap(path);
   }
   al_convert_mask_to_alpha(world->spr, al_map_rgb(255, 0, 255));

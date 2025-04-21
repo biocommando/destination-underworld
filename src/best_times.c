@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define BEST_TIMES_FILE DATADIR "%s\\best_times.dat"
+#define BEST_TIMES_FILE DATADIR "%s/best_times.dat"
 
 static int compare_floats(const void *a, const void *b)
 {

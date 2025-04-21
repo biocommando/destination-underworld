@@ -16,9 +16,11 @@ static int check_authentication(const char *file_to_check)
     if (get_game_settings()->require_authentication)
     {
         char fname[256];
-        sprintf(fname, DATADIR "%s\\auth.dat", get_game_settings()->mission_pack);
+        sprintf(fname, DATADIR "%s/auth.dat", get_game_settings()->mission_pack);
         char file_hash_hex[256] = "N/A";
-        record_file_scanf(fname, file_to_check, "%*s %s", file_hash_hex);
+        int ret = record_file_scanf(fname, file_to_check, "%*s %s", file_hash_hex);
+        if (ret == 0)
+            LOG_ERROR("Error reading auth.dat entry for file %s\n", file_to_check);
         char hash[DMAC_SHA1_HASH_SIZE];
         memset(hash, 0, sizeof(hash));
         convert_sha1_hex_to_hash(hash, file_hash_hex);
@@ -216,7 +218,7 @@ int read_level(World *world, int mission, int room_to)
     }
 
     char mission_name[256];
-    sprintf(mission_name, DATADIR "%s\\mission%d", get_game_settings()->mission_pack, mission);
+    sprintf(mission_name, DATADIR "%s/mission%d", get_game_settings()->mission_pack, mission);
 
     world->boss_fight = 0;
     sprintf(world->mission_display_name, "Level %d", mission);
@@ -258,7 +260,7 @@ int read_level(World *world, int mission, int room_to)
 void read_enemy_configs(World *world)
 {
     char fname[256];
-    sprintf(fname, DATADIR "%s\\enemy-properties.dat", get_game_settings()->mission_pack);
+    sprintf(fname, DATADIR "%s/enemy-properties.dat", get_game_settings()->mission_pack);
     if (check_authentication(fname))
     {
         LOG_FATAL("enemy config authentication failed!!");
@@ -282,7 +284,7 @@ void read_enemy_configs(World *world)
 int read_mission_count(int game_mode)
 {
     char fname[256];
-    sprintf(fname, DATADIR "%s\\mission-counts.dat", get_game_settings()->mission_pack);
+    sprintf(fname, DATADIR "%s/mission-counts.dat", get_game_settings()->mission_pack);
 
     char key[20];
     sprintf(key, "mode-%d", game_mode);

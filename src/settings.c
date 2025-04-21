@@ -54,7 +54,7 @@ void read_settings(char **argv, int argc)
   READ_SETTING(&game_settings.sfx_vol, "%f", "audio", "sfx-vol");
 
   char arena_config_file[256];
-  sprintf(arena_config_file, DATADIR "%s\\arenas.dat", game_settings.mission_pack);
+  sprintf(arena_config_file, DATADIR "%s/arenas.dat", game_settings.mission_pack);
   read_arena_configs(arena_config_file, &game_settings.arena_config);
 }
 
@@ -94,7 +94,7 @@ void get_data_filename(char *dst, const char *file)
 {
   if (game_settings.custom_resources)
   {
-    sprintf(dst, DATADIR "%s\\%s", game_settings.mission_pack, file);
+    sprintf(dst, DATADIR "%s/%s", game_settings.mission_pack, file);
   }
   else
   {
