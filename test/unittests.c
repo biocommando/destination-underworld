@@ -41,5 +41,11 @@ int main(int argc, char **argv)
         RUN_TEST(record_file__format_functions);
         RUN_TEST(record_file__limits);
     }
+    TEST_SUITE(duscript)
+    {
+        RUN_TEST(duscript__set_variables);
+        RUN_TEST(duscript__conditions);
+        RUN_TEST(duscript__gotos);
+    }
     END_TESTS;
 }

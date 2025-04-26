@@ -76,7 +76,8 @@ int du_script_execute_line(DuScriptState *state, const char *line)
             char name[DU_SCRIPT_MAX_STR_LEN] = "";
             char val[DU_SCRIPT_MAX_STR_LEN] = "";
             char op = 0;
-            sscanf(p, "%s %c %s %s", name, &op, val, goto_label);
+            if (sscanf(p, "%s %c %s %s", name, &op, val, goto_label) != 4)
+                return 0;
             LOG_TRACE("Compare %s %c %s : %s\n", name, op, val, goto_label);
             var = du_script_variable(state, name);
             int same = var && !strcmp(var->value, val);
