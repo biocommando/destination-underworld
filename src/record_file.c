@@ -10,6 +10,7 @@
 struct mem_record
 {
     char value[REC_MAX_LENGTH];
+    size_t sz;
 };
 
 struct mem_record_db
@@ -93,7 +94,8 @@ void record_file_read(const char *file)
             size_t sz = sizeof(struct mem_record) * state.sz;
             state.recs = (struct mem_record *)realloc(state.recs, sz);
         }
-        memcpy(&state.recs[line_idx], line, REC_MAX_LENGTH);
+        memcpy(&state.recs[line_idx].value, line, REC_MAX_LENGTH);
+        state.recs[line_idx].sz = line_len + 1;
         line_idx++;
     }
     fclose(f);
@@ -124,7 +126,7 @@ static int get_record_index(const char *file, const char *id)
 int record_file_get_record(const char *file, const char *id, char *record, size_t sz)
 {
     int rec_idx = get_record_index(file, id);
-    if (rec_idx >= 0)
+    if (rec_idx >= 0 && state.recs[rec_idx].sz <= sz)
     {
         memcpy(record, state.recs[rec_idx].value, sz > REC_MAX_LENGTH ? REC_MAX_LENGTH : sz);
         return 0;
@@ -134,10 +136,18 @@ int record_file_get_record(const char *file, const char *id, char *record, size_
 
 int record_file_set_record(const char *file, const char *id, const char *record)
 {
-    if (strlen(record) >= REC_MAX_LENGTH)
+    size_t length = strlen(record);
+    if (length >= REC_MAX_LENGTH)
     {
         return 1;
     }
+
+    size_t id_length = strlen(id);
+    if (id_length > length || memcmp(id, record, id_length))
+    {
+        return 1;
+    }
+
     int rec_idx = get_record_index(file, id);
     if (rec_idx == -1)
     {
@@ -147,6 +157,7 @@ int record_file_set_record(const char *file, const char *id, const char *record)
         state.recs = (struct mem_record *)realloc(state.recs, sz);
     }
     strcpy(state.recs[rec_idx].value, record);
+    state.recs[rec_idx].sz = length + 1;
 
     state.dirty = 1;
     return 0;

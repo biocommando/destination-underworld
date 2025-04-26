@@ -18,6 +18,7 @@ void init_AdsrEnvelope(AdsrEnvelope *env)
     env->endReached = 1;
     env->sustain = 0;
     env->stage = 0;
+    env->envelope = 0;
     init_EnvelopeStage(&env->stages[0], 1);
     init_EnvelopeStage(&env->stages[1], 1);
     init_EnvelopeStage(&env->stages[2], 0);
@@ -80,8 +81,17 @@ void AdsrEnvelope_calculateNext(AdsrEnvelope *env)
         // If cycling A-D-S-A-D-S... at the end of decay stage, trigger attack again
         if (env->cycleAttackDecay && env->stage == 1)
             triggerStage(env, 0);
+        else if (env->stage == 1 && env->sustain == 0)
+        {
+            // Special case: decay ends and sustain is zero
+            env->envelope = 0;
+            env->endReached = 1;
+            env->stages[env->stage].ratio = 1;
+        }
         else
+        {
             triggerStage(env, env->stage + 1);
+        }
         AdsrEnvelope_calculateNext(env);
     }
     else
@@ -105,7 +115,7 @@ void AdsrEnvelope_trigger(AdsrEnvelope *env)
 
 void AdsrEnvelope_release(AdsrEnvelope *env)
 {
-    if (env->stage < 3)
+    if (env->stage < 3 && !env->endReached)
     {
         env->releaseLevel = env->envelope;
         env->releaseStage = env->stage;
