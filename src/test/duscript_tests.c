@@ -7,11 +7,11 @@ TEST(duscript__set_variables)
     DuScriptVariable *var;
     var = du_script_variable(&st, "hello");
     strcpy(var->value, "123");
-    int ret = du_script_execute_line(&st, "*=hello\"world\"");
+    int ret = du_script_execute_line(&st, "*=hello\"world !!\"");
     ASSERT(INT_EQ(0, ret));
     ret = du_script_execute_line(&st, "*=hello2\"world2\"");
     ASSERT(INT_EQ(0, ret));
-    ASSERT(STR_EQ("world", var->value));
+    ASSERT(STR_EQ("world !!", var->value));
     var = du_script_variable(&st, "hello2");
     ASSERT(STR_EQ("world2", var->value));
     // invalid values
@@ -19,7 +19,7 @@ TEST(duscript__set_variables)
     ASSERT(INT_EQ(0, ret));
     ret = du_script_execute_line(&st, "*=hello2");
     ASSERT(INT_EQ(0, ret));
-    ASSERT(STR_EQ("world", du_script_variable(&st, "hello")->value));
+    ASSERT(STR_EQ("world !!", du_script_variable(&st, "hello")->value));
     ASSERT(STR_EQ("world2", du_script_variable(&st, "hello2")->value));
 
     var->read_only = 1;

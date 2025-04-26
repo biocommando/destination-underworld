@@ -33,38 +33,25 @@ int du_script_execute_line(DuScriptState *state, const char *line)
     {
         return 0;
     }
-    if (line[1] == '=')
+    if (line[1] == '=' && strlen(line) < DU_SCRIPT_MAX_STR_LEN)
     {
-        char buf[DU_SCRIPT_MAX_STR_LEN];
-        int ibuf = 0;
-        int n = 0;
-        for (int i = 2; line[i]; i++)
-        {
-            buf[ibuf] = line[i];
-            if (line[i] == '"')
-            {
-                buf[ibuf] = 0;
-                if (!n)
-                {
-                    var = du_script_variable(state, buf);
-                    if (!var || var->read_only)
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    strcpy(var->value, buf);
-                }
-                if (++n == 2)
-                    break;
-                ibuf = 0;
-            }
-            else
-            {
-                ibuf++;
-            }
-        }
+        const char *var_start = line + 2;
+        const char *var_end = strstr(var_start, "\"");
+        if (!var_end)
+            return 0;
+        const char *val_end = strstr(var_end + 1, "\"");
+        if (!val_end)
+            return 0;
+        char name[DU_SCRIPT_MAX_STR_LEN];
+        int len = var_end - var_start;
+        memcpy(name, var_start, len);
+        name[len] = 0;
+        var = du_script_variable(state, name);
+        if (!var || var->read_only)
+            return 0;
+        len = val_end - (var_end + 1);
+        memcpy(var->value, var_end + 1, len);
+        var->value[len] = 0;
         return 0;
     }
     if (line[1] == '?')
