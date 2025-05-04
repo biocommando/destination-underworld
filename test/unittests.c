@@ -48,5 +48,11 @@ int main(int argc, char **argv)
         RUN_TEST(duscript__conditions);
         RUN_TEST(duscript__gotos);
     }
+    TEST_SUITE(arenaconf)
+    {
+        RUN_TEST(arenaconf__read_arena_configs__valid_and_invalid_entries);
+        RUN_TEST(arenaconf__get_arena_highscore);
+        RUN_TEST(arenaconf__set_arena_highscore);
+    }
     END_TESTS;
 }
