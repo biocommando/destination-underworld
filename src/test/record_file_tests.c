@@ -106,3 +106,9 @@ TEST(record_file__limits)
     record_file_flush();
     remove(fn);
 }
+
+TEST(record_file__cannot_open_file__does_not_crash)
+{
+    record_file_set_record("path/that/does/not/exist", "hello", "hello world");
+    record_file_flush();
+}

@@ -40,6 +40,7 @@ int main(int argc, char **argv)
         RUN_TEST(record_file__read_write_and_switching_files);
         RUN_TEST(record_file__format_functions);
         RUN_TEST(record_file__limits);
+        RUN_TEST(record_file__cannot_open_file__does_not_crash);
     }
     TEST_SUITE(duscript)
     {

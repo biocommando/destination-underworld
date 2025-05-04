@@ -37,20 +37,27 @@ static inline void init()
     memset(&state, 0, sizeof(state));
 }
 
+static inline void write_current_db_to_file()
+{
+    FILE *f = fopen(state.current_file, "w");
+    if (!f)
+        return;
+    // Optional meta information in the beginning of the file
+    fprintf(f, "_record_count %d\n", state.sz);
+    for (int i = 0; i < state.sz; i++)
+    {
+        const struct mem_record *rec = &state.recs[i];
+        fprintf(f, "%s\n", rec->value);
+    }
+    fclose(f);
+}
+
 void record_file_flush()
 {
     init();
     if (state.dirty)
     {
-        FILE *f = fopen(state.current_file, "w");
-        // Optional meta information in the beginning of the file
-        fprintf(f, "_record_count %d\n", state.sz);
-        for (int i = 0; i < state.sz; i++)
-        {
-            const struct mem_record *rec = &state.recs[i];
-            fprintf(f, "%s\n", rec->value);
-        }
-        fclose(f);
+        write_current_db_to_file();
     }
 
     free(state.recs);
