@@ -116,112 +116,117 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
     {
       if (!strcmp(cmd, "event_trigger"))
       {
-        char s[BUF_LEN];
-        sscanf(buf, "%*s %s %d", s, &event->trigger_value);
+        char trigger_type_name[BUF_LEN];
+        sscanf(buf, "%*s %s %d", trigger_type_name, &event->trigger_value);
         int *trigger_type = &event->trigger_type;
-        if (!strcmp(s, "time_interval"))
+        if (!strcmp(trigger_type_name, "time_interval"))
         {
           *trigger_type = BFCONF_TRIGGER_TYPE_TIME_INTERVAL;
         }
-        if (!strcmp(s, "time_one_time"))
+        else if (!strcmp(trigger_type_name, "time_one_time"))
         {
           *trigger_type = BFCONF_TRIGGER_TYPE_TIME_ONE_TIME;
         }
-        if (!strcmp(s, "health"))
+        else if (!strcmp(trigger_type_name, "health"))
         {
           *trigger_type = BFCONF_TRIGGER_TYPE_HEALTH;
         }
-        if (!strcmp(s, "waypoint_reached"))
+        else if (!strcmp(trigger_type_name, "waypoint_reached"))
         {
           *trigger_type = BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED;
         }
-        if (!strcmp(s, "secondary_timer"))
+        else if (!strcmp(trigger_type_name, "secondary_timer"))
         {
           *trigger_type = BFCONF_TRIGGER_TYPE_SECONDARY_TIMER;
         }
-        if (!strcmp(s, "kill_count"))
+        else if (!strcmp(trigger_type_name, "kill_count"))
         {
           *trigger_type = BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED;
         }
-        if (!strcmp(s, "positional_trigger"))
+        else if (!strcmp(trigger_type_name, "positional_trigger"))
         {
           *trigger_type = BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER;
         }
       }
       else if (!strcmp(cmd, "event_action"))
       {
-        char s[BUF_LEN] = "", s2[BUF_LEN] = "";
+        char action_type[BUF_LEN] = "", str_param[BUF_LEN] = "";
         int params[7] = {0, 0, 0, 0, 0, 0, 0};
-        sscanf(buf, "%*s %s %d %d %d %d %d %d %d %s", s, params, params + 1, params + 2,
-               params + 3, params + 4, params + 5, params + 6, s2);
-        if (!strcmp(s, "spawn"))
+        sscanf(buf, "%*s %s %d %d %d %d %d %d %d %s", action_type, params, params + 1, params + 2,
+               params + 3, params + 4, params + 5, params + 6, str_param);
+        if (!strcmp(action_type, "spawn"))
         {
           event->event_type = BFCONF_EVENT_TYPE_SPAWN;
+          BossFightSpawnPointConfig *spawn_point = &event->spawn_point;
+          int total = 0;
           for (int j = 0; j < 5; j++)
           {
             int prob = params[j];
             // >= min, < max
-            event->spawn_point.probability_thresholds[j][0] = j == 0 ? 0 : event->spawn_point.probability_thresholds[j - 1][1];
-            event->spawn_point.probability_thresholds[j][1] = event->spawn_point.probability_thresholds[j][0] + prob;
+            spawn_point->probability_thresholds[j][0] = j == 0 ? 0 : spawn_point->probability_thresholds[j - 1][1];
+            spawn_point->probability_thresholds[j][1] = spawn_point->probability_thresholds[j][0] + prob;
+            total += prob;
           }
-          event->spawn_point.x = params[5];
-          event->spawn_point.y = params[6];
+          if (total > 100)
+          {
+            LOG_ERROR("Spawn point probability sum over 100: %d\n", total);
+          }
+          spawn_point->x = params[5];
+          spawn_point->y = params[6];
         }
-
-        if (!strcmp(s, "allow_firing"))
+        else if (!strcmp(action_type, "allow_firing"))
         {
           event->event_type = BFCONF_EVENT_TYPE_ALLOW_FIRING;
         }
-
-        if (!strcmp(s, "disallow_firing"))
+        else if (!strcmp(action_type, "disallow_firing"))
         {
           event->event_type = BFCONF_EVENT_TYPE_DISALLOW_FIRING;
         }
-        if (!strcmp(s, "fire_in_circle"))
+        else if (!strcmp(action_type, "fire_in_circle"))
         {
           event->event_type = BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE;
           event->parameters[0] = params[0]; // number_of_directions
           event->parameters[1] = params[1]; // intensity
         }
-        if (!strcmp(s, "modify_terrain"))
+        else if (!strcmp(action_type, "modify_terrain"))
         {
           event->event_type = BFCONF_EVENT_TYPE_MODIFY_TERRAIN;
           event->parameters[0] = params[0]; // x
           event->parameters[1] = params[1]; // y
-          if (!strcmp(s2, "floor"))
+          if (!strcmp(str_param, "floor"))
           {
             event->parameters[2] = BFCONF_MODIFY_TERRAIN_FLOOR;
           }
-          if (!strcmp(s2, "wall"))
+          if (!strcmp(str_param, "wall"))
           {
             event->parameters[2] = BFCONF_MODIFY_TERRAIN_WALL;
           }
-          if (!strcmp(s2, "level_exit"))
+          if (!strcmp(str_param, "level_exit"))
           {
             event->parameters[2] = BFCONF_MODIFY_TERRAIN_EXIT;
           }
         }
-        if (!strcmp(s, "set_waypoint"))
+        else if (!strcmp(action_type, "set_waypoint"))
         {
           event->event_type = BFCONF_EVENT_TYPE_SET_WAYPOINT;
           event->parameters[0] = params[0]; // x
           event->parameters[1] = params[1]; // y
           event->parameters[2] = params[2]; // waypoint_id
         }
-        if (!strcmp(s, "clear_waypoint"))
+        else if (!strcmp(action_type, "clear_waypoint"))
         {
           event->event_type = BFCONF_EVENT_TYPE_CLEAR_WAYPOINT;
         }
-        if (!strcmp(s, "start_secondary_timer"))
+        else if (!strcmp(action_type, "start_secondary_timer"))
         {
           event->event_type = BFCONF_EVENT_TYPE_START_SECONDARY_TIMER;
           event->parameters[0] = params[0]; // time
         }
-        if (!strcmp(s, "stop_secondary_timer"))
+        else if (!strcmp(action_type, "stop_secondary_timer"))
         {
           event->event_type = BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER;
         }
-        if (!strcmp(s, "toggle_event_enabled"))
+        else if (!strcmp(action_type, "toggle_event_enabled"))
         {
           event->event_type = BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED;
           int event_id = params[0];
@@ -233,8 +238,7 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
           event->parameters[0] = event_id;
           event->parameters[1] = params[1]; // enabled
         }
-
-        if (!strcmp(s, "spawn_potion"))
+        else if (!strcmp(action_type, "spawn_potion"))
         {
           event->event_type = BFCONF_EVENT_TYPE_SPAWN_POTION;
           event->parameters[0] = params[0]; // x
