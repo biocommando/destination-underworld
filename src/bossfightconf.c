@@ -50,12 +50,14 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
   config->state.boss_waypoint.x = -1;
   config->state.boss_waypoint.y = -1;
 
-  char buf[100];
+#define BUF_LEN 100
+
+  char buf[BUF_LEN];
   BossFightEventConfig *event = NULL;
   while (!feof(f))
   {
     fgets(buf, sizeof(buf), f);
-    char cmd[100];
+    char cmd[BUF_LEN];
     sscanf(buf, "%s", cmd);
     if (!strcmp(cmd, "health"))
     {
@@ -114,7 +116,7 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
     {
       if (!strcmp(cmd, "event_trigger"))
       {
-        char s[100];
+        char s[BUF_LEN];
         sscanf(buf, "%*s %s %d", s, &event->trigger_value);
         int *trigger_type = &event->trigger_type;
         if (!strcmp(s, "time_interval"))
@@ -148,7 +150,7 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
       }
       else if (!strcmp(cmd, "event_action"))
       {
-        char s[100] = "", s2[100] = "";
+        char s[BUF_LEN] = "", s2[BUF_LEN] = "";
         int params[7] = {0, 0, 0, 0, 0, 0, 0};
         sscanf(buf, "%*s %s %d %d %d %d %d %d %d %s", s, params, params + 1, params + 2,
                params + 3, params + 4, params + 5, params + 6, s2);
