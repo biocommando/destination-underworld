@@ -54,5 +54,9 @@ int main(int argc, char **argv)
         RUN_TEST(arenaconf__get_arena_highscore);
         RUN_TEST(arenaconf__set_arena_highscore);
     }
+    TEST_SUITE(scripted_events)
+    {
+        RUN_TEST(scripted_events__pos_triggers);
+    }
     END_TESTS;
 }

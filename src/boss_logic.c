@@ -16,8 +16,7 @@ void boss_logic(World *world, int boss_died)
   // world->boss_fight_config->state.player_kills = world->kills;
   bossfight_process_event_triggers(world->boss_fight_config);
   // Ensure that positional triggers will only fire once ever
-  world->boss_fight_config->state.positional_trigger_flags |=
-      (world->boss_fight_config->state.positional_trigger_flags & 0xFFFF) << 16;
+  pos_trigger_clear(&world->boss_fight_config->state.positional_trigger_flags);
   for (int x = 0; x < world->boss_fight_config->num_events; x++)
   {
     if (!world->boss_fight_config->state.triggers[x])

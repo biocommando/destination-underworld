@@ -277,3 +277,21 @@ void bossfight_process_event_triggers(BossFightConfig *config);
 void bossfight_trigger_to_str(char *dst, int value);
 // BFCONF_EVENT_TYPE_* to string for debug prints
 void bossfight_event_type_to_str(char *dst, int value);
+
+/*
+ * Returns trigger state:
+ *  0 = init
+ *  1 = triggered
+ * -1 = inactive
+ */
+int pos_trigger_state(const int *positional_trigger_flags, int ptrig_idx);
+
+/*
+ * Mark all positional triggers in triggered state to inactive state.
+ */
+void pos_trigger_clear(int *positional_trigger_flags);
+
+/*
+ * Set positional trigger state to triggered.
+ */
+void pos_trigger_set(int *positional_trigger_flags, int ptrig_idx);

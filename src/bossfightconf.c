@@ -291,12 +291,8 @@ void bossfight_process_event_triggers(BossFightConfig *config)
       *trig = state->player_kills >= econf->trigger_value && state->player_previous_kills < econf->trigger_value;
       break;
     case BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER:
-    {
-      int t_mask = 1 << econf->trigger_value;
-      int t_en_mask = t_mask << 16;
-      *trig = (state->positional_trigger_flags & t_mask) && !(state->positional_trigger_flags & t_en_mask);
-    }
-    break;
+      *trig = pos_trigger_state(&state->positional_trigger_flags, econf->trigger_value) > 0;
+      break;
     default:
       *trig = 0;
       break;
@@ -384,4 +380,31 @@ void bossfight_event_type_to_str(char *dst, int value)
     dst[0] = 0;
     break;
   }
+}
+
+int pos_trigger_state(const int *positional_trigger_flags, int ptrig_idx)
+{
+    if (ptrig_idx < 0 || ptrig_idx >= 16)
+        return 0;
+    int t_mask = 1 << ptrig_idx;
+    int t_en_mask = t_mask << 16;
+    int triggered = *positional_trigger_flags & t_mask;
+    if (triggered && !(*positional_trigger_flags & t_en_mask))
+        return 1;
+    return triggered ? -1 : 0;
+}
+
+void pos_trigger_clear(int *positional_trigger_flags)
+{
+  *positional_trigger_flags |=
+      (*positional_trigger_flags & 0xFFFF) << 16;
+}
+
+void pos_trigger_set(int *positional_trigger_flags, int ptrig_idx)
+{
+    if (ptrig_idx < 0 || ptrig_idx >= 16)
+        return;
+    LOG_TRACE("pos trigger current state %x\n", *positional_trigger_flags);
+    *positional_trigger_flags |= 1 << ptrig_idx;
+    LOG_TRACE("pos trigger, new state %x\n", *positional_trigger_flags);
 }
