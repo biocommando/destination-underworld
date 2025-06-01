@@ -291,7 +291,7 @@ void bossfight_process_event_triggers(BossFightConfig *config)
       *trig = state->player_kills >= econf->trigger_value && state->player_previous_kills < econf->trigger_value;
       break;
     case BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER:
-      *trig = pos_trigger_state(&state->positional_trigger_flags, econf->trigger_value) > 0;
+      *trig = pos_trigger_state(state->positional_trigger_flags, econf->trigger_value) == POS_TRIG_TRIGGERED;
       break;
     default:
       *trig = 0;
@@ -384,27 +384,26 @@ void bossfight_event_type_to_str(char *dst, int value)
 
 int pos_trigger_state(const int *positional_trigger_flags, int ptrig_idx)
 {
-    if (ptrig_idx < 0 || ptrig_idx >= 16)
-        return 0;
-    int t_mask = 1 << ptrig_idx;
-    int t_en_mask = t_mask << 16;
-    int triggered = *positional_trigger_flags & t_mask;
-    if (triggered && !(*positional_trigger_flags & t_en_mask))
-        return 1;
-    return triggered ? -1 : 0;
+  if (ptrig_idx < 0 || ptrig_idx >= NUM_POS_TRIGGERS)
+    return 0;
+  return positional_trigger_flags[ptrig_idx];
 }
 
 void pos_trigger_clear(int *positional_trigger_flags)
 {
-  *positional_trigger_flags |=
-      (*positional_trigger_flags & 0xFFFF) << 16;
+  for (int i = 0; i < NUM_POS_TRIGGERS; i++)
+  {
+    if (positional_trigger_flags[i])
+      positional_trigger_flags[i] = POS_TRIG_INACTIVE;
+  }
 }
 
 void pos_trigger_set(int *positional_trigger_flags, int ptrig_idx)
 {
-    if (ptrig_idx < 0 || ptrig_idx >= 16)
-        return;
-    LOG_TRACE("pos trigger current state %x\n", *positional_trigger_flags);
-    *positional_trigger_flags |= 1 << ptrig_idx;
-    LOG_TRACE("pos trigger, new state %x\n", *positional_trigger_flags);
+  if (ptrig_idx < 0 || ptrig_idx >= NUM_POS_TRIGGERS)
+    return;
+  LOG_TRACE("pos trigger current state %x\n", *positional_trigger_flags);
+  if (positional_trigger_flags[ptrig_idx] == POS_TRIG_INIT)
+    positional_trigger_flags[ptrig_idx] = POS_TRIG_TRIGGERED;
+  LOG_TRACE("pos trigger, new state %x\n", *positional_trigger_flags);
 }

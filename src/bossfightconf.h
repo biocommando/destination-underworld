@@ -64,6 +64,14 @@
 // Terrain type for exit level (for event type BFCONF_EVENT_TYPE_MODIFY_TERRAIN)
 #define BFCONF_MODIFY_TERRAIN_EXIT 3
 
+#define NUM_POS_TRIGGERS 16
+// Positional trigger state "init"
+#define POS_TRIG_INIT 0
+// Positional trigger state "triggered"
+#define POS_TRIG_TRIGGERED 1
+// Positional trigger state "inactive" (after clearing triggered pos.trigs)
+#define POS_TRIG_INACTIVE -1
+
 /*
  * Spawn point for enemies. Means that enemies spawn to these coordinates
  * with certain probabilities.
@@ -161,12 +169,8 @@ typedef struct
   Coordinates boss_waypoint;
   // True if boss can fire at will
   int boss_want_to_shoot;
-  // Tracks the current positional trigger flags. Least significant 16 bits hold
-  // the state if player has entered the positional trigger tile. Most significant
-  // 16 bits hold the state if the positional trigger has already been processed.
-  // So e.g. positional trigger number 0 will only fire if bit at 0 is 1 and bit at 16
-  // is 0.
-  int positional_trigger_flags;
+  // Tracks the current positional triggers using the POS_TRIG_* constants.
+  int positional_trigger_flags[NUM_POS_TRIGGERS];
 } BossFightState;
 
 /*
