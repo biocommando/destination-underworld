@@ -24,9 +24,7 @@ void boss_logic(World *world, int boss_died)
 
     BossFightEventConfig *event = &world->boss_fight_config->events[x];
 
-    char s[100];
-    bossfight_event_type_to_str(s, event->event_type);
-    LOG_TRACE("Trigger %s\n", s);
+    LOG_TRACE("Trigger %s\n", bossfight_event_type_to_str(event->event_type));
     if (!event->enabled)
     {
       LOG_TRACE("Event disabled\n");

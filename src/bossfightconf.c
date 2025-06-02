@@ -6,15 +6,12 @@
 
 static void print_configs(BossFightConfig *config)
 {
-  char s[100];
   LOG("Bossfight config read:\n  Events: %d\n", config->num_events);
   for (int i = 0; i < config->num_events && i < BFCONF_MAX_EVENTS; i++)
   {
-    bossfight_event_type_to_str(s, config->events[i].event_type);
-    LOG("  Event %d\n    Event type: %s\n", i, s);
+    LOG("  Event %d\n    Event type: %s\n", i, bossfight_event_type_to_str(config->events[i].event_type));
     LOG("    Params: %d %d %d\n", config->events[i].parameters[0], config->events[i].parameters[1], config->events[i].parameters[2]);
-    bossfight_trigger_to_str(s, config->events[i].trigger_type);
-    LOG("    Trigger type / value: %s = %d\n", s, config->events[i].trigger_value);
+    LOG("    Trigger type / value: %s = %d\n", bossfight_trigger_to_str(config->events[i].trigger_type), config->events[i].trigger_value);
     if (config->events[i].event_type == BFCONF_EVENT_TYPE_SPAWN)
     {
       LOG("    Spawn details: x %d y %d\n    ", config->events[i].spawn_point.x, config->events[i].spawn_point.y);
@@ -40,7 +37,7 @@ static void read_property_set_cmd(int *dst, const char *buf, int game_modifiers)
     *dst = val;
 }
 
-void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
+void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
 {
   memset(config, 0, sizeof(BossFightConfig));
   config->player_initial_gold = -1;
@@ -253,7 +250,7 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers)
     }
   }
 
-  config->state.previous_health = config->state.health + 1;
+  config->state.previous_health = config->health + 1;
   print_configs(config);
 }
 
@@ -303,82 +300,60 @@ void bossfight_process_event_triggers(BossFightConfig *config)
   state->waypoint_reached = 0;
 }
 
-void bossfight_trigger_to_str(char *dst, int value)
+const char *bossfight_trigger_to_str(int value)
 {
-  dst[0] = 0;
   switch (value)
   {
   case BFCONF_TRIGGER_TYPE_TIME_INTERVAL:
-    strcpy(dst, "Time interval");
-    break;
+    return "Time interval";
   case BFCONF_TRIGGER_TYPE_TIME_ONE_TIME:
-    strcpy(dst, "Time one time");
-    break;
+    return "Time one time";
   case BFCONF_TRIGGER_TYPE_HEALTH:
-    strcpy(dst, "Health");
-    break;
+    return "Health";
   case BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED:
-    strcpy(dst, "Waypoint reached");
-    break;
+    return "Waypoint reached";
   case BFCONF_TRIGGER_TYPE_SECONDARY_TIMER:
-    strcpy(dst, "Secondary timer");
-    break;
+    return "Secondary timer";
   case BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED:
-    strcpy(dst, "Kill count reached");
-    break;
+    return "Kill count reached";
   case BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER:
-    strcpy(dst, "positional trigger");
-    break;
+    return "positional trigger";
   case BFCONF_TRIGGER_TYPE_NEVER:
-    strcpy(dst, "Never");
-    break;
+    return "Never";
   default:
-    dst[0] = 0;
-    break;
+    return "";
   }
 }
 
-void bossfight_event_type_to_str(char *dst, int value)
+const char *bossfight_event_type_to_str(int value)
 {
   switch (value)
   {
   case BFCONF_EVENT_TYPE_NO_OP:
-    strcpy(dst, "No-op");
-    break;
+    return "No-op";
   case BFCONF_EVENT_TYPE_SPAWN:
-    strcpy(dst, "Spawn");
-    break;
+    return "Spawn";
   case BFCONF_EVENT_TYPE_ALLOW_FIRING:
-    strcpy(dst, "Allow firing");
-    break;
+    return "Allow firing";
   case BFCONF_EVENT_TYPE_DISALLOW_FIRING:
-    strcpy(dst, "Disallow firing");
-    break;
+    return "Disallow firing";
   case BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE:
-    strcpy(dst, "Fire in circle");
-    break;
+    return "Fire in circle";
   case BFCONF_EVENT_TYPE_MODIFY_TERRAIN:
-    strcpy(dst, "Modify terrain");
-    break;
+    return "Modify terrain";
   case BFCONF_EVENT_TYPE_SET_WAYPOINT:
-    strcpy(dst, "Set waypoint");
-    break;
+    return "Set waypoint";
   case BFCONF_EVENT_TYPE_CLEAR_WAYPOINT:
-    strcpy(dst, "Clear waypoint");
-    break;
+    return "Clear waypoint";
   case BFCONF_EVENT_TYPE_START_SECONDARY_TIMER:
-    strcpy(dst, "Start secondary timer");
-    break;
+    return "Start secondary timer";
   case BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER:
-    strcpy(dst, "Stop secondary timer");
-    break;
+    return "Stop secondary timer";
   case BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED:
-    strcpy(dst, "Toggle event enabled");
-    break;
+    return "Toggle event enabled";
 
   default:
-    dst[0] = 0;
-    break;
+    return "";
   }
 }
 

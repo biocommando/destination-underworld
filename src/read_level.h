@@ -19,7 +19,7 @@
  * - The file should start with a line that starts with 'X'
  * - Lines that begin with '#' are skipped as these are level editor metadata
  * - Line in format `$NUMBER`. This means that the next lines contain a script that should
- *   be run in room id NUMBER (starting from 1). The data is read using read_bfconfig_new
+ *   be run in room id NUMBER (starting from 1). The data is read using read_bfconfig
  *   that returns when the line `end` is read.
  * - Other lines are considered map data. Data is in format `object_id x y room_id`.
  *   The object id is a predefined 32 bit integer number that identifies the object.

@@ -57,6 +57,13 @@ int main(int argc, char **argv)
     TEST_SUITE(scripted_events)
     {
         RUN_TEST(scripted_events__pos_triggers);
+        RUN_TEST(scripted_events__read_bfconfig);
+        RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME_INTERVAL);
+        RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME_ONE_TIME);
+        RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_HEALTH);
+        RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED);
+        RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED);
+        RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER);
     }
     END_TESTS;
 }

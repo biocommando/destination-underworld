@@ -133,7 +133,7 @@ static inline void level_read_new_format(World *world, int room_to, FILE *f)
             if (room >= 1 && room <= ROOMCOUNT)
             {
                 LOG_TRACE("Reading bossfight for room %d\n", room);
-                read_bfconfig_new(f, &world->boss_fight_configs[room - 1], *world->game_modifiers);
+                read_bfconfig(f, &world->boss_fight_configs[room - 1], *world->game_modifiers);
                 world->boss_fight = 1;
             }
         }

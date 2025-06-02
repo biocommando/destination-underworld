@@ -267,7 +267,7 @@ typedef struct
  * event_initially_disabled
  *    Sets current event's enabled flag to 0.
  */
-void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers);
+void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers);
 
 /*
  * Processes event triggers as described in BossFightEventConfig documentation.
@@ -278,9 +278,9 @@ void read_bfconfig_new(FILE *f, BossFightConfig *config, int game_modifiers);
 void bossfight_process_event_triggers(BossFightConfig *config);
 
 // BFCONF_TRIGGER_TYPE_* to string for debug prints
-void bossfight_trigger_to_str(char *dst, int value);
+const char *bossfight_trigger_to_str(int value);
 // BFCONF_EVENT_TYPE_* to string for debug prints
-void bossfight_event_type_to_str(char *dst, int value);
+const char *bossfight_event_type_to_str(int value);
 
 /*
  * Returns trigger state:
