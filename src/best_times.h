@@ -34,7 +34,7 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
 /*
  * Save the new best time structure to the file. See populate_best_times for more information.
  */
-int save_best_times(const char *mission_pack, struct best_times *best_times);
+int save_best_times(const char *mission_pack, const struct best_times *best_times);
 
 /*
  * Checks if the best time was beaten by the provided time. If that was the case,

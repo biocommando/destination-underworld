@@ -21,7 +21,7 @@ static int compare_floats(const void *a, const void *b)
     return 0;
 }
 
-static inline void get_id(char *id, struct best_times *best_times, int idx)
+static inline void get_id(char *id, const struct best_times *best_times, int idx)
 {
     sprintf(id, "MISSION=%d;MODE=%d;I=%d;", best_times->mission, best_times->game_modifiers, idx);
 }
@@ -51,7 +51,7 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
     return 0;
 }
 
-int save_best_times(const char *mission_pack, struct best_times *best_times)
+int save_best_times(const char *mission_pack, const struct best_times *best_times)
 {
     char file[1024];
     get_file(file, mission_pack);
