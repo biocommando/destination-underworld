@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdarg.h>
+#include <ctype.h>
 #include "menu.h"
 #include "gamePersistence.h"
 #include "duColors.h"
@@ -150,10 +151,12 @@ static int get_menu_item_id(const char *id_str)
     return id;
 }
 
+#define NUM_MENU_ITEMS 20
+
 struct menu
 {
     char title[100];
-    struct menu_item items[20];
+    struct menu_item items[NUM_MENU_ITEMS];
     int num_items;
     int selected_item;
     int cancel_menu_item_id;
@@ -173,7 +176,7 @@ static void set_item_by_id(struct menu *m, int id)
 
 static struct menu_item *add_menu_item(struct menu *m, const char *name, const char *description, ...)
 {
-    if (m->num_items >= 20)
+    if (m->num_items >= NUM_MENU_ITEMS)
         return m->items;
     va_list args;
     va_start(args, description);
@@ -492,8 +495,8 @@ static int display_game_mode_menu(int game_modifiers)
     if (check_game_modes_beaten(modifiers, 6))
     {
         add_menu_item(&m, game_modifiers_to_str(modifiers[6]), "Player does not have access to powerups\n"
-                                         "but the base weapon is super powerful with multiple modes\n"
-                                         "that can be switched using X and L, or using the powerup keys.");
+                                                               "but the base weapon is super powerful with multiple modes\n"
+                                                               "that can be switched using X and L, or using the powerup keys.");
     }
     else
     {
@@ -595,13 +598,49 @@ static int display_range_menu(const char *title, const char *(*fmt)(int), int ra
     return range_start + m.selected_item * step;
 }
 
+#define TRACK_FN_SORTER_FNAME_LEN 32
+
+struct track_filename
+{
+    char name[TRACK_FN_SORTER_FNAME_LEN];
+    int id;
+};
+
+static int alpabetical_order(const void *a, const void *b)
+{
+    const struct track_filename *_a = (const struct track_filename *)a;
+    const struct track_filename *_b = (const struct track_filename *)b;
+    if (!*_b->name)
+        return -1;
+    if (!*_a->name)
+        return 1;
+    return strcmp(_a->name, _b->name);
+}
+
+static void str_to_upper(char *data)
+{
+    for (char *p = data; *p; p++)
+        *p = toupper(*p);
+}
+
 static int display_select_track_menu()
 {
     struct menu m = create_menu("Select track");
     const char *fname;
     const char *current = get_midi_playlist_entry_file_name(-1);
-    for (int i = 0; (fname = get_midi_playlist_entry_file_name(i)); i++)
+    struct track_filename filenames[NUM_MENU_ITEMS];
+    memset(filenames, 0, sizeof(filenames));
+    for (int i = 0; i < NUM_MENU_ITEMS && (fname = get_midi_playlist_entry_file_name(i)); i++)
     {
+        // Copy first 31 characters and convert to upper case
+        memcpy(filenames[i].name, fname, TRACK_FN_SORTER_FNAME_LEN - 1);
+        str_to_upper(filenames[i].name);
+        filenames[i].id = i;
+    }
+    qsort(filenames, NUM_MENU_ITEMS, sizeof(struct track_filename), alpabetical_order);
+    for (int i = 0; i < NUM_MENU_ITEMS && *filenames[i].name; i++)
+    {
+        fname = get_midi_playlist_entry_file_name(filenames[i].id);
         add_menu_item(&m, fname, "");
         if (!strcmp(current, fname))
             m.selected_item = i;
@@ -615,7 +654,7 @@ static int display_select_track_menu()
     display_menu(&m);
     if (m.selected_item == randomize_idx)
         return -2;
-    return m.selected_item == cancel_idx ? -1 : m.selected_item;
+    return m.selected_item == cancel_idx ? -1 : filenames[m.selected_item].id;
 }
 
 static const char *percent_fmt([[maybe_unused]] int i)
