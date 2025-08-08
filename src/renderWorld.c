@@ -124,6 +124,12 @@ void draw_map(World *world, int draw_walls, int vibration_intensity)
                         drawn_color = al_map_rgb(0, 0, abs(lava_fluctuations) + 100);
                     }
                     al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color);
+                    if (!tile->is_exit_level)
+                    {
+                        ALLEGRO_COLOR drawn_color2 = GRAY(floorcol * 1.1);
+                        al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, drawn_color2);
+                        al_draw_filled_rectangle((x)*TILESIZE + HALFTILESIZE, (y)*TILESIZE + HALFTILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color2);
+                    }
                 }
 
                 if (tile->is_blood_stained)
