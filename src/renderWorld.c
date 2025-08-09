@@ -91,123 +91,128 @@ void draw_wall_shadows(World *world)
     }
 }
 
-void draw_map(World *world, int draw_walls, int vibration_intensity)
+static inline int progress_lava_fluctuations()
 {
-    const int floor_base_col = 100;
-    const int shadow_base_col = floor_base_col - 44;
-
     static int lava_fluctuations = 0;
     if (++lava_fluctuations == 150)
         lava_fluctuations = -149;
-    if (!draw_walls)
+    return lava_fluctuations;
+}
+
+static const int floor_base_col = 100;
+static const int shadow_base_col = floor_base_col - 44;
+
+void draw_map_floors(World *world, int vibration_intensity)
+{
+    int lava_fluctuations = progress_lava_fluctuations();
+    for (int y = 0; y < MAPMAX_Y; y++)
     {
-        for (int y = 0; y < MAPMAX_Y; y++)
+        for (int x = 0; x < MAPMAX_X; x++)
         {
-            for (int x = 0; x < MAPMAX_X; x++)
+            int fshd = world->floor_shade_map[world->current_room - 1][x][y] * 5;
+            int shadowcol = shadow_base_col + 5 * vibration_intensity - fshd;
+            shadowcol = shadowcol < 0 ? 0 : shadowcol;
+            int floorcol = floor_base_col + 5 * vibration_intensity - fshd;
+            floorcol = floorcol < 0 ? 0 : floorcol;
+            Tile *tile = ns_get_tile_at(world, x, y);
+            if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
             {
-                int fshd = world->floor_shade_map[world->current_room - 1][x][y] * 5;
-                int shadowcol = shadow_base_col + 5 * vibration_intensity - fshd;
-                shadowcol = shadowcol < 0 ? 0 : shadowcol;
-                int floorcol = floor_base_col + 5 * vibration_intensity - fshd;
-                floorcol = floorcol < 0 ? 0 : floorcol;
-                Tile *tile = ns_get_tile_at(world, x, y);
-                if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
+                ALLEGRO_COLOR drawn_color = GRAY(floorcol);
+
+                if (tile->is_exit_point)
                 {
-                    ALLEGRO_COLOR drawn_color = GRAY(floorcol);
-
-                    if (tile->is_exit_point)
-                    {
-                        drawn_color = GRAY(shadowcol);
-                    }
-                    if (tile->is_exit_level)
-                    {
-                        drawn_color = al_map_rgb(0, 0, abs(lava_fluctuations) + 100);
-                    }
-                    al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color);
-                    if (!tile->is_exit_level)
-                    {
-                        ALLEGRO_COLOR drawn_color2 = GRAY(floorcol * 1.1);
-                        al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, drawn_color2);
-                        al_draw_filled_rectangle((x)*TILESIZE + HALFTILESIZE, (y)*TILESIZE + HALFTILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color2);
-                    }
+                    drawn_color = GRAY(shadowcol);
                 }
-
-                if (tile->is_blood_stained)
-                {
-                    for (int j = 0; j < 10; j++)
-                    {
-                        int x_pos = TO_PIXEL_COORDINATES(x);
-                        int y_pos = TO_PIXEL_COORDINATES(y);
-                        int dx = 3 - (x * 13 + y * 7 + j * 3 + world->current_room) % 7;
-                        int dy = 3 - (j * 13 + x * 7 + y * 3 + world->current_room) % 7;
-                        for (int i = 0; i < 4; i++)
-                        {
-                            x_pos += dx;
-                            y_pos += dy;
-                            al_draw_filled_rectangle(x_pos - 2, y_pos - 2, x_pos + 2 + 1, y_pos + 2 + 1, al_map_rgb(floorcol + 30 - i * 5, 0, 0));
-                        }
-                    }
-                }
-
                 if (tile->is_exit_level)
                 {
-                    for (int i = 0; i < 5; i++)
+                    drawn_color = al_map_rgb(0, 0, abs(lava_fluctuations) + 100);
+                }
+                al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color);
+                if (!tile->is_exit_level)
+                {
+                    ALLEGRO_COLOR drawn_color2 = GRAY(floorcol * 1.1);
+                    al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, drawn_color2);
+                    al_draw_filled_rectangle((x)*TILESIZE + HALFTILESIZE, (y)*TILESIZE + HALFTILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color2);
+                }
+            }
+
+            if (tile->is_blood_stained)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    int x_pos = TO_PIXEL_COORDINATES(x);
+                    int y_pos = TO_PIXEL_COORDINATES(y);
+                    int dx = 3 - (x * 13 + y * 7 + j * 3 + world->current_room) % 7;
+                    int dy = 3 - (j * 13 + x * 7 + y * 3 + world->current_room) % 7;
+                    for (int i = 0; i < 4; i++)
                     {
-                        double angle = (lava_fluctuations + i * 20) * ALLEGRO_PI / 50;
-                        draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES,
-                                                      TO_PIXEL_COORDINATES(x) + sin(angle) * 10,
-                                                      TO_PIXEL_COORDINATES(y) + cos(angle) * 10, (rand() % 4), 0);
+                        x_pos += dx;
+                        y_pos += dy;
+                        al_draw_filled_rectangle(x_pos - 2, y_pos - 2, x_pos + 2 + 1, y_pos + 2 + 1, al_map_rgb(floorcol + 30 - i * 5, 0, 0));
                     }
+                }
+            }
+
+            if (tile->is_exit_level)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    double angle = (lava_fluctuations + i * 20) * ALLEGRO_PI / 50;
+                    draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES,
+                                                    TO_PIXEL_COORDINATES(x) + sin(angle) * 10,
+                                                    TO_PIXEL_COORDINATES(y) + cos(angle) * 10, (rand() % 4), 0);
                 }
             }
         }
     }
-    else
-    {
-        for (int y = 0; y < MAPMAX_Y; y++)
-        {
-            for (int lev = 15; lev >= 0; lev--)
-            {
-                int colcalc = lev == 0 ? 165 : (15 - lev) * 10;
-                colcalc += y * 10;
-                colcalc = colcalc > 255 ? 255 : colcalc;
-                ALLEGRO_COLOR col_wall = al_map_rgb(colcalc * world->map_wall_color[0],
-                                                    colcalc * world->map_wall_color[1],
-                                                    colcalc * world->map_wall_color[2]);
+}
 
-                for (int x = 0; x < MAPMAX_X; x++)
+void draw_map_walls(World *world)
+{
+    int lava_fluctuations = progress_lava_fluctuations();
+    for (int y = 0; y < MAPMAX_Y; y++)
+    {
+        for (int lev = 15; lev >= 0; lev--)
+        {
+            int colcalc = lev == 0 ? 165 : (15 - lev) * 10;
+            colcalc += y * 10;
+            colcalc = colcalc > 255 ? 255 : colcalc;
+            ALLEGRO_COLOR col_wall = al_map_rgb(colcalc * world->map_wall_color[0],
+                                                colcalc * world->map_wall_color[1],
+                                                colcalc * world->map_wall_color[2]);
+
+            for (int x = 0; x < MAPMAX_X; x++)
+            {
+                int wall_type = ns_get_wall_type_at(world, x, y);
+                if (wall_type)
                 {
-                    int wall_type = ns_get_wall_type_at(world, x, y);
-                    if (wall_type)
+                    if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
                     {
-                        if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
-                        {
-                            al_draw_filled_rectangle(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 15, y * TILESIZE + lev + 15, col_wall);
-                        }
-                        if (wall_type == WALL_LAVA && (((int)abs(lava_fluctuations) / 5 + (y & x) * (y | x)) % 15 == lev || lev == 15))
-                        {
-                            al_draw_filled_rectangle(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 15, y * TILESIZE + lev + 15, al_map_rgb(colcalc, colcalc >> 1, colcalc >> 2));
-                        }
+                        al_draw_filled_rectangle(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 15, y * TILESIZE + lev + 15, col_wall);
                     }
-                    if (lev == 0)
+                    if (wall_type == WALL_LAVA && (((int)abs(lava_fluctuations) / 5 + (y & x) * (y | x)) % 15 == lev || lev == 15))
                     {
-                        if (wall_type == WALL_PENTAGRAM)
+                        al_draw_filled_rectangle(x * TILESIZE - 15 + lev, y * TILESIZE - 15 + lev, x * TILESIZE + lev + 15, y * TILESIZE + lev + 15, al_map_rgb(colcalc, colcalc >> 1, colcalc >> 2));
+                    }
+                }
+                if (lev == 0)
+                {
+                    if (wall_type == WALL_PENTAGRAM)
+                    {
+                        draw_sprite_centered(world->spr, SPRITE_ID_PENTAGRAM_WALL, x * TILESIZE, y * TILESIZE);
+                    }
+                    else
+                    {
+                        Tile *tile = ns_get_tile_at(world, x, y);
+                        if (tile->is_exit_point)
                         {
-                            draw_sprite_centered(world->spr, SPRITE_ID_PENTAGRAM_WALL, x * TILESIZE, y * TILESIZE);
+                            al_draw_filled_rectangle(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 15, y * TILESIZE + 15, GRAY_A(100, 100));
+                            al_draw_filled_rectangle(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 10, y * TILESIZE + 10, GRAY_A(100, 128));
+                            al_draw_filled_rectangle(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 5, y * TILESIZE + 5, GRAY_A(80, 150));
                         }
-                        else
+                        if (tile->durability > 0)
                         {
-                            Tile *tile = ns_get_tile_at(world, x, y);
-                            if (tile->is_exit_point)
-                            {
-                                al_draw_filled_rectangle(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 15, y * TILESIZE + 15, GRAY_A(100, 100));
-                                al_draw_filled_rectangle(x * TILESIZE - 10, y * TILESIZE - 10, x * TILESIZE + 10, y * TILESIZE + 10, GRAY_A(100, 128));
-                                al_draw_filled_rectangle(x * TILESIZE - 5, y * TILESIZE - 5, x * TILESIZE + 5, y * TILESIZE + 5, GRAY_A(80, 150));
-                            }
-                            if (tile->durability > 0)
-                            {
-                                draw_sprite_centered(world->spr, SPRITE_ID_CRACKED_WALL, x * TILESIZE, y * TILESIZE);
-                            }
+                            draw_sprite_centered(world->spr, SPRITE_ID_CRACKED_WALL, x * TILESIZE, y * TILESIZE);
                         }
                     }
                 }

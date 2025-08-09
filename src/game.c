@@ -297,7 +297,7 @@ void game(GlobalGameState *ggs)
       reset_sample_triggers();
     }
     time_stamp++;
-    draw_map(&world, 0, vibrations);
+    draw_map_floors(&world, vibrations);
     move_and_draw_body_parts(&world);
     draw_wall_shadows(&world);
     progress_and_draw_flame_fx(&world);
@@ -458,7 +458,7 @@ void game(GlobalGameState *ggs)
       potion_logic(&world);
     }
 
-    draw_map(&world, 1, 0);
+    draw_map_walls(&world);
 
     vibrations = calc_vibrations(progress_and_draw_explosions(&world));
 

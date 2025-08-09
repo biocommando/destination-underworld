@@ -51,19 +51,21 @@ void progress_player_death_animation(const World *world);
  */
 void apply_game_screen_transform(int vibrations);
 /*
- * Draws the map. Has two modes:
- * 1. draw_walls = 0:
- * Draws only floors and tiles that are on the same level as floor (e.g. level exit).
+ * Draws the map. Draws only floors and tiles that are on the same level as floor (e.g. level exit).
  * Shade map is subtracted directly from the floor color.
- * 2. draw_walls = 1:
- * Draws only walls (without shadows, they should be drawn before walls).
  *
  * The map needs to be drawn in stages because of the fake isometric perspective.
  *
- * Vibration intensity also affects the wall/floor color directly (explosions make the
+ * Vibration intensity also affects the floor color directly (explosions make the
  * level a bit brighter for a moment).
  */
-void draw_map(World *world, int draw_walls, int vibration_intensity);
+void draw_map_floors(World *world, int vibration_intensity);
+/*
+ * Draws the map. Draws only walls (without shadows, they should be drawn before walls).
+ *
+ * The map needs to be drawn in stages because of the fake isometric perspective.
+ */
+void draw_map_walls(World *world);
 /*
  * Draws wall shadows as an semi-opaque layer. This would allow different items that are next to
  * the walls to be in the shadow but because the fake isometric view is just added on top of
