@@ -232,7 +232,7 @@ void draw_map_walls(World *world)
     }
 }
 
-void draw_player_legend(World *world, int x, int y)
+void draw_player_legend(const World *world, int x, int y)
 {
     if (world->plr.health > 0)
     {
@@ -438,13 +438,13 @@ static void draw_explosion_circle(double x, double y, double intensity, double r
     al_draw_filled_circle(x, y, radius, col);
 }
 
-void progress_and_draw_flame_fx(World *world)
+void progress_and_draw_flame_fx(WorldFx *world_fx)
 {
     static int flame_phase = 0;
     flame_phase++;
     for (int i = 0; i < FLAME_FX_COUNT; i++)
     {
-        struct flame_fx *f = &world->visual_fx.flames[i];
+        struct flame_fx *f = &world_fx->flames[i];
         if (f->duration == 0)
             continue;
         if (f->duration > 1)
@@ -474,13 +474,13 @@ void progress_and_draw_flame_fx(World *world)
     }
 }
 
-int progress_and_draw_explosions(World *world)
+int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
 {
     const double circle_max_radius = 17;
     int vibrations = 0;
     for (int i = 0; i < EXPLOSIONCOUNT; i++)
     {
-        Explosion *ex = &world->visual_fx.explosion[i];
+        Explosion *ex = &world_fx->explosion[i];
         if (!ex->exists)
             continue;
         vibrations++;
@@ -533,11 +533,11 @@ int progress_and_draw_explosions(World *world)
     return vibrations;
 }
 
-void progress_and_draw_sparkles(World *world)
+void progress_and_draw_sparkles(const World *world, WorldFx *world_fx)
 {
     for (int i = 0; i < SPARKLE_FX_CIRCLE_COUNT; i++)
     {
-        struct sparkle_fx_circle *fxc = &world->visual_fx.sparkle_fx_circle[i];
+        struct sparkle_fx_circle *fxc = &world_fx->sparkle_fx_circle[i];
         if (fxc->duration > 0)
         {
             al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 5, fxc->color, fxc->duration / 4);
@@ -549,7 +549,7 @@ void progress_and_draw_sparkles(World *world)
     }
     for (int i = 0; i < SPARKLE_FX_COUNT; i++)
     {
-        struct sparkle_fx *fx = &world->visual_fx.sparkle_fx[i];
+        struct sparkle_fx *fx = &world_fx->sparkle_fx[i];
         if (fx->duration > 0)
         {
             int color = fx->color;
@@ -775,9 +775,9 @@ void show_ingame_info_screen(World *world)
     wait_key_presses(keys, 2);
 }
 
-void draw_uber_wizard_weapon_fx(World *world)
+void draw_uber_wizard_weapon_fx(WorldFx *world_fx)
 {
-    UberWizardWeaponFx *fx = &world->visual_fx.uber_wizard_weapon_fx;
+    UberWizardWeaponFx *fx = &world_fx->uber_wizard_weapon_fx;
     if (fx->dim == 0)
         return;
     al_draw_line(fx->start.x, fx->start.y, fx->end.x, fx->end.y, al_map_rgb(fx->type == 0 ? fx->dim * 10 : 0, 0, fx->type == 1 ? fx->dim * 10 : 0), fx->dim / 4 + 1);

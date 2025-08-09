@@ -30,7 +30,7 @@ void draw_boss_health_bar(const World *world);
  * Draws the legend that has the health meter, ammo counter / reload status indicator,
  * gold count and weapon mode.
  */
-void draw_player_legend(World *world, int x, int y);
+void draw_player_legend(const World *world, int x, int y);
 /*
  * Draw and progress the rune of protection powerup animation.
  */
@@ -82,15 +82,15 @@ void move_and_draw_body_parts(World *world);
  * Progresses and draws explosion effects (only visuals). Returns the vibration intensity based on
  * how many explosions are in progress at the moment.
  */
-int progress_and_draw_explosions(World *world);
+int progress_and_draw_explosions(const World *world, WorldFx *world_fx);
 /*
  * Progresses and draws sparkles and sparkle circles.
  */
-void progress_and_draw_sparkles(World *world);
+void progress_and_draw_sparkles(const World *world, WorldFx *world_fx);
 /*
  * Progresses and draws flames.
  */
-void progress_and_draw_flame_fx(World *world);
+void progress_and_draw_flame_fx(WorldFx *world_fx);
 /*
  * Displays the level ending screen that contains e.g. story text and best times.
  */
@@ -112,4 +112,4 @@ void show_ingame_info_screen(World *world);
  * isometric perspective.
  */
 void draw_enemy_shadows(World *world);
-void draw_uber_wizard_weapon_fx(World *world);
+void draw_uber_wizard_weapon_fx(WorldFx *world);

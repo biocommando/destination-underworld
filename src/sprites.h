@@ -53,12 +53,12 @@ int read_sprites_from_file(const char *filename, int min_id, int max_id);
  * Draw a sprite from the sprite sheet on the screen. The x, y position is the upper left corner
  * of the sprite.
  */
-void draw_sprite(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y);
+void draw_sprite(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y);
 /*
  * Draw a sprite from the sprite sheet on the screen. The x, y position is the center
  * of the sprite.
  */
-void draw_sprite_centered(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y);
+void draw_sprite_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y);
 /*
  * Draw a sprite from the sprite sheet on the screen. The x, y position is the upper left corner
  * of the sprite.
@@ -67,7 +67,7 @@ void draw_sprite_centered(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, in
  * width/height. This allows animating sprites with constant width/height without needing
  * to create multiple sprite definitions.
  */
-void draw_sprite_animated(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int frame_offset_x, int frame_offset_y);
+void draw_sprite_animated(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int frame_offset_x, int frame_offset_y);
 /*
  * Draw a sprite from the sprite sheet on the screen. The x, y position is the center
  * of the sprite.
@@ -76,4 +76,4 @@ void draw_sprite_animated(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, in
  * width/height. This allows animating sprites with constant width/height without needing
  * to create multiple sprite definitions.
  */
-void draw_sprite_animated_centered(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int frame_offset_x, int frame_offset_y);
+void draw_sprite_animated_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int frame_offset_x, int frame_offset_y);

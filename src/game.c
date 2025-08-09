@@ -300,7 +300,7 @@ void game(GlobalGameState *ggs)
     draw_map_floors(&world, vibrations);
     move_and_draw_body_parts(&world);
     draw_wall_shadows(&world);
-    progress_and_draw_flame_fx(&world);
+    progress_and_draw_flame_fx(&world.visual_fx);
     // draw_enemy_shadows(&world); -- doesn't look very good and the shadow physics are f'd up
 
     // Draw legend to same position as player
@@ -460,7 +460,7 @@ void game(GlobalGameState *ggs)
 
     draw_map_walls(&world);
 
-    vibrations = calc_vibrations(progress_and_draw_explosions(&world));
+    vibrations = calc_vibrations(progress_and_draw_explosions(&world, &world.visual_fx));
 
     draw_player_legend(&world, legend_x, legend_y);
 
@@ -476,9 +476,9 @@ void game(GlobalGameState *ggs)
 
     draw_rune_of_protection_indicator(&world);
 
-    progress_and_draw_sparkles(&world);
+    progress_and_draw_sparkles(&world, &world.visual_fx);
 
-    draw_uber_wizard_weapon_fx(&world);
+    draw_uber_wizard_weapon_fx(&world.visual_fx);
 
     draw_fly_in_text(&fly_in_text);
 

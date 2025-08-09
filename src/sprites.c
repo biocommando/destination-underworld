@@ -72,39 +72,39 @@ int read_sprites_from_file(const char *filename, int min_id, int max_id)
     return 0;
 }
 
-void draw_sprite(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y)
+void draw_sprite(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y)
 {
     DuSprite *s = get_sprite(sprite_id);
     if (s)
     {
-        al_draw_bitmap_region(sprite_sheet, s->sx, s->sy, s->width, s->height, x, y, 0);
+        al_draw_bitmap_region((ALLEGRO_BITMAP*)sprite_sheet, s->sx, s->sy, s->width, s->height, x, y, 0);
     }
 }
 
-void draw_sprite_centered(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y)
+void draw_sprite_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y)
 {
     DuSprite *s = get_sprite(sprite_id);
     if (s)
     {
-        al_draw_bitmap_region(sprite_sheet, s->sx, s->sy, s->width, s->height, x - s->width / 2, y - s->height / 2, 0);
+        al_draw_bitmap_region((ALLEGRO_BITMAP*)sprite_sheet, s->sx, s->sy, s->width, s->height, x - s->width / 2, y - s->height / 2, 0);
     }
 }
 
-void draw_sprite_animated(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int dx, int dy)
+void draw_sprite_animated(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int dx, int dy)
 {
     DuSprite *s = get_sprite(sprite_id);
     if (s)
     {
-        al_draw_bitmap_region(sprite_sheet, s->sx + s->width * dx, s->sy + s->height * dy, s->width, s->height, x, y, 0);
+        al_draw_bitmap_region((ALLEGRO_BITMAP*)sprite_sheet, s->sx + s->width * dx, s->sy + s->height * dy, s->width, s->height, x, y, 0);
     }
 }
 
-void draw_sprite_animated_centered(ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int dx, int dy)
+void draw_sprite_animated_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int dx, int dy)
 {
     DuSprite *s = get_sprite(sprite_id);
     if (s)
     {
-        al_draw_bitmap_region(sprite_sheet, s->sx + s->width * dx, s->sy + s->height * dy, s->width, s->height,
+        al_draw_bitmap_region((ALLEGRO_BITMAP*)sprite_sheet, s->sx + s->width * dx, s->sy + s->height * dy, s->width, s->height,
                               x - s->width / 2, y - s->height / 2, 0);
     }
 }
