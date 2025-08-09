@@ -368,7 +368,8 @@ void move_and_draw_body_parts(World *world)
 {
     for (int i = 0; i < ENEMYCOUNT; i++)
     {
-        if (world->enm[i].roomid != world->current_room || world->enm[i].health > 0)
+        BodyPartsContainer *bp_container = &world->visual_fx.bodypart_container[i];
+        if (bp_container->roomid != world->current_room || !bp_container->show)
         {
             continue;
         }
@@ -376,7 +377,7 @@ void move_and_draw_body_parts(World *world)
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
             int bonesturn = 0;
-            BodyPart *bodypart = &world->enm[i].bodyparts[j];
+            BodyPart *bodypart = &bp_container->bodyparts[j];
             if (bodypart->exists)
             {
                 if (bodypart->velocity > 0.7)

@@ -33,7 +33,7 @@ void init_world(World *world)
     {
         world->rooms_visited[i] = 0;
     }
-    clear_visual_fx(world);
+    clear_visual_fx(&world->visual_fx, 1);
     for (int i = 0; i < BULLETCOUNT; i++)
     {
         world->bullets[i].owner = NULL;
@@ -49,7 +49,6 @@ void init_world(World *world)
         enm->ammo = -1;
         enm->anim = rand() % 15;
         enm->death_animation = 999;
-        memset(enm->bodyparts, 0, sizeof(enm->bodyparts));
     }
     world->boss = NULL;
 

@@ -291,7 +291,7 @@ void game(GlobalGameState *ggs)
       show_ingame_info_screen(&world);
     }
 
-    cleanup_bodyparts(&world);
+    cleanup_bodyparts(&world, &world.visual_fx);
     if (time_stamp % 6 == 0)
     {
       reset_sample_triggers();

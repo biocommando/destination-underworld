@@ -3,21 +3,22 @@
 #include "world.h"
 
 /*
- * Clears the sparkle FX and explosions.
+ * Clears the visual effects in WorldFx.
+ * Set init = 1 when calling on world init.
  */
-void clear_visual_fx(World *);
+void clear_visual_fx(WorldFx *, int init);
 /*
  * Set the speed for all bodyparts to 0.
  */
-void stop_bodyparts(World *);
+void stop_bodyparts(WorldFx *);
 /*
  * Create body parts for the dead enemy. Initializes them to move to a random direction.
  */
-void spawn_body_parts(Enemy *enm);
+void spawn_body_parts(const Enemy *enm, WorldFx *world_fx);
 /* Checks if there are so many stacked bodyparts on a single tile
  * that some excess parts should be removed. Checks one tile at a time
  * and proceeds automatically to the next tile on each call.*/
-void cleanup_bodyparts(World *world);
+void cleanup_bodyparts(const World *world, WorldFx *world_fx);
 /*
  * Creates one explosion with the center at position x, y.
  */

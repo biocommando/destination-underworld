@@ -36,14 +36,14 @@ void enemy_logic(World *world)
           enm->death_animation++;
           if (enm->death_animation == death_anim_max)
           {
-            spawn_body_parts(enm);
+            spawn_body_parts(enm, &world->visual_fx);
             trigger_sample_with_params(SAMPLE_SPLASH(rand() % 3), 180 + rand() % 76, 127, 500 + rand() % 500);
           }
         }
         else
         {
           enm->death_animation = death_anim_max;
-          spawn_body_parts(enm);
+          spawn_body_parts(enm, &world->visual_fx);
         }
       }
       continue;

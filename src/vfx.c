@@ -26,10 +26,14 @@ static inline void bounce_body_parts(int x, int y, World *world)
 {
     // Make existing bodyparts bounce all over the place
     for (int i = 0; i < ENEMYCOUNT; i++)
+    {
+        BodyPartsContainer *bp_container = &world->visual_fx.bodypart_container[i];
+        if (!bp_container->show || bp_container->roomid != world->current_room)
+            continue;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
-            BodyPart *bp = &world->enm[i].bodyparts[j];
-            if (!bp->exists || world->enm[i].roomid != world->current_room || bp->velocity >= 20)
+            BodyPart *bp = &bp_container->bodyparts[j];
+            if (!bp->exists || bp->velocity >= 20)
             {
                 continue;
             }
@@ -50,6 +54,7 @@ static inline void bounce_body_parts(int x, int y, World *world)
                     bp->dy = -bp->dy;
             }
         }
+    }
 }
 
 void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f)
@@ -179,11 +184,28 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
     }
 }
 
-void spawn_body_parts(Enemy *enm)
+void spawn_body_parts(const Enemy *enm, WorldFx *world_fx)
 {
+    static int running_counter = 0;
+    BodyPartsContainer *bp_container = &world_fx->bodypart_container[0];
+
+    for (int i = 0; i < ENEMYCOUNT; i++)
+    {
+        BodyPartsContainer *container2 = &world_fx->bodypart_container[i];
+        if (!container2->show)
+        {
+            bp_container = container2;
+            break;
+        }
+        if (bp_container->show > container2->show)
+            bp_container = container2;
+    }
+    bp_container->show = ++running_counter;
+    bp_container->roomid = enm->roomid;
+
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
-        BodyPart *bp = &enm->bodyparts[j];
+        BodyPart *bp = &bp_container->bodyparts[j];
         bp->exists = 1;
         bp->type = rand() % 6 + 1;
         bp->x = enm->x;
@@ -196,7 +218,7 @@ void spawn_body_parts(Enemy *enm)
     }
 }
 
-void cleanup_bodyparts(World *world)
+void cleanup_bodyparts(const World *world, WorldFx *world_fx)
 {
     static int x = 0;
     static int y = 0;
@@ -207,10 +229,12 @@ void cleanup_bodyparts(World *world)
         int bp_count = 0;
         for (int i = 0; i < ENEMYCOUNT; i++)
         {
+            if (world_fx->bodypart_container[i].roomid != world->current_room)
+                continue;
             for (int j = 0; j < BODYPARTCOUNT; j++)
             {
-                BodyPart *bp = &world->enm[i].bodyparts[j];
-                if (bp->exists && world->enm[i].roomid == world->current_room &&
+                BodyPart *bp = &world_fx->bodypart_container[i].bodyparts[j];
+                if (bp->exists &&
                     bp->x > x * TILESIZE && bp->x < (x + 1) * TILESIZE &&
                     bp->y > y * TILESIZE && bp->y < (y + 1) * TILESIZE)
                 {
@@ -234,13 +258,15 @@ void cleanup_bodyparts(World *world)
     }
 }
 
-void stop_bodyparts(World *world)
+void stop_bodyparts(WorldFx *world_fx)
 {
     for (int x = 0; x < ENEMYCOUNT; x++)
     {
+        if (!world_fx->bodypart_container[x].show)
+            continue;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
-            BodyPart *bp = &world->enm[x].bodyparts[j];
+            BodyPart *bp = &world_fx->bodypart_container[x].bodyparts[j];
             bp->dx = 0;
             bp->dy = 0;
             bp->velocity = 0;
@@ -248,9 +274,20 @@ void stop_bodyparts(World *world)
     }
 }
 
-void clear_visual_fx(World *world)
+void clear_visual_fx(WorldFx *world_fx, int init)
 {
-    memset(&world->visual_fx, 0, sizeof(world->visual_fx));
+    memset(&world_fx->explosion, 0, sizeof(world_fx->explosion));
+    memset(&world_fx->flames, 0, sizeof(world_fx->flames));
+    memset(&world_fx->sparkle_fx, 0, sizeof(world_fx->sparkle_fx));
+    memset(&world_fx->sparkle_fx_circle, 0, sizeof(world_fx->sparkle_fx_circle));
+    memset(&world_fx->uber_wizard_weapon_fx, 0, sizeof(world_fx->uber_wizard_weapon_fx));
+
+    if (init)
+    {
+        memset(&world_fx->rune_of_protection_animation, 0, sizeof(world_fx->rune_of_protection_animation));
+        memset(&world_fx->hint, 0, sizeof(world_fx->hint));
+        memset(&world_fx->bodypart_container, 0, sizeof(world_fx->bodypart_container));
+    }
 }
 
 void create_uber_wizard_weapon_fx(World *world, int x2, int y2, int type)

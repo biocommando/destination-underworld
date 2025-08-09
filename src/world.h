@@ -42,6 +42,15 @@ enum TurretType
 #define PERK_START_WITH_SPEED_POTION 32
 #define PERK_START_WITH_SHIELD_POWERUP 64
 
+// For visualizing body parts left by the enemy
+typedef struct
+{
+    int show;
+    int roomid;
+    // Body parts for this enemy
+    BodyPart bodyparts[BODYPARTCOUNT];
+} BodyPartsContainer;
+
 // An enemy, player or player's powerup turret
 typedef struct
 {
@@ -89,8 +98,6 @@ typedef struct
     int sprite;
     // if >= 0, the enemy drops a potion with this effect after death
     int potion;
-    // Body parts for this enemy (shown if !alive && killed)
-    BodyPart bodyparts[BODYPARTCOUNT];
     // After death, when this counter reaches a certain value, the enemy will spawn the body parts
     int death_animation;
     // Experience points for player and the amount of xp that killing one enemy gives the player
@@ -389,6 +396,7 @@ typedef struct
     // Status for a text that is shown for a short moment
     struct hint_text hint;
     int rune_of_protection_animation;
+    BodyPartsContainer bodypart_container[ENEMYCOUNT];
 } WorldFx;
 
 // Structure that contains most of the game state

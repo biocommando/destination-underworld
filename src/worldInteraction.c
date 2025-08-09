@@ -356,10 +356,6 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     if (type == ENEMY_TYPE_COUNT)
         new_enemy->xp += 500;
 
-    for (int j = 0; j < BODYPARTCOUNT; j++)
-    {
-        new_enemy->bodyparts[j].exists = 0;
-    }
     new_enemy->roomid = room_id;
     return new_enemy;
 }
@@ -478,8 +474,8 @@ void change_room_if_at_exit_point(World *world)
                     get_tile_at_mut(world, world->enm[i].x, world->enm[i].y)->is_blood_stained = 1;
                 }
             }
-            clear_visual_fx(world);
-            stop_bodyparts(world);
+            clear_visual_fx(&world->visual_fx, 0);
+            stop_bodyparts(&world->visual_fx);
         }
     }
     else
