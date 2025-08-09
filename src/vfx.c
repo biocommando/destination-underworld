@@ -201,7 +201,7 @@ void cleanup_bodyparts(World *world)
     static int x = 0;
     static int y = 0;
 
-    Tile *tile = ns_get_tile_at(world, x, y);
+    const Tile *tile = ns_get_tile_at(world, x, y);
     if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
     {
         int bp_count = 0;

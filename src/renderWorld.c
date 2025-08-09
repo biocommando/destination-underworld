@@ -124,7 +124,7 @@ void draw_map_floors(World *world, int vibration_intensity)
             shadowcol = shadowcol < 0 ? 0 : shadowcol;
             int floorcol = floor_base_col + 5 * vibration_intensity - fshd;
             floorcol = floorcol < 0 ? 0 : floorcol;
-            Tile *tile = ns_get_tile_at(world, x, y);
+            const Tile *tile = ns_get_tile_at(world, x, y);
             if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
             {
                 ALLEGRO_COLOR drawn_color = GRAY(floorcol);
@@ -214,7 +214,7 @@ void draw_map_walls(World *world)
                     }
                     else
                     {
-                        Tile *tile = ns_get_tile_at(world, x, y);
+                        const Tile *tile = ns_get_tile_at(world, x, y);
                         if (tile->is_exit_point)
                         {
                             al_draw_filled_rectangle(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 15, y * TILESIZE + 15, GRAY_A(100, 100));

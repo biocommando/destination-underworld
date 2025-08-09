@@ -10,7 +10,7 @@
 #include "sampleRegister.h"
 #include "duColors.h"
 
-static inline int is_passable(World *world, int x, int y)
+static inline int is_passable(const World *world, int x, int y)
 {
     return !get_tile_at(world, x, y)->is_blocker;
 }
@@ -21,7 +21,7 @@ void clear_restricted_tiles(World *world, int id)
     {
         for (int y = 0; y < MAPMAX_Y; y++)
         {
-            Tile *tile = ns_get_tile_at(world, x, y);
+            Tile *tile = ns_get_tile_at_mut(world, x, y);
             if ((tile->is_restricted || tile->is_clear_restriction) && tile->data == id)
             {
                 tile->is_restricted = 0;
@@ -79,7 +79,7 @@ void move_enemy(Enemy *enm, World *world)
 
     if (enm == &world->plr)
     {
-        Tile *t = get_tile_at(world, enm->x, enm->y);
+        Tile *t = get_tile_at_mut(world, enm->x, enm->y);
         if (t->is_clear_restriction)
         {
             clear_restricted_tiles(world, t->data);
@@ -95,7 +95,7 @@ void move_enemy(Enemy *enm, World *world)
 
 static inline int tile_check_bullet_hit_wall(World *world, int x, int y)
 {
-    Tile *tile = get_tile_at(world, x, y);
+    Tile *tile = get_tile_at_mut(world, x, y);
     if (tile->is_wall)
     {
         if (tile->durability > 0)
@@ -475,7 +475,7 @@ void change_room_if_at_exit_point(World *world)
                 if (world->enm[i].roomid == world->current_room &&
                     !world->enm[i].alive && world->enm[i].killed)
                 {
-                    get_tile_at(world, world->enm[i].x, world->enm[i].y)->is_blood_stained = 1;
+                    get_tile_at_mut(world, world->enm[i].x, world->enm[i].y)->is_blood_stained = 1;
                 }
             }
             clear_visual_fx(world);
@@ -627,7 +627,7 @@ void kill_enemy(Enemy *enm, World *world)
         world->potion_duration = 0;
     }
 
-    get_tile_at(world, enm->x, enm->y)->is_blood_stained = 1;
+    get_tile_at_mut(world, enm->x, enm->y)->is_blood_stained = 1;
     if ((*world->game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
       world->plr.gold += enm->gold;
 

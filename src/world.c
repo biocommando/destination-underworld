@@ -157,23 +157,33 @@ Tile create_tile(int symbol)
     return t;
 }
 
-inline Tile *get_tile_at(World *world, int x, int y)
+inline const Tile *get_tile_at(const World *world, int x, int y)
 {
     return &world->map[world->current_room - 1][x / TILESIZE][y / TILESIZE];
 }
 
-inline Tile *ns_get_tile_at(World *world, int x, int y)
+inline const Tile *ns_get_tile_at(const World *world, int x, int y)
 {
     return &world->map[world->current_room - 1][x][y];
 }
 
-inline int ns_get_wall_type_at(World *world, int x, int y)
+inline Tile *get_tile_at_mut(World *world, int x, int y)
 {
-    Tile *t = &(world->map[world->current_room - 1][x][y]);
+    return &world->map[world->current_room - 1][x / TILESIZE][y / TILESIZE];
+}
+
+inline Tile *ns_get_tile_at_mut(World *world, int x, int y)
+{
+    return &world->map[world->current_room - 1][x][y];
+}
+
+inline int ns_get_wall_type_at(const World *world, int x, int y)
+{
+    const Tile *t = &(world->map[world->current_room - 1][x][y]);
     return t->is_wall ? t->data : 0;
 }
 
-inline int get_wall_type_at(World *world, int x, int y)
+inline int get_wall_type_at(const World *world, int x, int y)
 {
     return ns_get_wall_type_at(world, x / TILESIZE, y / TILESIZE);
 }

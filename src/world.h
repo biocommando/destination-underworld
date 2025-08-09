@@ -494,22 +494,29 @@ void init_world(World *world);
 /*
  * Get the tile at x, y position (pixel positions).
  */
-Tile *get_tile_at(World *world, int x, int y);
+const Tile *get_tile_at(const World *world, int x, int y);
+/*
+ * Get the tile as mutable at x, y position (pixel positions).
+ */
+Tile *get_tile_at_mut(World *world, int x, int y);
 /*
  * Get the wall type (see WALL_* macros) at x, y position (pixel positions).
  * Returns 0 if the tile is not a wall.
  */
-int get_wall_type_at(World *world, int x, int y);
-
+int get_wall_type_at(const World *world, int x, int y);
 /*
  * Get the tile at x, y position (tile positions).
  */
-Tile *ns_get_tile_at(World *world, int x, int y);
+const Tile *ns_get_tile_at(const World *world, int x, int y);
+/*
+ * Get the tile as mutable at x, y position (tile positions).
+ */
+Tile *ns_get_tile_at_mut(World *world, int x, int y);
 /*
  * Get the wall type (see WALL_* macros) at x, y position (tile positions).
  * Returns 0 if the tile is not a wall.
  */
-int ns_get_wall_type_at(World *world, int x, int y);
+int ns_get_wall_type_at(const World *world, int x, int y);
 /*
  * Inits player. Basically copies plrautosave struct if owner is alive.*/
 void init_player(World *world, Enemy *plrautosave);
