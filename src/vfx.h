@@ -22,7 +22,7 @@ void cleanup_bodyparts(const World *world, WorldFx *world_fx);
 /*
  * Creates one explosion with the center at position x, y.
  */
-void create_explosion(int x, int y, World *world, double intensity);
+void create_explosion(int x, int y, const World *world, WorldFx *world_fx, double intensity);
 /*
  * Creates one sparkle effect with a sparkle circle effect at x, y. The count parameter tells the
  * number of sparkles to create. The parameter color is a number from 0 to 2 or -1 for random color
@@ -31,15 +31,15 @@ void create_explosion(int x, int y, World *world, double intensity);
 void create_sparkles(int x, int y, int count, int color, int circle_duration, World *world);
 /*
  * Creates a circular "crater" around the x, y center position, with the radius of spread,
- * where the closest tiles get the darkest. Modifies the World.floor_shade_map array.
+ * where the closest tiles get the darkest. Modifies the WorldFx.floor_shade_map array.
  */
-void create_shade_around_hit_point(int x, int y, int spread, World *world);
+void create_shade_around_hit_point(int x, int y, int roomid, int spread, WorldFx *world);
 
 /*
  * Create a single flame ember
  */
 void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f);
 
-void create_flame_fx(int x, int y, World *world);
+void create_flame_fx(int x, int y, const World *world, WorldFx *world_fx);
 
-void create_uber_wizard_weapon_fx(World *world, int x2, int y2, int type);
+void create_uber_wizard_weapon_fx(const World *world, WorldFx *world_fx, int x2, int y2, int type);

@@ -152,10 +152,10 @@ void enemy_logic(World *world)
         if (enm->ammo == 0)
         {
           trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-          create_shade_around_hit_point(enm->x, enm->y, 9, world);
-          create_explosion(enm->x, enm->y, world, 1);
-          create_explosion(enm->x, enm->y, world, 1);
-          create_explosion(enm->x, enm->y, world, 2);
+          create_shade_around_hit_point(enm->x, enm->y, enm->roomid, 9, &world->visual_fx);
+          create_explosion(enm->x, enm->y, world, &world->visual_fx, 1);
+          create_explosion(enm->x, enm->y, world, &world->visual_fx, 1);
+          create_explosion(enm->x, enm->y, world, &world->visual_fx, 2);
           if (world->plr.perks & PERK_IMPROVE_TURRET_POWERUP)
             create_cluster_explosion(world, enm->x, enm->y, 32, 1, &world->plr);
           enm->ammo = -1;

@@ -232,7 +232,7 @@ void handle_uber_wizard_weapon(World *world)
         if (enm->x - HALFTILESIZE < x && enm->x + HALFTILESIZE > x &&
             enm->y - HALFTILESIZE < y && enm->y + HALFTILESIZE > y)
         {
-          create_uber_wizard_weapon_fx(world, x, y, 0);
+          create_uber_wizard_weapon_fx(world, &world->visual_fx, x, y, 0);
           if (world->plr.shots == 1)
           {
             kill_enemy(enm, world);
@@ -292,7 +292,7 @@ void handle_uber_wizard_weapon(World *world)
     }
     if (x > 0)
     {
-      create_uber_wizard_weapon_fx(world, x, y, 1);
+      create_uber_wizard_weapon_fx(world, &world->visual_fx, x, y, 1);
     }
   }
 }

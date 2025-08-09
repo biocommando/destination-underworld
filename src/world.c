@@ -28,7 +28,6 @@ void init_world(World *world)
     world->kills = 0;
     world->play_boss_sound = 1;
 
-    memset(world->floor_shade_map, 0, sizeof(world->floor_shade_map));
     for (int i = 0; i < ROOMCOUNT; i++)
     {
         world->rooms_visited[i] = 0;

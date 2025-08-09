@@ -4,7 +4,7 @@
 
 #define calc_sqr_distance(x1, y1, x2, y2) (((x1) - (x2)) * ((x1) - (x2)) + ((y1) - (y2)) * ((y1) - (y2)))
 
-void create_shade_around_hit_point(int x, int y, int spread, World *world)
+void create_shade_around_hit_point(int x, int y, int roomid, int spread, WorldFx *world_fx)
 {
     for (int xx = 0; xx < MAPMAX_X; xx++)
     {
@@ -14,7 +14,7 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world)
             if (sqr_dist < spread)
             {
                 int shade_diff = 4 - sqrt(sqr_dist);
-                char *tile_shade = &world->floor_shade_map[world->current_room - 1][xx][yy];
+                char *tile_shade = &world_fx->floor_shade_map[roomid - 1][xx][yy];
                 *tile_shade += shade_diff > 1 ? shade_diff : 1;
                 *tile_shade = *tile_shade > 9 ? 9 : *tile_shade;
             }
@@ -22,13 +22,13 @@ void create_shade_around_hit_point(int x, int y, int spread, World *world)
     }
 }
 
-static inline void bounce_body_parts(int x, int y, World *world)
+static inline void bounce_body_parts(int x, int y, int roomid, WorldFx *world_fx)
 {
     // Make existing bodyparts bounce all over the place
     for (int i = 0; i < ENEMYCOUNT; i++)
     {
-        BodyPartsContainer *bp_container = &world->visual_fx.bodypart_container[i];
-        if (!bp_container->show || bp_container->roomid != world->current_room)
+        BodyPartsContainer *bp_container = &world_fx->bodypart_container[i];
+        if (!bp_container->show || bp_container->roomid != roomid)
             continue;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
@@ -68,7 +68,7 @@ void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f)
     f->speed = rand() % 2 + 1;
 }
 
-void create_flame_fx(int x, int y, World *world)
+void create_flame_fx(int x, int y, const World *world, WorldFx *world_fx)
 {
     if (get_tile_at(world, x, y)->is_wall)
         return;
@@ -76,17 +76,17 @@ void create_flame_fx(int x, int y, World *world)
         x += 4;
     if (get_tile_at(world, x, y - 15)->is_wall)
         y += 15;
-    struct flame_fx *f = world->visual_fx.flames;
+    struct flame_fx *f = world_fx->flames;
     for (int i = 0; i < FLAME_FX_COUNT; i++)
     {
-        if (world->visual_fx.flames[i].duration == 0)
+        if (world_fx->flames[i].duration == 0)
         {
-            f = &world->visual_fx.flames[i];
+            f = &world_fx->flames[i];
             break;
         }
-        else if (world->visual_fx.flames[i].duration < f->duration)
+        else if (world_fx->flames[i].duration < f->duration)
         {
-            f = &world->visual_fx.flames[i];
+            f = &world_fx->flames[i];
         }
     }
     f->loc.x = x;
@@ -105,12 +105,12 @@ static inline int comp_expl_circle(const void *elem1, const void *elem2)
     return -1;
 }
 
-void create_explosion(int x, int y, World *world, double intensity)
+void create_explosion(int x, int y, const World *world, WorldFx *world_fx, double intensity)
 {
     static int explosion_counter = 0;
     const double circle_max_radius = 17;
 
-    Explosion *ex = &world->visual_fx.explosion[explosion_counter];
+    Explosion *ex = &world_fx->explosion[explosion_counter];
 
     ex->x = x - 16 + rand() % 32;
     ex->y = y - 16 + rand() % 32;
@@ -138,8 +138,8 @@ void create_explosion(int x, int y, World *world, double intensity)
     {
         explosion_counter = 0;
     }
-    bounce_body_parts(x, y, world);
-    create_flame_fx(x + rand() % 11 - 5, y + rand() % 11 - 5, world);
+    bounce_body_parts(x, y, world->current_room, world_fx);
+    create_flame_fx(x + rand() % 11 - 5, y + rand() % 11 - 5, world, world_fx);
 }
 
 void create_sparkles(int x, int y, int count, int color, int circle_duration, World *world)
@@ -287,12 +287,13 @@ void clear_visual_fx(WorldFx *world_fx, int init)
         memset(&world_fx->rune_of_protection_animation, 0, sizeof(world_fx->rune_of_protection_animation));
         memset(&world_fx->hint, 0, sizeof(world_fx->hint));
         memset(&world_fx->bodypart_container, 0, sizeof(world_fx->bodypart_container));
+        memset(&world_fx->floor_shade_map, 0, sizeof(world_fx->floor_shade_map));
     }
 }
 
-void create_uber_wizard_weapon_fx(World *world, int x2, int y2, int type)
+void create_uber_wizard_weapon_fx(const World *world, WorldFx *world_fx, int x2, int y2, int type)
 {
-    UberWizardWeaponFx *fx = &world->visual_fx.uber_wizard_weapon_fx;
+    UberWizardWeaponFx *fx = &world_fx->uber_wizard_weapon_fx;
     fx->start.x = world->plr.x;
     fx->start.y = world->plr.y;
     fx->end.x = x2;

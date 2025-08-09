@@ -397,6 +397,9 @@ typedef struct
     struct hint_text hint;
     int rune_of_protection_animation;
     BodyPartsContainer bodypart_container[ENEMYCOUNT];
+    // Floor color map; the floor gets darker always when there's an explosion
+    // at that tile
+    char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
 } WorldFx;
 
 // Structure that contains most of the game state
@@ -404,9 +407,6 @@ typedef struct
 {
     // The tiles for each room
     Tile map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
-    // Floor color map; the floor gets darker always when there's an explosion
-    // at that tile
-    char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
     // Set to 1 for each room that has been already visited so that
     // enemies and potions won't be spawned again
     char rooms_visited[ROOMCOUNT];

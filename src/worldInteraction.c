@@ -126,7 +126,7 @@ void move_bullet(Bullet *bb, World *world)
     }
     else
     {
-        create_shade_around_hit_point((int)bb->x, (int)bb->y, 4, world);
+        create_shade_around_hit_point((int)bb->x, (int)bb->y, world->current_room, 4, &world->visual_fx);
         bb->owner = NULL;
     }
 }
@@ -614,7 +614,7 @@ void kill_enemy(Enemy *enm, World *world)
     enm->killed = 1;
     enm->death_animation = 0;
 
-    create_explosion(enm->x, enm->y, world, 1.8);
+    create_explosion(enm->x, enm->y, world, &world->visual_fx, 1.8);
 
     if (check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
     {

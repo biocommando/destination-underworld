@@ -40,7 +40,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
       if (bullet->owner == NULL)
       {
         trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-        create_explosion(bullet_orig_x, bullet_orig_y, world, 0.5);
+        create_explosion(bullet_orig_x, bullet_orig_y, world, &world->visual_fx, 0.5);
         if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
         {
           bullet->x = TO_PIXEL_COORDINATES((int)(bullet_orig_x / TILESIZE));
@@ -59,7 +59,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
       if (bullet->dx > 0.2 || bullet->dx < -0.2)
         frame_cnt = bullet->x;
       if (rand() % 400 == 0)
-        create_flame_fx(bullet->x, bullet->y, world);
+        create_flame_fx(bullet->x, bullet->y, world, &world->visual_fx);
       if ((world->plr.perks & PERK_IMPROVE_BLAST_POWERUP) && bullet->bullet_type == BULLET_TYPE_CLUSTER)
       {
         if (frame_cnt % 64 == 0)
@@ -92,14 +92,14 @@ void bullet_logic(World *world, GlobalGameState *ggs)
           }
         }
         trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-        create_shade_around_hit_point(world->plr.x, world->plr.y, 9, world);
-        create_explosion(world->plr.x, world->plr.y, world, 1);
+        create_shade_around_hit_point(world->plr.x, world->plr.y, world->current_room, 9, &world->visual_fx);
+        create_explosion(world->plr.x, world->plr.y, world, &world->visual_fx, 1);
         if (world->plr.health <= 0)
         {
-          create_explosion(world->plr.x - 20, world->plr.y - 20, world, 1.5);
-          create_explosion(world->plr.x + 20, world->plr.y + 20, world, 1.5);
-          create_explosion(world->plr.x - 20, world->plr.y + 20, world, 1.5);
-          create_explosion(world->plr.x + 20, world->plr.y - 20, world, 1.5);
+          create_explosion(world->plr.x - 20, world->plr.y - 20, world, &world->visual_fx, 1.5);
+          create_explosion(world->plr.x + 20, world->plr.y + 20, world, &world->visual_fx, 1.5);
+          create_explosion(world->plr.x - 20, world->plr.y + 20, world, &world->visual_fx, 1.5);
+          create_explosion(world->plr.x + 20, world->plr.y - 20, world, &world->visual_fx, 1.5);
           // As player is not really an "enemy" (not in the same array), the bodypart logic is not
           // run for player object. Copy a vacant enemy to player's place so that the death animation
           // will play for that object instead.
@@ -121,8 +121,8 @@ void bullet_logic(World *world, GlobalGameState *ggs)
 
           if (bullet_hit(world->enm + j, world->bullets + i))
           {
-            create_shade_around_hit_point(enm->x, enm->y, 9, world);
-            create_explosion(enm->x, enm->y, world, 1.2);
+            create_shade_around_hit_point(enm->x, enm->y, world->current_room, 9, &world->visual_fx);
+            create_explosion(enm->x, enm->y, world, &world->visual_fx, 1.2);
             trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
 
             if (bullet->bullet_type == BULLET_TYPE_CLUSTER)
