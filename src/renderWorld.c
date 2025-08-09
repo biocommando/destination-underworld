@@ -63,17 +63,17 @@ inline void draw_boss_health_bar(const World *world)
     }
 }
 
-static void draw_enemy_shadow(Enemy *enm)
+static void draw_enemy_shadow(const Enemy *enm)
 {
     al_draw_filled_ellipse(enm->x - 3, enm->y + 12, 15, 5, al_map_rgba(0, 0, 0, 60));
 }
 
-void draw_enemy_shadows(World *world)
+void draw_enemy_shadows(const World *world)
 {
     draw_enemy_shadow(&world->plr);
     for (int i = 0; i < ENEMYCOUNT; i++)
     {
-        Enemy *enm = &world->enm[i];
+        const Enemy *enm = &world->enm[i];
         if (enm->alive && enm->roomid == world->current_room)
         {
             draw_enemy_shadow(enm);
@@ -81,7 +81,7 @@ void draw_enemy_shadows(World *world)
     }
 }
 
-void draw_wall_shadows(World *world)
+void draw_wall_shadows(const World *world)
 {
     const int floor_base_col = 100;
     const int shadow_base_col = floor_base_col - 44;
@@ -112,7 +112,7 @@ static inline int progress_lava_fluctuations()
 static const int floor_base_col = 100;
 static const int shadow_base_col = floor_base_col - 44;
 
-void draw_map_floors(World *world, int vibration_intensity)
+void draw_map_floors(const World *world, int vibration_intensity)
 {
     int lava_fluctuations = progress_lava_fluctuations();
     for (int y = 0; y < MAPMAX_Y; y++)
@@ -178,7 +178,7 @@ void draw_map_floors(World *world, int vibration_intensity)
     }
 }
 
-void draw_map_walls(World *world)
+void draw_map_walls(const World *world)
 {
     int lava_fluctuations = progress_lava_fluctuations();
     for (int y = 0; y < MAPMAX_Y; y++)
@@ -576,7 +576,7 @@ static inline void check_valid_time_for_display(float *f)
     *f = *f > 9999.9f ? 9999.9f : *f;
 }
 
-void display_level_info(World *world, int mission, int mission_count, long completetime)
+void display_level_info(const World *world, int mission, int mission_count, long completetime)
 {
     const int y_margin = al_get_font_line_height(get_menu_font()) + 2;
     const int y_margin_small_text = al_get_font_line_height(get_font()) + 1;
@@ -651,7 +651,7 @@ inline void draw_hint(WorldFx *world_fx)
     }
 }
 
-void show_ingame_info_screen(World *world)
+void show_ingame_info_screen(const World *world)
 {
     wait_key_release(ALLEGRO_KEY_M);
     al_clear_to_color(BLACK);
@@ -667,7 +667,7 @@ void show_ingame_info_screen(World *world)
             {
                 int xx = offset_x + x * map_tile_size;
                 int yy = offset_y + y * map_tile_size;
-                Tile *t = &world->map[i][x][y];
+                const Tile *t = &world->map[i][x][y];
                 ALLEGRO_COLOR color;
                 if (t->is_floor)
                 {
@@ -696,7 +696,7 @@ void show_ingame_info_screen(World *world)
         int num_enemies = 0;
         for (int e = 0; e < ENEMYCOUNT; e++)
         {
-            Enemy *enm = &world->enm[e];
+            const Enemy *enm = &world->enm[e];
             if (enm->alive && enm->roomid == i + 1 && enm != world->boss)
                 num_enemies++;
         }
@@ -704,7 +704,7 @@ void show_ingame_info_screen(World *world)
                       num_enemies);
         for (int e = 0; e < world->boss_fight_configs[i].num_events; e++)
         {
-            BossFightEventConfig *evt = &world->boss_fight_configs[i].events[e];
+            const BossFightEventConfig *evt = &world->boss_fight_configs[i].events[e];
             if (evt->event_type == BFCONF_EVENT_TYPE_MODIFY_TERRAIN)
             {
                 int xx = offset_x + evt->parameters[0] * map_tile_size;
@@ -759,7 +759,7 @@ void show_ingame_info_screen(World *world)
         int num_enemies = 0;
         for (int e = 0; e < ENEMYCOUNT; e++)
         {
-            Enemy *enm = &world->enm[e];
+            const Enemy *enm = &world->enm[e];
             if (enm->alive && enm->sprite == et)
                 num_enemies++;
         }

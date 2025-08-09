@@ -59,20 +59,20 @@ void apply_game_screen_transform(int vibrations);
  * Vibration intensity also affects the floor color directly (explosions make the
  * level a bit brighter for a moment).
  */
-void draw_map_floors(World *world, int vibration_intensity);
+void draw_map_floors(const World *world, int vibration_intensity);
 /*
  * Draws the map. Draws only walls (without shadows, they should be drawn before walls).
  *
  * The map needs to be drawn in stages because of the fake isometric perspective.
  */
-void draw_map_walls(World *world);
+void draw_map_walls(const World *world);
 /*
  * Draws wall shadows as an semi-opaque layer. This would allow different items that are next to
  * the walls to be in the shadow but because the fake isometric view is just added on top of
  * everything and the enemy sprites are always front facing, the effect just looks weird and wrong.
  * So only the ting of the body parts is affected by the shadow.
  */
-void draw_wall_shadows(World *world);
+void draw_wall_shadows(const World *world);
 /*
  * Moves the body parts in the current room around. The parts are slowed down by a friction and they
  * bounce off walls.
@@ -94,7 +94,7 @@ void progress_and_draw_flame_fx(WorldFx *world_fx);
 /*
  * Displays the level ending screen that contains e.g. story text and best times.
  */
-void display_level_info(World *world, int mission, int mission_count, long completetime);
+void display_level_info(const World *world, int mission, int mission_count, long completetime);
 /*
  * Shows a hint text near player sprite that tells how much gold was used on a powerup.
  */
@@ -106,10 +106,10 @@ void draw_hint(WorldFx *world_fx);
 /*
  * Displays a level info screen that contains the mini map and some metadata on the level.
  */
-void show_ingame_info_screen(World *world);
+void show_ingame_info_screen(const World *world);
 /*
  * Draws oval shadows under enemies. Not in use because it looks stupid because of the fake
  * isometric perspective.
  */
-void draw_enemy_shadows(World *world);
+void draw_enemy_shadows(const World *world);
 void draw_uber_wizard_weapon_fx(WorldFx *world);
