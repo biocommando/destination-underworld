@@ -10,6 +10,16 @@
 #include "game_playback.h"
 #include "vfx.h"
 
+static const double expl_sin_cos_table[2][10] = {
+    {0.19866933079506122, 0.7367955455941375, 0.9934909047357762,
+     0.8707065057822322, 0.4153418158455323, -0.19866933079506127,
+     -0.7367955455941376, -0.9934909047357762, -0.8707065057822322,
+     -0.4153418158455324},
+    {0.9800665778412416, 0.6761156143683099, 0.11391146653120064,
+     -0.49180298981248144, -0.9096654198166136, -0.9800665778412416,
+     -0.6761156143683098, -0.11391146653120054, 0.49180298981248133,
+     0.9096654198166136}};
+
 void set_fly_in_text(struct fly_in_text *fit, const char *text)
 {
     fit->x = SCREEN_W;
@@ -130,9 +140,10 @@ void draw_map_floors(World *world, int vibration_intensity)
                 al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color);
                 if (!tile->is_exit_level)
                 {
-                    ALLEGRO_COLOR drawn_color2 = GRAY(floorcol * 1.1);
-                    al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, drawn_color2);
-                    al_draw_filled_rectangle((x)*TILESIZE + HALFTILESIZE, (y)*TILESIZE + HALFTILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, drawn_color2);
+                    double multiplier = 1.2 + expl_sin_cos_table[0][(int)(x * 0.66)] * 0.15;
+                    ALLEGRO_COLOR pattern_color = GRAY(floorcol * multiplier);
+                    al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, pattern_color);
+                    al_draw_filled_rectangle((x)*TILESIZE + HALFTILESIZE, (y)*TILESIZE + HALFTILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, pattern_color);
                 }
             }
 
@@ -426,16 +437,6 @@ static void draw_explosion_circle(double x, double y, double intensity, double r
 
     al_draw_filled_circle(x, y, radius, col);
 }
-
-static const double expl_sin_cos_table[2][10] = {
-    {0.19866933079506122, 0.7367955455941375, 0.9934909047357762,
-     0.8707065057822322, 0.4153418158455323, -0.19866933079506127,
-     -0.7367955455941376, -0.9934909047357762, -0.8707065057822322,
-     -0.4153418158455324},
-    {0.9800665778412416, 0.6761156143683099, 0.11391146653120064,
-     -0.49180298981248144, -0.9096654198166136, -0.9800665778412416,
-     -0.6761156143683098, -0.11391146653120054, 0.49180298981248133,
-     0.9096654198166136}};
 
 void progress_and_draw_flame_fx(World *world)
 {
