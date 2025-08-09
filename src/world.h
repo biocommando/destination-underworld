@@ -477,6 +477,10 @@ typedef struct
     int game_modifiers;
     // Current mission number
     int mission;
+    // Next mission number (usually mission + 1)
+    int next_mission;
+    // Set this to 1 to force next mission number
+    int custom_next_mission_set;
     // The initial player status at beginning of a level
     Enemy plrautosave;
     // Bitmask of cheats active.

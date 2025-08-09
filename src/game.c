@@ -257,6 +257,9 @@ void game(GlobalGameState *ggs)
   long time_stamp = 0;
 
   read_level(&world, ggs->mission, 1);
+  ggs->custom_next_mission_set = 0;
+  if (ggs->next_mission == 0)
+    ggs->next_mission = ggs->mission + 1;
 
   struct fly_in_text fly_in_text;
   set_fly_in_text(&fly_in_text, world.mission_display_name);
@@ -332,7 +335,7 @@ void game(GlobalGameState *ggs)
           world.visual_fx.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-          display_level_info(&world, ggs->mission, mission_count, time_stamp - 1);
+          display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, time_stamp - 1);
 
           if (!ggs->no_player_interaction)
             wait_key_press(ALLEGRO_KEY_ENTER);
@@ -386,7 +389,7 @@ void game(GlobalGameState *ggs)
         show_gold_hint(&world, &world.visual_fx, gold_hint_amount);
       }
 
-      if (check_key(ALLEGRO_KEY_R) && *record_mode != RECORD_MODE_PLAYBACK)
+      if (check_key(ALLEGRO_KEY_R) && *record_mode != RECORD_MODE_PLAYBACK && ggs->mission != LIMBO_MISSION)
       {
         wait_key_release(ALLEGRO_KEY_R);
         break;
@@ -425,7 +428,7 @@ void game(GlobalGameState *ggs)
       world.visual_fx.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-      display_level_info(&world, ggs->mission, mission_count, time_stamp - 1);
+      display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, time_stamp - 1);
 
       if (*record_mode != RECORD_MODE_PLAYBACK)
         wait_key_press(ALLEGRO_KEY_ENTER);
@@ -437,7 +440,7 @@ void game(GlobalGameState *ggs)
         break;
       }
 
-      ggs->mission++;
+      ggs->mission = ggs->next_mission;
       ggs->plrautosave = world.plr;
       break;
     }
@@ -550,4 +553,7 @@ void game(GlobalGameState *ggs)
   al_destroy_bitmap(world.spr);
 
   reset_screen_transform();
+
+  if (!ggs->custom_next_mission_set)
+    ggs->next_mission = 0; // 0 = automatically set to mission + 1
 }

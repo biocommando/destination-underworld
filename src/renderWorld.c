@@ -577,40 +577,43 @@ static inline void check_valid_time_for_display(float *f)
     *f = *f > 9999.9f ? 9999.9f : *f;
 }
 
-void display_level_info(const World *world, int mission, int mission_count, long completetime)
+void display_level_info(const World *world, int mission, int next_mission, int mission_count, long completetime)
 {
     const int y_margin = al_get_font_line_height(get_menu_font()) + 2;
     const int y_margin_small_text = al_get_font_line_height(get_font()) + 1;
     al_clear_to_color(BLACK);
     int y = 5;
-    al_draw_text(get_menu_font(), GRAY(200), 5, y, 0, world->mission_display_name);
-    y += y_margin;
-    struct best_times best_times;
-    best_times.game_modifiers = *world->game_modifiers;
-    best_times.mission = mission;
-    populate_best_times(get_game_settings()->mission_pack, &best_times);
-    float time_secs = (float)completetime / 40;
-    int beat_idx = check_time_beaten(&best_times, (float)time_secs);
-
-    check_valid_time_for_display(&time_secs);
-    for (int i = 0; i < 3; i++)
-        check_valid_time_for_display(best_times.times + i);
-    float time0 = best_times.times[0];
-    float time1 = best_times.times[1];
-    float time2 = best_times.times[2];
-
-    al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Time: %.1f secs. Best times: %s%.1f, %s%.1f, %s%.1f",
-                  time_secs, beat_idx == 0 ? "*" : "", time0,
-                  beat_idx == 1 ? "*" : "", time1,
-                  beat_idx == 2 ? "*" : "", time2);
-    const int *record_mode = get_playback_mode();
-    if (beat_idx >= 0 && *record_mode != RECORD_MODE_PLAYBACK)
+    if (mission != LIMBO_MISSION)
     {
-        save_best_times(get_game_settings()->mission_pack, &best_times);
+        al_draw_text(get_menu_font(), GRAY(200), 5, y, 0, world->mission_display_name);
+        y += y_margin;
+        struct best_times best_times;
+        best_times.game_modifiers = *world->game_modifiers;
+        best_times.mission = mission;
+        populate_best_times(get_game_settings()->mission_pack, &best_times);
+        float time_secs = (float)completetime / 40;
+        int beat_idx = check_time_beaten(&best_times, (float)time_secs);
+
+        check_valid_time_for_display(&time_secs);
+        for (int i = 0; i < 3; i++)
+            check_valid_time_for_display(best_times.times + i);
+        float time0 = best_times.times[0];
+        float time1 = best_times.times[1];
+        float time2 = best_times.times[2];
+
+        al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Time: %.1f secs. Best times: %s%.1f, %s%.1f, %s%.1f",
+                    time_secs, beat_idx == 0 ? "*" : "", time0,
+                    beat_idx == 1 ? "*" : "", time1,
+                    beat_idx == 2 ? "*" : "", time2);
+        const int *record_mode = get_playback_mode();
+        if (beat_idx >= 0 && *record_mode != RECORD_MODE_PLAYBACK)
+        {
+            save_best_times(get_game_settings()->mission_pack, &best_times);
+        }
     }
     y += y_margin_small_text;
-    if (mission < mission_count)
-        al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Now entering level %d / %d.", mission + 1, mission_count);
+    if (mission < mission_count || mission == LIMBO_MISSION)
+        al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Now entering level %d / %d.", next_mission, mission_count);
     y += y_margin_small_text + 5;
     al_draw_filled_rectangle(0, y - 3, SCREEN_W + 1, y + y_margin_small_text * world->story_after_mission_lines + 2 + 1, GRAY(20));
     for (int i = 0; i < world->story_after_mission_lines; i++)

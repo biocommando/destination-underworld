@@ -94,7 +94,7 @@ void progress_and_draw_flame_fx(WorldFx *world_fx);
 /*
  * Displays the level ending screen that contains e.g. story text and best times.
  */
-void display_level_info(const World *world, int mission, int mission_count, long completetime);
+void display_level_info(const World *world, int mission, int next_mission, int mission_count, long completetime);
 /*
  * Shows a hint text near player sprite that tells how much gold was used on a powerup.
  */

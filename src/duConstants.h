@@ -82,3 +82,6 @@
 #define AUTH_CTX_COMPLETED_GAME_MODES 3
 
 #define M_PI 3.14159265358979323846
+
+// Special mission number where the player can change their loadout
+#define LIMBO_MISSION 999

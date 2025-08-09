@@ -520,7 +520,14 @@ static int display_in_game_menu(int game_modifiers, int mission)
     m.cancel_menu_item_id = mi->item_id;
     add_menu_item(&m, "Perks", "Spend experience points for upgrades!");
     add_menu_item(&m, "Save game", "");
+    add_menu_item(&m, "Restart from limbo", "Go to Limbo state where you can buy perks, change the weapon etc.");
     if (game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+    {
+        m.items[m.num_items - 3].selectable = 0;
+        m.items[m.num_items - 2].selectable = 0;
+        m.items[m.num_items - 1].selectable = 0;
+    }
+    if (mission == LIMBO_MISSION)
     {
         m.items[m.num_items - 2].selectable = 0;
         m.items[m.num_items - 1].selectable = 0;
@@ -857,6 +864,13 @@ int menu(int ingame, GlobalGameState *ggs)
                     if (choice == 2)
                         ggs->mission = 0;
                 }
+            }
+            else if (ingame_menu_selection == get_menu_item_id("Restart"))
+            {
+                exit_menu = 1;
+                ggs->next_mission = ggs->mission;
+                ggs->mission = LIMBO_MISSION;
+                ggs->custom_next_mission_set = 1;
             }
         }
         exit_menu = 0;
