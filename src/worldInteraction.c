@@ -636,16 +636,16 @@ void kill_enemy(Enemy *enm, World *world)
     world->plr.xp += enm->xp;
     if (enm->gold > 0 || (*world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT))
     {
-      world->hint.time_shows = 40;
+      world->visual_fx.hint.time_shows = 40;
       if (*world->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
-        sprintf(world->hint.text, "%d", world->kills);
+        sprintf(world->visual_fx.hint.text, "%d", world->kills);
       else if (!(*world->game_modifiers & GAMEMODIFIER_NO_GOLD))
-        sprintf(world->hint.text, "+ %d", enm->gold);
+        sprintf(world->visual_fx.hint.text, "+ %d", enm->gold);
       else
-        world->hint.time_shows = 0;
-      world->hint.loc.x = enm->x - 15;
-      world->hint.loc.y = enm->y - 15;
-      world->hint.dim = 6;
+        world->visual_fx.hint.time_shows = 0;
+      world->visual_fx.hint.loc.x = enm->x - 15;
+      world->visual_fx.hint.loc.y = enm->y - 15;
+      world->visual_fx.hint.dim = 6;
     }
     if ((*world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
     {

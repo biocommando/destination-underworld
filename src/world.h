@@ -386,6 +386,8 @@ typedef struct
     struct sparkle_fx_circle sparkle_fx_circle[SPARKLE_FX_CIRCLE_COUNT];
     struct flame_fx flames[FLAME_FX_COUNT];
     UberWizardWeaponFx uber_wizard_weapon_fx;
+    // Status for a text that is shown for a short moment
+    struct hint_text hint;
 } WorldFx;
 
 // Structure that contains most of the game state
@@ -426,8 +428,6 @@ typedef struct
     BossFightConfig *boss_fight_config;
     // Script configs for each room
     BossFightConfig boss_fight_configs[ROOMCOUNT];
-    // Status for a text that is shown for a short moment
-    struct hint_text hint;
     // The status of power up effects that do not affect directly
     // some other property.
     struct powerup_status powerups;

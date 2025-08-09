@@ -329,7 +329,7 @@ void game(GlobalGameState *ggs)
         }
         if (!has_more)
         {
-          world.hint.time_shows = 0;
+          world.visual_fx.hint.time_shows = 0;
           trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
           display_level_info(&world, ggs->mission, mission_count, time_stamp - 1);
@@ -383,7 +383,7 @@ void game(GlobalGameState *ggs)
       int gold_hint_amount = handle_power_up_keys(&world, key_a, key_s, key_d, key_f);
       if (gold_hint_amount)
       {
-        show_gold_hint(&world, gold_hint_amount);
+        show_gold_hint(&world, &world.visual_fx, gold_hint_amount);
       }
 
       if (check_key(ALLEGRO_KEY_R) && *record_mode != RECORD_MODE_PLAYBACK)
@@ -422,7 +422,7 @@ void game(GlobalGameState *ggs)
 
     if (get_tile_at(&world, world.plr.x, world.plr.y)->is_exit_level && world.plr.health > 0)
     {
-      world.hint.time_shows = 0;
+      world.visual_fx.hint.time_shows = 0;
       trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
       display_level_info(&world, ggs->mission, mission_count, time_stamp - 1);
@@ -464,7 +464,7 @@ void game(GlobalGameState *ggs)
 
     draw_player_legend(&world, legend_x, legend_y);
 
-    draw_hint(&world);
+    draw_hint(&world.visual_fx);
     if (world.boss_fight && time_stamp % 3 == 0)
     {
       boss_logic(&world, 0);
@@ -528,7 +528,7 @@ void game(GlobalGameState *ggs)
       {
         break;
       }
-      world.hint.time_shows = 0;
+      world.visual_fx.hint.time_shows = 0;
       int switch_level = menu(1, ggs);
       if (switch_level)
       {

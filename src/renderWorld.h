@@ -98,11 +98,11 @@ void display_level_info(World *world, int mission, int mission_count, long compl
 /*
  * Shows a hint text near player sprite that tells how much gold was used on a powerup.
  */
-void show_gold_hint(World *world, int number);
+void show_gold_hint(const World *world, WorldFx *world_fx, int number);
 /*
  * Draws the hint text and progresses its fading away.
  */
-void draw_hint(World *world);
+void draw_hint(WorldFx *world_fx);
 /*
  * Displays a level info screen that contains the mini map and some metadata on the level.
  */

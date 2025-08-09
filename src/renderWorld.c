@@ -632,22 +632,22 @@ void display_level_info(World *world, int mission, int mission_count, long compl
     al_flip_display();
 }
 
-void show_gold_hint(World *world, int number)
+void show_gold_hint(const World *world, WorldFx *world_fx, int number)
 {
-    sprintf(world->hint.text, "- %d", number);
-    world->hint.loc.x = world->plr.x - 15;
-    world->hint.loc.y = world->plr.y - 30;
-    world->hint.dim = 4;
-    world->hint.time_shows = 60;
+    sprintf(world_fx->hint.text, "- %d", number);
+    world_fx->hint.loc.x = world->plr.x - 15;
+    world_fx->hint.loc.y = world->plr.y - 30;
+    world_fx->hint.dim = 4;
+    world_fx->hint.time_shows = 60;
 }
 
-inline void draw_hint(World *world)
+inline void draw_hint(WorldFx *world_fx)
 {
-    if (world->hint.time_shows > 0)
+    if (world_fx->hint.time_shows > 0)
     {
-        world->hint.time_shows--;
-        int hint_col = world->hint.time_shows * world->hint.dim;
-        al_draw_textf(get_font(), GRAY(hint_col), world->hint.loc.x, world->hint.loc.y, -1, world->hint.text);
+        world_fx->hint.time_shows--;
+        int hint_col = world_fx->hint.time_shows * world_fx->hint.dim;
+        al_draw_textf(get_font(), GRAY(hint_col), world_fx->hint.loc.x, world_fx->hint.loc.y, -1, world_fx->hint.text);
     }
 }
 
