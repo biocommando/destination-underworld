@@ -66,6 +66,11 @@ int check_key(int key);
 int check_keys(const int *keys, int num_keys);
 
 /*
+ * Get the first key pressed in the key buffer, or 0 if none is pressed.
+ */
+int get_key();
+
+/*
  * Get the font for in-game texts.
  */
 ALLEGRO_FONT *get_font();

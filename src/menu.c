@@ -582,6 +582,8 @@ static int display_game_options(int default_opt)
     mi->item_id = get_menu_item_id("vibrations");
     mi = add_menu_item(&m, "Window mode", "Current: %s\nThe game needs to be restarted to take new window mode into use.", get_game_settings()->fullscreen ? "Full screen" : "Windowed");
     mi->item_id = get_menu_item_id("Window");
+    mi = add_menu_item(&m, "Set keys", "Change the control keys");
+    mi->item_id = get_menu_item_id("keys");
     set_item_by_id(&m, default_opt);
     display_menu(&m);
     return m.items[m.selected_item].item_id;
@@ -680,6 +682,58 @@ static const char *vibration_intensity_fmt(int i)
     return "%2d -- Light";
 }
 
+static int display_set_keys_menu()
+{
+    #define ADD_ITEM(label, key) \
+        key_to_change[m.num_items - 1] = &keys->key; \
+        add_menu_item(&m, label, "Current: %s", al_keycode_to_name(keys->key));
+    int *key_to_change[NUM_MENU_ITEMS];
+    struct game_control_keys *keys = &get_game_settings()->keys;
+    int default_selection = 0;
+    while (1)
+    {
+        struct menu m = create_menu("Set keys");
+        add_menu_item(&m, "Go back", "Go back to game settings menu");
+        ADD_ITEM("Move left", left);
+        ADD_ITEM("Move right", right);
+        ADD_ITEM("Move up", up);
+        ADD_ITEM("Move down", down);
+        ADD_ITEM("Shoot", shoot);
+        ADD_ITEM("Large blast firing mode", weapon1);
+        ADD_ITEM("Small blast firing mode", weapon0);
+        ADD_ITEM("Heal powerup", pwup0);
+        ADD_ITEM("Shield powerup", pwup1);
+        ADD_ITEM("Turret powerup", pwup2);
+        ADD_ITEM("Torrent of Fire powerup", pwup3);
+        ADD_ITEM("Restart level", restart);
+        ADD_ITEM("Display map info", map_info);
+
+        m.selected_item = default_selection;
+        display_menu(&m);
+        default_selection = m.selected_item;
+
+        if (m.selected_item > 0)
+        {
+            al_clear_to_color(BLACK);
+            al_draw_textf(get_font(), WHITE, 100, 100, 0, "Press new key for %s", m.items[m.selected_item].name);
+            al_flip_display();
+            int key = 0;
+            while (!key)
+            {
+                key = get_key();
+                wait_delay_ms(30);
+            }
+            wait_key_release(key);
+            *key_to_change[m.selected_item - 1] = key;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return 0;
+}
+
 static void game_option_menu()
 {
     GameSettings orig;
@@ -726,6 +780,10 @@ static void game_option_menu()
         else if (choice == get_menu_item_id("Window"))
         {
             get_game_settings()->fullscreen = !get_game_settings()->fullscreen;
+        }
+        else if (choice == get_menu_item_id("keys"))
+        {
+            display_set_keys_menu();
         }
     } while (choice != get_menu_item_id("Exit"));
 

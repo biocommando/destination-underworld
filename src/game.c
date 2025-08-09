@@ -289,7 +289,7 @@ void game(GlobalGameState *ggs)
       // Draw well outside of screen so that the zoom in transformation would not look like ass
       al_draw_filled_rectangle(0, 0, SCREEN_W * 2, SCREEN_H * 2, BLACK);
     }
-    else if (check_key(ALLEGRO_KEY_M))
+    else if (check_key(get_game_settings()->keys.map_info))
     {
       show_ingame_info_screen(&world);
     }
@@ -358,17 +358,18 @@ void game(GlobalGameState *ggs)
       }
       else
       {
-        key_left = check_key(ALLEGRO_KEY_LEFT);
-        key_right = check_key(ALLEGRO_KEY_RIGHT);
-        key_up = check_key(ALLEGRO_KEY_UP);
-        key_down = check_key(ALLEGRO_KEY_DOWN);
-        key_space = check_key(ALLEGRO_KEY_SPACE);
-        key_x = check_key(ALLEGRO_KEY_X);
-        key_z = check_key(ALLEGRO_KEY_Z);
-        key_a = check_key(ALLEGRO_KEY_A);
-        key_s = check_key(ALLEGRO_KEY_S);
-        key_d = check_key(ALLEGRO_KEY_D);
-        key_f = check_key(ALLEGRO_KEY_F);
+        struct game_control_keys *keys = &get_game_settings()->keys;
+        key_left = check_key(keys->left);
+        key_right = check_key(keys->right);
+        key_up = check_key(keys->up);
+        key_down = check_key(keys->down);
+        key_space = check_key(keys->shoot);
+        key_x = check_key(keys->weapon1);
+        key_z = check_key(keys->weapon0);
+        key_a = check_key(keys->pwup0);
+        key_s = check_key(keys->pwup1);
+        key_d = check_key(keys->pwup2);
+        key_f = check_key(keys->pwup3);
       }
 
       world.potion_turbo_mode = (ggs->game_modifiers & GAMEMODIFIER_POTION_ON_DEATH) && key_space && world.potion_duration > 0;
@@ -389,9 +390,9 @@ void game(GlobalGameState *ggs)
         show_gold_hint(&world, &world.visual_fx, gold_hint_amount);
       }
 
-      if (check_key(ALLEGRO_KEY_R) && *record_mode != RECORD_MODE_PLAYBACK && ggs->mission != LIMBO_MISSION)
+      if (check_key(get_game_settings()->keys.restart) && *record_mode != RECORD_MODE_PLAYBACK && ggs->mission != LIMBO_MISSION)
       {
-        wait_key_release(ALLEGRO_KEY_R);
+        wait_key_release(get_game_settings()->keys.restart);
         break;
       }
 

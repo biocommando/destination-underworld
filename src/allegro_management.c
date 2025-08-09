@@ -43,6 +43,16 @@ int check_keys(const int *keys, int num_keys)
     return 0;
 }
 
+int get_key()
+{
+    for (int i = 0; i < ALLEGRO_KEY_MAX; i++)
+    {
+        if (keybuffer[i])
+            return i;
+    }
+    return 0;
+}
+
 // Counter for adding a second of silence (or delay tail) after every midi file
 static int midi_track_spacing_counter = 0;
 

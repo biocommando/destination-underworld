@@ -5,6 +5,7 @@
 #include "settings.h"
 #include "record_file.h"
 #include "duConstants.h"
+#include "allegro_management.h"
 
 static GameSettings game_settings;
 
@@ -31,6 +32,37 @@ static void read_setting(const char *filename, char **argv, int argc, char *resu
                                                                               \
   } while (0)
 
+static void read_keys()
+{
+  // Set defaults
+  game_settings.keys.left = ALLEGRO_KEY_LEFT;
+  game_settings.keys.right = ALLEGRO_KEY_RIGHT;
+  game_settings.keys.up = ALLEGRO_KEY_UP;
+  game_settings.keys.down = ALLEGRO_KEY_DOWN;
+  game_settings.keys.shoot = ALLEGRO_KEY_SPACE;
+
+  game_settings.keys.weapon0 = ALLEGRO_KEY_Z;
+  game_settings.keys.weapon1 = ALLEGRO_KEY_X;
+
+  game_settings.keys.pwup0 = ALLEGRO_KEY_A;
+  game_settings.keys.pwup1 = ALLEGRO_KEY_S;
+  game_settings.keys.pwup2 = ALLEGRO_KEY_D;
+  game_settings.keys.pwup3 = ALLEGRO_KEY_F;
+
+  game_settings.keys.restart = ALLEGRO_KEY_R;
+  game_settings.keys.map_info = ALLEGRO_KEY_M;
+
+  record_file_scanf(game_settings.settings_file, "key-bindings",
+                    "%*s left=%d right=%d up=%d down=%d "
+                    "shoot=%d weapon0=%d weapon1=%d "
+                    "pwup0=%d pwup1=%d pwup2=%d pwup3=%d "
+                    "restart=%d map_info=%d",
+                    &game_settings.keys.left, &game_settings.keys.right, &game_settings.keys.up, &game_settings.keys.down,
+                    &game_settings.keys.shoot, &game_settings.keys.weapon0, &game_settings.keys.weapon1,
+                    &game_settings.keys.pwup0, &game_settings.keys.pwup1, &game_settings.keys.pwup2, &game_settings.keys.pwup3,
+                    &game_settings.keys.restart, &game_settings.keys.map_info);
+}
+
 void read_settings(char **argv, int argc)
 {
   char buf[256], file_name[256] = DATADIR "settings.dat";
@@ -56,6 +88,8 @@ void read_settings(char **argv, int argc)
   char arena_config_file[256];
   sprintf(arena_config_file, DATADIR "%s/arenas.dat", game_settings.mission_pack);
   read_arena_configs(arena_config_file, &game_settings.arena_config);
+
+  read_keys();
 }
 
 int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output, const char *documentation)
@@ -109,6 +143,17 @@ void save_settings()
   record_file_set_record_f(game_settings.settings_file, "audio--music-on %d", game_settings.music_on);
   record_file_set_record_f(game_settings.settings_file, "audio--music-vol %lf", game_settings.music_vol);
   record_file_set_record_f(game_settings.settings_file, "audio--sfx-vol %lf", game_settings.sfx_vol);
+
+  record_file_set_record_f(game_settings.settings_file,
+                           "key-bindings "
+                           "left=%d right=%d up=%d down=%d "
+                           "shoot=%d weapon0=%d weapon1=%d "
+                           "pwup0=%d pwup1=%d pwup2=%d pwup3=%d "
+                           "restart=%d map_info=%d",
+                           game_settings.keys.left, game_settings.keys.right, game_settings.keys.up, game_settings.keys.down,
+                           game_settings.keys.shoot, game_settings.keys.weapon0, game_settings.keys.weapon1,
+                           game_settings.keys.pwup0, game_settings.keys.pwup1, game_settings.keys.pwup2, game_settings.keys.pwup3,
+                           game_settings.keys.restart, game_settings.keys.map_info);
 }
 
 inline GameSettings *get_game_settings()

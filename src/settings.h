@@ -2,6 +2,14 @@
 
 #include "arenaconf.h"
 
+struct game_control_keys
+{
+  int left, right, up, down;
+  int shoot, weapon0, weapon1;
+  int pwup0, pwup1, pwup2, pwup3;
+  int restart, map_info;
+};
+
 // Overall game settings
 typedef struct
 {
@@ -32,6 +40,7 @@ typedef struct
   int require_authentication;
   // Arena fight configurations (cannot be accessed via command line arguments)
   ArenaConfigs arena_config;
+  struct game_control_keys keys;
 } GameSettings;
 
 /*
