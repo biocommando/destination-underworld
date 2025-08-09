@@ -43,7 +43,7 @@ inline void draw_fly_in_text(struct fly_in_text *fly_in_text)
     }
 }
 
-void draw_enemy(Enemy *enm, World *world)
+void draw_enemy(const Enemy *enm, const World *world)
 {
     if (enm->sprite == 9)
         draw_sprite_centered(world->spr, SPRITE_ID_TURRET, enm->x, enm->y);

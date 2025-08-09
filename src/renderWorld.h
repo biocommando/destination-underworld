@@ -19,7 +19,7 @@ void draw_fly_in_text(struct fly_in_text *fly_in_text);
 /*
  * Draw the enemy sprite. Takes care of walking animation.
  */
-void draw_enemy(Enemy *enm, World *world);
+void draw_enemy(const Enemy *enm, const World *world);
 /*
  * Draws a similar health bar as is used for player for the boss
  * enemy if it exists in the current room. The health bar has max. 6 hearts
