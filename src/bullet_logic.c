@@ -79,7 +79,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
           world->powerups.rune_of_protection_active--;
           if (world->powerups.rune_of_protection_active == 0)
           {
-            world->powerups.rune_of_protection_active = -50;
+            world->visual_fx.rune_of_protection_animation = -50;
             create_cluster_explosion(world, world->plr.x, world->plr.y, 16, difficulty == DIFFICULTY_BRUTAL ? 3 : 4, &world->plr);
             if ((ggs->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0)
             {

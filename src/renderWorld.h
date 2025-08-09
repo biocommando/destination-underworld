@@ -34,7 +34,7 @@ void draw_player_legend(const World *world, int x, int y);
 /*
  * Draw and progress the rune of protection powerup animation.
  */
-void draw_rune_of_protection_indicator(World *world);
+void draw_rune_of_protection_indicator(const World *world, WorldFx *world_fx);
 /*
  * Displays the fading crosshair that indicates the player's (new) direction and
  * progresses its state.

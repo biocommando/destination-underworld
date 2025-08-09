@@ -292,18 +292,18 @@ void draw_player_legend(const World *world, int x, int y)
     }
 }
 
-inline void draw_rune_of_protection_indicator(World *world)
+inline void draw_rune_of_protection_indicator(const World *world, WorldFx *world_fx)
 {
     static int phase = 0;
     phase++;
-    if (world->powerups.rune_of_protection_active)
+    if (world_fx->rune_of_protection_animation || world->powerups.rune_of_protection_active)
     {
-        if (world->powerups.rune_of_protection_active < 0)
+        if (!world->powerups.rune_of_protection_active)
         {
-            world->powerups.rune_of_protection_active++;
+            int state = ++world_fx->rune_of_protection_animation;
             draw_sprite_centered(world->spr, SPRITE_ID_RUNE_OF_PROTECTION,
-                                 world->plr.x + world->powerups.rune_of_protection_active * sin(phase * 0.15),
-                                 world->plr.y + world->powerups.rune_of_protection_active * cos(phase * 0.15));
+                                 world->plr.x + state * sin(phase * 0.15),
+                                 world->plr.y + state * cos(phase * 0.15));
         }
         else
         {

@@ -388,6 +388,7 @@ typedef struct
     UberWizardWeaponFx uber_wizard_weapon_fx;
     // Status for a text that is shown for a short moment
     struct hint_text hint;
+    int rune_of_protection_animation;
 } WorldFx;
 
 // Structure that contains most of the game state

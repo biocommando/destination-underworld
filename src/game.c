@@ -474,7 +474,7 @@ void game(GlobalGameState *ggs)
 
     display_plr_dir_helper(&world, &plr_dir_helper_intensity);
 
-    draw_rune_of_protection_indicator(&world);
+    draw_rune_of_protection_indicator(&world, &world.visual_fx);
 
     progress_and_draw_sparkles(&world, &world.visual_fx);
 
