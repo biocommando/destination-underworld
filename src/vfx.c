@@ -71,17 +71,17 @@ void create_flame_fx(int x, int y, World *world)
         x += 4;
     if (get_tile_at(world, x, y - 15)->is_wall)
         y += 15;
-    struct flame_fx *f = world->flames;
+    struct flame_fx *f = world->visual_fx.flames;
     for (int i = 0; i < FLAME_FX_COUNT; i++)
     {
-        if (world->flames[i].duration == 0)
+        if (world->visual_fx.flames[i].duration == 0)
         {
-            f = &world->flames[i];
+            f = &world->visual_fx.flames[i];
             break;
         }
-        else if (world->flames[i].duration < f->duration)
+        else if (world->visual_fx.flames[i].duration < f->duration)
         {
-            f = &world->flames[i];
+            f = &world->visual_fx.flames[i];
         }
     }
     f->loc.x = x;
@@ -105,7 +105,7 @@ void create_explosion(int x, int y, World *world, double intensity)
     static int explosion_counter = 0;
     const double circle_max_radius = 17;
 
-    Explosion *ex = &world->explosion[explosion_counter];
+    Explosion *ex = &world->visual_fx.explosion[explosion_counter];
 
     ex->x = x - 16 + rand() % 32;
     ex->y = y - 16 + rand() % 32;
@@ -145,7 +145,7 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
     {
         double angle = 2 * ALLEGRO_PI / count * i;
         double speed = (rand() % 20) / 10.0 + 1;
-        struct sparkle_fx *fx = &world->sparkle_fx[sparkle_counter];
+        struct sparkle_fx *fx = &world->visual_fx.sparkle_fx[sparkle_counter];
         fx->dir.x = sin(angle);
         fx->dir.y = cos(angle);
 
@@ -164,7 +164,7 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
         }
     }
 
-    struct sparkle_fx_circle *fxc = &world->sparkle_fx_circle[sparkle_circle_counter];
+    struct sparkle_fx_circle *fxc = &world->visual_fx.sparkle_fx_circle[sparkle_circle_counter];
     fxc->loc.x = x;
     fxc->loc.y = y;
     fxc->duration = circle_duration;
@@ -250,19 +250,16 @@ void stop_bodyparts(World *world)
 
 void clear_visual_fx(World *world)
 {
-    memset(world->explosion, 0, sizeof(world->explosion));
-    memset(world->sparkle_fx, 0, sizeof(world->sparkle_fx));
-    memset(world->sparkle_fx_circle, 0, sizeof(world->sparkle_fx_circle));
-    memset(world->flames, 0, sizeof(world->flames));
-    memset(&world->uber_wizard_weapon_fx, 0, sizeof(world->uber_wizard_weapon_fx));
+    memset(&world->visual_fx, 0, sizeof(world->visual_fx));
 }
 
 void create_uber_wizard_weapon_fx(World *world, int x2, int y2, int type)
 {
-    world->uber_wizard_weapon_fx.start.x = world->plr.x;
-    world->uber_wizard_weapon_fx.start.y = world->plr.y;
-    world->uber_wizard_weapon_fx.end.x = x2;
-    world->uber_wizard_weapon_fx.end.y = y2;
-    world->uber_wizard_weapon_fx.dim = 20;
-    world->uber_wizard_weapon_fx.type = type;
+    UberWizardWeaponFx *fx = &world->visual_fx.uber_wizard_weapon_fx;
+    fx->start.x = world->plr.x;
+    fx->start.y = world->plr.y;
+    fx->end.x = x2;
+    fx->end.y = y2;
+    fx->dim = 20;
+    fx->type = type;
 }

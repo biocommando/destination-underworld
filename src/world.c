@@ -59,7 +59,7 @@ void init_world(World *world)
     world->potion_turbo_mode = 0;
     world->potion_healing_counter = 0;
     world->potion_shield_counter = 0;
-    memset(world->flames, 0, sizeof(world->flames));
+    memset(world->visual_fx.flames, 0, sizeof(world->visual_fx.flames));
 
     world->boss_fight_config = world->boss_fight_configs;
     world->current_room = 1;

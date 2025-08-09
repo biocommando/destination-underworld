@@ -378,6 +378,16 @@ typedef struct
     int type;
 } UberWizardWeaponFx;
 
+// Visual effects of the world
+typedef struct
+{
+    Explosion explosion[EXPLOSIONCOUNT];
+    struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
+    struct sparkle_fx_circle sparkle_fx_circle[SPARKLE_FX_CIRCLE_COUNT];
+    struct flame_fx flames[FLAME_FX_COUNT];
+    UberWizardWeaponFx uber_wizard_weapon_fx;
+} WorldFx;
+
 // Structure that contains most of the game state
 typedef struct
 {
@@ -400,15 +410,7 @@ typedef struct
     // All shots fired by anything
     Bullet bullets[BULLETCOUNT];
     // Visual effects
-    Explosion explosion[EXPLOSIONCOUNT];
-    // Visual effects
-    struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
-    // Visual effects
-    struct sparkle_fx_circle sparkle_fx_circle[SPARKLE_FX_CIRCLE_COUNT];
-    // Visual effects
-    struct flame_fx flames[FLAME_FX_COUNT];
-    // Visual effects
-    UberWizardWeaponFx uber_wizard_weapon_fx;
+    WorldFx visual_fx;
     // Enemy type mapping
     struct enemy_config enemy_configs[ENEMY_TYPE_COUNT];
 
