@@ -21,10 +21,14 @@ typedef struct
     double x;
     // y position on the screen
     double y;
+    // depth, 0 = on floor, > 0 towards the screen
+    double z;
     // x movement vector
     double dx;
     // y movement vector
     double dy;
+    // depth movement vector
+    double dz;
 } BodyPart;
 
 enum TurretType

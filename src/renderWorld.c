@@ -380,6 +380,7 @@ void move_and_draw_body_parts(World *world)
             BodyPart *bodypart = &bp_container->bodyparts[j];
             if (bodypart->exists)
             {
+                int in_air = bodypart->z > 0.5;
                 if (bodypart->velocity > 0.7)
                 {
                     double bp_orig_x = bodypart->x;
@@ -402,7 +403,7 @@ void move_and_draw_body_parts(World *world)
                             bodypart->exists = 0;
                     }
 
-                    const double friction = 0.94 - (j + rand() % 5) * 0.003;
+                    const double friction = 0.94 - (j + rand() % 5) * 0.003 + in_air * 0.02;
 
                     bodypart->velocity *= friction;
                     bonesturn = bodypart->velocity > 1;
@@ -420,8 +421,24 @@ void move_and_draw_body_parts(World *world)
                     bodypart->anim++;
                 }
 
-                draw_sprite_animated_centered(world->spr, SPRITE_ID_BODY_PART, (int)bodypart->x, (int)bodypart->y,
-                                              bodypart->anim > 1, bodypart->type - 1);
+                if (in_air)
+                {
+                    draw_sprite_scaled_animated_centered(world->spr, SPRITE_ID_BODY_PART, (int)bodypart->x, (int)bodypart->y,
+                                                bodypart->anim > 1, bodypart->type - 1, bodypart->z * 0.03 + 1);
+                    bodypart->z += bodypart->dz;
+                    if (bodypart->z < 0 && bodypart->dz < -2)
+                    {
+                        bodypart->dz *= -0.5;
+                        bodypart->z = 1;
+                    }
+                    else
+                        bodypart->dz -= 1;
+                }
+                else
+                {
+                    draw_sprite_animated_centered(world->spr, SPRITE_ID_BODY_PART, (int)bodypart->x, (int)bodypart->y,
+                                                bodypart->anim > 1, bodypart->type - 1);
+                }
             }
         }
     }

@@ -108,3 +108,14 @@ void draw_sprite_animated_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprit
                               x - s->width / 2, y - s->height / 2, 0);
     }
 }
+
+void draw_sprite_scaled_animated_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int dx, int dy, double scale)
+{
+    DuSprite *s = get_sprite(sprite_id);
+    if (s)
+    {
+        double w = s->width * scale, h = s->height * scale;
+        al_draw_scaled_bitmap((ALLEGRO_BITMAP*)sprite_sheet, s->sx + s->width * dx, s->sy + s->height * dy, s->width, s->height,
+                              x - w / 2, y - h / 2, w, h, 0);
+    }
+}

@@ -77,3 +77,12 @@ void draw_sprite_animated(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int
  * to create multiple sprite definitions.
  */
 void draw_sprite_animated_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int frame_offset_x, int frame_offset_y);
+/*
+ * Draw a sprite from the sprite sheet on the screen with scaling option. The x, y position is the center
+ * of the sprite.
+ *
+ * Uses x/y offset which means that the sprite sheet coordinates are shifted by frame times
+ * width/height. This allows animating sprites with constant width/height without needing
+ * to create multiple sprite definitions.
+ */
+void draw_sprite_scaled_animated_centered(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y, int dx, int dy, double scale);

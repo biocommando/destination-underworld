@@ -215,6 +215,12 @@ void spawn_body_parts(const Enemy *enm, WorldFx *world_fx)
         bp->dx = sin(ang);
         bp->dy = cos(ang);
         bp->velocity = 20 + rand() % 10;
+        bp->dz = j % 2 ? rand() % 15 : rand() % 10;
+        if (rand() % 8 == 0)
+        {
+            bp->dz += 5;
+        }
+        bp->z = 1;
     }
 }
 
@@ -270,6 +276,7 @@ void stop_bodyparts(WorldFx *world_fx)
             bp->dx = 0;
             bp->dy = 0;
             bp->velocity = 0;
+            bp->z = 0;
         }
     }
 }
