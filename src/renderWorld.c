@@ -119,7 +119,7 @@ void draw_map_floors(const World *world, int vibration_intensity)
     {
         for (int x = 0; x < MAPMAX_X; x++)
         {
-            int fshd = world->visual_fx.floor_shade_map[world->current_room - 1][x][y] * 5;
+            int fshd = world->visual_fx.floor_shade_map[world->current_room - 1][x][y];
             int shadowcol = shadow_base_col + 5 * vibration_intensity - fshd;
             shadowcol = shadowcol < 0 ? 0 : shadowcol;
             int floorcol = floor_base_col + 5 * vibration_intensity - fshd;

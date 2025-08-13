@@ -16,7 +16,7 @@ void create_shade_around_hit_point(int x, int y, int roomid, int spread, WorldFx
                 int shade_diff = 4 - sqrt(sqr_dist);
                 char *tile_shade = &world_fx->floor_shade_map[roomid - 1][xx][yy];
                 *tile_shade += shade_diff > 1 ? shade_diff : 1;
-                *tile_shade = *tile_shade > 9 ? 9 : *tile_shade;
+                *tile_shade = *tile_shade > 60 ? 60 : *tile_shade;
             }
         }
     }
