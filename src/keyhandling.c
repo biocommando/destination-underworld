@@ -150,7 +150,8 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
     trigger_sample(SAMPLE_HEAL, 255);
     return cost_heal;
   }
-  if (key_s && world->plr.gold >= cost_protection && world->plr.reload == 0 && *plr_rune_of_protection_active == 0)
+  if (key_s && world->plr.gold >= cost_protection && world->plr.reload == 0 &&
+      *plr_rune_of_protection_active == 0 && !world->visual_fx.rune_of_protection_animation)
   {
     world->plr.gold -= cost_protection;
     *plr_rune_of_protection_active = 1;
