@@ -96,6 +96,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
         create_explosion(world->plr.x, world->plr.y, world, &world->visual_fx, 1);
         if (world->plr.health <= 0)
         {
+          world->plr.killed = 1;
           create_explosion(world->plr.x - 20, world->plr.y - 20, world, &world->visual_fx, 1.5);
           create_explosion(world->plr.x + 20, world->plr.y + 20, world, &world->visual_fx, 1.5);
           create_explosion(world->plr.x - 20, world->plr.y + 20, world, &world->visual_fx, 1.5);
