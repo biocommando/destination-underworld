@@ -236,6 +236,14 @@ X(duedit_compatible)
 # on kill_count: 50 do modify_terrain: x = 4, y = 8, terrain_type = floor
 # on kill_count: 50 do modify_terrain: x = 5, y = 8, terrain_type = floor
 # on kill_count: 50 do modify_terrain: x = 6, y = 8, terrain_type = floor
+# 
+# on kill_count: 100 do modify_terrain: x = 9, y = 6, terrain_type = floor
+# on kill_count: 100 do modify_terrain: x = 9, y = 7, terrain_type = floor
+# 
+# on kill_count: 150 do modify_terrain: x = 6, y = 6, terrain_type = floor
+# on kill_count: 150 do modify_terrain: x = 2, y = 6, terrain_type = floor
+# on kill_count: 150 do modify_terrain: x = 3, y = 6, terrain_type = floor
+# on kill_count: 150 do modify_terrain: x = 9, y = 10, terrain_type = floor
 #end_script
 $1
 health 50 
@@ -293,4 +301,22 @@ event_action modify_terrain 5 8 0 0 0 0 0 floor
 event
 event_trigger kill_count 50
 event_action modify_terrain 6 8 0 0 0 0 0 floor
+event
+event_trigger kill_count 100
+event_action modify_terrain 9 6 0 0 0 0 0 floor
+event
+event_trigger kill_count 100
+event_action modify_terrain 9 7 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 6 6 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 2 6 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 3 6 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 9 10 0 0 0 0 0 floor
 end

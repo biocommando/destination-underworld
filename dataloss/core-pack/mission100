@@ -269,6 +269,14 @@ X(duedit_compatible)
 # on kill_count: 30 do toggle_event_enabled: event_id = SpawnDelayed1, enabled = 1
 # on kill_count: 30 do toggle_event_enabled: event_id = SpawnDelayed2, enabled = 1
 # 
+# on kill_count: 150 do modify_terrain: x = 3, y = 7, terrain_type = floor
+# on kill_count: 150 do modify_terrain: x = 5, y = 7, terrain_type = floor
+# on kill_count: 150 do modify_terrain: x = 9, y = 7, terrain_type = floor
+# on kill_count: 150 do modify_terrain: x = 11, y = 7, terrain_type = floor
+# 
+# on kill_count: 150 do modify_terrain: x = 4, y = 4, terrain_type = floor
+# on kill_count: 150 do modify_terrain: x = 10, y = 4, terrain_type = floor
+# 
 #end_script
 $1
 health 50 
@@ -346,4 +354,22 @@ event_action toggle_event_enabled 16 1
 event
 event_trigger kill_count 30
 event_action toggle_event_enabled 17 1
+event
+event_trigger kill_count 150
+event_action modify_terrain 3 7 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 5 7 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 9 7 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 11 7 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 4 4 0 0 0 0 0 floor
+event
+event_trigger kill_count 150
+event_action modify_terrain 10 4 0 0 0 0 0 floor
 end

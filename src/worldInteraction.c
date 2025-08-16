@@ -246,6 +246,7 @@ int bullet_hit(Enemy *enm, Bullet *bb)
     if (--enm->health <= 0)
     {
         enm->alive = 0;
+        enm->killed = 1;
     }
 
     return 1;
