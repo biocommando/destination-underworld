@@ -7,5 +7,5 @@ core-pack--mission-count 17
 core-pack--custom-resources 0
 core-pack--require-authentication 1
 graphics--fullscreen 0
-graphics--menu-font dataloss\white-rabbit.TTF
-graphics--game-font dataloss\white-rabbit.TTF
+graphics--menu-font dataloss/white-rabbit.TTF
+graphics--game-font dataloss/white-rabbit.TTF
