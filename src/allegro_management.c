@@ -157,45 +157,48 @@ void wait_key_release(int key)
 
 int init_allegro()
 {
-    if (!al_init())
-    {
-        return 1;
+#define NOT_NULL(ptr) (ptr) != NULL
+#define IS_TRUE(thing) (thing) == 1
+#define TRY_INIT(command, expectation)                            \
+    if (!(expectation(command)))                                  \
+    {                                                             \
+        puts("ERROR: Init allegro failed at command: " #command); \
+        return 1;                                                 \
     }
+
+    TRY_INIT(al_init(), IS_TRUE)
     memset(keybuffer, 0, sizeof(keybuffer));
     // al_install_mouse();
-    al_install_keyboard();
-    al_init_image_addon();
-    al_init_primitives_addon();
-    al_init_font_addon();
-    al_init_ttf_addon();
-    al_init_acodec_addon();
+    TRY_INIT(al_install_keyboard(), IS_TRUE);
+    TRY_INIT(al_init_image_addon(), IS_TRUE);
+    TRY_INIT(al_init_primitives_addon(), IS_TRUE);
+    TRY_INIT(al_init_font_addon(), IS_TRUE);
+    TRY_INIT(al_init_ttf_addon(), IS_TRUE);
+    TRY_INIT(al_init_acodec_addon(), IS_TRUE);
 
     al_set_new_window_title("Destination Underworld " DU_VERSION);
     al_set_new_display_refresh_rate(60);
     int fullscreen_flag = get_game_settings()->fullscreen ? ALLEGRO_FULLSCREEN : 0;
     al_set_new_display_flags(ALLEGRO_OPENGL | fullscreen_flag);
-    menu_font = al_load_ttf_font(get_game_settings()->menu_font, 16, ALLEGRO_TTF_NO_KERNING);
-    menu_title_font = al_load_ttf_font(get_game_settings()->menu_font, 24, ALLEGRO_TTF_NO_KERNING);
-    game_font = al_load_ttf_font(get_game_settings()->game_font, 12, ALLEGRO_TTF_NO_KERNING);
-    game_font_tiny = al_load_ttf_font(get_game_settings()->game_font, 8, ALLEGRO_TTF_NO_KERNING | ALLEGRO_TTF_MONOCHROME);
-    display = al_create_display(DISPLAY_W, DISPLAY_H);
-    if (!display)
-    {
-        return 1;
-    }
+    TRY_INIT(menu_font = al_load_ttf_font(get_game_settings()->menu_font, 16, ALLEGRO_TTF_NO_KERNING), NOT_NULL);
+    TRY_INIT(menu_title_font = al_load_ttf_font(get_game_settings()->menu_font, 24, ALLEGRO_TTF_NO_KERNING), NOT_NULL);
+    TRY_INIT(game_font = al_load_ttf_font(get_game_settings()->game_font, 12, ALLEGRO_TTF_NO_KERNING), NOT_NULL);
+    TRY_INIT(game_font_tiny = al_load_ttf_font(get_game_settings()->game_font, 8, ALLEGRO_TTF_NO_KERNING | ALLEGRO_TTF_MONOCHROME), NOT_NULL);
+    TRY_INIT(display = al_create_display(DISPLAY_W, DISPLAY_H), NOT_NULL);
 
-    al_install_audio();
-    al_reserve_samples(64);
+    TRY_INIT(al_install_audio(), IS_TRUE);
+    TRY_INIT(al_reserve_samples(64), IS_TRUE);
 
-    audio_stream = al_create_audio_stream(4, AUDIO_BUFFER_SIZE, 44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
-    ALLEGRO_MIXER *mixer = al_get_default_mixer();
-    al_attach_audio_stream_to_mixer(audio_stream, mixer);
+    TRY_INIT(audio_stream = al_create_audio_stream(4, AUDIO_BUFFER_SIZE, 44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2), NOT_NULL);
+    ALLEGRO_MIXER *mixer;
+    TRY_INIT(mixer = al_get_default_mixer(), NOT_NULL);
+    TRY_INIT(al_attach_audio_stream_to_mixer(audio_stream, mixer), IS_TRUE);
 
     init_midi_playback(44100);
 
-    timer = al_create_timer(1.0 / 100);
-    io_queue = al_create_event_queue();
-    timer_queue = al_create_event_queue();
+    TRY_INIT(timer = al_create_timer(1.0 / 100), NOT_NULL);
+    TRY_INIT(io_queue = al_create_event_queue(), NOT_NULL);
+    TRY_INIT(timer_queue = al_create_event_queue(), NOT_NULL);
     al_register_event_source(io_queue, al_get_keyboard_event_source());
     // al_register_event_source(queue, al_get_mouse_event_source());
     // al_register_event_source(queue, al_get_display_event_source(display));
@@ -205,7 +208,8 @@ int init_allegro()
     if (al_get_display_refresh_rate(display) < 50)
     {
         printf("NOTE! Display rate %d Hz discovered. Game is optimized for 50 Hz or above.\n"
-            "Game will run but with a slower speed\n", al_get_display_refresh_rate(display));
+               "Game will run but with a slower speed\n",
+               al_get_display_refresh_rate(display));
     }
     return 0;
 }
