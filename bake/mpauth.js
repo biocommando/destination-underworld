@@ -1,0 +1,1 @@
+module.exports = v => v.sh(`${v.compiler} ${v.auth_setup} ./src/create_mission_pack_auth_file.c ./src/sha1/sha1.o ./src/sha1/du_dmac.c -o mpauth`)

@@ -1,0 +1,1 @@
+module.exports = v => v.version = '1.0'

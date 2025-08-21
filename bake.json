@@ -1,0 +1,46 @@
+{
+    "common": [
+        "game-obj-files",
+        "version",
+        "gen-version",
+        "sha1",
+        "mpauth",
+        "synth",
+        "compile-game"
+    ],
+    "environment-debug": [
+        "environment-common",
+        "environment-debug"
+    ],
+    "make-release-package": [
+        "environment-common",
+        "make-release-package"
+    ],
+    "release": [
+        "environment-common",
+        "environment-release",
+        "$common",
+        "make-release-package"
+    ],
+    "debug": [
+        "$environment-debug",
+        "$common",
+        "unit-tests"
+    ],
+    "game": [
+        "$environment-debug",
+        "game-obj-files",
+        "compile-game"
+    ],
+    "unit-tests": [
+        "$environment-debug",
+        "game-obj-files",
+        "unit-tests"
+    ],
+    "add-save-data-hash": [
+        "$environment-debug",
+        "add-save-data-hash"
+    ],
+    "default": "debug",
+    "verbose": true
+}
