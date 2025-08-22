@@ -36,7 +36,9 @@ function renameMidiFiles(targetDir) {
 module.exports = v => {
     const dest = 'DestinationUnderworldRelease/'
 
-    fs.rmSync(dest, { recursive: true })
+    if (fs.existsSync(dest)) {
+        fs.rmSync(dest, { recursive: true })
+    }
 
     fs.mkdirSync(`${dest}`)
     fs.mkdirSync(`${dest}dataloss`)
