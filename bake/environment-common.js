@@ -2,7 +2,7 @@ module.exports = v => {
     v.allegro_path = 'allegro'
     v.compiler = 'gcc'
     v.isWindows = process.platform.includes('win')
-    v.compiler_flags = '-O3 -std=c2x -Wall -Wextra -Wpedantic'
+    v.compiler_flags = '-O3 -std=c2x -Wall -Wextra -Wpedantic -Wno-unused-result -Wno-format-security'
     // Uncomment to remove warnings
     // v.compiler_flags += ' -w'
     v.auth_setup = ''
