@@ -94,8 +94,9 @@ void read_settings(char **argv, int argc)
 
 int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output, const char *documentation)
 {
-  char format_str[256];
-  sprintf(format_str, "--%s=%%s", arg);
+  char format_str[256] = "";
+  if (strlen(arg) < sizeof(format_str) - 5)
+    sprintf(format_str, "--%s=%%s", arg);
 
   printf(format_str, "<value>\n");
   if (documentation)

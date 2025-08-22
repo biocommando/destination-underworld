@@ -225,7 +225,7 @@ int read_level(World *world, int mission, int room_to)
     world->story_after_mission_lines = 0;
     world->custom_story_image[0] = 0;
 
-    char special_filename[256];
+    char special_filename[280];
     sprintf(special_filename, "%s-mode-%d", mission_name, *world->game_modifiers);
     FILE *f = fopen(special_filename, "r");
     int auth_check_result;
