@@ -11,6 +11,7 @@ allegro/
 *.dll
 dataloss/**/save.dat
 dataloss/**/arena_highscores.dat
+dataloss/**/auth.dat
 dataloss/recording--level-complete-state.dat
 environment-release.txt
 local/
