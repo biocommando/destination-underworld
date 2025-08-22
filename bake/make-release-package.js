@@ -48,10 +48,8 @@ module.exports = v => {
 
     starCopy('dataloss/core-pack', /^mission.*$/, `${dest}dataloss/core-pack`)
     starCopy('dataloss/core-pack', /^(best_times|enemy-properties|arenas|help)\.dat$/, `${dest}dataloss/core-pack`)
-
-    const isWindows = process.platform.includes('win')
-    const mpAuthEx = isWindows ? '.\\mpauth.exe' : './mpauth'
-    const mpAuthOut = v.sh(`${mpAuthEx} core-pack ./dataloss/core-pack/ no-debug-prints`).toString()
+    
+    const mpAuthOut = v.sh(`${v.mpAuthEx} core-pack ./dataloss/core-pack/ no-debug-prints`).toString()
     fs.writeFileSync(`${dest}dataloss/core-pack/auth.dat`, mpAuthOut)
 
     starCopy('dataloss/editor', /\.(md|js|json|html)$/, `${dest}dataloss/editor`)
@@ -71,6 +69,8 @@ module.exports = v => {
 
     starCopy('dataloss', /^wt_sample_slot_\d*\.wav$/, `${dest}dataloss`)
 
-    starCopy(`${v.allegro_path}/bin`, /allegro_monolith-5.2/, dest)
+    if (v.isWindows) {
+        starCopy(`${v.allegro_path}/bin`, /allegro_monolith-5.2/, dest)
+    }
     starCopy(`.`, /^DestinationUnderworld(\.exe)?$/, dest)
 }

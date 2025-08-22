@@ -4,8 +4,8 @@
 #include <time.h>
 #include <math.h>
 #include "logging.h"
-#include "duconstants.h"
-#include "ducolors.h"
+#include "duConstants.h"
+#include "duColors.h"
 #include "world.h"
 #include "worldInteraction.h"
 #include "renderWorld.h"

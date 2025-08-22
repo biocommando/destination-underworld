@@ -5,7 +5,7 @@
 #include <math.h>
 #include "game.h"
 #include "logging.h"
-#include "duconstants.h"
+#include "duConstants.h"
 #include "world.h"
 #include "menu.h"
 #include "settings.h"

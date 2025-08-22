@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "renderWorld.h"
-#include "ducolors.h"
+#include "duColors.h"
 #include "predictableRandom.h"
 #include "sprites.h"
 #include "best_times.h"

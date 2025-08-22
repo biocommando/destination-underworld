@@ -1,7 +1,7 @@
 #pragma once
 
 #include "allegro_management.h"
-#include "duconstants.h"
+#include "duConstants.h"
 #include "bossfightconf.h"
 #include "helpers.h"
 #include <time.h>
