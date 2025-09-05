@@ -26,12 +26,9 @@ static inline void create_blast_powerup_explosion(const Bullet *bullet, World *w
 void bullet_logic(World *world, GlobalGameState *ggs)
 {
   const int difficulty = GET_DIFFICULTY(world);
-  for (int i = 0; i < BULLETCOUNT; i++)
+  Bullet *bullet;
+  LINKED_LIST_FOR_EACH(&world->bullets, Bullet, bullet, bullet->owner == NULL)
   {
-    Bullet *bullet = &world->bullets[i];
-
-    if (bullet->owner == NULL)
-      continue;
     double bullet_orig_x = bullet->x;
     double bullet_orig_y = bullet->y;
     for (int j = 0; j < 12; j++)
@@ -65,7 +62,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
         if (frame_cnt % 64 == 0)
           create_cluster_explosion(world, bullet->x, bullet->y, 4, 1, &world->plr);
       }
-      if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, world->bullets + i)) // Player gets hit
+      if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, bullet)) // Player gets hit
       {
         if (ggs->cheats & 1)
           world->plr.health++;
@@ -114,13 +111,13 @@ void bullet_logic(World *world, GlobalGameState *ggs)
       }
       if (bullet->hurts_flags & BULLET_HURTS_MONSTERS)
       {
-        for (int j = 0; j < ENEMYCOUNT; j++)
+        Enemy *enm;
+        LINKED_LIST_FOR_EACH(&world->enm, Enemy, enm, 0)
         {
-          Enemy *enm = &world->enm[j];
           if (!enm->alive || enm->turret == TURRET_TYPE_PLAYER || enm->roomid != world->current_room)
             continue;
 
-          if (bullet_hit(world->enm + j, world->bullets + i))
+          if (bullet_hit(enm, bullet))
           {
             create_shade_around_hit_point(enm->x, enm->y, world->current_room, 9, &world->visual_fx);
             create_explosion(enm->x, enm->y, world, &world->visual_fx, 1.2);
@@ -138,6 +135,8 @@ void bullet_logic(World *world, GlobalGameState *ggs)
             break;
           }
         }
+        if (bullet->owner == NULL)
+          break;
       }
     }
     if (bullet->bullet_type == BULLET_TYPE_NORMAL)

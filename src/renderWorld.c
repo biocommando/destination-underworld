@@ -63,24 +63,6 @@ inline void draw_boss_health_bar(const World *world)
     }
 }
 
-static void draw_enemy_shadow(const Enemy *enm)
-{
-    al_draw_filled_ellipse(enm->x - 3, enm->y + 12, 15, 5, al_map_rgba(0, 0, 0, 60));
-}
-
-void draw_enemy_shadows(const World *world)
-{
-    draw_enemy_shadow(&world->plr);
-    for (int i = 0; i < ENEMYCOUNT; i++)
-    {
-        const Enemy *enm = &world->enm[i];
-        if (enm->alive && enm->roomid == world->current_room)
-        {
-            draw_enemy_shadow(enm);
-        }
-    }
-}
-
 void draw_wall_shadows(const World *world)
 {
     const int floor_base_col = 100;
@@ -366,9 +348,9 @@ inline void apply_game_screen_transform(int vibrations)
 
 void move_and_draw_body_parts(World *world)
 {
-    for (int i = 0; i < ENEMYCOUNT; i++)
+    BodyPartsContainer *bp_container;
+    LINKED_LIST_FOR_EACH(&world->visual_fx.bodypart_container, BodyPartsContainer, bp_container, 0)
     {
-        BodyPartsContainer *bp_container = &world->visual_fx.bodypart_container[i];
         if (bp_container->roomid != world->current_room || !bp_container->show)
         {
             continue;
@@ -460,11 +442,9 @@ void progress_and_draw_flame_fx(WorldFx *world_fx)
 {
     static int flame_phase = 0;
     flame_phase++;
-    for (int i = 0; i < FLAME_FX_COUNT; i++)
+    struct flame_fx *f;
+    LINKED_LIST_FOR_EACH(&world_fx->flames, struct flame_fx, f, f->duration == 0)
     {
-        struct flame_fx *f = &world_fx->flames[i];
-        if (f->duration == 0)
-            continue;
         if (f->duration > 1)
             f->duration--;
         int num_circles_left = EMBERS_PER_FLAME_FX;
@@ -477,7 +457,7 @@ void progress_and_draw_flame_fx(WorldFx *world_fx)
                 continue;
             }
             al_draw_filled_rectangle(fc->loc.x - fc->r / 3, fc->loc.y - fc->r / 3, fc->loc.x + fc->r / 3, fc->loc.y + fc->r / 3, fc->color);
-            fc->loc.x += expl_sin_cos_table[0][(flame_phase + i + j) % 10] * fc->speed / 2;
+            fc->loc.x += expl_sin_cos_table[0][(flame_phase + (int)(f->loc.x * 5 + f->loc.y * 3 + j)) % 10] * fc->speed / 2;
             fc->loc.y -= fc->speed * 2;
             fc->r--;
             fc->color.r *= 0.9f;
@@ -496,13 +476,12 @@ int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
 {
     const double circle_max_radius = 17;
     int vibrations = 0;
-    for (int i = 0; i < EXPLOSIONCOUNT; i++)
+    Explosion *ex;
+    LINKED_LIST_FOR_EACH(&world_fx->explosion, Explosion, ex, !ex->exists)
     {
-        Explosion *ex = &world_fx->explosion[i];
         if (!ex->exists)
             continue;
         vibrations++;
-
         for (int j = 0; j < ex->circle_count; j++)
         {
             struct explosion_circle *c = &ex->circles[j];
@@ -553,38 +532,32 @@ int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
 
 void progress_and_draw_sparkles(const World *world, WorldFx *world_fx)
 {
-    for (int i = 0; i < SPARKLE_FX_CIRCLE_COUNT; i++)
+    struct sparkle_fx_circle *fxc;
+    LINKED_LIST_FOR_EACH(&world_fx->sparkle_fx_circle, struct sparkle_fx_circle, fxc, fxc->duration <= 0)
     {
-        struct sparkle_fx_circle *fxc = &world_fx->sparkle_fx_circle[i];
-        if (fxc->duration > 0)
-        {
-            al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 5, fxc->color, fxc->duration / 4);
-            al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 3, fxc->color, fxc->duration / 5);
-            al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 1, fxc->color, 1);
-            fxc->duration--;
-            fxc->time++;
-        }
+        al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 5, fxc->color, fxc->duration / 4);
+        al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 3, fxc->color, fxc->duration / 5);
+        al_draw_circle(fxc->loc.x, fxc->loc.y, fxc->time * 1, fxc->color, 1);
+        fxc->duration--;
+        fxc->time++;
     }
-    for (int i = 0; i < SPARKLE_FX_COUNT; i++)
+    struct sparkle_fx *fx;
+    LINKED_LIST_FOR_EACH(&world_fx->sparkle_fx, struct sparkle_fx, fx, fx->duration <= 0)
     {
-        struct sparkle_fx *fx = &world_fx->sparkle_fx[i];
-        if (fx->duration > 0)
+        int color = fx->color;
+        if (color == -1)
         {
-            int color = fx->color;
-            if (color == -1)
-            {
-                color = rand() % 3;
-            }
-            int trail_sprite = (fx->sprite + 1) % 4;
-            draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES, fx->loc.x, fx->loc.y, trail_sprite, color);
-            fx->loc.x += fx->dir.x;
-            fx->loc.y += fx->dir.y;
-            draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES, fx->loc.x, fx->loc.y, fx->sprite, color);
-            fx->duration--;
-            if (fx->duration % 3 == 0)
-            {
-                fx->sprite = trail_sprite;
-            }
+            color = rand() % 3;
+        }
+        int trail_sprite = (fx->sprite + 1) % 4;
+        draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES, fx->loc.x, fx->loc.y, trail_sprite, color);
+        fx->loc.x += fx->dir.x;
+        fx->loc.y += fx->dir.y;
+        draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES, fx->loc.x, fx->loc.y, fx->sprite, color);
+        fx->duration--;
+        if (fx->duration % 3 == 0)
+        {
+            fx->sprite = trail_sprite;
         }
     }
 }
@@ -715,9 +688,10 @@ void show_ingame_info_screen(const World *world)
                                   offset_y + world->plr.y / TILESIZE * map_tile_size + map_tile_size / 2, map_tile_size / 2, WHITE);
         }
         int num_enemies = 0;
-        for (int e = 0; e < ENEMYCOUNT; e++)
+        const Enemy *enm;
+        // Casting const away is ok as list is not modified
+        LINKED_LIST_FOR_EACH((LinkedList*)&world->enm, Enemy, enm, 0)
         {
-            const Enemy *enm = &world->enm[e];
             if (enm->alive && enm->roomid == i + 1 && enm != world->boss)
                 num_enemies++;
         }
@@ -778,9 +752,10 @@ void show_ingame_info_screen(const World *world)
     for (int et = 0; et < ENEMY_TYPE_COUNT; et++)
     {
         int num_enemies = 0;
-        for (int e = 0; e < ENEMYCOUNT; e++)
+        const Enemy *enm;
+        // Casting const away is ok as list is not modified
+        LINKED_LIST_FOR_EACH((LinkedList*)&world->enm, const Enemy, enm, 0)
         {
-            const Enemy *enm = &world->enm[e];
             if (enm->alive && enm->sprite == et)
                 num_enemies++;
         }

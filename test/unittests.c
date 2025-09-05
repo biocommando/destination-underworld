@@ -65,5 +65,9 @@ int main(int argc, char **argv)
         RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED);
         RUN_TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER);
     }
+    TEST_SUITE(linked_list)
+    {
+        RUN_TEST(linked_list);
+    }
     END_TESTS;
 }

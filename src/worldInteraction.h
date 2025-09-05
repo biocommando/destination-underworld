@@ -85,17 +85,11 @@ void create_cluster_explosion(World *w, double x0, double y0, int num_directions
  */
 void change_room_if_at_exit_point(World *world);
 /*
- * Spawns a potion of a certain type at x, y (screen coordinates) in room room_id. The first indices in the
- * World.potions array are reserved for the potions that come from the level file and the rest can be used for
- * potion drops. Therefore, the range start and end should be provided. They must be either:
- * POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END
- * or
- * POTION_DROP_RANGE_START, POTION_DROP_RANGE_END
- *
- * The duration_boost for the potion is determined from the range (drops give a shorter boost).
+ * Spawns a potion of a certain type at x, y (screen coordinates) in room room_id.
+  *
+ * The duration_boost for the potion is determined from the "small" parameter (drops give a shorter boost).
  */
-Potion *spawn_potion(int x, int y, int type, int room_id, World *world,
-                     int range_start, int range_end);
+Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int small);
 
 /*
  * Modifies the player start state so that it takes game mode, perks and

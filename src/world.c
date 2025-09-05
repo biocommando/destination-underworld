@@ -33,31 +33,17 @@ void init_world(World *world)
         world->rooms_visited[i] = 0;
     }
     clear_visual_fx(&world->visual_fx, 1);
-    for (int i = 0; i < BULLETCOUNT; i++)
-    {
-        world->bullets[i].owner = NULL;
-    }
-    for (int i = 0; i < ENEMYCOUNT; i++)
-    {
-        Enemy *enm = &world->enm[i];
-        enm->alive = enm->killed = 0;
-        enm->dx = 1;
-        enm->dy = 0;
-        enm->reload = 10;
-        enm->shots = 1;
-        enm->ammo = -1;
-        enm->anim = rand() % 15;
-        enm->death_animation = 999;
-    }
+    world->bullets = linked_list_create();
+    world->enm = linked_list_create();
     world->boss = NULL;
 
     world->potion_duration = 0;
     world->potion_effect_flags = 0;
-    memset(world->potions, 0, sizeof(world->potions));
+    world->potions = linked_list_create();
     world->potion_turbo_mode = 0;
     world->potion_healing_counter = 0;
     world->potion_shield_counter = 0;
-    memset(world->visual_fx.flames, 0, sizeof(world->visual_fx.flames));
+    //memset(world->visual_fx.flames, 0, sizeof(world->visual_fx.flames));
 
     world->boss_fight_config = world->boss_fight_configs;
     world->current_room = 1;
@@ -191,8 +177,7 @@ void init_player(World *world, Enemy *plrautosave)
     Enemy *plr = &world->plr;
     if (!plrautosave->alive)
     {
-        // this initializes the player the same way enemy 0 was initialized
-        *plr = world->enm[0];
+        set_enemy_defaults(plr);
         plr->alive = 1;
         plr->killed = 0;
         plr->sprite = -1;
@@ -230,4 +215,19 @@ inline int get_plr_speed(World *world)
       }
     }
     return plr_speed;
+}
+
+void set_enemy_defaults(Enemy *enm)
+{
+    enm->alive = 1;
+    enm->killed = 0;
+    enm->move = 0;
+    enm->potion = POTION_ID_NONE;
+    enm->dx = 1;
+    enm->dy = 0;
+    enm->reload = 10;
+    enm->shots = 1;
+    enm->ammo = -1;
+    enm->anim = rand() % 15;
+    enm->death_animation = 999;
 }

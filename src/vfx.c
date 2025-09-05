@@ -25,9 +25,9 @@ void create_shade_around_hit_point(int x, int y, int roomid, int spread, WorldFx
 static inline void bounce_body_parts(int x, int y, int roomid, WorldFx *world_fx)
 {
     // Make existing bodyparts bounce all over the place
-    for (int i = 0; i < ENEMYCOUNT; i++)
+    BodyPartsContainer *bp_container;
+    LINKED_LIST_FOR_EACH(&world_fx->bodypart_container, BodyPartsContainer, bp_container, 0)
     {
-        BodyPartsContainer *bp_container = &world_fx->bodypart_container[i];
         if (!bp_container->show || bp_container->roomid != roomid)
             continue;
         for (int j = 0; j < BODYPARTCOUNT; j++)
@@ -76,19 +76,12 @@ void create_flame_fx(int x, int y, const World *world, WorldFx *world_fx)
         x += 4;
     if (get_tile_at(world, x, y - 15)->is_wall)
         y += 15;
-    struct flame_fx *f = world_fx->flames;
-    for (int i = 0; i < FLAME_FX_COUNT; i++)
+    struct flame_fx *f = LINKED_LIST_ADD(&world_fx->flames, struct flame_fx);
+    if (world_fx->flames.count > FLAME_FX_COUNT)
     {
-        if (world_fx->flames[i].duration == 0)
-        {
-            f = &world_fx->flames[i];
-            break;
-        }
-        else if (world_fx->flames[i].duration < f->duration)
-        {
-            f = &world_fx->flames[i];
-        }
+        linked_list_remove(&world_fx->flames, world_fx->flames.first);
     }
+
     f->loc.x = x;
     f->loc.y = y;
     for (int i = 0; i < EMBERS_PER_FLAME_FX; i++)
@@ -107,10 +100,11 @@ static inline int comp_expl_circle(const void *elem1, const void *elem2)
 
 void create_explosion(int x, int y, const World *world, WorldFx *world_fx, double intensity)
 {
-    static int explosion_counter = 0;
     const double circle_max_radius = 17;
 
-    Explosion *ex = &world_fx->explosion[explosion_counter];
+    Explosion *ex = LINKED_LIST_ADD(&world_fx->explosion, Explosion);
+    if (world_fx->explosion.count > 200)
+        linked_list_remove(&world_fx->explosion, world_fx->explosion.first);
 
     ex->x = x - 16 + rand() % 32;
     ex->y = y - 16 + rand() % 32;
@@ -134,23 +128,17 @@ void create_explosion(int x, int y, const World *world, WorldFx *world_fx, doubl
     qsort(ex->circles, ex->circle_count, sizeof(struct explosion_circle), comp_expl_circle);
 
     ex->exists = 1;
-    if (++explosion_counter == EXPLOSIONCOUNT)
-    {
-        explosion_counter = 0;
-    }
     bounce_body_parts(x, y, world->current_room, world_fx);
     create_flame_fx(x + rand() % 11 - 5, y + rand() % 11 - 5, world, world_fx);
 }
 
 void create_sparkles(int x, int y, int count, int color, int circle_duration, World *world)
 {
-    static int sparkle_counter = 0;
-    static int sparkle_circle_counter = 0;
     for (int i = 0; i < count; i++)
     {
         double angle = 2 * ALLEGRO_PI / count * i;
         double speed = (rand() % 20) / 10.0 + 1;
-        struct sparkle_fx *fx = &world->visual_fx.sparkle_fx[sparkle_counter];
+        struct sparkle_fx *fx = LINKED_LIST_ADD(&world->visual_fx.sparkle_fx, struct sparkle_fx);
         fx->dir.x = sin(angle);
         fx->dir.y = cos(angle);
 
@@ -163,13 +151,9 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
         fx->sprite = rand() % 4;
         fx->duration = 10 + rand() % 10;
         fx->color = color;
-        if (++sparkle_counter == SPARKLE_FX_COUNT)
-        {
-            sparkle_counter = 0;
-        }
     }
 
-    struct sparkle_fx_circle *fxc = &world->visual_fx.sparkle_fx_circle[sparkle_circle_counter];
+    struct sparkle_fx_circle *fxc = LINKED_LIST_ADD(&world->visual_fx.sparkle_fx_circle, struct sparkle_fx_circle);
     fxc->loc.x = x;
     fxc->loc.y = y;
     fxc->duration = circle_duration;
@@ -177,32 +161,16 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
     int col = rand() % 3;
     int col_intensity = rand() % 60 + 195;
     fxc->color = al_map_rgb(col == 0 ? col_intensity : 0, col == 1 ? col_intensity : 0, col == 2 ? col_intensity : 0);
-
-    if (++sparkle_circle_counter == SPARKLE_FX_CIRCLE_COUNT)
-    {
-        sparkle_circle_counter = 0;
-    }
 }
 
 void spawn_body_parts(const Enemy *enm, WorldFx *world_fx)
 {
-    static int running_counter = 0;
-    BodyPartsContainer *bp_container = &world_fx->bodypart_container[0];
-
-    for (int i = 0; i < ENEMYCOUNT; i++)
-    {
-        BodyPartsContainer *container2 = &world_fx->bodypart_container[i];
-        if (!container2->show)
-        {
-            bp_container = container2;
-            break;
-        }
-        if (bp_container->show > container2->show)
-            bp_container = container2;
-    }
-    bp_container->show = ++running_counter;
+    BodyPartsContainer *bp_container = LINKED_LIST_ADD(&world_fx->bodypart_container, BodyPartsContainer);
+    if (world_fx->bodypart_container.count > ENEMYCOUNT)
+        linked_list_remove(&world_fx->bodypart_container, world_fx->bodypart_container.first);
+    
     bp_container->roomid = enm->roomid;
-
+    bp_container->show = 1;
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
         BodyPart *bp = &bp_container->bodyparts[j];
@@ -233,13 +201,14 @@ void cleanup_bodyparts(const World *world, WorldFx *world_fx)
     if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
     {
         int bp_count = 0;
-        for (int i = 0; i < ENEMYCOUNT; i++)
+        BodyPartsContainer *bp_container;
+        LINKED_LIST_FOR_EACH(&world_fx->bodypart_container, BodyPartsContainer, bp_container, 0)
         {
-            if (world_fx->bodypart_container[i].roomid != world->current_room)
+            if (bp_container->roomid != world->current_room)
                 continue;
             for (int j = 0; j < BODYPARTCOUNT; j++)
             {
-                BodyPart *bp = &world_fx->bodypart_container[i].bodyparts[j];
+                BodyPart *bp = &bp_container->bodyparts[j];
                 if (bp->exists &&
                     bp->x > x * TILESIZE && bp->x < (x + 1) * TILESIZE &&
                     bp->y > y * TILESIZE && bp->y < (y + 1) * TILESIZE)
@@ -266,13 +235,14 @@ void cleanup_bodyparts(const World *world, WorldFx *world_fx)
 
 void stop_bodyparts(WorldFx *world_fx)
 {
-    for (int x = 0; x < ENEMYCOUNT; x++)
+    BodyPartsContainer *bp_container;
+    LINKED_LIST_FOR_EACH(&world_fx->bodypart_container, BodyPartsContainer, bp_container, 0)
     {
-        if (!world_fx->bodypart_container[x].show)
+        if (!bp_container->show)
             continue;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
-            BodyPart *bp = &world_fx->bodypart_container[x].bodyparts[j];
+            BodyPart *bp = &bp_container->bodyparts[j];
             bp->dx = 0;
             bp->dy = 0;
             bp->velocity = 0;
@@ -283,18 +253,27 @@ void stop_bodyparts(WorldFx *world_fx)
 
 void clear_visual_fx(WorldFx *world_fx, int init)
 {
-    memset(&world_fx->explosion, 0, sizeof(world_fx->explosion));
-    memset(&world_fx->flames, 0, sizeof(world_fx->flames));
-    memset(&world_fx->sparkle_fx, 0, sizeof(world_fx->sparkle_fx));
-    memset(&world_fx->sparkle_fx_circle, 0, sizeof(world_fx->sparkle_fx_circle));
+    if (init)
+    {
+        world_fx->explosion = linked_list_create();
+        world_fx->sparkle_fx = linked_list_create();
+        world_fx->sparkle_fx_circle = linked_list_create();
+        world_fx->flames = linked_list_create();
+        world_fx->bodypart_container = linked_list_create();
+    }
+    linked_list_clear(&world_fx->explosion);
+    linked_list_clear(&world_fx->flames);
+    linked_list_clear(&world_fx->sparkle_fx);
+    linked_list_clear(&world_fx->sparkle_fx_circle);
+    linked_list_clear(&world_fx->bodypart_container);
     memset(&world_fx->uber_wizard_weapon_fx, 0, sizeof(world_fx->uber_wizard_weapon_fx));
 
     if (init)
     {
         memset(&world_fx->rune_of_protection_animation, 0, sizeof(world_fx->rune_of_protection_animation));
         memset(&world_fx->hint, 0, sizeof(world_fx->hint));
-        memset(&world_fx->bodypart_container, 0, sizeof(world_fx->bodypart_container));
         memset(&world_fx->floor_shade_map, 0, sizeof(world_fx->floor_shade_map));
+        memset(&world_fx->floor_fx, 0, sizeof(world_fx->floor_fx));
     }
 }
 

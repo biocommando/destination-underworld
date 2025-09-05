@@ -29,6 +29,7 @@ module.exports = v => {
         'src/enemy_logic.o',
         'src/potion_logic.o',
         'src/screenshot.o',
+        'src/linked_list.o',
         'src/game.o',
         'src/synth/adsr_envelope.o',
         'src/synth/basic_delay.o',

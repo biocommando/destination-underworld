@@ -8,14 +8,18 @@
 void potion_logic(World *w)
 {
   static unsigned potion_anim_phase = 0;
-  for (int i = 0; i < POTION_COUNT; i++)
+  Potion *p;
+  int delete_current_potion;
+
+  LINKED_LIST_FOR_EACH(&w->potions, Potion, p, delete_current_potion)
   {
-    Potion *p = &w->potions[i];
+    delete_current_potion = 0;
     if (p->exists && p->room_id == w->current_room)
     {
       if (w->plr.x > p->location.x - 20 && w->plr.x < p->location.x + 20 &&
           w->plr.y > p->location.y - 20 && w->plr.y < p->location.y + 20 && w->plr.health > 0)
       {
+        delete_current_potion = 1;
         p->exists = 0;
         w->potion_duration += p->duration_boost;
         if (w->potion_duration > POTION_DURATION_CAP)
@@ -33,7 +37,7 @@ void potion_logic(World *w)
         create_sparkles(p->location.x, p->location.y, 12, 1, 10, w);
       }
 
-      unsigned anim_phase = (potion_anim_phase + i * 1337) % 200;
+      unsigned anim_phase = (potion_anim_phase + (int)(p->location.x * 3 + p->location.y * 5) * 1337) % 200;
       if (anim_phase < 30)
       {
         int bubble_y = anim_phase / 5;

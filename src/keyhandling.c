@@ -178,10 +178,12 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
   }
   if (key_f && world->plr.gold >= cost_blast && world->plr.reload == 0)
   {
-    Bullet *b = get_next_available_bullet(world);
+    ListNode *node = world->bullets.last;
     int did_shoot = shoot_one_shot_at_xy(world->plr.x, world->plr.y, world->plr.dx, world->plr.dy, &world->plr, 1, world);
     if (did_shoot)
     {
+      node = node ? node->next : world->bullets.first;
+      Bullet *b = (Bullet*)node->obj;
       b->bullet_type = BULLET_TYPE_CLUSTER;
       b->dx *= 0.5;
       b->dy *= 0.5;
@@ -225,9 +227,9 @@ void handle_uber_wizard_weapon(World *world)
       x += world->plr.dx;
       y += world->plr.dy;
       count++;
-      for (int i = 0; i < ENEMYCOUNT; i++)
+      Enemy *enm;
+      LINKED_LIST_FOR_EACH(&world->enm, Enemy, enm, 0)
       {
-        Enemy *enm = &world->enm[i];
         if (!enm->alive || enm->roomid != world->current_room)
           continue;
         if (enm->x - HALFTILESIZE < x && enm->x + HALFTILESIZE > x &&
@@ -282,7 +284,7 @@ void handle_uber_wizard_weapon(World *world)
             if (enm->health <= 0)
             {
               kill_enemy(enm, world);
-              spawn_potion(enm->x, enm->y, POTION_ID_INSTANT_HEAL, world->current_room, world, POTION_DROP_RANGE_START, POTION_DROP_RANGE_END);
+              spawn_potion(enm->x, enm->y, POTION_ID_INSTANT_HEAL, world->current_room, world, 1);
             }
             trigger_sample(SAMPLE_HEAL, 200);
           }

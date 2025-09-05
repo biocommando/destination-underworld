@@ -22,12 +22,12 @@ static inline void set_directions(Enemy *enm, Coordinates *aim_at, int aim_windo
 
 void enemy_logic(World *world)
 {
-  for (int x = 0; x < ENEMYCOUNT; x++)
+  const int death_anim_max = 16;
+  Enemy *enm;
+  LINKED_LIST_FOR_EACH(&world->enm, Enemy, enm, enm->death_animation == death_anim_max)
   {
-    Enemy *enm = &world->enm[x];
     if (!enm->alive)
     {
-      const int death_anim_max = 16;
       if (enm->death_animation < death_anim_max)
       {
         if (enm->roomid == world->current_room)

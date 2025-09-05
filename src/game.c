@@ -169,7 +169,7 @@ static inline void check_perks_changed(World *world, int old_perks, int *next_pe
     }
     if ((world->plr.perks & PERK_START_WITH_SPEED_POTION) && !(old_perks & PERK_START_WITH_SPEED_POTION))
     {
-      spawn_potion(world->plr.x, world->plr.y, POTION_ID_FAST, world->plr.roomid, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
+      spawn_potion(world->plr.x, world->plr.y, POTION_ID_FAST, world->plr.roomid, world, 0);
     }
   }
 }
@@ -183,7 +183,7 @@ static void write_recording_complete_state_file(World *world, GlobalGameState *g
   fprintf(f, "Kills %d\n", world->kills);
   fprintf(f, "Time %ld\n", time_stamp);
   fprintf(f, "Enemy states\n");
-  for (int i = -1; i < ENEMYCOUNT; i++)
+  /*for (int i = -1; i < ENEMYCOUNT; i++)
   {
     Enemy *e = &world->plr;
     if (i >= 0)
@@ -191,15 +191,22 @@ static void write_recording_complete_state_file(World *world, GlobalGameState *g
     if (e->alive || e->killed)
       fprintf(f, "enemy #%d: alive %d killed %d position %d,%d health %d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
               i, e->alive, e->killed, e->x, e->y, e->health, e->ammo, e->roomid, e->rate, e->shots, e->turret, e->gold);
-  }
+  }*/
   fprintf(f, "Potion states\n");
-  for (int i = 0; i < POTION_COUNT; i++)
+  Potion *p;
+  int i = 0;
+  LINKED_LIST_FOR_EACH(&world->potions, Potion, p, 0)
+  {
+    fprintf(f, "potion #%d: position %d,%d roomid %d effects 0x%x duration_boost %d\n",
+              i++, (int)p->location.x, (int)p->location.y, p->room_id, p->effects, p->duration_boost);
+  }
+  /*for (int i = 0; i < POTION_COUNT; i++)
   {
     Potion *p = &world->potions[i];
     if (p->exists)
       fprintf(f, "potion #%d: position %d,%d roomid %d effects 0x%x duration_boost %d\n",
               i, (int)p->location.x, (int)p->location.y, p->room_id, p->effects, p->duration_boost);
-  }
+  }*/
 
   fclose(f);
 }
@@ -304,7 +311,6 @@ void game(GlobalGameState *ggs)
     move_and_draw_body_parts(&world);
     draw_wall_shadows(&world);
     progress_and_draw_flame_fx(&world.visual_fx);
-    // draw_enemy_shadows(&world); -- doesn't look very good and the shadow physics are f'd up
 
     // Draw legend to same position as player
     // Legend cannot be drawn here or it would get obscured
@@ -552,6 +558,13 @@ void game(GlobalGameState *ggs)
     write_recording_complete_state_file(&world, ggs, time_stamp);
 
   al_destroy_bitmap(world.spr);
+  linked_list_clear(&world.potions);
+  linked_list_clear(&world.bullets);
+  linked_list_clear(&world.visual_fx.flames);
+  linked_list_clear(&world.visual_fx.sparkle_fx);
+  linked_list_clear(&world.visual_fx.sparkle_fx_circle);
+  linked_list_clear(&world.visual_fx.bodypart_container);
+  linked_list_clear(&world.enm);
 
   reset_screen_transform();
 

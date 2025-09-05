@@ -107,7 +107,7 @@ void boss_logic(World *world, int boss_died)
       break;
     case BFCONF_EVENT_TYPE_SPAWN_POTION:
       spawn_potion(TO_PIXEL_COORDINATES(event->parameters[0]), TO_PIXEL_COORDINATES(event->parameters[1]),
-                   event->parameters[2], world->current_room, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
+                   event->parameters[2], world->current_room, world, 0);
       create_sparkles(TO_PIXEL_COORDINATES(event->parameters[0]), TO_PIXEL_COORDINATES(event->parameters[1]), 15, 2, 15, world);
       break;
     }

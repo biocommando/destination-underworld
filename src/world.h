@@ -4,6 +4,7 @@
 #include "duConstants.h"
 #include "bossfightconf.h"
 #include "helpers.h"
+#include "linked_list.h"
 #include <time.h>
 
 // Body part that's left behind when an enemy dies
@@ -392,18 +393,19 @@ typedef struct
 // Visual effects of the world
 typedef struct
 {
-    Explosion explosion[EXPLOSIONCOUNT];
-    struct sparkle_fx sparkle_fx[SPARKLE_FX_COUNT];
-    struct sparkle_fx_circle sparkle_fx_circle[SPARKLE_FX_CIRCLE_COUNT];
-    struct flame_fx flames[FLAME_FX_COUNT];
+    LinkedList explosion;
+    LinkedList sparkle_fx;
+    LinkedList sparkle_fx_circle;
+    LinkedList flames;
     UberWizardWeaponFx uber_wizard_weapon_fx;
     // Status for a text that is shown for a short moment
     struct hint_text hint;
     int rune_of_protection_animation;
-    BodyPartsContainer bodypart_container[ENEMYCOUNT];
+    LinkedList bodypart_container;
     // Floor color map; the floor gets darker always when there's an explosion
     // at that tile
     char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
+    char floor_fx[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
 } WorldFx;
 
 // Structure that contains most of the game state
@@ -417,13 +419,13 @@ typedef struct
     // Room number currently active
     int current_room;
     // All enemies and other actors (but not the player)
-    Enemy enm[ENEMYCOUNT];
+    LinkedList enm;
     // The player
     Enemy plr;
     // Points to the enemy that is the "boss" or NULL if not present
     Enemy *boss;
     // All shots fired by anything
-    Bullet bullets[BULLETCOUNT];
+    LinkedList bullets;
     // Visual effects
     WorldFx visual_fx;
     // Enemy type mapping
@@ -469,7 +471,7 @@ typedef struct
     int potion_healing_counter;
     // Shoots fireballs when this is reduced to zero
     int potion_shield_counter;
-    Potion potions[POTION_COUNT];
+    LinkedList potions;
     // Maximum health that can be obtained using potions
     int plr_max_health;
 } World;
@@ -537,8 +539,11 @@ int ns_get_wall_type_at(const World *world, int x, int y);
 /*
  * Inits player. Basically copies plrautosave struct if owner is alive.*/
 void init_player(World *world, Enemy *plrautosave);
-
 /*
  * Calculates the player speed (affecting movement and fire rate).
  */
 int get_plr_speed(World *world);
+/**
+ * Set default settings for new enemy instance.
+ */
+void set_enemy_defaults(Enemy *enm);

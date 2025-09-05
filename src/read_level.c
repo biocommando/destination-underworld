@@ -83,7 +83,7 @@ static inline void place_lev_object(World *world, int x, int y, int id, int room
     {
         if (!world->rooms_visited[room_to - 1])
         {
-            spawn_potion(TO_PIXEL_COORDINATES(x), TO_PIXEL_COORDINATES(y), id - 300, room_to, world, POTION_PRESET_RANGE_START, POTION_PRESET_RANGE_END);
+            spawn_potion(TO_PIXEL_COORDINATES(x), TO_PIXEL_COORDINATES(y), id - 300, room_to, world, 0);
         }
     }
     else
