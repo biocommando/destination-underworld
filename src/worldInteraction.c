@@ -584,6 +584,16 @@ inline Enemy *create_turret(World *world)
 
 void kill_enemy(Enemy *enm, World *world)
 {
+    struct killed_enemy_stats *kes = LINKED_LIST_ADD(&world->killed_enemy_stats, struct killed_enemy_stats);
+    kes->x = enm->x;
+    kes->y = enm->y;
+    kes->roomid = enm->roomid;
+    kes->ammo = enm->ammo;
+    kes->rate = enm->rate;
+    kes->shots = enm->shots;
+    kes->turret = enm->turret;
+    kes->gold = enm->gold;
+
     enm->health = 0;
     enm->alive = 0;
     enm->killed = 1;

@@ -183,30 +183,30 @@ static void write_recording_complete_state_file(World *world, GlobalGameState *g
   fprintf(f, "Kills %d\n", world->kills);
   fprintf(f, "Time %ld\n", time_stamp);
   fprintf(f, "Enemy states\n");
-  /*for (int i = -1; i < ENEMYCOUNT; i++)
+  int i = 0;
+  Enemy *e = &world->plr;
+  fprintf(f, "player: alive %d killed %d position %d,%d health %d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
+              e->alive, e->killed, e->x, e->y, e->health, e->ammo, e->roomid, e->rate, e->shots, e->turret, e->gold);
+  LINKED_LIST_FOR_EACH(&world->enm, Enemy, e, 0)
   {
-    Enemy *e = &world->plr;
-    if (i >= 0)
-      e = &world->enm[i];
-    if (e->alive || e->killed)
-      fprintf(f, "enemy #%d: alive %d killed %d position %d,%d health %d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
-              i, e->alive, e->killed, e->x, e->y, e->health, e->ammo, e->roomid, e->rate, e->shots, e->turret, e->gold);
-  }*/
+    fprintf(f, "enemy #%d: alive %d killed %d position %d,%d health %d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
+              i++, e->alive, e->killed, e->x, e->y, e->health, e->ammo, e->roomid, e->rate, e->shots, e->turret, e->gold);
+  }
+  struct killed_enemy_stats *kes;
+  fprintf(f, "Dead\n");
+  LINKED_LIST_FOR_EACH(&world->killed_enemy_stats, struct killed_enemy_stats, kes, 0)
+  {
+    fprintf(f, "enemy #%d: position %d,%d ammo %d roomid %d rate %d shots %d turret %d gold %d\n",
+              i++, kes->x, kes->y, kes->ammo, kes->roomid, kes->rate, kes->shots, kes->turret, kes->gold);
+  }
   fprintf(f, "Potion states\n");
   Potion *p;
-  int i = 0;
+  i = 0;
   LINKED_LIST_FOR_EACH(&world->potions, Potion, p, 0)
   {
     fprintf(f, "potion #%d: position %d,%d roomid %d effects 0x%x duration_boost %d\n",
               i++, (int)p->location.x, (int)p->location.y, p->room_id, p->effects, p->duration_boost);
   }
-  /*for (int i = 0; i < POTION_COUNT; i++)
-  {
-    Potion *p = &world->potions[i];
-    if (p->exists)
-      fprintf(f, "potion #%d: position %d,%d roomid %d effects 0x%x duration_boost %d\n",
-              i, (int)p->location.x, (int)p->location.y, p->room_id, p->effects, p->duration_boost);
-  }*/
 
   fclose(f);
 }
@@ -565,6 +565,7 @@ void game(GlobalGameState *ggs)
   linked_list_clear(&world.visual_fx.sparkle_fx_circle);
   linked_list_clear(&world.visual_fx.bodypart_container);
   linked_list_clear(&world.enm);
+  linked_list_clear(&world.killed_enemy_stats);
 
   reset_screen_transform();
 

@@ -408,6 +408,18 @@ typedef struct
     char floor_fx[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
 } WorldFx;
 
+struct killed_enemy_stats
+{
+    int x;
+    int y;
+    int roomid;
+    int ammo;
+    int rate;
+    int shots;
+    int turret;
+    int gold;
+};
+
 // Structure that contains most of the game state
 typedef struct
 {
@@ -474,6 +486,7 @@ typedef struct
     LinkedList potions;
     // Maximum health that can be obtained using potions
     int plr_max_health;
+    LinkedList killed_enemy_stats;
 } World;
 
 // Global state that is persisted over different game(...) calls.

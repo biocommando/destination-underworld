@@ -35,6 +35,7 @@ void init_world(World *world)
     clear_visual_fx(&world->visual_fx, 1);
     world->bullets = linked_list_create();
     world->enm = linked_list_create();
+    world->killed_enemy_stats = linked_list_create();
     world->boss = NULL;
 
     world->potion_duration = 0;

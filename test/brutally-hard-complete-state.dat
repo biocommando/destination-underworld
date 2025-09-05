@@ -1,25 +1,25 @@
 Recording complete
-Mission 1, mode 48
+Mission 100, mode 48
 Kills 12
 Time 1171
 Enemy states
-enemy #-1: alive 0 killed 1 position 227,196 health 0 ammo 15 roomid 1 rate 12 shots 1 turret 0 gold 4
+player: alive 0 killed 1 position 227,196 health 0 ammo 15 roomid 1 rate 12 shots 1 turret 0 gold 4
 enemy #0: alive 1 killed 0 position 15,15 health 50 ammo -1 roomid 1 rate 10 shots 1 turret 0 gold 0
-enemy #1: alive 0 killed 1 position 101,161 health 0 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
-enemy #2: alive 0 killed 1 position 389,195 health 0 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
-enemy #3: alive 0 killed 1 position 183,295 health 0 ammo -1 roomid 1 rate 20 shots 1 turret 0 gold 0
-enemy #4: alive 0 killed 1 position 200,280 health 0 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
-enemy #5: alive 0 killed 1 position 232,244 health 0 ammo -1 roomid 1 rate 20 shots 1 turret 0 gold 0
-enemy #6: alive 0 killed 1 position 252,227 health 0 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
-enemy #7: alive 0 killed 1 position 200,272 health 0 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
-enemy #8: alive 0 killed 1 position 211,241 health 0 ammo -1 roomid 1 rate 20 shots 1 turret 0 gold 0
-enemy #9: alive 0 killed 1 position 125,195 health 0 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
-enemy #10: alive 0 killed 1 position 421,197 health 0 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
-enemy #11: alive 0 killed 1 position 214,243 health 0 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
-enemy #12: alive 0 killed 1 position 213,218 health 0 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
-enemy #13: alive 1 killed 0 position 225,246 health 3 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
-enemy #14: alive 1 killed 0 position 229,216 health 3 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
-enemy #15: alive 0 killed 1 position 227,196 health 0 ammo 15 roomid 1 rate 12 shots 1 turret 0 gold 4
+enemy #1: alive 1 killed 0 position 225,246 health 3 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
+enemy #2: alive 1 killed 0 position 229,216 health 3 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
+Dead
+enemy #3: position 389,195 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
+enemy #4: position 101,161 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
+enemy #5: position 183,295 ammo -1 roomid 1 rate 20 shots 1 turret 0 gold 0
+enemy #6: position 200,280 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
+enemy #7: position 252,227 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
+enemy #8: position 232,244 ammo -1 roomid 1 rate 20 shots 1 turret 0 gold 0
+enemy #9: position 211,241 ammo -1 roomid 1 rate 20 shots 1 turret 0 gold 0
+enemy #10: position 200,272 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
+enemy #11: position 421,197 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
+enemy #12: position 125,195 ammo -1 roomid 1 rate 15 shots 1 turret 0 gold 1
+enemy #13: position 213,218 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
+enemy #14: position 214,243 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
 Potion states
-potion #2: position 255,75 roomid 1 effects 0x8 duration_boost 250
-potion #3: position 345,75 roomid 1 effects 0x2 duration_boost 250
+potion #0: position 255,75 roomid 1 effects 0x8 duration_boost 250
+potion #1: position 345,75 roomid 1 effects 0x2 duration_boost 250
