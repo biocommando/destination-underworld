@@ -2,8 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *recording = NULL, *complete_state = NULL;
+char recording[1024], complete_state[1024];
 char cmdl_extra[1024] = "";
+
+
+#define WRITE_TRES(...)                           \
+    do                                            \
+    {                                             \
+        FILE *f = fopen("test-results.txt", "a"); \
+        fprintf(f, __VA_ARGS__);                  \
+        fclose(f);                                \
+    } while (0)
 
 int play_one()
 {
@@ -33,6 +42,7 @@ int play_one()
         if (strcmp(b1, b2))
         {
             printf("Difference at line %d:\n%svs\n%s", line, b1, b2);
+            WRITE_TRES("Difference at line %d:\n%svs\n%s", line, b1, b2);
             ok = 0;
         }
     }
@@ -41,38 +51,35 @@ int play_one()
     return ok;
 }
 
-#define WRITE_TRES(...)                           \
-    do                                            \
-    {                                             \
-        FILE *f = fopen("test-results.txt", "a"); \
-        fprintf(f, __VA_ARGS__);                  \
-        fclose(f);                                \
-    } while (0)
-
 int main(int argc, char **argv)
 {
     remove("test-results.txt");
     WRITE_TRES("Start tests with %d arguments\n", argc - 1);
-    int num_failed = 0;
-    for (int i = 0; i < argc; i++)
+    if (argc != 2)
     {
-        if (argv[i][0] == '-' && argv[i][1] == 'r')
-            recording = argv[i] + 2;
-        if (argv[i][0] == '-' && argv[i][1] == 'c')
-            complete_state = argv[i] + 2;
-        if (argv[i][0] == '-' && argv[i][1] == 'x')
-            strcpy(cmdl_extra, argv[i] + 2);
-        if (recording && complete_state)
+        return -1;
+    }
+
+    int num_failed = 0;
+    *recording = 0;
+    *complete_state = 0;
+    FILE *f = fopen(argv[1], "r");
+    while (!feof(f))
+    {
+        char buf[1024] = "";
+        fgets(buf, 1024, f);
+        sscanf(buf, "R %s", recording);
+        sscanf(buf, "C %s", complete_state);
+        if (*recording && *complete_state)
         {
             printf("Start playback for recording %s and check it against complete state %s...\n", recording, complete_state);
-            WRITE_TRES("Start test run with command line:\n%s \"-x%s\" \"-r%s\" \"-c%s\"\n", argv[0], cmdl_extra, recording, complete_state);
             int ok = play_one();
             WRITE_TRES("    Result: %s\n", ok ? "OK" : "FAIL");
             printf("%s\n", ok ? "OK" : "FAIL");
             if (!ok)
                 num_failed++;
-            recording = NULL;
-            complete_state = NULL;
+            *recording = 0;
+            *complete_state = 0;
         }
     }
     printf("\n\n\n*****************************\nTest run done. Result: ");

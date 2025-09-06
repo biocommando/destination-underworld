@@ -46,7 +46,6 @@ TEST(linked_list)
         str_append_number(test_str, *el);
     }
     ASSERT(STR_EQ(test_str, "1,2,3,4,5,6,7,"));
-    printf("Add one with value 123\n");
     *LINKED_LIST_ADD(&lst, int) = 123;
     *test_str = 0;
     LINKED_LIST_FOR_EACH(&lst, int, el, 0)

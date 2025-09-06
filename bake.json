@@ -41,6 +41,10 @@
         "$environment-debug",
         "add-save-data-hash"
     ],
+    "test": [
+        "$unit-tests",
+        "run-tests"
+    ],
     "default": "debug",
     "verbose": true
 }
