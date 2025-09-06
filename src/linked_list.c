@@ -109,12 +109,64 @@ void *linked_list_iterate(LinkedList_it_state *state)
     return state->node->obj;
 }
 
+void add_managed_list(LinkedList *lst)
+{
+    static LinkedList _lists;
+    static int init = 0;
+    if (!init)
+    {
+        _lists = linked_list_create();
+        init = 1;
+    }
+    LinkedList **el;
+    if (!lst)
+    {
+        //printf("Clearing %d entries\n", (int)_lists.count);
+        LINKED_LIST_FOR_EACH(&_lists, LinkedList*, el, 1)
+        {
+            //printf("Clearing %d sub entries\n", (int)(*el)->count);
+            linked_list_clear(*el);
+        }
+        return;
+    }
+    LINKED_LIST_FOR_EACH(&_lists, LinkedList*, el, *el == lst)
+    {
+        if (*el == lst)
+        {
+            //printf("List already in managed lists! Clearing old entry\n");
+            linked_list_clear(*el);
+        }
+    }
+    el = LINKED_LIST_ADD(&_lists, LinkedList *);
+    *el = lst;
+    *lst = linked_list_create();
+}
+
 #ifdef linked_list_test_main
 
 typedef struct
 {
     int a;
 } A;
+
+void test_manage()
+{
+    LinkedList lst1;
+    LinkedList lst2;
+    LinkedList lst3;
+    add_managed_list(&lst1);
+    LINKED_LIST_ADD(&lst1, A)->a = 1;
+    add_managed_list(&lst2);
+    LINKED_LIST_ADD(&lst2, A)->a = 1;
+    LINKED_LIST_ADD(&lst2, A)->a = 2;
+    add_managed_list(&lst3);
+    LINKED_LIST_ADD(&lst3, A)->a = 1;
+    LINKED_LIST_ADD(&lst3, A)->a = 2;
+    LINKED_LIST_ADD(&lst3, A)->a = 3;
+
+    add_managed_list(&lst2);
+    add_managed_list(NULL);
+}
 
 int main(int argc, char **argv)
 {
@@ -178,6 +230,7 @@ int main(int argc, char **argv)
     {
         printf("A{%d}\n", el->a);
     }
+    test_manage();
     return 0;
 }
 

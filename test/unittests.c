@@ -67,7 +67,8 @@ int main(int argc, char **argv)
     }
     TEST_SUITE(linked_list)
     {
-        RUN_TEST(linked_list);
+        RUN_TEST(linked_list__list_add_remove_clear_access);
+        RUN_TEST(linked_list__managed_lists);
     }
     END_TESTS;
 }

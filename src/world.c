@@ -33,18 +33,17 @@ void init_world(World *world)
         world->rooms_visited[i] = 0;
     }
     clear_visual_fx(&world->visual_fx, 1);
-    world->bullets = linked_list_create();
-    world->enm = linked_list_create();
-    world->killed_enemy_stats = linked_list_create();
+    add_managed_list(&world->bullets);
+    add_managed_list(&world->enm);
+    add_managed_list(&world->killed_enemy_stats);
     world->boss = NULL;
 
     world->potion_duration = 0;
     world->potion_effect_flags = 0;
-    world->potions = linked_list_create();
+    add_managed_list(&world->potions);
     world->potion_turbo_mode = 0;
     world->potion_healing_counter = 0;
     world->potion_shield_counter = 0;
-    //memset(world->visual_fx.flames, 0, sizeof(world->visual_fx.flames));
 
     world->boss_fight_config = world->boss_fight_configs;
     world->current_room = 1;

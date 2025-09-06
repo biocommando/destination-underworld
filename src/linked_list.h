@@ -41,3 +41,5 @@ void *linked_list_iterate(LinkedList_it_state *state);
     for (LinkedList_it_state _it_state__##i = linked_list_iteration_start(list); \
          (i = (type *)linked_list_iterate(&_it_state__##i));                     \
          _it_state__##i.delete_current = delete_state)
+
+void add_managed_list(LinkedList *lst);

@@ -558,14 +558,7 @@ void game(GlobalGameState *ggs)
     write_recording_complete_state_file(&world, ggs, time_stamp);
 
   al_destroy_bitmap(world.spr);
-  linked_list_clear(&world.potions);
-  linked_list_clear(&world.bullets);
-  linked_list_clear(&world.visual_fx.flames);
-  linked_list_clear(&world.visual_fx.sparkle_fx);
-  linked_list_clear(&world.visual_fx.sparkle_fx_circle);
-  linked_list_clear(&world.visual_fx.bodypart_container);
-  linked_list_clear(&world.enm);
-  linked_list_clear(&world.killed_enemy_stats);
+  add_managed_list(NULL);
 
   reset_screen_transform();
 

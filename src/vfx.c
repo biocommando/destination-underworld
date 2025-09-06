@@ -255,17 +255,12 @@ void clear_visual_fx(WorldFx *world_fx, int init)
 {
     if (init)
     {
-        world_fx->explosion = linked_list_create();
-        world_fx->sparkle_fx = linked_list_create();
-        world_fx->sparkle_fx_circle = linked_list_create();
-        world_fx->flames = linked_list_create();
-        world_fx->bodypart_container = linked_list_create();
+        add_managed_list(&world_fx->bodypart_container);
     }
-    linked_list_clear(&world_fx->explosion);
-    linked_list_clear(&world_fx->flames);
-    linked_list_clear(&world_fx->sparkle_fx);
-    linked_list_clear(&world_fx->sparkle_fx_circle);
-    linked_list_clear(&world_fx->bodypart_container);
+    add_managed_list(&world_fx->explosion);
+    add_managed_list(&world_fx->sparkle_fx);
+    add_managed_list(&world_fx->sparkle_fx_circle);
+    add_managed_list(&world_fx->flames);
     memset(&world_fx->uber_wizard_weapon_fx, 0, sizeof(world_fx->uber_wizard_weapon_fx));
 
     if (init)

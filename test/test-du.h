@@ -56,11 +56,16 @@
 #define TEST_NAME(name) \
     test_fn_##name
 
+#define TEST_FN_ARGS_DEF \
+    int *_test_result
+
 #define TEST_FN_DEF(name) \
-    int TEST_NAME(name)(int *_test_result)
+    int TEST_NAME(name)(TEST_FN_ARGS_DEF)
 
 #define TEST(name) \
     TEST_FN_DEF(name)
+
+#define TEST_FN_ARGS _test_result
 
 #define INIT_TESTS                                                   \
     int test_result, n_tests = 0, n_tests_failed = 0,                \
