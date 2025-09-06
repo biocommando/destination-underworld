@@ -111,25 +111,26 @@ void *linked_list_iterate(LinkedList_it_state *state)
 
 void add_managed_list(LinkedList *lst)
 {
-    static LinkedList _lists;
-    static int init = 0;
-    if (!init)
+    static LinkedList *_lists = NULL;
+    if (!_lists)
     {
-        _lists = linked_list_create();
-        init = 1;
+        _lists = malloc(sizeof(LinkedList));
+        *_lists = linked_list_create();
     }
     LinkedList **el;
     if (!lst)
     {
         //printf("Clearing %d entries\n", (int)_lists.count);
-        LINKED_LIST_FOR_EACH(&_lists, LinkedList*, el, 1)
+        LINKED_LIST_FOR_EACH(_lists, LinkedList*, el, 1)
         {
             //printf("Clearing %d sub entries\n", (int)(*el)->count);
             linked_list_clear(*el);
         }
+        free(_lists);
+        _lists = NULL;
         return;
     }
-    LINKED_LIST_FOR_EACH(&_lists, LinkedList*, el, *el == lst)
+    LINKED_LIST_FOR_EACH(_lists, LinkedList*, el, *el == lst)
     {
         if (*el == lst)
         {
@@ -137,7 +138,7 @@ void add_managed_list(LinkedList *lst)
             linked_list_clear(*el);
         }
     }
-    el = LINKED_LIST_ADD(&_lists, LinkedList *);
+    el = LINKED_LIST_ADD(_lists, LinkedList *);
     *el = lst;
     *lst = linked_list_create();
 }
