@@ -114,7 +114,7 @@ void create_explosion(int x, int y, const World *world, WorldFx *world_fx, doubl
     ex->intensity = intensity;
 
     ex->circle_count = 5 + rand() % 6;
-    double scale = random() * 0.5 + 0.5;
+    double scale = random() * 0.3 + 0.7;
     for (int i = 0; i < ex->circle_count; i++)
     {
         struct explosion_circle *c = &ex->circles[i];
@@ -122,7 +122,10 @@ void create_explosion(int x, int y, const World *world, WorldFx *world_fx, doubl
         c->i *= intensity;
         c->loc.x = (1 - 2 * random()) * circle_max_radius * scale;
         c->loc.y = (1 - 2 * random()) * circle_max_radius * scale;
-        c->r = MAX(random() * circle_max_radius * scale, 5);
+        if (rand() % 2)
+            c->r = MAX(random() * circle_max_radius * scale, 5);
+        else
+            c->r = MAX((0.5 + 0.5 * random()) * circle_max_radius * scale, 5);
     }
     // Sort so that most intense are on top (last)
     qsort(ex->circles, ex->circle_count, sizeof(struct explosion_circle), comp_expl_circle);
