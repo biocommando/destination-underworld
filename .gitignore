@@ -10,6 +10,7 @@ screenshot*_*.png
 allegro/
 *.dll
 dataloss/**/save.dat
+dataloss/**/best_times.dat
 dataloss/**/arena_highscores.dat
 dataloss/**/auth.dat
 dataloss/recording--level-complete-state.dat
