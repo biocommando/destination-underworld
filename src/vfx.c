@@ -138,7 +138,6 @@ void create_explosion(int x, int y, const World *world, WorldFx *world_fx, doubl
     // Sort so that most intense are on top (last)
     qsort(ex->circles, ex->circle_count, sizeof(struct explosion_circle), comp_expl_circle);
 
-    ex->exists = 1;
     bounce_body_parts(x, y, world->current_room, world_fx);
     create_flame_fx(x + rand() % 11 - 5, y + rand() % 11 - 5, world, world_fx);
 }

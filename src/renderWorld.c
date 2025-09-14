@@ -477,14 +477,14 @@ int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
     const double circle_max_radius = 17;
     int vibrations = 0;
     Explosion *ex;
-    LINKED_LIST_FOR_EACH(&world_fx->explosion, Explosion, ex, !ex->exists)
+    LINKED_LIST_FOR_EACH(&world_fx->explosion, Explosion, ex, ex->phase >= 30)
     {
-        if (!ex->exists)
-            continue;
         vibrations++;
         for (int j = 0; j < ex->circle_count; j++)
         {
             struct explosion_circle *c = &ex->circles[j];
+            if (c->r < .5)
+             continue;
 
             draw_explosion_circle(c->loc.x + ex->x, c->loc.y + ex->y, c->i * .9, c->r);
             draw_explosion_circle(c->loc.x + ex->x, c->loc.y + ex->y, c->i, c->r * .8);
@@ -522,10 +522,7 @@ int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
         if (ex->emit_blast_wave && ex->phase < 12)
             al_draw_filled_circle(ex->x, ex->y, ex->phase * 7, al_map_rgba(0, 0, 0, (12 - ex->phase) * 6.6));
 
-        if (++ex->phase >= 30)
-        {
-            ex->exists = 0;
-        }
+        ex->phase++;
     }
     return vibrations;
 }

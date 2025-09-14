@@ -226,8 +226,6 @@ struct explosion_circle
 // Explosion visual effect
 typedef struct
 {
-    // 1 = draw effect
-    int exists;
     // x position for the explosion center
     int x;
     // y position for the explosion center
