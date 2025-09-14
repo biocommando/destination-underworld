@@ -36,7 +36,7 @@ static inline void bounce_body_parts(int x, int y, int roomid, WorldFx *world_fx
     BodyPartsContainer *bp_container;
     LINKED_LIST_FOR_EACH(&world_fx->bodypart_container, BodyPartsContainer, bp_container, 0)
     {
-        if (!bp_container->show || bp_container->roomid != roomid)
+        if (bp_container->roomid != roomid)
             continue;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
@@ -180,7 +180,6 @@ void spawn_body_parts(const Enemy *enm, WorldFx *world_fx)
         linked_list_remove(&world_fx->bodypart_container, world_fx->bodypart_container.first);
     
     bp_container->roomid = enm->roomid;
-    bp_container->show = 1;
     for (int j = 0; j < BODYPARTCOUNT; j++)
     {
         BodyPart *bp = &bp_container->bodyparts[j];
@@ -250,8 +249,6 @@ void stop_bodyparts(WorldFx *world_fx)
     BodyPartsContainer *bp_container;
     LINKED_LIST_FOR_EACH(&world_fx->bodypart_container, BodyPartsContainer, bp_container, 0)
     {
-        if (!bp_container->show)
-            continue;
         for (int j = 0; j < BODYPARTCOUNT; j++)
         {
             BodyPart *bp = &bp_container->bodyparts[j];

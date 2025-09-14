@@ -50,7 +50,6 @@ enum TurretType
 // For visualizing body parts left by the enemy
 typedef struct
 {
-    int show;
     int roomid;
     // Body parts for this enemy
     BodyPart bodyparts[BODYPARTCOUNT];

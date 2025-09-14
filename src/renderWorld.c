@@ -351,7 +351,7 @@ void move_and_draw_body_parts(World *world)
     BodyPartsContainer *bp_container;
     LINKED_LIST_FOR_EACH(&world->visual_fx.bodypart_container, BodyPartsContainer, bp_container, 0)
     {
-        if (bp_container->roomid != world->current_room || !bp_container->show)
+        if (bp_container->roomid != world->current_room)
         {
             continue;
         }
