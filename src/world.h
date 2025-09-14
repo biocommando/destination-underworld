@@ -371,8 +371,6 @@ typedef struct potion
     int duration_boost;
     // A bit mask for potion effects (see POTION_EFFECT_* definitions)
     int effects;
-    // 1 = yes, 0 = no
-    int exists;
     // Potion sprite index in spritesheet
     int sprite;
     // Sample index to play when the potion is picked up

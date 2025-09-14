@@ -338,32 +338,9 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     return new_enemy;
 }
 
-Potion *get_next_available_potion(World *world)
-{
-    return LINKED_LIST_ADD(&world->potions, Potion);
-    /*for (int i = range_start; i < range_end; i++)
-    {
-        if (!world->potions[i].exists)
-            return &world->potions[i];
-    }
-    // If dropped potions run out, start reusing from oldest
-    if (range_start != POTION_PRESET_RANGE_START)
-    {
-        int min_exists = range_start;
-        for (int i = range_start + 1; i < range_end; i++)
-        {
-            if (world->potions[i].exists < world->potions[min_exists].exists)
-                min_exists = i;
-        }
-        return &world->potions[min_exists];
-    }
-    return NULL;*/
-}
-
 Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int small)
 {
-    static int spawned_count = 0;
-    Potion *p = get_next_available_potion(world);
+    Potion *p = LINKED_LIST_ADD(&world->potions, Potion);
     if (!p)
         return NULL;
     p->location.x = x;
@@ -389,7 +366,6 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int smal
     p->sprite = type;
     p->sample = SAMPLE_POTION(type);
     p->room_id = room_id;
-    p->exists = ++spawned_count;
     return p;
 }
 

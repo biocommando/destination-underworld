@@ -14,13 +14,12 @@ void potion_logic(World *w)
   LINKED_LIST_FOR_EACH(&w->potions, Potion, p, delete_current_potion)
   {
     delete_current_potion = 0;
-    if (p->exists && p->room_id == w->current_room)
+    if (p->room_id == w->current_room)
     {
       if (w->plr.x > p->location.x - 20 && w->plr.x < p->location.x + 20 &&
           w->plr.y > p->location.y - 20 && w->plr.y < p->location.y + 20 && w->plr.health > 0)
       {
         delete_current_potion = 1;
-        p->exists = 0;
         w->potion_duration += p->duration_boost;
         if (w->potion_duration > POTION_DURATION_CAP)
           w->potion_duration = POTION_DURATION_CAP;
