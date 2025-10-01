@@ -164,6 +164,7 @@ int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, i
         }
         else
         {
+            linked_list_remove_by_value(&world->bullets, bb);
             return 0;
         }
 

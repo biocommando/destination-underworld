@@ -28,7 +28,6 @@ ListNode *linked_list_add(LinkedList *lst, size_t element_size)
         lst->last = n;
     }
     lst->count++;
-    //printf("elements in list %lu\n", lst->count);
     return n;
 }
 
@@ -99,7 +98,6 @@ void *linked_list_iterate(LinkedList_it_state *state)
     {
         linked_list_remove(state->lst, to_be_deleted);
     }
-    //printf("next node: %d{next:%d, prev:%d, obj:%d}\n", state->node, !state->node ? 0 : state->node->next, !state->node ? 0 : state->node->prev, !state->node ? 0 : state->node->obj);
     if (!state->node)
     {
         state->lst = NULL;
@@ -120,10 +118,8 @@ void add_managed_list(LinkedList *lst)
     LinkedList **el;
     if (!lst)
     {
-        //printf("Clearing %d entries\n", (int)_lists.count);
         LINKED_LIST_FOR_EACH(_lists, LinkedList*, el, 1)
         {
-            //printf("Clearing %d sub entries\n", (int)(*el)->count);
             linked_list_clear(*el);
         }
         free(_lists);
@@ -134,7 +130,6 @@ void add_managed_list(LinkedList *lst)
     {
         if (*el == lst)
         {
-            //printf("List already in managed lists! Clearing old entry\n");
             linked_list_clear(*el);
         }
     }
