@@ -25,13 +25,23 @@ void create_shade_around_hit_point(int x, int y, int roomid, int spread, WorldFx
 // Limit the amount of bounce_body_parts calculations within a single frame by
 // allowing only one call per map tile
 char bounce_body_parts_limit_map[MAPMAX_X][MAPMAX_Y];
+static inline int check_bounce_body_parts_limit_map(int x, int y)
+{
+    const unsigned _x = x / TILESIZE;
+    const unsigned _y = y / TILESIZE;
+    if (_x >= MAPMAX_X || _y >= MAPMAX_Y)
+        return 1;
+    char *limit_map_cell = &bounce_body_parts_limit_map[_x][_y];
+    if (*limit_map_cell)
+        return 1;
+    *limit_map_cell = 1;
+    return 0;
+}
 
 static inline void bounce_body_parts(int x, int y, int roomid, WorldFx *world_fx)
 {
-    char *limit_map_cell = &bounce_body_parts_limit_map[x / TILESIZE][y / TILESIZE];
-    if (*limit_map_cell)
+    if (check_bounce_body_parts_limit_map(x, y))
         return;
-    *limit_map_cell = 1;
     // Make existing bodyparts bounce all over the place
     BodyPartsContainer *bp_container;
     LINKED_LIST_FOR_EACH(&world_fx->bodypart_container, BodyPartsContainer, bp_container, 0)
