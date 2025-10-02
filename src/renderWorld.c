@@ -76,6 +76,7 @@ void draw_wall_shadows(const World *world)
             if (wall_type == WALL_NORMAL || wall_type == WALL_PENTAGRAM)
             {
                 const Tile *t = ns_get_tile_at(world, x - 1, y);
+                // tile is always non-null
                 if (t->is_floor)
                     al_draw_filled_rectangle((x - 1) * TILESIZE, (y)*TILESIZE, (x)*TILESIZE + 1, (y + 1) * TILESIZE, al_map_rgba(0, 0, 0, shadowcolm1));
             }
@@ -107,6 +108,7 @@ void draw_map_floors(const World *world, int vibration_intensity)
             int floorcol = floor_base_col + 5 * vibration_intensity - fshd;
             floorcol = floorcol < 0 ? 0 : floorcol;
             const Tile *tile = ns_get_tile_at(world, x, y);
+            // tile is always non-null
             if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
             {
                 ALLEGRO_COLOR drawn_color = GRAY(floorcol);
@@ -197,6 +199,7 @@ void draw_map_walls(const World *world)
                     else
                     {
                         const Tile *tile = ns_get_tile_at(world, x, y);
+                        // tile is always non-null
                         if (tile->is_exit_point)
                         {
                             al_draw_filled_rectangle(x * TILESIZE - 15, y * TILESIZE - 15, x * TILESIZE + 15, y * TILESIZE + 15, GRAY_A(100, 100));

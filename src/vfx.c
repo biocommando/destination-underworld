@@ -27,15 +27,15 @@ void create_shade_around_hit_point(int x, int y, int roomid, int spread, WorldFx
 char bounce_body_parts_limit_map[MAPMAX_X][MAPMAX_Y];
 static inline int check_bounce_body_parts_limit_map(int x, int y)
 {
-    const unsigned _x = x / TILESIZE;
-    const unsigned _y = y / TILESIZE;
-    if (_x >= MAPMAX_X || _y >= MAPMAX_Y)
-        return 1;
-    char *limit_map_cell = &bounce_body_parts_limit_map[_x][_y];
-    if (*limit_map_cell)
-        return 1;
-    *limit_map_cell = 1;
-    return 0;
+    WITH_SANITIZED_TILE_COORDINATES(x, y)
+    {
+        char *limit_map_cell = &bounce_body_parts_limit_map[ok_x][ok_y];
+        if (*limit_map_cell)
+            return 1;
+        *limit_map_cell = 1;
+        return 0;
+    }
+    return 1;
 }
 
 static inline void bounce_body_parts(int x, int y, int roomid, WorldFx *world_fx)
@@ -88,11 +88,11 @@ void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f)
 
 void create_flame_fx(int x, int y, const World *world, WorldFx *world_fx)
 {
-    if (get_tile_at(world, x, y)->is_wall)
+    if (get_wall_type_at(world, x, y))
         return;
-    if (get_tile_at(world, x - 4, y)->is_wall)
+    if (get_wall_type_at(world, x - 4, y))
         x += 4;
-    if (get_tile_at(world, x, y - 15)->is_wall)
+    if (get_wall_type_at(world, x, y - 15))
         y += 15;
     struct flame_fx *f = LINKED_LIST_ADD(&world_fx->flames, struct flame_fx);
     if (world_fx->flames.count > FLAME_FX_COUNT)
@@ -219,6 +219,7 @@ void cleanup_bodyparts(const World *world, WorldFx *world_fx)
     static int y = 0;
 
     const Tile *tile = ns_get_tile_at(world, x, y);
+    // tile is always non-null
     if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
     {
         int bp_count = 0;

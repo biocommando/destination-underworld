@@ -8,6 +8,14 @@
 #define ANIM_FRAME_COUNT 40
 #define TO_PIXEL_COORDINATES(point) ((point) * TILESIZE + HALFTILESIZE)
 
+#define WITH_SANITIZED_NS_TILE_COORDINATES(x, y) \
+    const unsigned ok_x = x;             \
+    const unsigned ok_y = y;             \
+    if (ok_x < MAPMAX_X && ok_y < MAPMAX_Y)
+
+#define WITH_SANITIZED_TILE_COORDINATES(x, y) \
+    WITH_SANITIZED_NS_TILE_COORDINATES(x / TILESIZE, y / TILESIZE)
+
 #define BODYPARTCOUNT 32
 #define ROOMCOUNT 8
 #define ENEMY_TYPE_COUNT 5 // all "normal" enemies excluding the special boss type

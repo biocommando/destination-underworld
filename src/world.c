@@ -144,33 +144,57 @@ Tile create_tile(int symbol)
 
 inline const Tile *get_tile_at(const World *world, int x, int y)
 {
-    return &world->map[world->current_room - 1][x / TILESIZE][y / TILESIZE];
+    WITH_SANITIZED_TILE_COORDINATES(x, y)
+    {
+        return &world->map[world->current_room - 1][ok_x][ok_y];
+    }
+    return NULL;
 }
 
 inline const Tile *ns_get_tile_at(const World *world, int x, int y)
 {
-    return &world->map[world->current_room - 1][x][y];
+    WITH_SANITIZED_NS_TILE_COORDINATES(x, y)
+    {
+        return &world->map[world->current_room - 1][ok_x][ok_y];
+    }
+    return NULL;
 }
 
 inline Tile *get_tile_at_mut(World *world, int x, int y)
 {
-    return &world->map[world->current_room - 1][x / TILESIZE][y / TILESIZE];
+    WITH_SANITIZED_TILE_COORDINATES(x, y)
+    {
+        return &world->map[world->current_room - 1][ok_x][ok_y];
+    }
+    return NULL;
 }
 
 inline Tile *ns_get_tile_at_mut(World *world, int x, int y)
 {
-    return &world->map[world->current_room - 1][x][y];
+    WITH_SANITIZED_NS_TILE_COORDINATES(x, y)
+    {
+        return &world->map[world->current_room - 1][ok_x][ok_y];
+    }
+    return NULL;
 }
 
 inline int ns_get_wall_type_at(const World *world, int x, int y)
 {
-    const Tile *t = &(world->map[world->current_room - 1][x][y]);
-    return t->is_wall ? t->data : 0;
+    WITH_SANITIZED_NS_TILE_COORDINATES(x, y)
+    {
+        const Tile *t = &(world->map[world->current_room - 1][ok_x][ok_y]);
+        return t->is_wall ? t->data : 0;
+    }
+    return 0;
 }
 
 inline int get_wall_type_at(const World *world, int x, int y)
 {
-    return ns_get_wall_type_at(world, x / TILESIZE, y / TILESIZE);
+    WITH_SANITIZED_TILE_COORDINATES(x, y)
+    {
+        return ns_get_wall_type_at(world, ok_x, ok_y);
+    }
+    return 0;
 }
 
 void init_player(World *world, Enemy *plrautosave)

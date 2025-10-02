@@ -42,7 +42,7 @@ void bullet_logic(World *world, GlobalGameState *ggs)
         {
           bullet->x = TO_PIXEL_COORDINATES((int)(bullet_orig_x / TILESIZE));
           bullet->y = TO_PIXEL_COORDINATES((int)(bullet_orig_y / TILESIZE));
-          while (get_tile_at(world, (int)bullet->x, (int)bullet->y)->is_wall)
+          while (get_wall_type_at(world, (int)bullet->x, (int)bullet->y) != 0)
           {
             bullet->x -= 5 * bullet->dx;
             bullet->y -= 5 * bullet->dy;

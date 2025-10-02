@@ -12,7 +12,8 @@
 
 static inline int is_passable(const World *world, int x, int y)
 {
-    return !get_tile_at(world, x, y)->is_blocker;
+    const Tile *tile = get_tile_at(world, x, y);
+    return tile && !tile->is_blocker;
 }
 
 void clear_restricted_tiles(World *world, int id)
@@ -22,6 +23,7 @@ void clear_restricted_tiles(World *world, int id)
         for (int y = 0; y < MAPMAX_Y; y++)
         {
             Tile *tile = ns_get_tile_at_mut(world, x, y);
+            // tile is always non-null
             if ((tile->is_restricted || tile->is_clear_restriction) && tile->data == id)
             {
                 tile->is_restricted = 0;
@@ -72,6 +74,7 @@ void move_enemy(Enemy *enm, World *world)
 
     if ((enm->x >= SCREEN_W || enm->x < 0 || enm->y >= SCREEN_H || enm->y < 0) ||
         (enm != &world->plr && (get_tile_at(world, enm->x, enm->y)->is_exit_point)))
+        // tile is always non-null because boundaries are checked already before
     {
         enm->x = ex;
         enm->y = ey;
@@ -80,11 +83,11 @@ void move_enemy(Enemy *enm, World *world)
     if (enm == &world->plr)
     {
         Tile *t = get_tile_at_mut(world, enm->x, enm->y);
-        if (t->is_clear_restriction)
+        if (t && t->is_clear_restriction)
         {
             clear_restricted_tiles(world, t->data);
         }
-        if (t->is_positional_trigger)
+        if (t && t->is_positional_trigger)
         {
             pos_trigger_set(world->boss_fight_config->state.positional_trigger_flags, t->data);
             // No point in having the flag set anymore as the condition can trigger only once
@@ -96,7 +99,7 @@ void move_enemy(Enemy *enm, World *world)
 static inline int tile_check_bullet_hit_wall(World *world, int x, int y)
 {
     Tile *tile = get_tile_at_mut(world, x, y);
-    if (tile->is_wall)
+    if (tile && tile->is_wall)
     {
         if (tile->durability > 0)
         {
@@ -408,9 +411,10 @@ static void place_player_at_entrance(World *world, int to_room)
 
 void change_room_if_at_exit_point(World *world)
 {
-    if (get_tile_at(world, world->plr.x, world->plr.y)->is_exit_point && world->plr.health > 0)
+    const Tile *tile = get_tile_at(world, world->plr.x, world->plr.y);
+    if (tile && tile->is_exit_point && world->plr.health > 0)
     {
-        int to_room = get_tile_at(world, world->plr.x, world->plr.y)->data;
+        int to_room = tile->data;
         if (world->plr.roomid != to_room)
         {
             world->boss_fight_config = &world->boss_fight_configs[to_room - 1];
@@ -586,7 +590,11 @@ void kill_enemy(Enemy *enm, World *world)
     }
 
     world->visual_fx.floor_fx[enm->roomid][enm->x / TILESIZE][enm->y / TILESIZE] |= 1;
-    get_tile_at_mut(world, enm->x, enm->y)->is_blood_stained = 1;
+    Tile *tile = get_tile_at_mut(world, enm->x, enm->y);
+    if (tile)
+    {
+        tile->is_blood_stained = 1;
+    }
     if ((*world->game_modifiers & GAMEMODIFIER_NO_GOLD) == 0)
         world->plr.gold += enm->gold;
 

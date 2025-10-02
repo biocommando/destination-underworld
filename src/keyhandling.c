@@ -222,7 +222,7 @@ void handle_uber_wizard_weapon(World *world)
     double x = world->plr.x - world->plr.dx * HALFTILESIZE;
     double y = world->plr.y - world->plr.dy * HALFTILESIZE;
     int count = 0;
-    while (x > 0 && !get_tile_at(world, x, y)->is_wall)
+    while (x > 0 && !get_wall_type_at(world, x, y))
     {
       x += world->plr.dx;
       y += world->plr.dy;
@@ -251,7 +251,7 @@ void handle_uber_wizard_weapon(World *world)
                 int ty = enm->y + y * TILESIZE;
                 int xx = enm->x;
                 int yy = enm->y;
-                while (xx != tx && yy != ty && !get_tile_at(world, xx, yy)->is_wall)
+                while (xx != tx && yy != ty && !get_wall_type_at(world, xx, yy))
                 {
                   if (tx > enm->x)
                     xx++;
