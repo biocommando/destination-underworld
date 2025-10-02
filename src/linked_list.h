@@ -37,7 +37,7 @@ void linked_list_clear(LinkedList *lst);
 LinkedList_it_state linked_list_iteration_start(LinkedList *lst);
 void *linked_list_iterate(LinkedList_it_state *state);
 
-#define LINKED_LIST_FOR_EACH(list, type, i, delete_state)                                  \
+#define LINKED_LIST_FOR_EACH(list, type, i, delete_state)                        \
     for (LinkedList_it_state _it_state__##i = linked_list_iteration_start(list); \
          (i = (type *)linked_list_iterate(&_it_state__##i));                     \
          _it_state__##i.delete_current = delete_state)

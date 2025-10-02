@@ -88,7 +88,7 @@ void *linked_list_iterate(LinkedList_it_state *state)
     if (state->lst == NULL)
         return NULL;
     ListNode *to_be_deleted = NULL;
-    if (state->delete_current && state->node)
+    if (state->delete_current)
     {
         state->delete_current = 0;
         to_be_deleted = state->node;
@@ -122,6 +122,7 @@ void add_managed_list(LinkedList *lst)
         {
             linked_list_clear(*el);
         }
+        linked_list_clear(_lists);
         free(_lists);
         _lists = NULL;
         return;
