@@ -64,9 +64,10 @@ TEST(linked_list__list_add_remove_clear_access)
 
 void test_managed_lists(TEST_FN_ARGS_DEF, LinkedList *lists)
 {
+    LinkedList *mgmt = NULL;
     for (int i = 0; i < 3; i++)
     {
-        add_managed_list(&lists[i]);
+        add_managed_list(&lists[i], &mgmt);
         for (int j = 0; j < 3; j++)
         {
             *(LINKED_LIST_ADD(&lists[i], int)) = j;
@@ -74,13 +75,13 @@ void test_managed_lists(TEST_FN_ARGS_DEF, LinkedList *lists)
         assert_int_list_contents_equal(TEST_FN_ARGS, &lists[i], "0,1,2,");
     }
     // Add already managed -> should clear the original entry
-    add_managed_list(&lists[1]);
+    add_managed_list(&lists[1], &mgmt);
     for (int i = 0; i < 3; i++)
     {
         assert_int_list_contents_equal(TEST_FN_ARGS, &lists[i], i == 1 ? "" : "0,1,2,");
     }
     // Add the fourth list
-    add_managed_list(&lists[3]);
+    add_managed_list(&lists[3], &mgmt);
     // Add elements back
     for (int j = 0; j < 3; j++)
     {
@@ -93,12 +94,13 @@ void test_managed_lists(TEST_FN_ARGS_DEF, LinkedList *lists)
         assert_int_list_contents_equal(TEST_FN_ARGS, &lists[i], "0,1,2,");
     }
     // Passing NULL clears all lists
-    add_managed_list(NULL);
+    add_managed_list(NULL, &mgmt);
 
     for (int i = 0; i < 4; i++)
     {
         assert_int_list_contents_equal(TEST_FN_ARGS, &lists[i], "");
     }
+    ASSERT(mgmt == NULL);
 }
 
 TEST(linked_list__managed_lists)

@@ -274,12 +274,12 @@ void clear_visual_fx(WorldFx *world_fx, int init)
 {
     if (init)
     {
-        add_managed_list(&world_fx->bodypart_container);
+        add_managed_list(&world_fx->bodypart_container, world_fx->management_list);
     }
-    add_managed_list(&world_fx->explosion);
-    add_managed_list(&world_fx->sparkle_fx);
-    add_managed_list(&world_fx->sparkle_fx_circle);
-    add_managed_list(&world_fx->flames);
+    add_managed_list(&world_fx->explosion, world_fx->management_list);
+    add_managed_list(&world_fx->sparkle_fx, world_fx->management_list);
+    add_managed_list(&world_fx->sparkle_fx_circle, world_fx->management_list);
+    add_managed_list(&world_fx->flames, world_fx->management_list);
     memset(&world_fx->uber_wizard_weapon_fx, 0, sizeof(world_fx->uber_wizard_weapon_fx));
 
     if (init)

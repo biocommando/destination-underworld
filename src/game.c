@@ -558,7 +558,7 @@ void game(GlobalGameState *ggs)
     write_recording_complete_state_file(&world, ggs, time_stamp);
 
   al_destroy_bitmap(world.spr);
-  add_managed_list(NULL);
+  add_managed_list(NULL, &world.management_list);
 
   reset_screen_transform();
 

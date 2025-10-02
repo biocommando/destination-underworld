@@ -107,34 +107,33 @@ void *linked_list_iterate(LinkedList_it_state *state)
     return state->node->obj;
 }
 
-void add_managed_list(LinkedList *lst)
+void add_managed_list(LinkedList *lst, LinkedList **root_list)
 {
-    static LinkedList *_lists = NULL;
-    if (!_lists)
+    if (!*root_list)
     {
-        _lists = malloc(sizeof(LinkedList));
-        *_lists = linked_list_create();
+        *root_list = malloc(sizeof(LinkedList));
+        **root_list = linked_list_create();
     }
     LinkedList **el;
     if (!lst)
     {
-        LINKED_LIST_FOR_EACH(_lists, LinkedList*, el, 1)
+        LINKED_LIST_FOR_EACH(*root_list, LinkedList*, el, 1)
         {
             linked_list_clear(*el);
         }
-        linked_list_clear(_lists);
-        free(_lists);
-        _lists = NULL;
+        linked_list_clear(*root_list);
+        free(*root_list);
+        *root_list = NULL;
         return;
     }
-    LINKED_LIST_FOR_EACH(_lists, LinkedList*, el, *el == lst)
+    LINKED_LIST_FOR_EACH(*root_list, LinkedList*, el, *el == lst)
     {
         if (*el == lst)
         {
             linked_list_clear(*el);
         }
     }
-    el = LINKED_LIST_ADD(_lists, LinkedList *);
+    el = LINKED_LIST_ADD(*root_list, LinkedList *);
     *el = lst;
     *lst = linked_list_create();
 }
@@ -145,25 +144,6 @@ typedef struct
 {
     int a;
 } A;
-
-void test_manage()
-{
-    LinkedList lst1;
-    LinkedList lst2;
-    LinkedList lst3;
-    add_managed_list(&lst1);
-    LINKED_LIST_ADD(&lst1, A)->a = 1;
-    add_managed_list(&lst2);
-    LINKED_LIST_ADD(&lst2, A)->a = 1;
-    LINKED_LIST_ADD(&lst2, A)->a = 2;
-    add_managed_list(&lst3);
-    LINKED_LIST_ADD(&lst3, A)->a = 1;
-    LINKED_LIST_ADD(&lst3, A)->a = 2;
-    LINKED_LIST_ADD(&lst3, A)->a = 3;
-
-    add_managed_list(&lst2);
-    add_managed_list(NULL);
-}
 
 int main(int argc, char **argv)
 {
@@ -227,7 +207,6 @@ int main(int argc, char **argv)
     {
         printf("A{%d}\n", el->a);
     }
-    test_manage();
     return 0;
 }
 

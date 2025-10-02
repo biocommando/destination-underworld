@@ -401,6 +401,7 @@ typedef struct
     // at that tile
     char floor_shade_map[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
     char floor_fx[ROOMCOUNT][MAPMAX_X][MAPMAX_Y];
+    LinkedList **management_list; // Points to world->management_list
 } WorldFx;
 
 struct killed_enemy_stats
@@ -482,6 +483,8 @@ typedef struct
     // Maximum health that can be obtained using potions
     int plr_max_health;
     LinkedList killed_enemy_stats;
+    // List that manages all the other linked lists
+    LinkedList *management_list;
 } World;
 
 // Global state that is persisted over different game(...) calls.
