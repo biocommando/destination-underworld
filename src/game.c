@@ -282,7 +282,7 @@ void game(GlobalGameState *ggs)
 
   create_sparkles(world.plr.x, world.plr.y, 30, -1, 10, &world);
 
-  clock_t game_loop_clk = clock();
+  double game_loop_clk = al_get_time();
 
   int next_perk_xp = calculate_next_perk_xp(world.plr.perks);
 

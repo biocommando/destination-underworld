@@ -2,14 +2,14 @@
 #include "helpers.h"
 #include "allegro_management.h"
 
-void game_loop_rest(clock_t *state)
+void game_loop_rest(double *state)
 {
-    while (clock() - *state < 25) // because of timer resolution the actual game tick rate is 30 ms
+    while (al_get_time() - *state < 0.025) // because of timer resolution the actual game tick rate is 30 ms
     {
         wait_delay(1);
         consume_event_queue();
     }
-    *state = clock();
+    *state = al_get_time();
 }
 
 double random()
