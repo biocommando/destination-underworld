@@ -50,7 +50,7 @@ module.exports = v => {
 
     starCopy('dataloss/core-pack', /^mission.*$/, `${dest}dataloss/core-pack`)
     starCopy('dataloss/core-pack', /^(enemy-properties|arenas|help)\.dat$/, `${dest}dataloss/core-pack`)
-    starCopy('dataloss/core-pack', /^best_times\.dat\.template$/, `${dest}dataloss/core-pack/best_times.dat`)
+    fs.copyFileSync('dataloss/core-pack/best_times.dat.template', `${dest}dataloss/core-pack/best_times.dat`)
     
     const mpAuthOut = v.sh(`${v.mpAuthEx} core-pack ./dataloss/core-pack/ no-debug-prints`).toString()
     fs.writeFileSync(`${dest}dataloss/core-pack/auth.dat`, mpAuthOut)
