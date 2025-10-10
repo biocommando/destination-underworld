@@ -137,3 +137,13 @@ typedef struct
     } while (0)
 
 #define TEST_DEBUG_PRINT_CLEAR() TEST_DEBUG_PRINTF("")
+
+#define TEST_MAIN(main_function_name)     \
+    TEST_GLOBAL_STATE                     \
+    int main(int argc, char **argv)       \
+    {                                     \
+        INIT_TESTS                        \
+        extern void main_function_name(); \
+        main_function_name();             \
+        END_TESTS;                        \
+    }

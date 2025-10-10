@@ -1,11 +1,11 @@
 #include <test-du.h>
 
 int logging_enabled = 0;
-TEST_GLOBAL_STATE;
 
-int main(int argc, char **argv)
+TEST_MAIN(all_tests)
+
+void all_tests()
 {
-    INIT_TESTS;
     TEST_SUITE(synth)
     {
         TEST_SUITE(adsr_envelope)
@@ -70,5 +70,4 @@ int main(int argc, char **argv)
         RUN_TEST(linked_list__list_add_remove_clear_access);
         RUN_TEST(linked_list__managed_lists);
     }
-    END_TESTS;
 }
