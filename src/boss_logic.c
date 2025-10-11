@@ -76,10 +76,14 @@ void boss_logic(World *world, int boss_died)
       }
       if (tile_type)
       {
-        world->map[world->current_room - 1][event->parameters[0]][event->parameters[1]] = create_tile(tile_type);
-        trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
-        for (int y = 0; y < 3; y++)
-          create_explosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world, &world->visual_fx, 1);
+        Tile *tile = get_tile_at_mut(world, event->parameters[0], event->parameters[1]);
+        if (tile)
+        {
+          *tile = create_tile(tile_type);
+          trigger_sample(SAMPLE_EXPLOSION(rand() % 6), 200);
+          for (int y = 0; y < 3; y++)
+            create_explosion(event->parameters[0] * TILESIZE + TILESIZE / 2, event->parameters[1] * TILESIZE + TILESIZE / 2, world, &world->visual_fx, 1);
+        }
       }
     }
     break;
