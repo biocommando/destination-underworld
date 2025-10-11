@@ -110,3 +110,9 @@ void linked_list__managed_lists()
     test_managed_lists(lists);
     test_managed_lists(lists);
 }
+
+void test_suite__linked_list()
+{
+    RUN_TEST(linked_list__list_add_remove_clear_access);
+    RUN_TEST(linked_list__managed_lists);
+}

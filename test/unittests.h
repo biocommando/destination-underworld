@@ -100,10 +100,8 @@ typedef struct
     (_test_state.filter_pos && !strstr(name, _test_state.filter_pos)) || \
         (_test_state.filter_neg && strstr(name, _test_state.filter_neg))
 
-#define TEST_SUITE(name)                                                   \
-    int skip_suite_##name = TEST_FILTER(#name);                            \
-    printf("\n%s suite " #name "\n", !skip_suite_##name ? "Run" : "Skip"); \
-    if (!skip_suite_##name)
+#define TEST_SUITE(name) \
+    if (_check_test_suite_enabled(#name))
 
 #define RUN_TEST_SUITE(name) \
     TEST_SUITE(name)         \
@@ -112,10 +110,10 @@ typedef struct
         name();              \
     }
 
-// defined in TEST_GLOBAL_STATE
 #define RUN_TEST_FN_DEF void _run_test__execute(void (*fn)(), const char *name)
-
 RUN_TEST_FN_DEF;
+#define CHECK_TEST_SUITE_FN_DEF _check_test_suite_enabled(const char *name)
+CHECK_TEST_SUITE_FN_DEF;
 
 #define RUN_TEST(name)                   \
     do                                   \
@@ -126,9 +124,16 @@ RUN_TEST_FN_DEF;
 
 #define TEST_GLOBAL_STATE                    \
     T_test_state _test_state;                \
+    CHECK_TEST_SUITE_FN_DEF                  \
+    {                                        \
+        int skip = TEST_FILTER(name);        \
+        printf("\n%s suite %s\n",            \
+               skip ? "Skip" : "Run",        \
+               name);                        \
+        return !skip;                        \
+    }                                        \
     RUN_TEST_FN_DEF                          \
     {                                        \
-        extern T_test_state _test_state;     \
         TEST_DEBUG_PRINT_CLEAR();            \
         if (TEST_FILTER(name))               \
         {                                    \

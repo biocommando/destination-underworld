@@ -98,3 +98,10 @@ void duscript__gotos()
     ASSERT(INT_EQ(0, ret));
     ASSERT(STR_EQ(st.goto_label, "+LABEL_3"));
 }
+
+void test_suite__duscript()
+{
+    RUN_TEST(duscript__set_variables);
+    RUN_TEST(duscript__conditions);
+    RUN_TEST(duscript__gotos);
+}

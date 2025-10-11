@@ -34,7 +34,7 @@ void arenaconf__read_arena_configs__valid_and_invalid_entries()
     record_file_flush();
 
     ASSERT(INT_EQ(ac.number_of_arenas, 5));
-    
+
     ASSERT(INT_EQ(ac.arenas[0].level_number, 123));
     ASSERT(STR_EQ(ac.arenas[0].name, "A fancy name"));
 
@@ -48,7 +48,7 @@ void arenaconf__read_arena_configs__valid_and_invalid_entries()
     long_name[sizeof(ac.arenas[0].name) - 1] = 0;
     ASSERT(INT_EQ(ac.arenas[3].level_number, 555));
     ASSERT(STR_EQ(ac.arenas[3].name, long_name));
-    
+
     ASSERT(INT_EQ(ac.arenas[4].level_number, 333));
     ASSERT(STR_EQ(ac.arenas[4].name, "Arena level 5"));
 }
@@ -92,4 +92,11 @@ void arenaconf__set_arena_highscore()
     ASSERT(INT_EQ(get_arena_highscore(123, 0), 10));
 
     record_file_flush();
+}
+
+void test_suite__arenaconf()
+{
+    RUN_TEST(arenaconf__read_arena_configs__valid_and_invalid_entries);
+    RUN_TEST(arenaconf__get_arena_highscore);
+    RUN_TEST(arenaconf__set_arena_highscore);
 }

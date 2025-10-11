@@ -112,3 +112,11 @@ void record_file__cannot_open_file__does_not_crash()
     record_file_set_record("path/that/does/not/exist", "hello", "hello world");
     record_file_flush();
 }
+
+void test_suite__record_file()
+{
+    RUN_TEST(record_file__read_write_and_switching_files);
+    RUN_TEST(record_file__format_functions);
+    RUN_TEST(record_file__limits);
+    RUN_TEST(record_file__cannot_open_file__does_not_crash);
+}

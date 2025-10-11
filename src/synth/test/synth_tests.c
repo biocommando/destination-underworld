@@ -386,7 +386,7 @@ void wt_sample_loader__works()
 
     int read_wts = wt_sample_read_all("./");
     ASSERT(INT_EQ(1, read_wts));
-    
+
     // More than max -> null
     ASSERT(get_wt_sample(MAX_WT_SAMPLE_SLOTS) == NULL);
 
@@ -408,4 +408,42 @@ void wt_sample_loader__works()
     wt_sample_free();
 
     remove("wt_sample_slot_0.wav");
+}
+
+void test_suite__adsr_envelope()
+{
+    RUN_TEST(adsr_envelope__attack_decay);
+    RUN_TEST(adsr_envelope__attack_decay_release);
+    RUN_TEST(adsr_envelope__attack_release);
+    RUN_TEST(adsr_envelope__attack_decay_sustain_release);
+    RUN_TEST(adsr_envelope__attack_decay_cycling);
+}
+
+void test_suite__basic_delay()
+{
+    RUN_TEST(basic_delay__works);
+}
+
+void test_suite__basic_oscillator()
+{
+    RUN_TEST(basic_oscillator__sin_waveform);
+    RUN_TEST(basic_oscillator__sqr_waveform);
+    RUN_TEST(basic_oscillator__saw_waveform);
+    RUN_TEST(basic_oscillator__tri_waveform);
+    RUN_TEST(basic_oscillator__wt_waveform);
+    RUN_TEST(basic_oscillator__fm_output);
+    RUN_TEST(basic_oscillator__randomize_phase);
+}
+
+void test_suite__wt_sample_loader()
+{
+    RUN_TEST(wt_sample_loader__works);
+}
+
+void test_suite__synth()
+{
+    RUN_TEST_SUITE(test_suite__adsr_envelope)
+    RUN_TEST_SUITE(test_suite__basic_delay)
+    RUN_TEST_SUITE(test_suite__basic_oscillator)
+    RUN_TEST_SUITE(test_suite__wt_sample_loader)
 }
