@@ -1,5 +1,5 @@
 #include <math.h>
-#include <test-du.h>
+#include <unittests.h>
 #include "../adsr_envelope.h"
 #include "../basic_delay.h"
 #include "../basic_oscillator.h"

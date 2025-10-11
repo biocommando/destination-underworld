@@ -1,4 +1,4 @@
-#include <test-du.h>
+#include <unittests.h>
 #include "../duscript.h"
 
 TEST(duscript__set_variables)

@@ -1,4 +1,4 @@
-#include <test-du.h>
+#include <unittests.h>
 #include "../record_file.h"
 
 static const char *fn = "record_file__read_write_and_switching_files.txt";
