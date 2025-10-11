@@ -55,9 +55,6 @@ void arenaconf__read_arena_configs__valid_and_invalid_entries()
 
 void arenaconf__get_arena_highscore()
 {
-    // The directory doesn't exist so the test records don't get written to disk
-    strcpy(get_game_settings()->mission_pack, "not-real-missionpack");
-
     const char *testfile = DATADIR "not-real-missionpack/arcade_mode_highscores.dat";
 
     record_file_set_record(testfile, "level_number=123;mode=1;", "level_number=123;mode=1; 1");
@@ -79,9 +76,6 @@ void arenaconf__get_arena_highscore()
 
 void arenaconf__set_arena_highscore()
 {
-    // The directory doesn't exist so the test records don't get written to disk
-    strcpy(get_game_settings()->mission_pack, "not-real-missionpack");
-
     const char *testfile = DATADIR "not-real-missionpack/arcade_mode_highscores.dat";
 
     set_arena_highscore(123, 1, 10);
@@ -96,7 +90,15 @@ void arenaconf__set_arena_highscore()
 
 void test_suite__arenaconf()
 {
+    char orig_mission_pack[64];
+    memcpy(orig_mission_pack, get_game_settings()->mission_pack, sizeof(orig_mission_pack));
+
+    // The directory doesn't exist so the test records don't get written to disk
+    strcpy(get_game_settings()->mission_pack, "not-real-missionpack");
+
     RUN_TEST(arenaconf__read_arena_configs__valid_and_invalid_entries);
     RUN_TEST(arenaconf__get_arena_highscore);
     RUN_TEST(arenaconf__set_arena_highscore);
+
+    memcpy(get_game_settings()->mission_pack, orig_mission_pack, sizeof(orig_mission_pack));
 }
