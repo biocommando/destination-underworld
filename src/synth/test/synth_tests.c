@@ -7,7 +7,7 @@
 #include "../wav_handler.h"
 #include "../wt_sample_loader.h"
 
-TEST(adsr_envelope__attack_decay)
+void adsr_envelope__attack_decay()
 {
     AdsrEnvelope e;
     init_AdsrEnvelope(&e);
@@ -40,7 +40,7 @@ TEST(adsr_envelope__attack_decay)
     TEST_DEBUG_PRINT_CLEAR();
 }
 
-TEST(adsr_envelope__attack_decay_cycling)
+void adsr_envelope__attack_decay_cycling()
 {
     AdsrEnvelope e;
     init_AdsrEnvelope(&e);
@@ -64,7 +64,7 @@ TEST(adsr_envelope__attack_decay_cycling)
     TEST_DEBUG_PRINT_CLEAR();
 }
 
-TEST(adsr_envelope__attack_decay_release)
+void adsr_envelope__attack_decay_release()
 {
     AdsrEnvelope e;
     init_AdsrEnvelope(&e);
@@ -99,7 +99,7 @@ TEST(adsr_envelope__attack_decay_release)
     ASSERT(INT_EQ(1, AdsrEnvelope_ended(&e)));
 }
 
-TEST(adsr_envelope__attack_release)
+void adsr_envelope__attack_release()
 {
     AdsrEnvelope e;
     init_AdsrEnvelope(&e);
@@ -128,7 +128,7 @@ TEST(adsr_envelope__attack_release)
     ASSERT(INT_EQ(1, AdsrEnvelope_ended(&e)));
 }
 
-TEST(adsr_envelope__attack_decay_sustain_release)
+void adsr_envelope__attack_decay_sustain_release()
 {
     AdsrEnvelope e;
     init_AdsrEnvelope(&e);
@@ -171,7 +171,7 @@ TEST(adsr_envelope__attack_decay_sustain_release)
     ASSERT(INT_EQ(1, AdsrEnvelope_ended(&e)));
 }
 
-TEST(basic_delay__works)
+void basic_delay__works()
 {
     BasicDelay bd;
     init_BasicDelay(&bd, 10, 10);
@@ -215,7 +215,7 @@ TEST(basic_delay__works)
     free_BasicDelay(&bd);
 }
 
-TEST(basic_oscillator__sin_waveform)
+void basic_oscillator__sin_waveform()
 {
     BasicOscillator bo;
     init_BasicOscillator(&bo, 10);
@@ -229,7 +229,7 @@ TEST(basic_oscillator__sin_waveform)
     }
 }
 
-TEST(basic_oscillator__sqr_waveform)
+void basic_oscillator__sqr_waveform()
 {
     BasicOscillator bo;
     init_BasicOscillator(&bo, 10);
@@ -243,7 +243,7 @@ TEST(basic_oscillator__sqr_waveform)
     }
 }
 
-TEST(basic_oscillator__saw_waveform)
+void basic_oscillator__saw_waveform()
 {
     BasicOscillator bo;
     init_BasicOscillator(&bo, 10);
@@ -257,7 +257,7 @@ TEST(basic_oscillator__saw_waveform)
     }
 }
 
-TEST(basic_oscillator__tri_waveform)
+void basic_oscillator__tri_waveform()
 {
     BasicOscillator bo;
     init_BasicOscillator(&bo, 32);
@@ -290,7 +290,7 @@ TEST(basic_oscillator__tri_waveform)
     }
 }
 
-TEST(basic_oscillator__wt_waveform)
+void basic_oscillator__wt_waveform()
 {
     BasicOscillator bo;
     init_BasicOscillator(&bo, 10);
@@ -332,7 +332,7 @@ TEST(basic_oscillator__wt_waveform)
     }
 }
 
-TEST(basic_oscillator__fm_output)
+void basic_oscillator__fm_output()
 {
     BasicOscillator bo;
     init_BasicOscillator(&bo, 10);
@@ -346,7 +346,7 @@ TEST(basic_oscillator__fm_output)
     }
 }
 
-TEST(basic_oscillator__randomize_phase)
+void basic_oscillator__randomize_phase()
 {
     BasicOscillator bo;
     init_BasicOscillator(&bo, 10);
@@ -372,7 +372,7 @@ TEST(basic_oscillator__randomize_phase)
     synth_random_reset();
 }
 
-TEST(wt_sample_loader__works)
+void wt_sample_loader__works()
 {
     struct wav_file wf;
     create_wav_file(&wf, 10, 1, 32, 44100);

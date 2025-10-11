@@ -19,7 +19,7 @@ static void assert_int_list_contents_equal(LinkedList *lst, const char *cmp_str)
     ASSERT(STR_EQ(test_str, cmp_str));
 }
 
-TEST(linked_list__list_add_remove_clear_access)
+void linked_list__list_add_remove_clear_access()
 {
     LinkedList lst = linked_list_create();
     int *el, *_5;
@@ -103,7 +103,7 @@ void test_managed_lists(LinkedList *lists)
     ASSERT(mgmt == NULL);
 }
 
-TEST(linked_list__managed_lists)
+void linked_list__managed_lists()
 {
     LinkedList lists[4];
     // Both executions should work exactly in the same manner.

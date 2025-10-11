@@ -2,7 +2,7 @@
 
 #include "../bossfightconf.h"
 
-TEST(scripted_events__pos_triggers)
+void scripted_events__pos_triggers()
 {
     int p[NUM_POS_TRIGGERS];
     int expected_states[NUM_POS_TRIGGERS];
@@ -62,7 +62,7 @@ TEST(scripted_events__pos_triggers)
     ASSERT(INT_EQ(pos_trigger_state(p, NUM_POS_TRIGGERS), POS_TRIG_INIT));
 }
 
-TEST(scripted_events__read_bfconfig)
+void scripted_events__read_bfconfig()
 {
     const char *fname = "scripted_events__read_bfconfig.txt";
     FILE *f = fopen(fname, "w");
@@ -212,7 +212,7 @@ TEST(scripted_events__read_bfconfig)
     ev++;                                                \
     c.num_events++;
 
-TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME_INTERVAL)
+void scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME_INTERVAL()
 {
     BossFightConfig c;
     memset(&c, 0, sizeof(c));
@@ -236,7 +236,7 @@ TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME
     ASSERT(INT_EQ(c.state.triggers[1], 0));
 }
 
-TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME_ONE_TIME)
+void scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME_ONE_TIME()
 {
     BossFightConfig c;
     memset(&c, 0, sizeof(c));
@@ -253,7 +253,7 @@ TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_TIME
     }
 }
 
-TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_HEALTH)
+void scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_HEALTH()
 {
     BossFightConfig c;
     memset(&c, 0, sizeof(c));
@@ -283,7 +283,7 @@ TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_HEAL
     ASSERT(INT_EQ(c.state.triggers[1], 0));
 }
 
-TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED)
+void scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED()
 {
     BossFightConfig c;
     memset(&c, 0, sizeof(c));
@@ -302,7 +302,7 @@ TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_WAYP
     ASSERT(INT_EQ(c.state.triggers[0], 1));
 }
 
-TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED)
+void scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED()
 {
     BossFightConfig c;
     memset(&c, 0, sizeof(c));
@@ -316,7 +316,7 @@ TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_PLAY
     }
 }
 
-TEST(scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER)
+void scripted_events__bossfight_process_event_triggers__BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER()
 {
     BossFightConfig c;
     memset(&c, 0, sizeof(c));

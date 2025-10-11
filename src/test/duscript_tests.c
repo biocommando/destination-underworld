@@ -1,7 +1,7 @@
 #include <unittests.h>
 #include "../duscript.h"
 
-TEST(duscript__set_variables)
+void duscript__set_variables()
 {
     DuScriptState st = du_script_init();
     DuScriptVariable *var;
@@ -27,7 +27,7 @@ TEST(duscript__set_variables)
     ASSERT(STR_EQ("world2", du_script_variable(&st, "hello2")->value));
 }
 
-TEST(duscript__conditions)
+void duscript__conditions()
 {
     DuScriptState st = du_script_init();
     DuScriptVariable *var, *var2;
@@ -76,7 +76,7 @@ TEST(duscript__conditions)
     ASSERT(STR_EQ(st.goto_label, "+fwd_label"));
 }
 
-TEST(duscript__gotos)
+void duscript__gotos()
 {
     DuScriptState st = du_script_init();
     int ret = du_script_execute_line(&st, "data line");

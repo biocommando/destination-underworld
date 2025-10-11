@@ -12,7 +12,7 @@ static void create_test_file()
     fclose(f);
 }
 
-TEST(record_file__read_write_and_switching_files)
+void record_file__read_write_and_switching_files()
 {
     create_test_file();
     char rec[100];
@@ -66,7 +66,7 @@ TEST(record_file__read_write_and_switching_files)
     remove(fn2);
 }
 
-TEST(record_file__format_functions)
+void record_file__format_functions()
 {
     create_test_file();
 
@@ -84,7 +84,7 @@ TEST(record_file__format_functions)
     remove(fn);
 }
 
-TEST(record_file__limits)
+void record_file__limits()
 {
     FILE *f;
     f = fopen(fn, "w");
@@ -107,7 +107,7 @@ TEST(record_file__limits)
     remove(fn);
 }
 
-TEST(record_file__cannot_open_file__does_not_crash)
+void record_file__cannot_open_file__does_not_crash()
 {
     record_file_set_record("path/that/does/not/exist", "hello", "hello world");
     record_file_flush();

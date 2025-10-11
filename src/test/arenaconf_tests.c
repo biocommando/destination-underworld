@@ -6,7 +6,7 @@
 #include "../settings.h"
 #include "../duConstants.h"
 
-TEST(arenaconf__read_arena_configs__valid_and_invalid_entries)
+void arenaconf__read_arena_configs__valid_and_invalid_entries()
 {
     // The directory doesn't exist so the test records don't get written to disk
     const char *testfile = "path/does/not/exist";
@@ -53,7 +53,7 @@ TEST(arenaconf__read_arena_configs__valid_and_invalid_entries)
     ASSERT(STR_EQ(ac.arenas[4].name, "Arena level 5"));
 }
 
-TEST(arenaconf__get_arena_highscore)
+void arenaconf__get_arena_highscore()
 {
     // The directory doesn't exist so the test records don't get written to disk
     strcpy(get_game_settings()->mission_pack, "not-real-missionpack");
@@ -77,7 +77,7 @@ TEST(arenaconf__get_arena_highscore)
     record_file_flush();
 }
 
-TEST(arenaconf__set_arena_highscore)
+void arenaconf__set_arena_highscore()
 {
     // The directory doesn't exist so the test records don't get written to disk
     strcpy(get_game_settings()->mission_pack, "not-real-missionpack");

@@ -2,10 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef TEST_DEBUG_STR_LENGTH
+#define TEST_DEBUG_STR_LENGTH 1024
+#endif
 typedef struct
 {
     int test_result, n_tests, n_tests_failed, n_tests_skipped;
     const char *filter_pos, *filter_neg;
+    char debug[TEST_DEBUG_STR_LENGTH];
 } T_test_state;
 
 #define _AB_ASSERT_BASE(type, fmt, a, b) \
@@ -50,9 +54,8 @@ typedef struct
             printf("-------- ASSERTION FAILED: " #condition "\n");            \
             if (*_test_error)                                                 \
                 printf("               >>> REASON: %s\n", _test_error);       \
-            extern _TEST_DEBUG_PRINT_VAR;                                     \
-            if (*_test_debug_print)                                           \
-                printf("               >>>> DEBUG: %s\n", _test_debug_print); \
+            if (*_test_state.debug)                                           \
+                printf("               >>>> DEBUG: %s\n", _test_state.debug); \
         }                                                                     \
     } while (0)
 
@@ -60,15 +63,13 @@ typedef struct
 
 #define EXPECT_FLOAT_EQ(a, b) EXPECT_FLOAT_EQ_DELTA(a, b, 1e-6)
 
-// For backwards compatibility
-#define TEST(name) void name()
-
 #define INIT_TESTS                                                   \
     _test_state.n_tests = 0;                                         \
     _test_state.n_tests_failed = 0;                                  \
     _test_state.n_tests_skipped = 0;                                 \
     _test_state.filter_pos = NULL;                                   \
     _test_state.filter_neg = NULL;                                   \
+    *_test_state.debug = 0;                                          \
     for (int i = 1; i < argc; i++)                                   \
     {                                                                \
         if (!strcmp(argv[i], "--include") && i + 1 < argc)           \
@@ -104,36 +105,53 @@ typedef struct
     printf("\n%s suite " #name "\n", !skip_suite_##name ? "Run" : "Skip"); \
     if (!skip_suite_##name)
 
-#define RUN_TEST(name)                                                 \
-    do                                                                 \
-    {                                                                  \
-        extern T_test_state _test_state;                               \
-        TEST_DEBUG_PRINT_CLEAR();                                      \
-        if (TEST_FILTER(#name))                                        \
-        {                                                              \
-            _test_state.n_tests_skipped++;                             \
-            break;                                                     \
-        }                                                              \
-        _test_state.n_tests++;                                         \
-        _test_state.test_result = 1;                                   \
-        extern void name();                                            \
-        name();                                                        \
-        _test_state.n_tests_failed += _test_state.test_result ? 0 : 1; \
-        printf("%s : " #name "\n",                                     \
-               _test_state.test_result ? "[  OK  ]" : "[ FAIL ]");     \
+#define RUN_TEST_SUITE(name) \
+    TEST_SUITE(name)         \
+    {                        \
+        extern void name();  \
+        name();              \
+    }
+
+// defined in TEST_GLOBAL_STATE
+#define RUN_TEST_FN_DEF void _run_test__execute(void (*fn)(), const char *name)
+
+RUN_TEST_FN_DEF;
+
+#define RUN_TEST(name)                   \
+    do                                   \
+    {                                    \
+        extern void name();              \
+        _run_test__execute(name, #name); \
     } while (0)
 
-#define _TEST_DEBUG_PRINT_VAR char _test_debug_print[1024]
-
-#define TEST_GLOBAL_STATE       \
-    _TEST_DEBUG_PRINT_VAR = ""; \
-    T_test_state _test_state;
+#define TEST_GLOBAL_STATE                    \
+    T_test_state _test_state;                \
+    RUN_TEST_FN_DEF                          \
+    {                                        \
+        extern T_test_state _test_state;     \
+        TEST_DEBUG_PRINT_CLEAR();            \
+        if (TEST_FILTER(name))               \
+        {                                    \
+            _test_state.n_tests_skipped++;   \
+            return;                          \
+        }                                    \
+        _test_state.n_tests++;               \
+        _test_state.test_result = 1;         \
+        fn();                                \
+        if (_test_state.test_result)         \
+            printf("[  OK  ] : %s\n", name); \
+        else                                 \
+        {                                    \
+            _test_state.n_tests_failed++;    \
+            printf("[ FAIL ] : %s\n", name); \
+        }                                    \
+    }
 
 #define TEST_DEBUG_PRINTF(...)                   \
     do                                           \
     {                                            \
-        extern _TEST_DEBUG_PRINT_VAR;            \
-        sprintf(_test_debug_print, __VA_ARGS__); \
+        extern T_test_state _test_state;         \
+        sprintf(_test_state.debug, __VA_ARGS__); \
     } while (0)
 
 #define TEST_DEBUG_PRINT_CLEAR() TEST_DEBUG_PRINTF("")
