@@ -6,6 +6,7 @@
         "sha1",
         "mpauth",
         "synth",
+        "gen-cmd-dispatchers",
         "compile-game"
     ],
     "environment-debug": [
@@ -30,11 +31,13 @@
     "game": [
         "$environment-debug",
         "game-obj-files",
+        "gen-cmd-dispatchers",
         "compile-game"
     ],
     "unit-tests": [
         "$environment-debug",
         "game-obj-files",
+        "gen-cmd-dispatchers",
         "unit-tests"
     ],
     "add-save-data-hash": [
@@ -44,6 +47,10 @@
     "test": [
         "$unit-tests",
         "run-tests"
+    ],
+    "dispatchers": [
+        "environment-common",
+        "gen-cmd-dispatchers"
     ],
     "default": "debug",
     "verbose": true

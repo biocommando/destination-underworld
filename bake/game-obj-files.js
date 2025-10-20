@@ -19,7 +19,8 @@ module.exports = v => {
         'src/read_level.o',
         'src/allegro_management.o',
         'src/loadindicator.o',
-        'src/duscript.o',
+        //'src/duscript.o',
+        'src/variables.o',
         'src/sprites.o',
         'src/record_file.o',
         'src/best_times.o',
@@ -30,6 +31,8 @@ module.exports = v => {
         'src/potion_logic.o',
         'src/screenshot.o',
         'src/linked_list.o',
+        'src/command_file.o',
+        'src/strescape.o',
         'src/game.o',
         'src/synth/adsr_envelope.o',
         'src/synth/basic_delay.o',
@@ -41,6 +44,6 @@ module.exports = v => {
         'src/synth/midi_reader.o',
         'src/synth/moog_filter.o',
         'src/synth/synth_random.o',
-        'src/synth/synth.o'
+        'src/synth/synth.o',
     ].join(' ')
 }

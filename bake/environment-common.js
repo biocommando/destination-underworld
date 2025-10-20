@@ -5,6 +5,7 @@ module.exports = v => {
     v.compiler_flags = '-O3 -std=c2x -Wall -Wextra -Wpedantic -Wno-unused-result -Wno-format-security'
     // Uncomment to remove warnings
     // v.compiler_flags += ' -w'
+    v.compiler_flags += ' -Icommand_file'
     v.auth_setup = ''
     v.mpAuthEx = v.isWindows ? '.\\mpauth.exe' : './mpauth'
     if (!v.isWindows) {

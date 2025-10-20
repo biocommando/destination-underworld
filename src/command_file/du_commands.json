@@ -1,0 +1,108 @@
+{
+    "read_level": {
+        "state": "LevelState",
+        "header": {
+            "version": "int",
+            "extra": "str"
+        },
+        "object": {
+            "id": "int",
+            "x": "int",
+            "validate:x": {
+                "type": "range",
+                "min": 0,
+                "max": 15
+            },
+            "y": "int",
+            "validate:y": {
+                "type": "range",
+                "min": 0,
+                "max": 11
+            },
+            "room": "int",
+            "validate:room": {
+                "type": "range",
+                "min": 1,
+                "max": 8
+            }
+        },
+        "condition": {
+            "expression": "str",
+            "label": "str"
+        },
+        "goto": {
+            "label": "str"
+        },
+        "set_var": {
+            "name": "str",
+            "value": "str"
+        },
+        "script_line": {
+            "value": "str"
+        },
+        "script_start": {
+            "room_number": "int",
+            "validate:room_number": {
+                "type": "range",
+                "min": 1,
+                "max": 8
+            }
+        }
+    },
+    "enemy_properties": {
+        "state": "EnemyConfigs",
+        "enemy_config": {
+            "enemy_type": "int",
+            "validate:enemy_type": {
+                "type": "range",
+                "min": 0,
+                "max": 4
+            },
+            "turret": "int",
+            "validate:turret": {
+                "type": "choice",
+                "options": [
+                    0,
+                    1
+                ]
+            },
+            "rate": "int",
+            "validate:rate": {
+                "type": "range",
+                "min": 1
+            },
+            "health": "int",
+            "validate:health": {
+                "type": "range",
+                "min": 1
+            },
+            "gold": "int",
+            "validate:gold": {
+                "type": "range",
+                "min": 0
+            },
+            "fast": "int",
+            "validate:fast": {
+                "type": "choice",
+                "options": [
+                    0,
+                    1
+                ]
+            },
+            "hurts_monsters": "int",
+            "validate:hurts_monsters": {
+                "type": "choice",
+                "options": [
+                    0,
+                    1
+                ]
+            },
+            "potion_for_potion_only": "int",
+            "validate:potion_for_potion_only": {
+                "type": "range",
+                "min": -1,
+                "max": 6
+            }
+        }
+    }
+}

@@ -269,6 +269,12 @@ typedef struct
  */
 void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers);
 
+int read_bfconfig_line(const char *buf, BossFightConfig *config, int game_modifiers, BossFightEventConfig **eventp);
+
+void bfconfig_init(BossFightConfig *config);
+
+void bfconfig_finalize(BossFightConfig *config);
+
 /*
  * Processes event triggers as described in BossFightEventConfig documentation.
  * Processing means that it checks each trigger condition and if the trigger condition

@@ -1,10 +1,13 @@
 #include "read_level.h"
 #include "worldInteraction.h"
 #include "settings.h"
-#include "duscript.h"
+#include "variables.h"
 #include "logging.h"
 #include "record_file.h"
 #include "sha1/du_dmac.h"
+
+#include "command_file/generated/dispatch_read_level.h"
+#include "command_file/generated/dispatch_enemy_properties.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -92,95 +95,150 @@ static inline void place_lev_object(World *world, int x, int y, int id, int room
     }
 }
 
-static inline void level_read_new_format(World *world, int room_to, FILE *f)
+void dispatch__handle_header(struct header_DispatchDto *dto)
 {
-    world->boss_fight_config = &world->boss_fight_configs[room_to - 1];
-    DuScriptVariable *var;
-    int file_start = ftell(f);
-    DuScriptState state = du_script_init();
-    int boss_exists = world->boss != NULL;
+    if (dto->version == 3)
+        return;
+    LOG_FATAL("legacy format file!\n");
+    exit(1);
+}
 
-    var = du_script_variable(&state, "game_modifiers");
-    sprintf(var->value, "%d", *world->game_modifiers);
-    var->read_only = 1;
+void dispatch__handle_object(struct object_DispatchDto *dto)
+{
+    place_lev_object(dto->state->world, dto->x, dto->y, dto->id, dto->room);
+}
 
-    while (!feof(f))
+void dispatch__handle_condition(struct condition_DispatchDto *dto)
+{
+    LOG("dispatch__handle_condition: <%s>\n", dto->expression);
+    const char *p = dto->expression;
+    while (p)
     {
-        char buf[DU_SCRIPT_MAX_STR_LEN];
-        fgets(buf, sizeof(buf), f);
-        if (feof(f))
-            break;
-        // level editor metadata
-        if (*buf == '#')
+        char logical_op[command_file_LINE_MAX] = "";
+        char name[command_file_LINE_MAX] = "";
+        char val[command_file_LINE_MAX] = "";
+        char op = 0;
+        if (sscanf(p, "%s %c %s %s", name, &op, val, logical_op) < 3)
+            return;
+        LOG_TRACE("Compare %s %c %s : %s\n", name, op, val, logical_op);
+        const char *var = get_var(name, dto->state->variables);
+        int same = var && !strcmp(var, val);
+        if ((op == '=' && same) || (op == '!' && !same))
         {
-            continue;
-        }
-        int ret = du_script_execute_line(&state, buf);
-        if (ret == 0)
-        {
-            continue;
-        }
-        else if (ret == 1)
-        {
-            fseek(f, file_start, SEEK_SET);
-            continue;
-        }
-        else if (*buf == '$')
-        {
-            LOG_TRACE("Found $\n");
-            int room = -1;
-            sscanf(buf + 1, "%d", &room);
-            if (room >= 1 && room <= ROOMCOUNT)
+            LOG_TRACE("Compare result true\n");
+            if (!strcmp("and", logical_op))
             {
-                LOG_TRACE("Reading bossfight for room %d\n", room);
-                read_bfconfig(f, &world->boss_fight_configs[room - 1], *world->game_modifiers);
-                world->boss_fight = 1;
+                p = strstr(p, " and ");
+                if (p)
+                {
+                    p += 5;
+                }
+            }
+            else
+            {
+                LOG_TRACE("condition ok -> jump to <%s>\n", logical_op);
+                strcpy(dto->skip_label, dto->label);
+                break;
             }
         }
-        else if (*buf != '*') // Checking this is just defensive coding; all lines starting with * should return 0.
+        else
         {
-            int id = -1, x = -1, y = -1, room = -1;
-            sscanf(buf, "%d %d %d %d", &id, &x, &y, &room);
-            place_lev_object(world, x, y, id, room);
-            if (id == -1)
-                LOG("unparsed line: %s\n", buf);
+            LOG_TRACE("Compare result false\n");
+            break;
         }
     }
-    fclose(f);
-    var = du_script_variable(&state, "name");
-    if (strlen(var->value) < 64)
+}
+
+void dispatch__handle_goto(struct goto_DispatchDto *dto)
+{
+    strcpy(dto->skip_label, dto->label);
+}
+
+void dispatch__handle_set_var(struct set_var_DispatchDto *dto)
+{
+    set_var(dto->name, dto->value, dto->state->variables);
+}
+
+void dispatch__handle_script_line(struct script_line_DispatchDto *dto)
+{
+    if (!dto->state->bfconfig)
+        return;
+    int ret = read_bfconfig_line(dto->value, dto->state->bfconfig, *dto->state->world->game_modifiers, &dto->state->bfevent);
+    if (ret != 0)
     {
-        strcpy(world->mission_display_name, var->value);
+        bfconfig_finalize(dto->state->bfconfig);
+        dto->state->bfconfig = NULL;
+    }
+}
+
+void dispatch__handle_script_start(struct script_start_DispatchDto *dto)
+{
+    int room = dto->room_number;
+    if (dto->state->bfconfig)
+    {
+        bfconfig_finalize(dto->state->bfconfig);
+        dto->state->bfconfig = NULL;
+    }
+    if (room >= 1 && room <= ROOMCOUNT)
+    {
+        LOG_TRACE("Reading bossfight for room %d\n", room);
+        dto->state->bfconfig = &dto->state->world->boss_fight_configs[room - 1];
+        bfconfig_init(dto->state->bfconfig);
+        dto->state->world->boss_fight = 1;
+    }
+}
+
+static inline void read_level_cmd_file(World *world, int room_to, const char *filename)
+{ 
+    int boss_exists = world->boss != NULL;
+    LevelState read_level_state;
+    memset(&read_level_state, 0, sizeof(LevelState));
+    VarState variables = create_VarState();
+    char game_mod_str[20];
+    sprintf(game_mod_str, "%d", *world->game_modifiers);
+    set_var("game_modifiers", game_mod_str, &variables);
+    set_var_readonly("game_modifiers", &variables);
+
+    read_level_state.variables = &variables;
+    read_level_state.world = world;
+    read_command_file(filename, dispatch__read_level, &read_level_state);
+
+    const char *var = get_var("name", &variables);
+    if (var && strlen(var) < 64)
+    {
+        strcpy(world->mission_display_name, var);
     }
     for (int i = 1; i <= 10; i++)
     {
         char story_var[16];
         sprintf(story_var, "story%d", i);
-        var = du_script_variable(&state, story_var);
-        if (*var->value && strlen(var->value) < 61)
+        var = get_var(story_var, &variables);
+        if (var && strlen(var) < 61)
         {
-            strcpy(world->story_after_mission[i - 1], var->value);
+            strcpy(world->story_after_mission[i - 1], var);
             world->story_after_mission_lines = i;
         }
     }
 
-    var = du_script_variable(&state, "wall_color");
-    if (*var->value)
+    var = get_var("wall_color", &variables);
+    if (var)
     {
         float r = 0, g = 0, b = 0;
-        sscanf(var->value, "%f %f %f", &r, &g, &b);
+        sscanf(var, "%f %f %f", &r, &g, &b);
         LOG_TRACE("Map color %f %f %f\n", r, g, b);
         world->map_wall_color[0] = r;
         world->map_wall_color[1] = g;
         world->map_wall_color[2] = b;
     }
-    var = du_script_variable(&state, "mute_bosstalk");
-    world->play_boss_sound = *var->value ? 0 : 1;
-    var = du_script_variable(&state, "story_image");
-    if (*var->value)
+    var = get_var("mute_bosstalk", &variables);
+    world->play_boss_sound = var ? 0 : 1;
+    var = get_var("story_image", &variables);
+    if (var)
     {
-        get_data_filename(world->custom_story_image, var->value);
+        get_data_filename(world->custom_story_image, var);
     }
+
+    free_VarState(&variables);
 
     if (world->boss && !boss_exists)
     {
@@ -193,8 +251,6 @@ static inline void level_read_new_format(World *world, int room_to, FILE *f)
 
 int read_level(World *world, int mission, int room_to)
 {
-    char buf[256];
-
     memset(world->map, 0, sizeof(world->map));
 
     // Default colors
@@ -227,34 +283,42 @@ int read_level(World *world, int mission, int room_to)
 
     char special_filename[280];
     sprintf(special_filename, "%s-mode-%d", mission_name, *world->game_modifiers);
-    FILE *f = fopen(special_filename, "r");
+    const char *filename = special_filename;
+    FILE *f = fopen(filename, "r");
     int auth_check_result;
     if (f == NULL)
     {
-        f = fopen(mission_name, "r");
+        filename = mission_name;
+        f = fopen(filename, "r");
         if (f == NULL)
             return -1;
-        auth_check_result = check_authentication(mission_name);
     }
-    else
-    {
-        auth_check_result = check_authentication(special_filename);
-    }
+    auth_check_result = check_authentication(filename);
+    fclose(f);
     if (auth_check_result)
     {
         LOG_FATAL("level authentication failed!!");
         exit(1);
     }
 
-    fgets(buf, 256, f); // version
-    if (buf[0] != 'X')
-    {
-        LOG_FATAL("legacy format file!\n");
-        fclose(f);
-        return -1;
-    }
-    level_read_new_format(world, room_to, f);
+   read_level_cmd_file(world, room_to, filename);
+
     return 0;
+}
+
+void dispatch__handle_enemy_config(struct enemy_config_DispatchDto *dto)
+{
+
+    struct enemy_config *e = &dto->state[dto->enemy_type];
+    e->turret = dto->turret;
+    e->rate = dto->rate;
+    e->health = dto->health;
+    e->gold = dto->gold;
+    e->fast = dto->fast;
+    e->hurts_monsters = dto->hurts_monsters;
+    e->potion_for_potion_only = dto->potion_for_potion_only;
+
+    debug_enemy_config_DispatchDto(dto);
 }
 
 void read_enemy_configs(World *world)
@@ -266,19 +330,8 @@ void read_enemy_configs(World *world)
         LOG_FATAL("enemy config authentication failed!!");
         exit(1);
     }
-    for (int i = 0; i < 5; i++)
-    {
-        char key[10];
-        sprintf(key, "type-%d", i);
-        record_file_scanf(fname, key, "%*s turret=%d rate=%d health=%d gold=%d fast=%d hurts-monsters=%d  potion-for-potion-only=%d",
-               &world->enemy_configs[i].turret,
-               &world->enemy_configs[i].rate,
-               &world->enemy_configs[i].health,
-               &world->enemy_configs[i].gold,
-               &world->enemy_configs[i].fast,
-               &world->enemy_configs[i].hurts_monsters,
-               &world->enemy_configs[i].potion_for_potion_only);
-    }
+    
+    read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
 }
 
 int read_mission_count(int game_mode)

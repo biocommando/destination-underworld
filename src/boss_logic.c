@@ -76,7 +76,7 @@ void boss_logic(World *world, int boss_died)
       }
       if (tile_type)
       {
-        Tile *tile = get_tile_at_mut(world, event->parameters[0], event->parameters[1]);
+        Tile *tile = ns_get_tile_at_mut(world, event->parameters[0], event->parameters[1]);
         if (tile)
         {
           *tile = create_tile(tile_type);

@@ -1,665 +1,665 @@
-X(duedit_compatible)
-*@tiles
-120 0 0 1
-120 1 0 1
-120 2 0 1
-120 3 0 1
-120 4 0 1
-120 5 0 1
-120 6 0 1
-120 7 0 1
-120 8 0 1
-120 9 0 1
-120 10 0 1
-120 11 0 1
-120 12 0 1
-120 13 0 1
-120 14 0 1
-120 15 0 1
-120 0 1 1
-46 1 1 1
-46 2 1 1
-46 3 1 1
-204 3 1 1
-60 4 1 1
-60 5 1 1
-120 6 1 1
-46 7 1 1
-46 8 1 1
-46 9 1 1
-46 10 1 1
-204 10 1 1
-46 11 1 1
-46 12 1 1
-46 13 1 1
-201 13 1 1
-46 14 1 1
-120 15 1 1
-120 0 2 1
-46 1 2 1
-202 1 2 1
-46 2 2 1
-46 3 2 1
-204 3 2 1
-60 4 2 1
-60 5 2 1
-120 6 2 1
-46 7 2 1
-201 7 2 1
-46 8 2 1
-46 9 2 1
-46 10 2 1
-201 10 2 1
-46 11 2 1
-46 12 2 1
-201 12 2 1
-120 13 2 1
-46 14 2 1
-120 15 2 1
-120 0 3 1
-46 1 3 1
-202 1 3 1
-46 2 3 1
-46 3 3 1
-204 3 3 1
-46 4 3 1
-204 4 3 1
-46 5 3 1
-204 5 3 1
-120 6 3 1
-46 7 3 1
-46 8 3 1
-46 9 3 1
-46 10 3 1
-201 10 3 1
-46 11 3 1
-46 12 3 1
-120 13 3 1
-46 14 3 1
-201 14 3 1
-120 15 3 1
-120 0 4 1
-46 1 4 1
-46 2 4 1
-202 2 4 1
-46 3 4 1
-46 4 4 1
-46 5 4 1
-120 6 4 1
-46 7 4 1
-201 7 4 1
-46 8 4 1
-46 9 4 1
-46 10 4 1
-46 11 4 1
-201 11 4 1
-46 12 4 1
-113 13 4 1
-46 14 4 1
-1002 15 4 1
-120 0 5 1
-46 1 5 1
-46 2 5 1
-202 2 5 1
-46 3 5 1
-202 3 5 1
-46 4 5 1
-46 5 5 1
-120 6 5 1
-46 7 5 1
-46 8 5 1
-46 9 5 1
-46 10 5 1
-46 11 5 1
-46 12 5 1
-120 13 5 1
-46 14 5 1
-202 14 5 1
-120 15 5 1
-120 0 6 1
-46 1 6 1
-46 2 6 1
-46 3 6 1
-46 4 6 1
-46 5 6 1
-120 6 6 1
-46 7 6 1
-46 8 6 1
-46 9 6 1
-201 9 6 1
-46 10 6 1
-46 11 6 1
-46 12 6 1
-120 13 6 1
-46 14 6 1
-120 15 6 1
-120 0 7 1
-46 1 7 1
-46 2 7 1
-46 3 7 1
-46 4 7 1
-46 5 7 1
-120 6 7 1
-46 7 7 1
-201 7 7 1
-46 8 7 1
-46 9 7 1
-46 10 7 1
-46 11 7 1
-46 12 7 1
-46 13 7 1
-46 14 7 1
-120 15 7 1
-120 0 8 1
-120 1 8 1
-120 2 8 1
-46 3 8 1
-46 4 8 1
-46 5 8 1
-120 6 8 1
-46 7 8 1
-46 8 8 1
-46 9 8 1
-46 10 8 1
-46 11 8 1
-46 12 8 1
-46 13 8 1
-46 14 8 1
-120 15 8 1
-1003 0 9 1
-510 1 9 1
-113 2 9 1
-500 3 9 1
-46 4 9 1
-46 5 9 1
-120 6 9 1
-120 7 9 1
-120 8 9 1
-120 9 9 1
-46 10 9 1
-46 11 9 1
-46 12 9 1
-46 13 9 1
-46 14 9 1
-120 15 9 1
-120 0 10 1
-46 1 10 1
-46 2 10 1
-46 3 10 1
-500 4 10 1
-46 5 10 1
-120 6 10 1
-46 7 10 1
-1001 8 10 1
-46 9 10 1
-46 10 10 1
-46 11 10 1
-46 12 10 1
-46 13 10 1
-46 14 10 1
-120 15 10 1
-120 0 11 1
-120 1 11 1
-120 2 11 1
-120 3 11 1
-120 4 11 1
-120 5 11 1
-120 6 11 1
-120 7 11 1
-120 8 11 1
-120 9 11 1
-120 10 11 1
-120 11 11 1
-120 12 11 1
-120 13 11 1
-120 14 11 1
-120 15 11 1
-120 0 0 2
-120 1 0 2
-120 2 0 2
-120 3 0 2
-120 4 0 2
-120 5 0 2
-120 6 0 2
-120 7 0 2
-120 8 0 2
-120 9 0 2
-120 10 0 2
-120 11 0 2
-120 12 0 2
-120 13 0 2
-120 14 0 2
-120 15 0 2
-120 0 1 2
-46 1 1 2
-46 2 1 2
-46 3 1 2
-46 4 1 2
-46 5 1 2
-46 6 1 2
-46 7 1 2
-46 8 1 2
-201 8 1 2
-46 9 1 2
-46 10 1 2
-46 11 1 2
-46 12 1 2
-46 13 1 2
-46 14 1 2
-120 15 1 2
-120 0 2 2
-46 1 2 2
-46 2 2 2
-46 3 2 2
-46 4 2 2
-46 5 2 2
-46 6 2 2
-46 7 2 2
-46 8 2 2
-46 9 2 2
-46 10 2 2
-46 11 2 2
-46 12 2 2
-46 13 2 2
-201 13 2 2
-46 14 2 2
-120 15 2 2
-120 0 3 2
-120 1 3 2
-120 2 3 2
-120 3 3 2
-120 4 3 2
-46 5 3 2
-120 6 3 2
-46 7 3 2
-46 8 3 2
-46 10 3 2
-201 10 3 2
-46 11 3 2
-46 12 3 2
-46 13 3 2
-46 14 3 2
-202 14 3 2
-120 15 3 2
-1001 0 4 2
-46 1 4 2
-46 2 4 2
-46 3 4 2
-46 4 4 2
-46 5 4 2
-113 6 4 2
-46 7 4 2
-300 7 4 2
-46 8 4 2
-201 8 4 2
-46 10 4 2
-46 11 4 2
-46 12 4 2
-46 13 4 2
-46 14 4 2
-120 15 4 2
-120 0 5 2
-120 1 5 2
-120 2 5 2
-120 3 5 2
-120 4 5 2
-46 5 5 2
-120 6 5 2
-46 7 5 2
-46 8 5 2
-46 10 5 2
-46 11 5 2
-46 12 5 2
-46 13 5 2
-46 14 5 2
-113 15 5 2
-120 0 6 2
-46 1 6 2
-46 2 6 2
-46 3 6 2
-46 4 6 2
-46 5 6 2
-46 6 6 2
-46 7 6 2
-46 8 6 2
-46 9 6 2
-201 9 6 2
-46 10 6 2
-46 11 6 2
-46 12 6 2
-204 12 6 2
-46 13 6 2
-46 14 6 2
-201 14 6 2
-120 15 6 2
-120 0 7 2
-46 1 7 2
-46 2 7 2
-201 2 7 2
-46 3 7 2
-46 4 7 2
-46 5 7 2
-201 5 7 2
-46 6 7 2
-201 6 7 2
-46 7 7 2
-46 8 7 2
-46 9 7 2
-46 10 7 2
-46 11 7 2
-46 12 7 2
-46 13 7 2
-46 14 7 2
-120 15 7 2
-120 0 8 2
-46 1 8 2
-201 1 8 2
-46 2 8 2
-46 3 8 2
-46 4 8 2
-46 5 8 2
-46 6 8 2
-46 7 8 2
-46 8 8 2
-46 9 8 2
-46 10 8 2
-46 11 8 2
-46 12 8 2
-46 13 8 2
-202 13 8 2
-46 14 8 2
-120 15 8 2
-120 0 9 2
-46 1 9 2
-201 1 9 2
-46 2 9 2
-46 3 9 2
-204 3 9 2
-46 4 9 2
-46 5 9 2
-46 6 9 2
-46 7 9 2
-201 7 9 2
-46 8 9 2
-46 9 9 2
-46 10 9 2
-46 11 9 2
-201 11 9 2
-46 12 9 2
-46 13 9 2
-46 14 9 2
-201 14 9 2
-120 15 9 2
-120 0 10 2
-46 1 10 2
-46 2 10 2
-202 2 10 2
-46 3 10 2
-46 4 10 2
-46 5 10 2
-46 6 10 2
-201 6 10 2
-46 10 10 2
-201 10 10 2
-46 11 10 2
-46 12 10 2
-46 13 10 2
-46 14 10 2
-120 15 10 2
-120 0 11 2
-120 1 11 2
-120 2 11 2
-120 3 11 2
-113 4 11 2
-120 5 11 2
-120 6 11 2
-120 7 11 2
-1003 8 11 2
-120 9 11 2
-120 10 11 2
-120 11 11 2
-120 12 11 2
-120 13 11 2
-120 14 11 2
-120 15 11 2
-120 0 0 3
-120 1 0 3
-120 2 0 3
-120 3 0 3
-120 4 0 3
-120 5 0 3
-120 6 0 3
-120 7 0 3
-1002 8 0 3
-120 9 0 3
-120 10 0 3
-120 11 0 3
-120 12 0 3
-120 13 0 3
-120 14 0 3
-120 15 0 3
-120 0 1 3
-46 1 1 3
-46 2 1 3
-46 3 1 3
-46 4 1 3
-46 5 1 3
-46 6 1 3
-120 7 1 3
-46 8 1 3
-46 9 1 3
-46 10 1 3
-46 11 1 3
-46 12 1 3
-46 13 1 3
-120 14 1 3
-120 15 1 3
-120 0 2 3
-46 1 2 3
-46 2 2 3
-46 3 2 3
-46 4 2 3
-203 4 2 3
-46 5 2 3
-120 6 2 3
-120 7 2 3
-46 8 2 3
-46 9 2 3
-46 10 2 3
-46 11 2 3
-120 12 2 3
-46 13 2 3
-46 14 2 3
-120 15 2 3
-120 0 3 3
-46 1 3 3
-203 1 3 3
-46 2 3 3
-46 3 3 3
-46 4 3 3
-46 5 3 3
-120 6 3 3
-46 7 3 3
-46 8 3 3
-46 9 3 3
-46 10 3 3
-46 11 3 3
-120 12 3 3
-46 13 3 3
-46 14 3 3
-120 15 3 3
-120 0 4 3
-46 1 4 3
-46 2 4 3
-46 3 4 3
-46 4 4 3
-46 5 4 3
-120 6 4 3
-120 7 4 3
-120 8 4 3
-46 9 4 3
-120 10 4 3
-113 11 4 3
-120 12 4 3
-46 13 4 3
-46 14 4 3
-120 15 4 3
-120 0 5 3
-46 1 5 3
-46 2 5 3
-46 3 5 3
-46 4 5 3
-46 5 5 3
-1001 6 5 3
-113 7 5 3
-120 8 5 3
-46 9 5 3
-46 10 5 3
-46 11 5 3
-46 12 5 3
-46 13 5 3
-46 14 5 3
-120 15 5 3
-120 0 6 3
-46 1 6 3
-46 2 6 3
-46 3 6 3
-46 4 6 3
-203 4 6 3
-46 5 6 3
-120 6 6 3
-120 7 6 3
-120 8 6 3
-46 11 6 3
-46 12 6 3
-46 13 6 3
-46 14 6 3
-120 15 6 3
-120 0 7 3
-46 1 7 3
-46 2 7 3
-46 3 7 3
-46 4 7 3
-46 5 7 3
-120 6 7 3
-46 7 7 3
-46 8 7 3
-46 9 7 3
-46 10 7 3
-46 11 7 3
-46 12 7 3
-46 13 7 3
-46 14 7 3
-120 15 7 3
-120 0 8 3
-46 1 8 3
-203 1 8 3
-46 2 8 3
-46 3 8 3
-46 4 8 3
-46 5 8 3
-120 6 8 3
-46 7 8 3
-46 8 8 3
-46 9 8 3
-202 9 8 3
-46 10 8 3
-46 11 8 3
-46 12 8 3
-46 13 8 3
-46 14 8 3
-120 15 8 3
-120 0 9 3
-46 1 9 3
-46 2 9 3
-46 3 9 3
-46 4 9 3
-120 6 9 3
-46 7 9 3
-46 8 9 3
-202 8 9 3
-46 9 9 3
-202 9 9 3
-46 10 9 3
-202 10 9 3
-46 11 9 3
-46 12 9 3
-46 13 9 3
-46 14 9 3
-120 15 9 3
-120 0 10 3
-46 1 10 3
-46 2 10 3
-46 3 10 3
-46 4 10 3
-46 6 10 3
-204 6 10 3
-46 7 10 3
-202 7 10 3
-46 8 10 3
-202 8 10 3
-46 9 10 3
-202 9 10 3
-46 10 10 3
-202 10 10 3
-46 11 10 3
-202 11 10 3
-46 12 10 3
-46 13 10 3
-46 14 10 3
-120 15 10 3
-120 0 11 3
-120 1 11 3
-120 2 11 3
-120 3 11 3
-120 4 11 3
-120 5 11 3
-120 6 11 3
-120 7 11 3
-120 8 11 3
-120 9 11 3
-120 10 11 3
-120 11 11 3
-120 12 11 3
-120 13 11 3
-120 14 11 3
-120 15 11 3
-113 14 2 1
-113 14 6 1
-100 9 4 2
-100 9 3 2
-100 9 5 2
-100 9 6 3
-100 10 6 3
-600 9 4 3
-600 12 1 3
-100 5 10 3
-100 5 9 3
-100 7 10 2
-100 8 10 2
-100 9 10 2
+header: "3" "duedit_compatible"
+:tiles
+object: "120" "0" "0" "1"
+object: "120" "1" "0" "1"
+object: "120" "2" "0" "1"
+object: "120" "3" "0" "1"
+object: "120" "4" "0" "1"
+object: "120" "5" "0" "1"
+object: "120" "6" "0" "1"
+object: "120" "7" "0" "1"
+object: "120" "8" "0" "1"
+object: "120" "9" "0" "1"
+object: "120" "10" "0" "1"
+object: "120" "11" "0" "1"
+object: "120" "12" "0" "1"
+object: "120" "13" "0" "1"
+object: "120" "14" "0" "1"
+object: "120" "15" "0" "1"
+object: "120" "0" "1" "1"
+object: "46" "1" "1" "1"
+object: "46" "2" "1" "1"
+object: "46" "3" "1" "1"
+object: "204" "3" "1" "1"
+object: "60" "4" "1" "1"
+object: "60" "5" "1" "1"
+object: "120" "6" "1" "1"
+object: "46" "7" "1" "1"
+object: "46" "8" "1" "1"
+object: "46" "9" "1" "1"
+object: "46" "10" "1" "1"
+object: "204" "10" "1" "1"
+object: "46" "11" "1" "1"
+object: "46" "12" "1" "1"
+object: "46" "13" "1" "1"
+object: "201" "13" "1" "1"
+object: "46" "14" "1" "1"
+object: "120" "15" "1" "1"
+object: "120" "0" "2" "1"
+object: "46" "1" "2" "1"
+object: "202" "1" "2" "1"
+object: "46" "2" "2" "1"
+object: "46" "3" "2" "1"
+object: "204" "3" "2" "1"
+object: "60" "4" "2" "1"
+object: "60" "5" "2" "1"
+object: "120" "6" "2" "1"
+object: "46" "7" "2" "1"
+object: "201" "7" "2" "1"
+object: "46" "8" "2" "1"
+object: "46" "9" "2" "1"
+object: "46" "10" "2" "1"
+object: "201" "10" "2" "1"
+object: "46" "11" "2" "1"
+object: "46" "12" "2" "1"
+object: "201" "12" "2" "1"
+object: "120" "13" "2" "1"
+object: "46" "14" "2" "1"
+object: "120" "15" "2" "1"
+object: "120" "0" "3" "1"
+object: "46" "1" "3" "1"
+object: "202" "1" "3" "1"
+object: "46" "2" "3" "1"
+object: "46" "3" "3" "1"
+object: "204" "3" "3" "1"
+object: "46" "4" "3" "1"
+object: "204" "4" "3" "1"
+object: "46" "5" "3" "1"
+object: "204" "5" "3" "1"
+object: "120" "6" "3" "1"
+object: "46" "7" "3" "1"
+object: "46" "8" "3" "1"
+object: "46" "9" "3" "1"
+object: "46" "10" "3" "1"
+object: "201" "10" "3" "1"
+object: "46" "11" "3" "1"
+object: "46" "12" "3" "1"
+object: "120" "13" "3" "1"
+object: "46" "14" "3" "1"
+object: "201" "14" "3" "1"
+object: "120" "15" "3" "1"
+object: "120" "0" "4" "1"
+object: "46" "1" "4" "1"
+object: "46" "2" "4" "1"
+object: "202" "2" "4" "1"
+object: "46" "3" "4" "1"
+object: "46" "4" "4" "1"
+object: "46" "5" "4" "1"
+object: "120" "6" "4" "1"
+object: "46" "7" "4" "1"
+object: "201" "7" "4" "1"
+object: "46" "8" "4" "1"
+object: "46" "9" "4" "1"
+object: "46" "10" "4" "1"
+object: "46" "11" "4" "1"
+object: "201" "11" "4" "1"
+object: "46" "12" "4" "1"
+object: "113" "13" "4" "1"
+object: "46" "14" "4" "1"
+object: "1002" "15" "4" "1"
+object: "120" "0" "5" "1"
+object: "46" "1" "5" "1"
+object: "46" "2" "5" "1"
+object: "202" "2" "5" "1"
+object: "46" "3" "5" "1"
+object: "202" "3" "5" "1"
+object: "46" "4" "5" "1"
+object: "46" "5" "5" "1"
+object: "120" "6" "5" "1"
+object: "46" "7" "5" "1"
+object: "46" "8" "5" "1"
+object: "46" "9" "5" "1"
+object: "46" "10" "5" "1"
+object: "46" "11" "5" "1"
+object: "46" "12" "5" "1"
+object: "120" "13" "5" "1"
+object: "46" "14" "5" "1"
+object: "202" "14" "5" "1"
+object: "120" "15" "5" "1"
+object: "120" "0" "6" "1"
+object: "46" "1" "6" "1"
+object: "46" "2" "6" "1"
+object: "46" "3" "6" "1"
+object: "46" "4" "6" "1"
+object: "46" "5" "6" "1"
+object: "120" "6" "6" "1"
+object: "46" "7" "6" "1"
+object: "46" "8" "6" "1"
+object: "46" "9" "6" "1"
+object: "201" "9" "6" "1"
+object: "46" "10" "6" "1"
+object: "46" "11" "6" "1"
+object: "46" "12" "6" "1"
+object: "120" "13" "6" "1"
+object: "46" "14" "6" "1"
+object: "120" "15" "6" "1"
+object: "120" "0" "7" "1"
+object: "46" "1" "7" "1"
+object: "46" "2" "7" "1"
+object: "46" "3" "7" "1"
+object: "46" "4" "7" "1"
+object: "46" "5" "7" "1"
+object: "120" "6" "7" "1"
+object: "46" "7" "7" "1"
+object: "201" "7" "7" "1"
+object: "46" "8" "7" "1"
+object: "46" "9" "7" "1"
+object: "46" "10" "7" "1"
+object: "46" "11" "7" "1"
+object: "46" "12" "7" "1"
+object: "46" "13" "7" "1"
+object: "46" "14" "7" "1"
+object: "120" "15" "7" "1"
+object: "120" "0" "8" "1"
+object: "120" "1" "8" "1"
+object: "120" "2" "8" "1"
+object: "46" "3" "8" "1"
+object: "46" "4" "8" "1"
+object: "46" "5" "8" "1"
+object: "120" "6" "8" "1"
+object: "46" "7" "8" "1"
+object: "46" "8" "8" "1"
+object: "46" "9" "8" "1"
+object: "46" "10" "8" "1"
+object: "46" "11" "8" "1"
+object: "46" "12" "8" "1"
+object: "46" "13" "8" "1"
+object: "46" "14" "8" "1"
+object: "120" "15" "8" "1"
+object: "1003" "0" "9" "1"
+object: "510" "1" "9" "1"
+object: "113" "2" "9" "1"
+object: "500" "3" "9" "1"
+object: "46" "4" "9" "1"
+object: "46" "5" "9" "1"
+object: "120" "6" "9" "1"
+object: "120" "7" "9" "1"
+object: "120" "8" "9" "1"
+object: "120" "9" "9" "1"
+object: "46" "10" "9" "1"
+object: "46" "11" "9" "1"
+object: "46" "12" "9" "1"
+object: "46" "13" "9" "1"
+object: "46" "14" "9" "1"
+object: "120" "15" "9" "1"
+object: "120" "0" "10" "1"
+object: "46" "1" "10" "1"
+object: "46" "2" "10" "1"
+object: "46" "3" "10" "1"
+object: "500" "4" "10" "1"
+object: "46" "5" "10" "1"
+object: "120" "6" "10" "1"
+object: "46" "7" "10" "1"
+object: "1001" "8" "10" "1"
+object: "46" "9" "10" "1"
+object: "46" "10" "10" "1"
+object: "46" "11" "10" "1"
+object: "46" "12" "10" "1"
+object: "46" "13" "10" "1"
+object: "46" "14" "10" "1"
+object: "120" "15" "10" "1"
+object: "120" "0" "11" "1"
+object: "120" "1" "11" "1"
+object: "120" "2" "11" "1"
+object: "120" "3" "11" "1"
+object: "120" "4" "11" "1"
+object: "120" "5" "11" "1"
+object: "120" "6" "11" "1"
+object: "120" "7" "11" "1"
+object: "120" "8" "11" "1"
+object: "120" "9" "11" "1"
+object: "120" "10" "11" "1"
+object: "120" "11" "11" "1"
+object: "120" "12" "11" "1"
+object: "120" "13" "11" "1"
+object: "120" "14" "11" "1"
+object: "120" "15" "11" "1"
+object: "120" "0" "0" "2"
+object: "120" "1" "0" "2"
+object: "120" "2" "0" "2"
+object: "120" "3" "0" "2"
+object: "120" "4" "0" "2"
+object: "120" "5" "0" "2"
+object: "120" "6" "0" "2"
+object: "120" "7" "0" "2"
+object: "120" "8" "0" "2"
+object: "120" "9" "0" "2"
+object: "120" "10" "0" "2"
+object: "120" "11" "0" "2"
+object: "120" "12" "0" "2"
+object: "120" "13" "0" "2"
+object: "120" "14" "0" "2"
+object: "120" "15" "0" "2"
+object: "120" "0" "1" "2"
+object: "46" "1" "1" "2"
+object: "46" "2" "1" "2"
+object: "46" "3" "1" "2"
+object: "46" "4" "1" "2"
+object: "46" "5" "1" "2"
+object: "46" "6" "1" "2"
+object: "46" "7" "1" "2"
+object: "46" "8" "1" "2"
+object: "201" "8" "1" "2"
+object: "46" "9" "1" "2"
+object: "46" "10" "1" "2"
+object: "46" "11" "1" "2"
+object: "46" "12" "1" "2"
+object: "46" "13" "1" "2"
+object: "46" "14" "1" "2"
+object: "120" "15" "1" "2"
+object: "120" "0" "2" "2"
+object: "46" "1" "2" "2"
+object: "46" "2" "2" "2"
+object: "46" "3" "2" "2"
+object: "46" "4" "2" "2"
+object: "46" "5" "2" "2"
+object: "46" "6" "2" "2"
+object: "46" "7" "2" "2"
+object: "46" "8" "2" "2"
+object: "46" "9" "2" "2"
+object: "46" "10" "2" "2"
+object: "46" "11" "2" "2"
+object: "46" "12" "2" "2"
+object: "46" "13" "2" "2"
+object: "201" "13" "2" "2"
+object: "46" "14" "2" "2"
+object: "120" "15" "2" "2"
+object: "120" "0" "3" "2"
+object: "120" "1" "3" "2"
+object: "120" "2" "3" "2"
+object: "120" "3" "3" "2"
+object: "120" "4" "3" "2"
+object: "46" "5" "3" "2"
+object: "120" "6" "3" "2"
+object: "46" "7" "3" "2"
+object: "46" "8" "3" "2"
+object: "46" "10" "3" "2"
+object: "201" "10" "3" "2"
+object: "46" "11" "3" "2"
+object: "46" "12" "3" "2"
+object: "46" "13" "3" "2"
+object: "46" "14" "3" "2"
+object: "202" "14" "3" "2"
+object: "120" "15" "3" "2"
+object: "1001" "0" "4" "2"
+object: "46" "1" "4" "2"
+object: "46" "2" "4" "2"
+object: "46" "3" "4" "2"
+object: "46" "4" "4" "2"
+object: "46" "5" "4" "2"
+object: "113" "6" "4" "2"
+object: "46" "7" "4" "2"
+object: "300" "7" "4" "2"
+object: "46" "8" "4" "2"
+object: "201" "8" "4" "2"
+object: "46" "10" "4" "2"
+object: "46" "11" "4" "2"
+object: "46" "12" "4" "2"
+object: "46" "13" "4" "2"
+object: "46" "14" "4" "2"
+object: "120" "15" "4" "2"
+object: "120" "0" "5" "2"
+object: "120" "1" "5" "2"
+object: "120" "2" "5" "2"
+object: "120" "3" "5" "2"
+object: "120" "4" "5" "2"
+object: "46" "5" "5" "2"
+object: "120" "6" "5" "2"
+object: "46" "7" "5" "2"
+object: "46" "8" "5" "2"
+object: "46" "10" "5" "2"
+object: "46" "11" "5" "2"
+object: "46" "12" "5" "2"
+object: "46" "13" "5" "2"
+object: "46" "14" "5" "2"
+object: "113" "15" "5" "2"
+object: "120" "0" "6" "2"
+object: "46" "1" "6" "2"
+object: "46" "2" "6" "2"
+object: "46" "3" "6" "2"
+object: "46" "4" "6" "2"
+object: "46" "5" "6" "2"
+object: "46" "6" "6" "2"
+object: "46" "7" "6" "2"
+object: "46" "8" "6" "2"
+object: "46" "9" "6" "2"
+object: "201" "9" "6" "2"
+object: "46" "10" "6" "2"
+object: "46" "11" "6" "2"
+object: "46" "12" "6" "2"
+object: "204" "12" "6" "2"
+object: "46" "13" "6" "2"
+object: "46" "14" "6" "2"
+object: "201" "14" "6" "2"
+object: "120" "15" "6" "2"
+object: "120" "0" "7" "2"
+object: "46" "1" "7" "2"
+object: "46" "2" "7" "2"
+object: "201" "2" "7" "2"
+object: "46" "3" "7" "2"
+object: "46" "4" "7" "2"
+object: "46" "5" "7" "2"
+object: "201" "5" "7" "2"
+object: "46" "6" "7" "2"
+object: "201" "6" "7" "2"
+object: "46" "7" "7" "2"
+object: "46" "8" "7" "2"
+object: "46" "9" "7" "2"
+object: "46" "10" "7" "2"
+object: "46" "11" "7" "2"
+object: "46" "12" "7" "2"
+object: "46" "13" "7" "2"
+object: "46" "14" "7" "2"
+object: "120" "15" "7" "2"
+object: "120" "0" "8" "2"
+object: "46" "1" "8" "2"
+object: "201" "1" "8" "2"
+object: "46" "2" "8" "2"
+object: "46" "3" "8" "2"
+object: "46" "4" "8" "2"
+object: "46" "5" "8" "2"
+object: "46" "6" "8" "2"
+object: "46" "7" "8" "2"
+object: "46" "8" "8" "2"
+object: "46" "9" "8" "2"
+object: "46" "10" "8" "2"
+object: "46" "11" "8" "2"
+object: "46" "12" "8" "2"
+object: "46" "13" "8" "2"
+object: "202" "13" "8" "2"
+object: "46" "14" "8" "2"
+object: "120" "15" "8" "2"
+object: "120" "0" "9" "2"
+object: "46" "1" "9" "2"
+object: "201" "1" "9" "2"
+object: "46" "2" "9" "2"
+object: "46" "3" "9" "2"
+object: "204" "3" "9" "2"
+object: "46" "4" "9" "2"
+object: "46" "5" "9" "2"
+object: "46" "6" "9" "2"
+object: "46" "7" "9" "2"
+object: "201" "7" "9" "2"
+object: "46" "8" "9" "2"
+object: "46" "9" "9" "2"
+object: "46" "10" "9" "2"
+object: "46" "11" "9" "2"
+object: "201" "11" "9" "2"
+object: "46" "12" "9" "2"
+object: "46" "13" "9" "2"
+object: "46" "14" "9" "2"
+object: "201" "14" "9" "2"
+object: "120" "15" "9" "2"
+object: "120" "0" "10" "2"
+object: "46" "1" "10" "2"
+object: "46" "2" "10" "2"
+object: "202" "2" "10" "2"
+object: "46" "3" "10" "2"
+object: "46" "4" "10" "2"
+object: "46" "5" "10" "2"
+object: "46" "6" "10" "2"
+object: "201" "6" "10" "2"
+object: "46" "10" "10" "2"
+object: "201" "10" "10" "2"
+object: "46" "11" "10" "2"
+object: "46" "12" "10" "2"
+object: "46" "13" "10" "2"
+object: "46" "14" "10" "2"
+object: "120" "15" "10" "2"
+object: "120" "0" "11" "2"
+object: "120" "1" "11" "2"
+object: "120" "2" "11" "2"
+object: "120" "3" "11" "2"
+object: "113" "4" "11" "2"
+object: "120" "5" "11" "2"
+object: "120" "6" "11" "2"
+object: "120" "7" "11" "2"
+object: "1003" "8" "11" "2"
+object: "120" "9" "11" "2"
+object: "120" "10" "11" "2"
+object: "120" "11" "11" "2"
+object: "120" "12" "11" "2"
+object: "120" "13" "11" "2"
+object: "120" "14" "11" "2"
+object: "120" "15" "11" "2"
+object: "120" "0" "0" "3"
+object: "120" "1" "0" "3"
+object: "120" "2" "0" "3"
+object: "120" "3" "0" "3"
+object: "120" "4" "0" "3"
+object: "120" "5" "0" "3"
+object: "120" "6" "0" "3"
+object: "120" "7" "0" "3"
+object: "1002" "8" "0" "3"
+object: "120" "9" "0" "3"
+object: "120" "10" "0" "3"
+object: "120" "11" "0" "3"
+object: "120" "12" "0" "3"
+object: "120" "13" "0" "3"
+object: "120" "14" "0" "3"
+object: "120" "15" "0" "3"
+object: "120" "0" "1" "3"
+object: "46" "1" "1" "3"
+object: "46" "2" "1" "3"
+object: "46" "3" "1" "3"
+object: "46" "4" "1" "3"
+object: "46" "5" "1" "3"
+object: "46" "6" "1" "3"
+object: "120" "7" "1" "3"
+object: "46" "8" "1" "3"
+object: "46" "9" "1" "3"
+object: "46" "10" "1" "3"
+object: "46" "11" "1" "3"
+object: "46" "12" "1" "3"
+object: "46" "13" "1" "3"
+object: "120" "14" "1" "3"
+object: "120" "15" "1" "3"
+object: "120" "0" "2" "3"
+object: "46" "1" "2" "3"
+object: "46" "2" "2" "3"
+object: "46" "3" "2" "3"
+object: "46" "4" "2" "3"
+object: "203" "4" "2" "3"
+object: "46" "5" "2" "3"
+object: "120" "6" "2" "3"
+object: "120" "7" "2" "3"
+object: "46" "8" "2" "3"
+object: "46" "9" "2" "3"
+object: "46" "10" "2" "3"
+object: "46" "11" "2" "3"
+object: "120" "12" "2" "3"
+object: "46" "13" "2" "3"
+object: "46" "14" "2" "3"
+object: "120" "15" "2" "3"
+object: "120" "0" "3" "3"
+object: "46" "1" "3" "3"
+object: "203" "1" "3" "3"
+object: "46" "2" "3" "3"
+object: "46" "3" "3" "3"
+object: "46" "4" "3" "3"
+object: "46" "5" "3" "3"
+object: "120" "6" "3" "3"
+object: "46" "7" "3" "3"
+object: "46" "8" "3" "3"
+object: "46" "9" "3" "3"
+object: "46" "10" "3" "3"
+object: "46" "11" "3" "3"
+object: "120" "12" "3" "3"
+object: "46" "13" "3" "3"
+object: "46" "14" "3" "3"
+object: "120" "15" "3" "3"
+object: "120" "0" "4" "3"
+object: "46" "1" "4" "3"
+object: "46" "2" "4" "3"
+object: "46" "3" "4" "3"
+object: "46" "4" "4" "3"
+object: "46" "5" "4" "3"
+object: "120" "6" "4" "3"
+object: "120" "7" "4" "3"
+object: "120" "8" "4" "3"
+object: "46" "9" "4" "3"
+object: "120" "10" "4" "3"
+object: "113" "11" "4" "3"
+object: "120" "12" "4" "3"
+object: "46" "13" "4" "3"
+object: "46" "14" "4" "3"
+object: "120" "15" "4" "3"
+object: "120" "0" "5" "3"
+object: "46" "1" "5" "3"
+object: "46" "2" "5" "3"
+object: "46" "3" "5" "3"
+object: "46" "4" "5" "3"
+object: "46" "5" "5" "3"
+object: "1001" "6" "5" "3"
+object: "113" "7" "5" "3"
+object: "120" "8" "5" "3"
+object: "46" "9" "5" "3"
+object: "46" "10" "5" "3"
+object: "46" "11" "5" "3"
+object: "46" "12" "5" "3"
+object: "46" "13" "5" "3"
+object: "46" "14" "5" "3"
+object: "120" "15" "5" "3"
+object: "120" "0" "6" "3"
+object: "46" "1" "6" "3"
+object: "46" "2" "6" "3"
+object: "46" "3" "6" "3"
+object: "46" "4" "6" "3"
+object: "203" "4" "6" "3"
+object: "46" "5" "6" "3"
+object: "120" "6" "6" "3"
+object: "120" "7" "6" "3"
+object: "120" "8" "6" "3"
+object: "46" "11" "6" "3"
+object: "46" "12" "6" "3"
+object: "46" "13" "6" "3"
+object: "46" "14" "6" "3"
+object: "120" "15" "6" "3"
+object: "120" "0" "7" "3"
+object: "46" "1" "7" "3"
+object: "46" "2" "7" "3"
+object: "46" "3" "7" "3"
+object: "46" "4" "7" "3"
+object: "46" "5" "7" "3"
+object: "120" "6" "7" "3"
+object: "46" "7" "7" "3"
+object: "46" "8" "7" "3"
+object: "46" "9" "7" "3"
+object: "46" "10" "7" "3"
+object: "46" "11" "7" "3"
+object: "46" "12" "7" "3"
+object: "46" "13" "7" "3"
+object: "46" "14" "7" "3"
+object: "120" "15" "7" "3"
+object: "120" "0" "8" "3"
+object: "46" "1" "8" "3"
+object: "203" "1" "8" "3"
+object: "46" "2" "8" "3"
+object: "46" "3" "8" "3"
+object: "46" "4" "8" "3"
+object: "46" "5" "8" "3"
+object: "120" "6" "8" "3"
+object: "46" "7" "8" "3"
+object: "46" "8" "8" "3"
+object: "46" "9" "8" "3"
+object: "202" "9" "8" "3"
+object: "46" "10" "8" "3"
+object: "46" "11" "8" "3"
+object: "46" "12" "8" "3"
+object: "46" "13" "8" "3"
+object: "46" "14" "8" "3"
+object: "120" "15" "8" "3"
+object: "120" "0" "9" "3"
+object: "46" "1" "9" "3"
+object: "46" "2" "9" "3"
+object: "46" "3" "9" "3"
+object: "46" "4" "9" "3"
+object: "120" "6" "9" "3"
+object: "46" "7" "9" "3"
+object: "46" "8" "9" "3"
+object: "202" "8" "9" "3"
+object: "46" "9" "9" "3"
+object: "202" "9" "9" "3"
+object: "46" "10" "9" "3"
+object: "202" "10" "9" "3"
+object: "46" "11" "9" "3"
+object: "46" "12" "9" "3"
+object: "46" "13" "9" "3"
+object: "46" "14" "9" "3"
+object: "120" "15" "9" "3"
+object: "120" "0" "10" "3"
+object: "46" "1" "10" "3"
+object: "46" "2" "10" "3"
+object: "46" "3" "10" "3"
+object: "46" "4" "10" "3"
+object: "46" "6" "10" "3"
+object: "204" "6" "10" "3"
+object: "46" "7" "10" "3"
+object: "202" "7" "10" "3"
+object: "46" "8" "10" "3"
+object: "202" "8" "10" "3"
+object: "46" "9" "10" "3"
+object: "202" "9" "10" "3"
+object: "46" "10" "10" "3"
+object: "202" "10" "10" "3"
+object: "46" "11" "10" "3"
+object: "202" "11" "10" "3"
+object: "46" "12" "10" "3"
+object: "46" "13" "10" "3"
+object: "46" "14" "10" "3"
+object: "120" "15" "10" "3"
+object: "120" "0" "11" "3"
+object: "120" "1" "11" "3"
+object: "120" "2" "11" "3"
+object: "120" "3" "11" "3"
+object: "120" "4" "11" "3"
+object: "120" "5" "11" "3"
+object: "120" "6" "11" "3"
+object: "120" "7" "11" "3"
+object: "120" "8" "11" "3"
+object: "120" "9" "11" "3"
+object: "120" "10" "11" "3"
+object: "120" "11" "11" "3"
+object: "120" "12" "11" "3"
+object: "120" "13" "11" "3"
+object: "120" "14" "11" "3"
+object: "120" "15" "11" "3"
+object: "113" "14" "2" "1"
+object: "113" "14" "6" "1"
+object: "100" "9" "4" "2"
+object: "100" "9" "3" "2"
+object: "100" "9" "5" "2"
+object: "100" "9" "6" "3"
+object: "100" "10" "6" "3"
+object: "600" "9" "4" "3"
+object: "600" "12" "1" "3"
+object: "100" "5" "10" "3"
+object: "100" "5" "9" "3"
+object: "100" "7" "10" "2"
+object: "100" "8" "10" "2"
+object: "100" "9" "10" "2"
 #conditions
-*?game_modifiers = 200 COND_potion
-*>+SKIP_COND_potion
-*@COND_potion
-305 10 9 1
-305 12 9 1
-306 13 9 1
-304 11 9 1
-*@+SKIP_COND_potion
-*@metadata
-*=name"Entrance to the SpaceX Headquarters"
-*=story1"You would expect the next dungeon to be the SpaceX office,"
-*=story2"right? But you know, the portals work in a semi-random way."
-*=story3"The aliens have just tracked down the portals that most"
-*=story4"commonly lead to their headquarters, and they must enforce"
-*=story5"them all in order to make it less probable to get uninvited"
-*=story6"guests so frequently. Ultimately, though, any portal can"
-*=story7"lead to any exit point, and when you travel in Hell you"
-*=story8"just need to adapt. It's like every other taxi would take"
-*=story9"you reliably to your destination and every other gives you"
-*=story10"sleeping pills to abduct you. But that's just how Hell is!"
-*=mute_bosstalk"1"
+condition: "game_modifiers = 200" "COND_potion"
+goto: "+SKIP_COND_potion"
+:COND_potion
+object: "305" "10" "9" "1"
+object: "305" "12" "9" "1"
+object: "306" "13" "9" "1"
+object: "304" "11" "9" "1"
+:+SKIP_COND_potion
+:metadata
+set_var: "name" "Entrance to the SpaceX Headquarters"
+set_var: "story1" "You would expect the next dungeon to be the SpaceX office,"
+set_var: "story2" "right? But you know, the portals work in a semi-random way."
+set_var: "story3" "The aliens have just tracked down the portals that most"
+set_var: "story4" "commonly lead to their headquarters, and they must enforce"
+set_var: "story5" "them all in order to make it less probable to get uninvited"
+set_var: "story6" "guests so frequently. Ultimately, though, any portal can"
+set_var: "story7" "lead to any exit point, and when you travel in Hell you"
+set_var: "story8" "just need to adapt. It's like every other taxi would take"
+set_var: "story9" "you reliably to your destination and every other gives you"
+set_var: "story10" "sleeping pills to abduct you. But that's just how Hell is!"
+set_var: "mute_bosstalk" "1"
 #script 1
 # ignore_init_properties
 # on kill_count: 9 do modify_terrain: x = 14, y = 6, terrain_type = floor
@@ -684,51 +684,51 @@ X(duedit_compatible)
 # on kill_count: 10 do modify_terrain: x = 5, y = 10, terrain_type = floor
 # 
 #end_script
-$1
-event
-event_trigger kill_count 9
-event_action modify_terrain 14 6 0 0 0 0 0 floor
-event
-event_trigger kill_count 9
-event_action modify_terrain 14 2 0 0 0 0 0 floor
-end
-$2
-event
-event_trigger kill_count 5
-event_action modify_terrain 6 4 0 0 0 0 0 floor
-event
-event_trigger kill_count 10
-event_action spawn 50 50 0 0 0 13 9
-event
-event_trigger kill_count 10
-event_action spawn 50 50 0 0 0 2 9
-event
-event_trigger kill_count 15
-event_action spawn 50 50 0 0 0 13 9
-event
-event_trigger kill_count 15
-event_action spawn 50 50 0 0 0 2 9
-event
-event_trigger kill_count 20
-event_action spawn 50 50 0 0 0 13 9
-event
-event_trigger kill_count 20
-event_action spawn 50 50 0 0 0 2 9
-event
-event_trigger kill_count 25
-event_action spawn 50 50 0 0 0 13 9
-event
-event_trigger kill_count 25
-event_action spawn 50 50 0 0 0 2 9
-end
-$3
-event
-event_trigger positional_trigger 0
-event_action spawn_potion 12 6 4
-event
-event_trigger positional_trigger 0
-event_action spawn_potion 13 3 4
-event
-event_trigger kill_count 10
-event_action modify_terrain 5 10 0 0 0 0 0 floor
-end
+script_start: "1"
+script_line: "event"
+script_line: "event_trigger kill_count 9"
+script_line: "event_action modify_terrain 14 6 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 9"
+script_line: "event_action modify_terrain 14 2 0 0 0 0 0 floor"
+script_line: "end"
+script_start: "2"
+script_line: "event"
+script_line: "event_trigger kill_count 5"
+script_line: "event_action modify_terrain 6 4 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 10"
+script_line: "event_action spawn 50 50 0 0 0 13 9"
+script_line: "event"
+script_line: "event_trigger kill_count 10"
+script_line: "event_action spawn 50 50 0 0 0 2 9"
+script_line: "event"
+script_line: "event_trigger kill_count 15"
+script_line: "event_action spawn 50 50 0 0 0 13 9"
+script_line: "event"
+script_line: "event_trigger kill_count 15"
+script_line: "event_action spawn 50 50 0 0 0 2 9"
+script_line: "event"
+script_line: "event_trigger kill_count 20"
+script_line: "event_action spawn 50 50 0 0 0 13 9"
+script_line: "event"
+script_line: "event_trigger kill_count 20"
+script_line: "event_action spawn 50 50 0 0 0 2 9"
+script_line: "event"
+script_line: "event_trigger kill_count 25"
+script_line: "event_action spawn 50 50 0 0 0 13 9"
+script_line: "event"
+script_line: "event_trigger kill_count 25"
+script_line: "event_action spawn 50 50 0 0 0 2 9"
+script_line: "end"
+script_start: "3"
+script_line: "event"
+script_line: "event_trigger positional_trigger 0"
+script_line: "event_action spawn_potion 12 6 4"
+script_line: "event"
+script_line: "event_trigger positional_trigger 0"
+script_line: "event_action spawn_potion 13 3 4"
+script_line: "event"
+script_line: "event_trigger kill_count 10"
+script_line: "event_action modify_terrain 5 10 0 0 0 0 0 floor"
+script_line: "end"

@@ -37,23 +37,11 @@ static void read_property_set_cmd(int *dst, const char *buf, int game_modifiers)
     *dst = val;
 }
 
-void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
-{
-  memset(config, 0, sizeof(BossFightConfig));
-  config->player_initial_gold = -1;
-
-  // Disable waypoints by default;
-  // otherwise boss will try to go to coordinate 0,0
-  config->state.boss_waypoint.x = -1;
-  config->state.boss_waypoint.y = -1;
-
 #define BUF_LEN 100
 
-  char buf[BUF_LEN];
-  BossFightEventConfig *event = NULL;
-  while (!feof(f))
-  {
-    fgets(buf, sizeof(buf), f);
+int read_bfconfig_line(const char *buf, BossFightConfig *config, int game_modifiers, BossFightEventConfig **eventp)
+{
+    BossFightEventConfig *event = *eventp;
     char cmd[BUF_LEN];
     sscanf(buf, "%s", cmd);
     if (!strcmp(cmd, "health"))
@@ -81,7 +69,7 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
       if (config->num_events == BFCONF_MAX_EVENTS)
       {
         LOG("ERROR: too many events defined\n");
-        continue;
+        return 0;
       }
       event = &config->events[config->num_events];
       event->enabled = 1;
@@ -92,7 +80,7 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
       if (config->num_events == 0)
       {
         LOG("ERROR: overrides can only be defined after generic event\n");
-        continue;
+        return 0;
       }
       int override_num = -1;
       sscanf(buf, "%*s %d", &override_num);
@@ -107,7 +95,7 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
     }
     else if (!strcmp(cmd, "end"))
     {
-      break;
+      return 1;
     }
     else if (event)
     {
@@ -248,10 +236,41 @@ void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
         event->enabled = 0;
       }
     }
-  }
+    *eventp = event;
+    return 0;
+}
 
+void bfconfig_init(BossFightConfig *config)
+{
+  memset(config, 0, sizeof(BossFightConfig));
+  config->player_initial_gold = -1;
+
+  // Disable waypoints by default;
+  // otherwise boss will try to go to coordinate 0,0
+  config->state.boss_waypoint.x = -1;
+  config->state.boss_waypoint.y = -1;
+}
+
+void bfconfig_finalize(BossFightConfig *config)
+{
   config->state.previous_health = config->health + 1;
   print_configs(config);
+}
+
+void read_bfconfig(FILE *f, BossFightConfig *config, int game_modifiers)
+{
+  bfconfig_init(config);
+
+  char buf[BUF_LEN];
+  BossFightEventConfig *event = NULL;
+  while (!feof(f))
+  {
+    fgets(buf, sizeof(buf), f);
+    if (read_bfconfig_line(buf, config, game_modifiers, &event) != 0)
+      break;
+  }
+
+  bfconfig_finalize(config);
 }
 
 void bossfight_process_event_triggers(BossFightConfig *config)

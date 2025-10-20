@@ -1,212 +1,212 @@
-X(duedit_compatible)
-*@tiles
-120 0 0 1
-120 1 0 1
-120 2 0 1
-120 3 0 1
-120 4 0 1
-120 5 0 1
-120 6 0 1
-120 7 0 1
-120 8 0 1
-120 9 0 1
-120 10 0 1
-120 11 0 1
-120 12 0 1
-120 13 0 1
-120 14 0 1
-120 15 0 1
-120 0 1 1
-46 1 1 1
-46 2 1 1
-113 3 1 1
-46 4 1 1
-120 5 1 1
-46 6 1 1
-204 6 1 1
-46 7 1 1
-46 8 1 1
-46 9 1 1
-46 10 1 1
-46 11 1 1
-46 12 1 1
-46 13 1 1
-46 14 1 1
-120 15 1 1
-120 0 2 1
-46 1 2 1
-46 2 2 1
-46 3 2 1
-46 4 2 1
-120 5 2 1
-46 6 2 1
-46 7 2 1
-120 8 2 1
-120 9 2 1
-120 10 2 1
-120 11 2 1
-120 12 2 1
-120 13 2 1
-46 14 2 1
-120 15 2 1
-120 0 3 1
-46 1 3 1
-46 2 3 1
-46 3 3 1
-46 4 3 1
-113 5 3 1
-46 6 3 1
-46 7 3 1
-120 8 3 1
-46 9 3 1
-46 10 3 1
-46 11 3 1
-46 12 3 1
-113 13 3 1
-46 14 3 1
-120 15 3 1
-120 0 4 1
-46 1 4 1
-46 2 4 1
-113 3 4 1
-46 4 4 1
-46 5 4 1
-204 5 4 1
-46 6 4 1
-46 7 4 1
-120 8 4 1
-113 9 4 1
-1001 10 4 1
-46 11 4 1
-46 12 4 1
-46 13 4 1
-46 14 4 1
-120 15 4 1
-120 0 5 1
-46 1 5 1
-205 1 5 1
-46 2 5 1
-120 3 5 1
-46 4 5 1
-46 5 5 1
-204 5 5 1
-46 6 5 1
-46 7 5 1
-120 8 5 1
-113 9 5 1
-46 10 5 1
-46 11 5 1
-46 12 5 1
-46 13 5 1
-46 14 5 1
-120 15 5 1
-120 0 6 1
-46 1 6 1
-46 2 6 1
-120 3 6 1
-46 4 6 1
-46 5 6 1
-204 5 6 1
-46 6 6 1
-46 7 6 1
-120 8 6 1
-46 9 6 1
-46 10 6 1
-46 11 6 1
-46 12 6 1
-113 13 6 1
-46 14 6 1
-120 15 6 1
-120 0 7 1
-46 1 7 1
-46 2 7 1
-113 3 7 1
-46 4 7 1
-46 5 7 1
-204 5 7 1
-46 6 7 1
-46 7 7 1
-120 8 7 1
-120 9 7 1
-120 10 7 1
-120 11 7 1
-120 12 7 1
-120 13 7 1
-46 14 7 1
-120 15 7 1
-120 0 8 1
-46 1 8 1
-46 2 8 1
-46 3 8 1
-46 4 8 1
-113 5 8 1
-46 6 8 1
-204 6 8 1
-46 7 8 1
-46 8 8 1
-46 9 8 1
-46 10 8 1
-46 11 8 1
-46 12 8 1
-46 13 8 1
-46 14 8 1
-120 15 8 1
-120 0 9 1
-122 1 9 1
-46 2 9 1
-122 3 9 1
-122 4 9 1
-120 5 9 1
-120 6 9 1
-122 7 9 1
-120 8 9 1
-113 9 9 1
-122 10 9 1
-122 11 9 1
-113 12 9 1
-120 13 9 1
-120 14 9 1
-120 15 9 1
-122 0 10 1
-122 1 10 1
-122 2 10 1
-122 3 10 1
-122 4 10 1
-122 5 10 1
-122 6 10 1
-122 7 10 1
-122 8 10 1
-122 9 10 1
-122 10 10 1
-122 11 10 1
-122 12 10 1
-122 13 10 1
-122 14 10 1
-122 15 10 1
-122 0 11 1
-122 1 11 1
-122 2 11 1
-122 3 11 1
-122 4 11 1
-122 5 11 1
-122 6 11 1
-122 7 11 1
-122 8 11 1
-122 9 11 1
-122 10 11 1
-122 11 11 1
-122 12 11 1
-122 13 11 1
-122 14 11 1
-122 15 11 1
-*@metadata
-*=name"Deepest Abyss"
-*=story1"The corpse of the Arch Evil explodes into 50 shades of"
-*=story2"bloody mess and in the same instant all the beasts of"
-*=story3"Hell disappear... Just to regroup around the corner!"
-*=story4" "
-*=story5"You feel how the spirit of the Arch Evil powers you"
-*=story6"as you prepare for the Hell's last stand..."
+header: "3" "duedit_compatible"
+:tiles
+object: "120" "0" "0" "1"
+object: "120" "1" "0" "1"
+object: "120" "2" "0" "1"
+object: "120" "3" "0" "1"
+object: "120" "4" "0" "1"
+object: "120" "5" "0" "1"
+object: "120" "6" "0" "1"
+object: "120" "7" "0" "1"
+object: "120" "8" "0" "1"
+object: "120" "9" "0" "1"
+object: "120" "10" "0" "1"
+object: "120" "11" "0" "1"
+object: "120" "12" "0" "1"
+object: "120" "13" "0" "1"
+object: "120" "14" "0" "1"
+object: "120" "15" "0" "1"
+object: "120" "0" "1" "1"
+object: "46" "1" "1" "1"
+object: "46" "2" "1" "1"
+object: "113" "3" "1" "1"
+object: "46" "4" "1" "1"
+object: "120" "5" "1" "1"
+object: "46" "6" "1" "1"
+object: "204" "6" "1" "1"
+object: "46" "7" "1" "1"
+object: "46" "8" "1" "1"
+object: "46" "9" "1" "1"
+object: "46" "10" "1" "1"
+object: "46" "11" "1" "1"
+object: "46" "12" "1" "1"
+object: "46" "13" "1" "1"
+object: "46" "14" "1" "1"
+object: "120" "15" "1" "1"
+object: "120" "0" "2" "1"
+object: "46" "1" "2" "1"
+object: "46" "2" "2" "1"
+object: "46" "3" "2" "1"
+object: "46" "4" "2" "1"
+object: "120" "5" "2" "1"
+object: "46" "6" "2" "1"
+object: "46" "7" "2" "1"
+object: "120" "8" "2" "1"
+object: "120" "9" "2" "1"
+object: "120" "10" "2" "1"
+object: "120" "11" "2" "1"
+object: "120" "12" "2" "1"
+object: "120" "13" "2" "1"
+object: "46" "14" "2" "1"
+object: "120" "15" "2" "1"
+object: "120" "0" "3" "1"
+object: "46" "1" "3" "1"
+object: "46" "2" "3" "1"
+object: "46" "3" "3" "1"
+object: "46" "4" "3" "1"
+object: "113" "5" "3" "1"
+object: "46" "6" "3" "1"
+object: "46" "7" "3" "1"
+object: "120" "8" "3" "1"
+object: "46" "9" "3" "1"
+object: "46" "10" "3" "1"
+object: "46" "11" "3" "1"
+object: "46" "12" "3" "1"
+object: "113" "13" "3" "1"
+object: "46" "14" "3" "1"
+object: "120" "15" "3" "1"
+object: "120" "0" "4" "1"
+object: "46" "1" "4" "1"
+object: "46" "2" "4" "1"
+object: "113" "3" "4" "1"
+object: "46" "4" "4" "1"
+object: "46" "5" "4" "1"
+object: "204" "5" "4" "1"
+object: "46" "6" "4" "1"
+object: "46" "7" "4" "1"
+object: "120" "8" "4" "1"
+object: "113" "9" "4" "1"
+object: "1001" "10" "4" "1"
+object: "46" "11" "4" "1"
+object: "46" "12" "4" "1"
+object: "46" "13" "4" "1"
+object: "46" "14" "4" "1"
+object: "120" "15" "4" "1"
+object: "120" "0" "5" "1"
+object: "46" "1" "5" "1"
+object: "205" "1" "5" "1"
+object: "46" "2" "5" "1"
+object: "120" "3" "5" "1"
+object: "46" "4" "5" "1"
+object: "46" "5" "5" "1"
+object: "204" "5" "5" "1"
+object: "46" "6" "5" "1"
+object: "46" "7" "5" "1"
+object: "120" "8" "5" "1"
+object: "113" "9" "5" "1"
+object: "46" "10" "5" "1"
+object: "46" "11" "5" "1"
+object: "46" "12" "5" "1"
+object: "46" "13" "5" "1"
+object: "46" "14" "5" "1"
+object: "120" "15" "5" "1"
+object: "120" "0" "6" "1"
+object: "46" "1" "6" "1"
+object: "46" "2" "6" "1"
+object: "120" "3" "6" "1"
+object: "46" "4" "6" "1"
+object: "46" "5" "6" "1"
+object: "204" "5" "6" "1"
+object: "46" "6" "6" "1"
+object: "46" "7" "6" "1"
+object: "120" "8" "6" "1"
+object: "46" "9" "6" "1"
+object: "46" "10" "6" "1"
+object: "46" "11" "6" "1"
+object: "46" "12" "6" "1"
+object: "113" "13" "6" "1"
+object: "46" "14" "6" "1"
+object: "120" "15" "6" "1"
+object: "120" "0" "7" "1"
+object: "46" "1" "7" "1"
+object: "46" "2" "7" "1"
+object: "113" "3" "7" "1"
+object: "46" "4" "7" "1"
+object: "46" "5" "7" "1"
+object: "204" "5" "7" "1"
+object: "46" "6" "7" "1"
+object: "46" "7" "7" "1"
+object: "120" "8" "7" "1"
+object: "120" "9" "7" "1"
+object: "120" "10" "7" "1"
+object: "120" "11" "7" "1"
+object: "120" "12" "7" "1"
+object: "120" "13" "7" "1"
+object: "46" "14" "7" "1"
+object: "120" "15" "7" "1"
+object: "120" "0" "8" "1"
+object: "46" "1" "8" "1"
+object: "46" "2" "8" "1"
+object: "46" "3" "8" "1"
+object: "46" "4" "8" "1"
+object: "113" "5" "8" "1"
+object: "46" "6" "8" "1"
+object: "204" "6" "8" "1"
+object: "46" "7" "8" "1"
+object: "46" "8" "8" "1"
+object: "46" "9" "8" "1"
+object: "46" "10" "8" "1"
+object: "46" "11" "8" "1"
+object: "46" "12" "8" "1"
+object: "46" "13" "8" "1"
+object: "46" "14" "8" "1"
+object: "120" "15" "8" "1"
+object: "120" "0" "9" "1"
+object: "122" "1" "9" "1"
+object: "46" "2" "9" "1"
+object: "122" "3" "9" "1"
+object: "122" "4" "9" "1"
+object: "120" "5" "9" "1"
+object: "120" "6" "9" "1"
+object: "122" "7" "9" "1"
+object: "120" "8" "9" "1"
+object: "113" "9" "9" "1"
+object: "122" "10" "9" "1"
+object: "122" "11" "9" "1"
+object: "113" "12" "9" "1"
+object: "120" "13" "9" "1"
+object: "120" "14" "9" "1"
+object: "120" "15" "9" "1"
+object: "122" "0" "10" "1"
+object: "122" "1" "10" "1"
+object: "122" "2" "10" "1"
+object: "122" "3" "10" "1"
+object: "122" "4" "10" "1"
+object: "122" "5" "10" "1"
+object: "122" "6" "10" "1"
+object: "122" "7" "10" "1"
+object: "122" "8" "10" "1"
+object: "122" "9" "10" "1"
+object: "122" "10" "10" "1"
+object: "122" "11" "10" "1"
+object: "122" "12" "10" "1"
+object: "122" "13" "10" "1"
+object: "122" "14" "10" "1"
+object: "122" "15" "10" "1"
+object: "122" "0" "11" "1"
+object: "122" "1" "11" "1"
+object: "122" "2" "11" "1"
+object: "122" "3" "11" "1"
+object: "122" "4" "11" "1"
+object: "122" "5" "11" "1"
+object: "122" "6" "11" "1"
+object: "122" "7" "11" "1"
+object: "122" "8" "11" "1"
+object: "122" "9" "11" "1"
+object: "122" "10" "11" "1"
+object: "122" "11" "11" "1"
+object: "122" "12" "11" "1"
+object: "122" "13" "11" "1"
+object: "122" "14" "11" "1"
+object: "122" "15" "11" "1"
+:metadata
+set_var: "name" "Deepest Abyss"
+set_var: "story1" "The corpse of the Arch Evil explodes into 50 shades of"
+set_var: "story2" "bloody mess and in the same instant all the beasts of"
+set_var: "story3" "Hell disappear... Just to regroup around the corner!"
+set_var: "story4" " "
+set_var: "story5" "You feel how the spirit of the Arch Evil powers you"
+set_var: "story6" "as you prepare for the Hell's last stand..."
 #script 1
 # // Boss for "explosion madness" mode
 # 
@@ -234,39 +234,39 @@ X(duedit_compatible)
 # 
 # 
 #end_script
-$1
-health 50 
-fire_rate 10 
-speed 2 
-player_initial_gold 5 
-event
-event_trigger time_one_time 1
-event_action set_waypoint 2 1 1
-event
-event_trigger waypoint_reached 1
-event_action set_waypoint 2 8 2
-event
-event_trigger waypoint_reached 2
-event_action set_waypoint 2 1 1
-event
-event_trigger time_one_time 1
-event_action start_secondary_timer 0
-event
-event_trigger secondary_timer 44
-event_action spawn 50 50 0 0 0 3 3
-event
-event_trigger secondary_timer 44
-event_action spawn 50 50 0 0 0 3 8
-event
-event_trigger secondary_timer 44
-event_action start_secondary_timer 0
-event
-event_trigger health 0
-event_action modify_terrain 9 4 0 0 0 0 0 level_exit
-event
-event_trigger health 0
-event_action modify_terrain 9 5 0 0 0 0 0 level_exit
-event
-event_trigger health 0
-event_action stop_secondary_timer 
-end
+script_start: "1"
+script_line: "health 50 "
+script_line: "fire_rate 10 "
+script_line: "speed 2 "
+script_line: "player_initial_gold 5 "
+script_line: "event"
+script_line: "event_trigger time_one_time 1"
+script_line: "event_action set_waypoint 2 1 1"
+script_line: "event"
+script_line: "event_trigger waypoint_reached 1"
+script_line: "event_action set_waypoint 2 8 2"
+script_line: "event"
+script_line: "event_trigger waypoint_reached 2"
+script_line: "event_action set_waypoint 2 1 1"
+script_line: "event"
+script_line: "event_trigger time_one_time 1"
+script_line: "event_action start_secondary_timer 0"
+script_line: "event"
+script_line: "event_trigger secondary_timer 44"
+script_line: "event_action spawn 50 50 0 0 0 3 3"
+script_line: "event"
+script_line: "event_trigger secondary_timer 44"
+script_line: "event_action spawn 50 50 0 0 0 3 8"
+script_line: "event"
+script_line: "event_trigger secondary_timer 44"
+script_line: "event_action start_secondary_timer 0"
+script_line: "event"
+script_line: "event_trigger health 0"
+script_line: "event_action modify_terrain 9 4 0 0 0 0 0 level_exit"
+script_line: "event"
+script_line: "event_trigger health 0"
+script_line: "event_action modify_terrain 9 5 0 0 0 0 0 level_exit"
+script_line: "event"
+script_line: "event_trigger health 0"
+script_line: "event_action stop_secondary_timer "
+script_line: "end"
