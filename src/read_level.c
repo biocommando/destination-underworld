@@ -8,6 +8,7 @@
 
 #include "command_file/generated/dispatch_read_level.h"
 #include "command_file/generated/dispatch_enemy_properties.h"
+#include "command_file/generated/dispatch_mission_counts.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -317,8 +318,6 @@ void dispatch__handle_enemy_config(struct enemy_config_DispatchDto *dto)
     e->fast = dto->fast;
     e->hurts_monsters = dto->hurts_monsters;
     e->potion_for_potion_only = dto->potion_for_potion_only;
-
-    debug_enemy_config_DispatchDto(dto);
 }
 
 void read_enemy_configs(World *world)
@@ -334,17 +333,32 @@ void read_enemy_configs(World *world)
     read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
 }
 
+void dispatch__handle_mode_override(struct mode_override_DispatchDto *dto)
+{
+    if (dto->state->game_mode == dto->mode)
+    {
+        dto->state->count = dto->count;
+    }
+}
+
+void dispatch__handle_initial_count(struct initial_count_DispatchDto *dto)
+{
+    if (!dto->state->override_set)
+    {
+        dto->state->count = dto->count;
+    }
+}
+
 int read_mission_count(int game_mode)
 {
     char fname[256];
     sprintf(fname, DATADIR "%s/mission-counts.dat", get_game_settings()->mission_pack);
 
-    char key[20];
-    sprintf(key, "mode-%d", game_mode);
-    int count = 0;
-    if (record_file_scanf(fname, key, "%*s %d", &count))
-        return count;
+    SetMissionCount smc;
+    memset(&smc, 0, sizeof(smc));
+    smc.game_mode = game_mode;
 
-    record_file_scanf(fname, "base", "%*s %d", &count);
-    return count;
+    read_command_file(fname, dispatch__mission_counts, &smc);
+
+    return smc.count;
 }

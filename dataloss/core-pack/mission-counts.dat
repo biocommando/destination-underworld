@@ -1,3 +1,2 @@
-_record_count 2
-base 17
-mode-392 16
+initial_count: "17"
+mode_override: mode="392" count="16"

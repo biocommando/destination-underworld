@@ -104,5 +104,35 @@
                 "max": 6
             }
         }
+    },
+    "mission_counts": {
+        "state": "SetMissionCount",
+        "mode_override": {
+            "mode": "int",
+            "validate:mode": {
+                "type": "choice",
+                "options": [
+                    0,
+                    1,
+                    6,
+                    8,
+                    16,
+                    200,
+                    392
+                ]
+            },
+            "count": "int",
+            "validate:count": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "initial_count": {
+            "count": "int",
+            "validate:count": {
+                "type": "range",
+                "min": 0
+            }
+        }
     }
 }
