@@ -237,5 +237,30 @@
                 "max": 63
             }
         }
+    },
+    "sprite_conf": {
+        ":config": {
+            "state": "DuSprite"
+        },
+        "sprite": {
+            "id": "int",
+            "validate:id": {
+                "type": "range",
+                "min": 0,
+                "max": 22
+            },
+            "x": "int",
+            "y": "int",
+            "width": "int",
+            "validate:width": {
+                "type": "range",
+                "min": 0
+            },
+            "height": "int",
+            "validate:height": {
+                "type": "range",
+                "min": 0
+            }
+        }
     }
 }

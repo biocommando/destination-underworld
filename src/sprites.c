@@ -1,7 +1,7 @@
 #include "sprites.h"
 
-#include "record_file.h"
 #include "logging.h"
+#include "command_file/generated/dispatch_sprite_conf.h"
 
 static DuSprite sprites[SPRITE_ID_MAX + 1];
 static int sprite_ok[SPRITE_ID_MAX + 1];
@@ -44,31 +44,21 @@ DuSprite *get_sprite(int sprite_id)
     return &sprites[sprite_id];
 }
 
-int read_sprites_from_file(const char *filename, int min_id, int max_id)
+void dispatch__handle_sprite_conf_sprite(struct sprite_conf_sprite_DispatchDto *dto)
 {
-    if (!id_ok(min_id) || !id_ok(max_id))
-    {
-        LOG("Invalid sprite id range %d...%d\n", min_id, max_id);
-        return -1;
-    }
+    DuSprite *s = &dto->state[dto->id];
+    s->sx = dto->x;
+    s->sy = dto->y;
+    s->width = dto->width;
+    s->height = dto->height;
+    sprite_ok[dto->id] = 1;
+    LOG("Read sprite %d : %d %d %d %d\n", dto->id, s->sx, s->sy, s->width, s->height);
+}
+
+int read_sprites_from_file(const char *filename)
+{
     init_sprites();
-    for (int i = SPRITE_ID_MIN; i <= SPRITE_ID_MAX; i++)
-    {
-        char key[] = "sprite_xxx";
-        sprintf(key, "sprite_%d", i);
-        DuSprite *s = &sprites[i];
-        record_file_scanf(filename, key, "%*s x=%d y=%d w=%d h=%d", &s->sx, &s->sy, &s->width, &s->height);
-        if (s->width != 0 && s->height != 0)
-        {
-            sprite_ok[i] = 1;
-            LOG("Read sprite %d : %d %d %d %d\n", i, s->sx, s->sy, s->width, s->height);
-        }
-        else
-        {
-            sprite_ok[i] = 0;
-            LOG("ERROR: invalid sprite configuration for sprite %d\n", i);
-        }
-    }
+    read_command_file(filename, dispatch__sprite_conf, sprites);
     return 0;
 }
 

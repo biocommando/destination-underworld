@@ -1,46 +1,47 @@
+# sprite: "id" "x" "y" "w" "h"
 # Bullet
-sprite_0 x=140 y=140 w=10 h=10
+sprite: "0" "140" "140" "10" "10"
 # Cluster bullet
-sprite_1 x=140 y=150 w=13 h=12
+sprite: "1" "140" "150" "13" "12"
 # Potion
-sprite_2 x=142 y=182 w=18 h=20
+sprite: "2" "142" "182" "18" "20"
 # Potion bubble
-sprite_3 x=153 y=176 w=4 h=5
+sprite: "3" "153" "176" "4" "5"
 # Health indicator
-sprite_4 x=60 y=0 w=7 h=6
+sprite: "4" "60" "0" "7" "6"
 # Rune of protection
-sprite_5 x=140 y=165 w=13 h=13
+sprite: "5" "140" "165" "13" "13"
 # Skeleton
-sprite_6 x=79 y=0 w=25 h=29
+sprite: "6" "79" "0" "25" "29"
 # Ammo indicator
-sprite_7 x=67 y=0 w=6 h=3
+sprite: "7" "67" "0" "6" "3"
 # Turret
-sprite_8 x=47 y=117 w=24 h=28
+sprite: "8" "47" "117" "24" "28"
 # Sparkles
-sprite_9 x=160 y=150 w=5 h=5
+sprite: "9" "160" "150" "5" "5"
 # Pentagram wall
-sprite_10 x=47 y=145 w=30 h=30
+sprite: "10" "47" "145" "30" "30"
 # Cracked wall
-sprite_11 x=80 y=145 w=30 h=30
+sprite: "11" "80" "145" "30" "30"
 # Player legend font
-sprite_12 x=49 y=196 w=4 h=6
+sprite: "12" "49" "196" "4" "6"
 # Potion indicator
-sprite_13 x=48 y=186 w=7 h=9
+sprite: "13" "48" "186" "7" "9"
 # Body part
-sprite_14 x=311 y=129 w=11 h=11 
+sprite: "14" "311" "129" "11" "11" 
 # Potion effect
-sprite_15 x=184 y=144 w=5 h=5
+sprite: "15" "184" "144" "5" "5"
 # Player
-sprite_16 x=0 y=0 w=23 h=29
+sprite: "16" "0" "0" "23" "29"
 # Enemy 1
-sprite_17 x=0 y=29 w=23 h=29
+sprite: "17" "0" "29" "23" "29"
 # Enemy 2
-sprite_18 x=0 y=58 w=23 h=29
+sprite: "18" "0" "58" "23" "29"
 # Enemy 3
-sprite_19 x=0 y=87 w=23 h=29
+sprite: "19" "0" "87" "23" "29"
 # Enemy 4
-sprite_20 x=0 y=116 w=23 h=29
+sprite: "20" "0" "116" "23" "29"
 # Enemy 5
-sprite_21 x=0 y=145 w=23 h=29
+sprite: "21" "0" "145" "23" "29"
 # Enemy, boss
-sprite_22 x=0 y=174 w=23 h=29
+sprite: "22" "0" "174" "23" "29"

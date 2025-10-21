@@ -155,7 +155,7 @@ int main(int argc, char **argv)
   {
     char path[256];
     get_data_filename(path, "sprites.dat");
-    read_sprites_from_file(path, SPRITE_ID_MIN, SPRITE_ID_MAX);
+    read_sprites_from_file(path);
   }
 
   progress_load_state("Loading menu...", 1);

@@ -43,12 +43,9 @@ int set_sprite(int sprite_id, DuSprite sprite);
 DuSprite *get_sprite(int sprite_id);
 /*
  * Reads sprites with ids min...max from provided file.
- * Uses the record file format with the following syntax for a single sprite:
- * sprite_[id] x=%d y=%d w=%d h=%d
- *
- * Note that the key values are just for human-readability, the key-value order needs to be exactly like this.
+ * Uses the command_file format.
  */
-int read_sprites_from_file(const char *filename, int min_id, int max_id);
+int read_sprites_from_file(const char *filename);
 /*
  * Draw a sprite from the sprite sheet on the screen. The x, y position is the upper left corner
  * of the sprite.
