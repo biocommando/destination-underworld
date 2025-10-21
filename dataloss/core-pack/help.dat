@@ -4,305 +4,305 @@
 # #margin <left margin>
 # #sprite <sprite id> <screen x> <screen y> <animation offset x> <animation offset y>
 # #rect <x> <y> <width> <height> <red> <green> <blue>
-# #page-end
+# page_end
 # #doc-end
 # #to-line <line number 0-29>
-
+(empty line)
 ############################
 # page 1
-
-#to-line 0
-#color 255 0 0 1
+(empty line)
+to_line: "0"
+color: "255" "0" "0" "1"
 Controls
-#color 127 127 255 2
-Arrows: move around
-Space: shoot
-X: Use large blast fire mode. Slower, deadlier, requires more mana.
-#margin 40
+color: "127" "127" "255" "2"
+Arrows\. move around
+Space\. shoot
+X\. Use large blast fire mode. Slower, deadlier, requires more mana.
+margin: "40"
 This fire mode is indicated by small 'L' next to the player
-#margin 5
-Z: Use small blast fire mode. Faster, less deadly, requires less mana.
-#margin 40
+margin: "5"
+Z\. Use small blast fire mode. Faster, less deadly, requires less mana.
+margin: "40"
 This fire mode is indicated by small 'S' next to the player
-#margin 5
-A: Activate powerup Heal
-S: Activate powerup Shield
-D: Activate powerup Turret
-F: Activate powerup Torrent of Fire
-M: Display level information screen
-
-#color 1
+margin: "5"
+A\. Activate powerup Heal
+S\. Activate powerup Shield
+D\. Activate powerup Turret
+F\. Activate powerup Torrent of Fire
+M\. Display level information screen
+(empty line)
+color_ref: "1"
 Basic Gameplay
-#color 2
+color_ref: "2"
 The goal of each level is to reach the exit portal.
 Shooting at the enemies requires mana that is indicated by
 the yellow bar next to the player. Each killed enemy grants
 you a boost in mana and health. Stronger enemies (imps, aliens
 and turrets) will also give you a soul. The amount of souls in
 possession is indicated by a number below the fire mode indicator.
-
+(empty line)
 The enemies generally don't hurt other enemies but the enemy turrets
 are an exception.
-
+(empty line)
 When a level changes the remaining player souls is capped at 5
 and the remainder is used for maxing out the player's health (player
 health is also carried over from level to another, though it's always
 at least 3).
-
+(empty line)
 Killing enemies also grants you experience points. You can spend XP
 in the Perks menu that can be opened using the ESC key.
-#to-line 32
-#color 40 40 160 5
+to_line: "32"
+color: "40" "40" "160" "5"
 Press space to continue or esc to return to menu
-
+(empty line)
 # Draw player reference
-#sprite 17 540 230 0 -1
-#sprite 7 565 230 
-#sprite 7 565 233 
-#sprite 7 565 236 
-#sprite 7 565 239
-#sprite 4 532 230
-#sprite 4 532 236
-#sprite 4 532 242
-#sprite 12 534 250 11
-#sprite 12 534 260 8
-
-#page-end
-
+sprite: "17" "540" "230" "0" "-1"
+sprite: "7" "565" "230" "0" "0"
+sprite: "7" "565" "233" "0" "0"
+sprite: "7" "565" "236" "0" "0"
+sprite: "7" "565" "239" "0" "0"
+sprite: "4" "532" "230" "0" "0"
+sprite: "4" "532" "236" "0" "0"
+sprite: "4" "532" "242" "0" "0"
+sprite: "12" "534" "250" "11" "0"
+sprite: "12" "534" "260" "8" "0"
+(empty line)
+page_end
+(empty line)
 #################################
 #page 2
-
-#to-line 0
-#color 1
+(empty line)
+to_line: "0"
+color_ref: "1"
 Game Modes
-#color 255 127 127 3
+color: "255" "127" "127" "3"
 NORMAL
-#color 2
-#margin 40
+color_ref: "2"
+margin: "40"
 Normal gameplay.
-Power up specs:
-#margin 50
-#color 255 255 127 4
+Power up specs\.
+margin: "50"
+color: "255" "255" "127" "4"
 Heal
-#margin 70
-#color 2
-Cost:   1 soul
-Effect: Gives +3 health (capped at 6)
-#margin 50
-#color 4
+margin: "70"
+color_ref: "2"
+Cost\.   1 soul
+Effect\. Gives +3 health (capped at 6)
+margin: "50"
+color_ref: "4"
 Shield
-#margin 70
-#color 2
-Cost:   2 souls
-Effect: Guards from one shot, releases explosion on hit
-#margin 50
-#color 4
+margin: "70"
+color_ref: "2"
+Cost\.   2 souls
+Effect\. Guards from one shot, releases explosion on hit
+margin: "50"
+color: "4"
 Turret
-#margin 70
-#color 2
-Cost:   3 souls
-Effect: Releases a turret that shoots fireballs into each direction
-#margin 50
-#color 4
+margin: "70"
+color_ref: "2"
+Cost\.   3 souls
+Effect\. Releases a turret that shoots fireballs into each direction
+margin: "50"
+color_ref: "4"
 Torrent of Fire
-#margin 70
-#color 2
-Cost:   6 souls
-Effect: Shoots projectile that explodes into a torrent of fire
-#margin 5
-#color 3
+margin: "70"
+color_ref: "2"
+Cost\.   6 souls
+Effectv Shoots projectile that explodes into a torrent of fire
+margin: "5"
+color_ref: "3"
 BRUTALLY HARD
-#color 2
-#margin 40
+color_ref: "2"
+margin: "40"
 Fire modes are a bit modified. All enemies have +1 health. Heal gives +2 health,
 Turret costs 4, Torrent of Fire costs 8. Player always starts with 0 souls.
-#margin 5
-#color 3
+margin: "5"
+color_ref: "3"
 EXPLOSION MADNESS
-#color 2
-#margin 40
+color_ref: "2"
+margin: "40"
 Every time a fireball is spawned two fireballs are spawned instead.
-#margin 5
-#color 3
+margin: "5"
+color_ref: "3"
 OVER POWER UP
-#color 2
-#margin 40
+color_ref: "2"
+margin: "40"
 Over powered and over priced power ups. All power ups are +2 in cost
 and have a vamped up effect.
-#margin 5
-#color 3
+margin: "5"
+color_ref: "3"
 POWER UP ONLY
-#color 2
-#margin 40
+color_ref: "2"
+margin: "40"
 Player does not regenerate health or mana. Player has 20 souls initially
 at the start of each level.
-#margin 5
-#color 3
+margin: "5"
+color_ref: "3"
 POTIONS ONLY
-#color 2
-#margin 40
+color_ref: "2"
+margin: "40"
 Player does not regenerate health and cannot use souls or mana. All enemies drop
 potions. Pressing shoot button will activate "turbo" mode which will boost the potion
 effects but consume the potion twice as fast. Picking up a potion with an already
 active effect generates a large explosion if also the duration is already at the max.
-#margin 5
-#color 5
+margin: "5"
+color_ref: "5"
 Press space to continue or esc to return to menu
-#page-end
-
+page_end
+(empty line)
 #################################
 #page 3
-
-#to-line 0
-#color 1
+(empty line)
+to_line: "0"
+color_ref: "1"
 Potions
-
-#color 2
+(empty line)
+color_ref: "2"
 Potions give a short boost to the player's abilities. The effects of
 potions stack up.
-
-#color 3
+(empty line)
+color_ref: "3"
 POTION OF BURSTING ANGER
-#sprite 2 10 100
-#color 2
-#margin 40
+sprite: "2" "10" "100" "0" "0"
+color_ref: "2"
+margin: "40"
 Makes the player shoot fireballs to all directions. Also, makes the monsters
 to forget who's who and their fireballs will hurt all other monsters.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 POTION OF FREEZING TIME
-#sprite 2 10 164 1
-#color 2
-#margin 40
+sprite: "2" "10" "164" "1" "0"
+color_ref: "2"
+margin: "40"
 This potion will detach the player from the time plane and allow
 them to move through space as if the time was frozen. The time
 will unfreeze if any of the monsters die during its effect.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 POTION OF GOTTA GO FAST
-#sprite 2 10 244 2
-#color 2
-#margin 40
+sprite: "2" "10" "244" "2" "0"
+color_ref: "2"
+margin: "40"
 Sipping this potion will boost player's reaction time by an incredible
 amount. Both movement speed and fire rate are increased.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 POTION OF FIREBALL ARMAGEDDON
-#sprite 2 10 308 3
-#color 2
-#margin 40
+sprite: "2" "10" "308" "3" "0"
+color_ref: "2"
+margin: "40"
 Makes player's fireballs twice as potent.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 POTION OF REGENERATION
-#sprite 2 10 356 4
-#color 2
-#margin 40
+sprite: "2" "10" "356" "4" "0"
+color_ref: "2"
+margin: "40"
 Player will automatically regenerate health for a while.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 POTION OF MINOR ANGER
-#sprite 2 10 404 5
-#color 2
-#margin 40
+sprite: "2" "10" "404" "5" "0"
+color_ref: "2"
+margin: "40"
 Makes the player shoot fireballs to all directions.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 POTION OF INSTANT GRATIFICATION
-#sprite 2 10 452 6
-#color 2
-#margin 40
+sprite: "2" "10" "452" "6" "0"
+color_ref: "2"
+margin: "40"
 Player will instantly heal to 6 health.
-
-#margin 5
-#to-line 32
-#color 5
+(empty line)
+margin: "5"
+to_line: "32"
+color_ref: "5"
 Press space to continue or esc to return to menu
-#page-end
-
+page_end
+(empty line)
 ########################
 #page 4
-
-#to-line 0
-#color 1
+(empty line)
+to_line: "0"
+color_ref: "1"
 Enemy Profiles
-#color 3
+color_ref: "3"
 Common Goblin (lat. Communis Lemures)
-#sprite 17 10 35
-#margin 40
-#color 4
-Health: 2, Fire rate: 1.6 / sec, Moves slow
-#color 2
+sprite: "17" "10" "35" "0" "0"
+margin: "40"
+color_ref: "4"
+Health\. 2, Fire rate\. 1.6 / sec, Moves slow
+color_ref: "2"
 Common golbins dwell near the surface and thus sometimes make appearances
 in folklore. Relatively easy to kill. Dangerous in large groups, though.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 Ancient Protector
-#sprite 17 10 115 0 1
-#margin 40
-#color 4
-Health: 3, Fire rate: 2.0 / sec, Moves slow
-#color 2
+sprite: "17" "10" "115" "0" "1"
+margin: "40"
+color_ref: "4"
+Health\. 3, Fire rate\. 2.0 / sec, Moves slow
+color_ref: "2"
 Ancient Protectors were given the mission to protect the Ancient Evil
 Places in the Ancient Days. Some still do, others have found better
 life at protecting places like tax havens and the Vatican.
 Significantly, or slightly, more dangerous than common goblins,
 depending on your viewpoint.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 Imp
-#sprite 17 10 243 0 2
-#margin 40
-#color 4
-Health: 5, Fire rate: 5.3 / sec, Moves fast, Possesses a soul
-#color 2
+sprite: "17" "10" "243" "0" "2"
+margin: "40"
+color_ref: "4"
+Health\. 5, Fire rate\. 5.3 / sec, Moves fast, Possesses a soul
+color_ref: "2"
 In the modern godless times, imps have become more busy at boasting about
 themselves than actually protecting the core values of Hell which has also
 lead to this situation where it was possible for a common magician to
 invade Hell. Their combat skills may be rusty but they're still very much
 lethal and their fast movement speed makes their charges annoying to evade.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 Extraterrestial Alien
-#sprite 17 10 371 0 3
-#margin 40
-#color 4
-Health: 6, Fire rate: 8.0 / sec, Moves fast, Possesses a soul
-#color 2
+sprite: "17" "10" "371" "0" "3"
+margin: "40"
+color_ref: "4"
+Health\. 6, Fire rate\. 8.0 / sec, Moves fast, Possesses a soul
+color_ref: "2"
 In 1950's a specimen from the Area 51 escaped and colonialized Hell. It is
 unknown whether the aliens and other hell-dwellers are allied or if the
 aliens are just protecting their homes. Nevertheless, their position
 makes them the most motivated fighters and they should be approached with
 extreme caution.
-#to-line 32
-#margin 5
-#color 5
+to_line: "32"
+margin: "5"
+color_ref: "5"
 Press space to continue or esc to return to menu
-#page-end
-
+page_end
+(empty line)
 ########################
 # page 5
-
-#to-line 0
-#color 1
+(empty line)
+to_line: "0"
+color_ref: "1"
 Enemy Profiles (cont.)
-#color 3
+color_ref: "3"
 Alien Defensive Turret UF-0 mk II
-#rect 7 33 27 33 66 66 66
-#sprite 17 10 35 0 4
-#margin 40
-#color 4
-Health: 8, Fire rate: 8.0 / sec, Stationary, Possesses a soul
-#color 2
+rect: "7" "33" "27" "33" "66" "66" "66"
+sprite: "17" "10" "35" "0" "4"
+margin: "40"
+color_ref: "4"
+Health\. 8, Fire rate\. 8.0 / sec, Stationary, Possesses a soul
+color_ref: "2"
 The Unified Front 0 defensive turret is the aliens' latest development in
 defensive technology. The extreme rate of fire comes with an expense,
 though. The flashing of fireballs is so blinding for the shooter that they
@@ -311,103 +311,104 @@ furiously they try to defend their lines, the turrets often do more damage
 to their own than help them in the fight. It is rumoured that the up-coming
 UF-0 mk III will fix the flashing issue but for now, the design flaw can
 be used as a tactical advantage.
-
-#margin 5
-#color 3
+(empty line)
+margin: "5"
+color_ref: "3"
 Arch Evil
-#sprite 17 10 211 0 5
-#margin 40
-#color 4
-Health: ?, Fire rate: ??? / sec
-#color 2
+sprite: "17" "10" "211" "0" "5"
+margin: "40"
+color_ref: "4"
+Health\. ?, Fire rate\. ??? / sec
+color_ref: "2"
 The absolute evil, the most priviledged creature in the deepest depths of
 Hell is a naked white male. Who could have guessed? Not much is known
 about him. Does he even acknowledge his own priviledge? Anyway, your
 ultimate goal is to destroy him. Shouldn't be too hard to argue why
 nowadays.
-
-#to-line 32
-#margin 5
-#color 5
+(empty line)
+to_line: "32"
+margin: "5"
+color_ref: "5"
 Press space to continue or esc to return to menu
-
-
-#page-end
-
+(empty line)
+(empty line)
+page_end
+(empty line)
 ########################
 # page 6
-
-#to-line 0
-#color 1
+(empty line)
+to_line: "0"
+color_ref: "1"
 Story
-#color 4
+color_ref: "4"
 Every game should have a story, right? And pretend that it's a result of
 countless sleepless nights' worth of creative struggle, and totally n o t
 just some gringy cliche-fest written in 5 minutes just before the release.
-
+(empty line)
 Ok, well, here you'll have it:
-
-#color 2
+(empty line)
+color_ref: "2"
 You are teenager from a middle-class family who has just finished watching
 the entirety of SUPERNATURAL. Inspired by the series, you think that it
 would be super cool (although just having watched the series you should
 acknowledge how b a d the idea is) to conjure the Devil.
-
+(empty line)
 You follow one of the rituals you have found online. Against your
 exceptations the ritual actually works. Kind of. Your soul is projected
 into the mind of a cursed magician who is stuck in Hell since something
 like 1850 or whenever conjuring spirits was a cool passtime last time.
-
+(empty line)
 You want to end the magician's torment by executing an all-out one-man
 assault into the most critical structures of Hell, through the cursed
 magician's soul, of course.
-
+(empty line)
 But if you'd remember the show, you'd know that destroying Hell won't
 result in anything that would even remotely make sense. There's a slight
 change that the magician is freed from his pain. Most importantly though,
 you just want to have fun.
-
+(empty line)
 Stop reading already and go kill some demons, you bastard.
-
-#to-line 32
-#margin 5
-#color 5
+(empty line)
+to_line: "32"
+margin: "5"
+color_ref: "5"
 Press space to continue or esc to return to menu
-#page-end
-
-
+page_end
+(empty line)
+(empty line)
 ########################
 # page 7
-
-#to-line 0
-#color 1
+(empty line)
+to_line: "0"
+color_ref: "1"
 Credits
-#color 2
+color_ref: "2"
 The game is created by ME, Joonas Salonpaa. I've been developing the game
 on and off since 2011. Not that it would show in anything but in the
 absolutely sadistic game difficulty.
-
+(empty line)
 The game was originally developed in C using the now-ancient Allegro 4.2.2
 game development library. The codebase is still, after trying to clean it
 up for release, quite messy and right out bad quality and the fact that it's
 based on even older game engine prototypes shows. Anyway, the code is
-available at https://github.com/biocommando/destination-underworld
+available at https\.//github.com/biocommando/destination-underworld
 and is licensed with MIT license.
-
-#color 3
+(empty line)
+color_ref: "3"
 Art credits:
-#color 2
-Player and enemy sprites based on templates by Charles Gabriel:
-https://opengameart.org/content/twelve-16x18-rpg-sprites-plus-base
-License CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
-
+color_ref: "2"
+Player and enemy sprites based on templates by Charles Gabriel\.
+https\.//opengameart.org/content/twelve-16x18-rpg-sprites-plus-base
+License CC-BY 3.0 (https\.//creativecommons.org/licenses/by/3.0/)
+(empty line)
 Font "White Rabbit" is created by Matthew Welch. See license under data
 directory (MIT style).
-
+(empty line)
 Other art, including music and soundeffects, are created by me,
 Joonas Salonpaa, under license CC-BY 3.0 (see link above).
-#to-line 32
-#margin 5
-#color 5
+to_line: "32"
+margin: "5"
+color_ref: "5"
 Press space to continue or esc to return to menu
-#doc-end
+doc_end
+(empty line)

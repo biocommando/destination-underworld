@@ -109,28 +109,30 @@ Object.keys(json)
     .forEach(commandSetName => {
         const def = json[commandSetName]
         init(commandSetName)
-        statename = def.state
+        const config = def[':config']
+        statename = config.state
+        const prefix = config.prefix || `${commandSetName}_`
+        const defaultHandler = !!config.default
         hfile = hfile.replace('$$STATE_H$$', 'state_' + statename + '.h')
         cfile += `    ${statename} *state = (${statename} *)dto->state;\n`
-
-        Object.keys(def).filter(x => x !== 'state')
+        Object.keys(def).filter(x => x !== ':config')
             .forEach(command => {
                 command_idx = 0
                 commandname = command
 
-                debug_print += `void debug_${commandname}_DispatchDto(const struct ${commandname}_DispatchDto *dto)
+                debug_print += `\nvoid debug_${prefix}${commandname}_DispatchDto([[maybe_unused]] const struct ${prefix}${commandname}_DispatchDto *dto)
 {
     printf("DEBUG :: ${commandname}:\\n");
 `
                 hfile += `
-struct ${commandname}_DispatchDto
+struct ${prefix}${commandname}_DispatchDto
 {
     ${statename} *state;
     char *skip_label;
 `
                 cfile += `\n    if (!strcmp(dto->command, "${commandname}"))
     {
-        struct ${commandname}_DispatchDto cd;
+        struct ${prefix}${commandname}_DispatchDto cd;
         cd.state = state;
         cd.skip_label = dto->skip_label;
 `
@@ -162,18 +164,38 @@ struct ${commandname}_DispatchDto
                     command_idx++;
                 })
                 debug_print += '}'
-                cfile += `        dispatch__handle_${commandname}(&cd);
+                cfile += `        dispatch__handle_${prefix}${commandname}(&cd);
         return;
     }
 `
                 hfile += `};
 
-void dispatch__handle_${commandname}(struct ${commandname}_DispatchDto *);
+void dispatch__handle_${prefix}${commandname}(struct ${prefix}${commandname}_DispatchDto *);
 
-void debug_${commandname}_DispatchDto(const struct ${commandname}_DispatchDto *);
+void debug_${prefix}${commandname}_DispatchDto(const struct ${prefix}${commandname}_DispatchDto *);
 `
-            })
 
+            })
+        if (!defaultHandler) {
+            cfile += `    printf("Command '%s' not recognized\\n", dto->command);\n`
+        } else {
+            hfile += `
+struct ${commandSetName}_default_DispatchDto
+{
+    ${statename} *state;
+    char *skip_label;
+    const char *command;
+};
+
+void dispatch__handle_${commandSetName}_default(struct ${commandSetName}_default_DispatchDto *);`
+            cfile += `
+    struct ${commandSetName}_default_DispatchDto default_dto;
+    default_dto.state = state;
+    default_dto.skip_label = dto->skip_label;
+    default_dto.command = dto->command;
+    dispatch__handle_${commandSetName}_default(&default_dto);
+`
+        }
     })
 
 function generate_validator(validate, param, type) {

@@ -52,9 +52,10 @@ int read_command_file(const char *filename, void (*dispatch)(command_file_Dispat
                 p = strstr(p, "\"");
                 if (p)
                     *p = 0;
-                strescape_inplace(pp, '\\', "'\"n\n", 4);
+                strescape_inplace(pp, '\\', "\\\\'\"n\n", 6);
             }
         }
+        strescape_inplace(line, '\\', "\\\\.:", 4);
         dispatch(&dto);
     }
     fclose(f);

@@ -19,7 +19,7 @@ module.exports = v => {
         'src/read_level.o',
         'src/allegro_management.o',
         'src/loadindicator.o',
-        //'src/duscript.o',
+        'src/help.o',
         'src/variables.o',
         'src/sprites.o',
         'src/record_file.o',

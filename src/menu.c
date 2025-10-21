@@ -12,6 +12,7 @@
 #include "midi_playback.h"
 #include "record_file.h"
 #include "sha1/du_dmac.h"
+#include "help.h"
 
 static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
@@ -23,86 +24,6 @@ static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int
 }
 
 static ALLEGRO_BITMAP *menu_sprites;
-
-static void show_help()
-{
-    char help_path[256];
-    sprintf(help_path, DATADIR "%s/help.dat", get_game_settings()->mission_pack);
-    FILE *f = fopen(help_path, "r");
-    ALLEGRO_COLOR color = al_map_rgb(255, 255, 255);
-    ALLEGRO_COLOR saved_colors[10];
-    memset(saved_colors, 0, sizeof(saved_colors));
-    const int line_height = 16;
-    int line = 0;
-    int margin = 5;
-    const int y_margin = 5;
-    al_clear_to_color(BLACK);
-    while (!feof(f))
-    {
-        char s[256];
-        fgets(s, 256, f);
-        if (strlen(s))
-            s[strlen(s) - 1] = 0;
-        if (s[0] == '#') // command
-        {
-            char cmd[256];
-            sscanf(s, "%s", cmd);
-            if (!strcmp(cmd, "#color"))
-            {
-                int r = 255, g = 255, b = 255, colorref = -1;
-                int n = sscanf(s, "%*s %d %d %d %d", &r, &g, &b, &colorref);
-                if (n == 1 && r >= 0 && r < 10)
-                {
-                    color = saved_colors[r];
-                }
-                else
-                {
-                    color = al_map_rgb(r, g, b);
-                    if (colorref >= 0 && colorref < 10)
-                    {
-                        saved_colors[colorref] = color;
-                    }
-                }
-            }
-            if (!strcmp(cmd, "#sprite"))
-            {
-                int id = -1, x = 0, y = 0, dx = 0, dy = 0;
-                sscanf(s, "%*s %d %d %d %d %d", &id, &x, &y, &dx, &dy);
-                draw_sprite_animated(menu_sprites, id, x, y, dx, dy);
-            }
-            if (!strcmp(cmd, "#rect"))
-            {
-                int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0;
-                sscanf(s, "%*s %d %d %d %d %d %d %d", &x, &y, &w, &h, &r, &g, &b);
-                al_draw_filled_rectangle(x, y, x + w + 1, y + h + 1, al_map_rgb(r, g, b));
-            }
-            if (!strcmp(cmd, "#margin"))
-            {
-                sscanf(s, "%*s %d", &margin);
-            }
-            if (!strcmp(cmd, "#to-line"))
-            {
-                sscanf(s, "%*s %d", &line);
-            }
-            if (!strcmp(cmd, "#page-end") || !strcmp(cmd, "#doc-end"))
-            {
-                al_flip_display();
-                int keys[] = {ALLEGRO_KEY_SPACE, ALLEGRO_KEY_ESCAPE};
-                int key = wait_key_presses(keys, 2);
-                al_clear_to_color(BLACK);
-                line = 0;
-                if (!strcmp(cmd, "#doc-end") || key == ALLEGRO_KEY_ESCAPE)
-                    break;
-            }
-        }
-        else
-        {
-            al_draw_textf(get_font(), color, margin, y_margin + line * line_height, 0, s);
-            line++;
-        }
-    }
-    fclose(f);
-}
 
 static const char *game_modifiers_to_str(int game_modifiers)
 {
@@ -909,7 +830,7 @@ int menu(int ingame, GlobalGameState *ggs)
             }
             else if (ingame_menu_selection == get_menu_item_id("View help"))
             {
-                show_help();
+                show_help(menu_sprites);
             }
             else if (ingame_menu_selection == get_menu_item_id("Exit"))
             {
@@ -979,7 +900,7 @@ int menu(int ingame, GlobalGameState *ggs)
         }
         if (main_menu_selection == get_menu_item_id("View help"))
         {
-            show_help();
+            show_help(menu_sprites);
         }
         if (main_menu_selection == get_menu_item_id("Exit"))
         {

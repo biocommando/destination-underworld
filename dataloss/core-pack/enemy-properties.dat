@@ -1,10 +1,10 @@
 # Adept
-enemy_config: type="0" turret="0"  rate="25" health="2"  gold="0"  fast="0"  hurts-monsters="0"  potion-for-potion-only="5"
+config: type="0" turret="0"  rate="25" health="2"  gold="0"  fast="0"  hurts-monsters="0"  potion-for-potion-only="5"
 # Magician
-enemy_config: type="1" turret="0"  rate="20" health="3"  gold="0"  fast="0"  hurts-monsters="0"  potion-for-potion-only="2"
+config: type="1" turret="0"  rate="20" health="3"  gold="0"  fast="0"  hurts-monsters="0"  potion-for-potion-only="2"
 # Imp
-enemy_config: type="2" turret="0"  rate="15" health="5"  gold="1"  fast="1"  hurts-monsters="0"  potion-for-potion-only="4"
+config: type="2" turret="0"  rate="15" health="5"  gold="1"  fast="1"  hurts-monsters="0"  potion-for-potion-only="4"
 # Alien
-enemy_config: type="3" turret="0"  rate="10" health="6"  gold="1"  fast="1"  hurts-monsters="0"  potion-for-potion-only="3"
+config: type="3" turret="0"  rate="10" health="6"  gold="1"  fast="1"  hurts-monsters="0"  potion-for-potion-only="3"
 # Alien turret
-enemy_config: type="4" turret="1"  rate="5"  health="8"  gold="1"  fast="0"  hurts-monsters="1"  potion-for-potion-only="3"
+config: type="4" turret="1"  rate="5"  health="8"  gold="1"  fast="0"  hurts-monsters="1"  potion-for-potion-only="3"

@@ -1,6 +1,8 @@
 {
     "read_level": {
-        "state": "LevelState",
+        ":config": {
+            "state": "LevelState"
+        },
         "header": {
             "version": "int",
             "extra": "str"
@@ -50,8 +52,10 @@
         }
     },
     "enemy_properties": {
-        "state": "EnemyConfigs",
-        "enemy_config": {
+        ":config": {
+            "state": "EnemyConfigs"
+        },
+        "config": {
             "enemy_type": "int",
             "validate:enemy_type": {
                 "type": "range",
@@ -106,7 +110,9 @@
         }
     },
     "mission_counts": {
-        "state": "SetMissionCount",
+        ":config": {
+            "state": "SetMissionCount"
+        },
         "mode_override": {
             "mode": "int",
             "validate:mode": {
@@ -132,6 +138,90 @@
             "validate:count": {
                 "type": "range",
                 "min": 0
+            }
+        }
+    },
+    "help": {
+        ":config": {
+            "state": "HelpState",
+            "default": true
+        },
+        "color": {
+            "red": "int",
+            "validate:red": {
+                "type": "range",
+                "min": 0,
+                "max": 255
+            },
+            "green": "int",
+            "validate:green": {
+                "type": "range",
+                "min": 0,
+                "max": 255
+            },
+            "blue": "int",
+            "validate:blue": {
+                "type": "range",
+                "min": 0,
+                "max": 255
+            },
+            "ref": "int",
+            "validate:ref": {
+                "type": "range",
+                "min": -1,
+                "max": 9
+            }
+        },
+        "color_ref": {
+            "ref": "int",
+            "validate:ref": {
+                "type": "range",
+                "min": 0,
+                "max": 9
+            }
+        },
+        "margin": {
+            "margin": "int"
+        },
+        "sprite": {
+            "id": "int",
+            "x": "int",
+            "y": "int",
+            "anim_offset_x": "int",
+            "anim_offset_y": "int"
+        },
+        "rect": {
+            "x": "int",
+            "y": "int",
+            "width": "int",
+            "height": "int",
+            "red": "int",
+            "validate:red": {
+                "type": "range",
+                "min": 0,
+                "max": 255
+            },
+            "green": "int",
+            "validate:green": {
+                "type": "range",
+                "min": 0,
+                "max": 255
+            },
+            "blue": "int",
+            "validate:blue": {
+                "type": "range",
+                "min": 0,
+                "max": 255
+            }
+        },
+        "page_end": {},
+        "doc_end": {},
+        "to_line": {
+            "line": "int",
+            "validate:line": {
+                "type": "range",
+                "min": 0,
+                "max": 32
             }
         }
     }

@@ -32,6 +32,10 @@ static void dispatch(command_file_DispatchDto *dto)
             }
             return;
         }
+        else if (!strcmp(dto->command, ":inc_at_6:")) {
+            buf[6]++;
+            return;
+        }
     }
     strcpy(buf, "1234567");
 }
@@ -50,7 +54,8 @@ void command_file__smoke_test()
     fprintf(f, ":just some label for fun\n");
     fprintf(f, "increment: \"4\" \"-1\"\n");
     fprintf(f, "set:\"o\"  \"5\"\n");
-    fprintf(f, "jump if equal:\"1Hello7\"  \"skip some lines\"\n");
+    fprintf(f, "\\.inc_at_6\\.: \"\"\"\"\n");
+    fprintf(f, "jump if equal:\"1Hello8\"  \"skip some lines\"\n");
     fprintf(f, "set: \"E\" \"1\"\n");
     fprintf(f, "set: \"R\" \"2\"\n");
     fprintf(f, "set: \"R\" \"3\"\n");
@@ -58,12 +63,12 @@ void command_file__smoke_test()
     fprintf(f, "set: \"R\" \"5\"\n");
     fprintf(f, ":skip some lines\n");
     fprintf(f, "set: \"\\'\" \"0\"\n");
-    fprintf(f, "set: \"\\'\" \"6\"\n");
+    fprintf(f, "set: \"\\\\\" \"6\"\n");
     fclose(f);
 
     read_command_file("testfile.txt", dispatch, buf);
     ASSERT(INT_EQ(buf[7], 0));
-    ASSERT(STR_EQ(buf, "\"Hello\""));
+    ASSERT(STR_EQ(buf, "\"Hello\\"));
 
     remove("testfile.txt");
 }

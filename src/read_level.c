@@ -96,7 +96,7 @@ static inline void place_lev_object(World *world, int x, int y, int id, int room
     }
 }
 
-void dispatch__handle_header(struct header_DispatchDto *dto)
+void dispatch__handle_read_level_header(struct read_level_header_DispatchDto *dto)
 {
     if (dto->version == 3)
         return;
@@ -104,12 +104,12 @@ void dispatch__handle_header(struct header_DispatchDto *dto)
     exit(1);
 }
 
-void dispatch__handle_object(struct object_DispatchDto *dto)
+void dispatch__handle_read_level_object(struct read_level_object_DispatchDto *dto)
 {
     place_lev_object(dto->state->world, dto->x, dto->y, dto->id, dto->room);
 }
 
-void dispatch__handle_condition(struct condition_DispatchDto *dto)
+void dispatch__handle_read_level_condition(struct read_level_condition_DispatchDto *dto)
 {
     LOG("dispatch__handle_condition: <%s>\n", dto->expression);
     const char *p = dto->expression;
@@ -150,17 +150,17 @@ void dispatch__handle_condition(struct condition_DispatchDto *dto)
     }
 }
 
-void dispatch__handle_goto(struct goto_DispatchDto *dto)
+void dispatch__handle_read_level_goto(struct read_level_goto_DispatchDto *dto)
 {
     strcpy(dto->skip_label, dto->label);
 }
 
-void dispatch__handle_set_var(struct set_var_DispatchDto *dto)
+void dispatch__handle_read_level_set_var(struct read_level_set_var_DispatchDto *dto)
 {
     set_var(dto->name, dto->value, dto->state->variables);
 }
 
-void dispatch__handle_script_line(struct script_line_DispatchDto *dto)
+void dispatch__handle_read_level_script_line(struct read_level_script_line_DispatchDto *dto)
 {
     if (!dto->state->bfconfig)
         return;
@@ -172,7 +172,7 @@ void dispatch__handle_script_line(struct script_line_DispatchDto *dto)
     }
 }
 
-void dispatch__handle_script_start(struct script_start_DispatchDto *dto)
+void dispatch__handle_read_level_script_start(struct read_level_script_start_DispatchDto *dto)
 {
     int room = dto->room_number;
     if (dto->state->bfconfig)
@@ -307,9 +307,8 @@ int read_level(World *world, int mission, int room_to)
     return 0;
 }
 
-void dispatch__handle_enemy_config(struct enemy_config_DispatchDto *dto)
+void dispatch__handle_enemy_properties_config(struct enemy_properties_config_DispatchDto *dto)
 {
-
     struct enemy_config *e = &dto->state[dto->enemy_type];
     e->turret = dto->turret;
     e->rate = dto->rate;
@@ -333,7 +332,7 @@ void read_enemy_configs(World *world)
     read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
 }
 
-void dispatch__handle_mode_override(struct mode_override_DispatchDto *dto)
+void dispatch__handle_mission_counts_mode_override(struct mission_counts_mode_override_DispatchDto *dto)
 {
     if (dto->state->game_mode == dto->mode)
     {
@@ -341,7 +340,7 @@ void dispatch__handle_mode_override(struct mode_override_DispatchDto *dto)
     }
 }
 
-void dispatch__handle_initial_count(struct initial_count_DispatchDto *dto)
+void dispatch__handle_mission_counts_initial_count(struct mission_counts_initial_count_DispatchDto *dto)
 {
     if (!dto->state->override_set)
     {
