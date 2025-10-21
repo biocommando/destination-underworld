@@ -8,49 +8,40 @@
 
 void arenaconf__read_arena_configs__valid_and_invalid_entries()
 {
-    // The directory doesn't exist so the test records don't get written to disk
-    const char *testfile = "path/does/not/exist";
-
     ArenaConfigs ac;
-
-    record_file_set_record(testfile, "number_of_arenas", "number_of_arenas 5");
-    record_file_set_record(testfile, "arena_0", "arena_0 level_number=123 name=A fancy name");
-    // Arena 1 missing
-
+    const char *testfile = "testfile.txt";
+    FILE *f = fopen(testfile, "w");
+    fprintf(f, "add:level_number=\"123\" name=\"A fancy name\"\n");
     // Name missing
-    record_file_set_record(testfile, "arena_2", "arena_2 level_number=321");
+    fprintf(f, "add:level_number=\"321\"\n");
 
     char long_name[100];
     memset(long_name, 0, sizeof(long_name));
     memset(long_name, 'A', sizeof(ac.arenas[0].name) - 1);
     // Arena name with max characters
-    record_file_set_record_f(testfile, "arena_3 level_number=555 name=%s", long_name);
+    fprintf(f, "add:level_number=\"555\" name=\"%s\"\n", long_name);
     long_name[sizeof(ac.arenas[0].name) - 1] = 'A';
     // Too long arena name
+    fprintf(f, "add:level_number=\"333\" name=\"%s\"\n", long_name);
     record_file_set_record_f(testfile, "arena_4 level_number=333 name=%s", long_name);
+    fprintf(f, "add:level_number=\"666\" name=\"One more\"\n");
+    fclose(f);
 
     read_arena_configs(testfile, &ac);
 
-    record_file_flush();
+    remove(testfile);
 
-    ASSERT(INT_EQ(ac.number_of_arenas, 5));
+    ASSERT(INT_EQ(ac.number_of_arenas, 3));
 
     ASSERT(INT_EQ(ac.arenas[0].level_number, 123));
     ASSERT(STR_EQ(ac.arenas[0].name, "A fancy name"));
 
-    // Reading failed -> skip the entry
-    ASSERT(INT_EQ(ac.arenas[1].level_number, 0));
-    ASSERT(STR_EQ(ac.arenas[1].name, ""));
-
-    ASSERT(INT_EQ(ac.arenas[2].level_number, 321));
-    ASSERT(STR_EQ(ac.arenas[2].name, "Arena level 3"));
-
     long_name[sizeof(ac.arenas[0].name) - 1] = 0;
-    ASSERT(INT_EQ(ac.arenas[3].level_number, 555));
-    ASSERT(STR_EQ(ac.arenas[3].name, long_name));
+    ASSERT(INT_EQ(ac.arenas[1].level_number, 555));
+    ASSERT(STR_EQ(ac.arenas[1].name, long_name));
 
-    ASSERT(INT_EQ(ac.arenas[4].level_number, 333));
-    ASSERT(STR_EQ(ac.arenas[4].name, "Arena level 5"));
+    ASSERT(INT_EQ(ac.arenas[2].level_number, 666));
+    ASSERT(STR_EQ(ac.arenas[2].name, "One more"));
 }
 
 void arenaconf__get_arena_highscore()

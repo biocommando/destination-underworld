@@ -7,11 +7,27 @@
 #include "logging.h"
 #include <stdlib.h>
 #include <string.h>
+#include "command_file/generated/dispatch_arena_conf.h"
+
+void dispatch__handle_arena_conf_add(struct arena_conf_add_DispatchDto *dto)
+{
+    int idx = dto->state->number_of_arenas;
+    if (idx == ARENACONF_MAX_NUMBER_OF_ARENAS)
+    {
+        LOG("Max number of arenas %d exceeded!!\n", ARENACONF_MAX_NUMBER_OF_ARENAS);
+        return;
+    }
+    dto->state->arenas[idx].level_number = dto->level_number;
+    strcpy(dto->state->arenas[idx].name, dto->name);
+    LOG("Read arena config: '%s' = %d\n", dto->state->arenas[idx].name, dto->state->arenas[idx].level_number);
+    dto->state->number_of_arenas++;
+}
 
 void read_arena_configs(const char *filename, ArenaConfigs *config)
 {
     memset(config, 0, sizeof(ArenaConfigs));
-    unsigned num = 0;
+    read_command_file(filename, dispatch__arena_conf, config);
+    /*unsigned num = 0;
     record_file_scanf(filename, "number_of_arenas", "%*s %u", &num);
     if (num > ARENACONF_MAX_NUMBER_OF_ARENAS)
     {
@@ -39,7 +55,7 @@ void read_arena_configs(const char *filename, ArenaConfigs *config)
             sprintf(config->arenas[i].name, "Arena level %u", i + 1);
         }
         LOG("Read arena config: '%s' = %d\n", config->arenas[i].name, config->arenas[i].level_number);
-    }
+    }*/
 }
 
 static void get_arena_highscores_path(char *path)

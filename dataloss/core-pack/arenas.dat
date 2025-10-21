@@ -1,7 +1,6 @@
-_record_count 6
-number_of_arenas 5
-arena_0 level_number=100 name=Imp Pit
-arena_1 level_number=101 name=Area 51
-arena_2 level_number=102 name=Dungeon
-arena_3 level_number=103 name=Mage's Maze
-arena_4 level_number=104 name=Slaughterhouse
+# level_number, name
+add: "100" "Imp Pit"
+add: "101" "Area 51"
+add: "102" "Dungeon"
+add: "103" "Mage's Maze"
+add: "104" "Slaughterhouse"

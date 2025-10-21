@@ -224,5 +224,18 @@
                 "max": 32
             }
         }
+    },
+    "arena_conf": {
+        ":config": {
+            "state": "ArenaConfigs"
+        },
+        "add": {
+            "level_number": "int",
+            "name": "str",
+            "validate:name": {
+                "type": "length",
+                "max": 63
+            }
+        }
     }
 }

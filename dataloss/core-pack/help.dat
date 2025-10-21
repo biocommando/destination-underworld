@@ -1,12 +1,13 @@
 # Reference:
-# #color <red> <green> <blue> <save color to slot 0-9>
-# #color <slot id>
-# #margin <left margin>
-# #sprite <sprite id> <screen x> <screen y> <animation offset x> <animation offset y>
-# #rect <x> <y> <width> <height> <red> <green> <blue>
+# color: "<red>" "<green>" "<blue>" "<save color to slot 0-9>"
+# color_ref: "<slot id>"
+# margin: "<left margin>"
+# sprite: "<sprite id>" "<screen x>" "<screen y>" "<animation offset x>" "<animation offset y>"
+# rect: "<x>" "<y>" "<width>" "<height>" "<red>" "<green>" "<blue>"
 # page_end
-# #doc-end
-# #to-line <line number 0-29>
+# doc_end
+# to_line: "<line number 0-29>"
+# (empty line)
 (empty line)
 ############################
 # page 1
@@ -411,4 +412,3 @@ margin: "5"
 color_ref: "5"
 Press space to continue or esc to return to menu
 doc_end
-(empty line)
