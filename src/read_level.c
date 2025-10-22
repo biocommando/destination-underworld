@@ -9,30 +9,40 @@
 #include "command_file/generated/dispatch_read_level.h"
 #include "command_file/generated/dispatch_enemy_properties.h"
 #include "command_file/generated/dispatch_mission_counts.h"
+#include "command_file/generated/dispatch_data_file_auth.h"
 
 #include <stdio.h>
 #include <string.h>
 
+void dispatch__handle_data_file_auth_entry(struct data_file_auth_entry_DispatchDto *dto)
+{
+    if (strcmp(dto->path, dto->state->find_path) != 0)
+        return;
+    dto->state->entry_found = 1;
+    char hash[DMAC_SHA1_HASH_SIZE];
+    memset(hash, 0, DMAC_SHA1_HASH_SIZE);
+    convert_sha1_hex_to_hash(hash, dto->sha1);
+    dmac_sha1_set_ctx(AUTH_CTX_CONF);
+    int ret = dmac_sha1_verify_file(dto->path, hash);
+    dto->state->validation_ok = ret == 0;
+    strcpy(dto->skip_label, "EOF");
+}
+
 static int check_authentication(const char *file_to_check)
 {
-    int err = 0;
+    if (!get_game_settings()->require_authentication)
+        return 0;
+    char fname[256];
+    sprintf(fname, DATADIR "%s/auth.dat", get_game_settings()->mission_pack);
 
-    if (get_game_settings()->require_authentication)
-    {
-        char fname[256];
-        sprintf(fname, DATADIR "%s/auth.dat", get_game_settings()->mission_pack);
-        char file_hash_hex[256] = "N/A";
-        int ret = record_file_scanf(fname, file_to_check, "%*s %s", file_hash_hex);
-        if (ret == 0)
-            LOG_ERROR("Error reading auth.dat entry for file %s\n", file_to_check);
-        char hash[DMAC_SHA1_HASH_SIZE];
-        memset(hash, 0, sizeof(hash));
-        convert_sha1_hex_to_hash(hash, file_hash_hex);
-        dmac_sha1_set_ctx(AUTH_CTX_CONF);
-        err = dmac_sha1_verify_file(file_to_check, hash);
-    }
+    DataFileAuthState state;
+    memset(&state, 0, sizeof(state));
+    state.find_path = file_to_check;
+    read_command_file(fname, dispatch__data_file_auth, &state);
 
-    return err;
+    if (!state.entry_found)
+        LOG_ERROR("Error reading auth.dat entry for file %s\n", file_to_check);
+    return state.validation_ok ? 0 : -1;
 }
 
 static inline void combine_tile_properties(Tile *dst, Tile *other)

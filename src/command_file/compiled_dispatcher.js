@@ -130,7 +130,8 @@ struct ${prefix}${commandname}_DispatchDto
     ${statename} *state;
     char *skip_label;
 `
-                cfile += `\n    if (!strcmp(dto->command, "${commandname}"))
+                const commandStr = config.list ? '' : commandname
+                cfile += `\n    if (!strcmp(dto->command, "${commandStr}"))
     {
         struct ${prefix}${commandname}_DispatchDto cd;
         cd.state = state;

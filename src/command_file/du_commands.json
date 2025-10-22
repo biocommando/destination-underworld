@@ -53,7 +53,8 @@
     },
     "enemy_properties": {
         ":config": {
-            "state": "EnemyConfigs"
+            "state": "EnemyConfigs",
+            "list": "config"
         },
         "config": {
             "enemy_type": "int",
@@ -227,7 +228,8 @@
     },
     "arena_conf": {
         ":config": {
-            "state": "ArenaConfigs"
+            "state": "ArenaConfigs",
+            "list": "add"
         },
         "add": {
             "level_number": "int",
@@ -240,7 +242,8 @@
     },
     "sprite_conf": {
         ":config": {
-            "state": "DuSprite"
+            "state": "DuSprite",
+            "list": "sprite"
         },
         "sprite": {
             "id": "int",
@@ -260,6 +263,26 @@
             "validate:height": {
                 "type": "range",
                 "min": 0
+            }
+        }
+    },
+    "data_file_auth": {
+        ":config": {
+            "state": "DataFileAuthState",
+            "list": "entry"
+        },
+        "entry": {
+            "path": "str",
+            "validate:path": {
+                "type": "length",
+                "min": 0,
+                "max": 255
+            },
+            "sha1": "str",
+            "validate:sha1": {
+                "type": "length",
+                "min": 40,
+                "max": 40
             }
         }
     }

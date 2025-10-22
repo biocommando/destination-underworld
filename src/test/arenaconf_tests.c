@@ -11,20 +11,20 @@ void arenaconf__read_arena_configs__valid_and_invalid_entries()
     ArenaConfigs ac;
     const char *testfile = "testfile.txt";
     FILE *f = fopen(testfile, "w");
-    fprintf(f, "add:level_number=\"123\" name=\"A fancy name\"\n");
+    fprintf(f, "level_number=\"123\" name=\"A fancy name\"\n");
     // Name missing
-    fprintf(f, "add:level_number=\"321\"\n");
+    fprintf(f, "level_number=\"321\"\n");
 
     char long_name[100];
     memset(long_name, 0, sizeof(long_name));
     memset(long_name, 'A', sizeof(ac.arenas[0].name) - 1);
     // Arena name with max characters
-    fprintf(f, "add:level_number=\"555\" name=\"%s\"\n", long_name);
+    fprintf(f, "level_number=\"555\" name=\"%s\"\n", long_name);
     long_name[sizeof(ac.arenas[0].name) - 1] = 'A';
     // Too long arena name
-    fprintf(f, "add:level_number=\"333\" name=\"%s\"\n", long_name);
+    fprintf(f, "level_number=\"333\" name=\"%s\"\n", long_name);
     record_file_set_record_f(testfile, "arena_4 level_number=333 name=%s", long_name);
-    fprintf(f, "add:level_number=\"666\" name=\"One more\"\n");
+    fprintf(f, "level_number=\"666\" name=\"One more\"\n");
     fclose(f);
 
     read_arena_configs(testfile, &ac);

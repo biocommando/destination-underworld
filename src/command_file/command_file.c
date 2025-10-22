@@ -9,6 +9,27 @@
 // :label
 // command:"arg" "arg" ...
 
+static void parse_parameters(char *params_start, command_file_DispatchDto *dto)
+{
+    if (!params_start)
+        return;
+    int num_args = 0;
+    char *p = params_start - 1;
+    while (p && num_args < 32)
+    {
+        p = strstr(p + 1, "\"");
+        if (!p)
+            break;
+        p++;
+        char *pp = p;
+        dto->parameters[num_args++] = p;
+        p = strstr(p, "\"");
+        if (p)
+            *p = 0;
+        strescape_inplace(pp, '\\', "\\\\'\"n\n", 6);
+    }
+}
+
 int read_command_file(const char *filename, void (*dispatch)(command_file_DispatchDto *), void *state)
 {
     FILE *f = fopen(filename, "r");
@@ -36,26 +57,18 @@ int read_command_file(const char *filename, void (*dispatch)(command_file_Dispat
         if (*dto.skip_label)
             continue;
         memset(dto.parameters, 0, sizeof(dto.parameters));
-        char *p = strstr(line, ":");
-        if (p)
+        char *p;
+        if ((p = strstr(line, ":")))
         {
             *p = 0;
-            int num_args = 0;
-            while (p && num_args < 32)
-            {
-                p = strstr(p + 1, "\"");
-                if (!p)
-                    break;
-                p++;
-                char *pp = p;
-                dto.parameters[num_args++] = p;
-                p = strstr(p, "\"");
-                if (p)
-                    *p = 0;
-                strescape_inplace(pp, '\\', "\\\\'\"n\n", 6);
-            }
+            parse_parameters(p + 1, &dto);
         }
-        strescape_inplace(line, '\\', "\\\\.:", 4);
+        else if ((p = strstr(line, "\"")))
+        {
+            parse_parameters(p, &dto);
+            *line = 0;
+        }
+        strescape_inplace(line, '\\', "\\\\.:'\"", 6);
         dispatch(&dto);
     }
     fclose(f);

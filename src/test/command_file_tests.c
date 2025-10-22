@@ -8,7 +8,17 @@ static void dispatch(command_file_DispatchDto *dto)
     char *buf = (char *)dto->state;
     if (dto->parameters[1])
     {
-        if (!strcmp(dto->command, "set"))
+        if (!strcmp(dto->command, ""))
+        {
+            if (!strcmp(dto->parameters[1], "upper"))
+            {
+                int idx;
+                sscanf(dto->parameters[0], "%d", &idx);;
+                buf[idx] &= ~32;
+            }
+            return;
+        }
+        else if (!strcmp(dto->command, "set"))
         {
             char c = *dto->parameters[0];
             int idx;
@@ -45,7 +55,9 @@ void command_file__smoke_test()
     char buf[8] = "7654321";
     FILE *f = fopen("testfile.txt", "w");
     fprintf(f, "this should set to 1234567\n");
-    fprintf(f, "set: \"H\" ignore \"1\"\n");
+    fprintf(f, "set: \"h\" ignore \"1\"\n");
+    fprintf(f, "\"1\" \"upper\"\n");
+    fprintf(f, "asd \"do\" ddsad \"nothing\"\n");
     fprintf(f, "set: \"a\"\"2\"\n");
     fprintf(f, "increment: \"2\" \"4\"\n");
     fprintf(f, "# comment!\n");

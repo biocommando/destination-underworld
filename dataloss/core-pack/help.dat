@@ -143,7 +143,7 @@ POTIONS ONLY
 color_ref: "2"
 margin: "40"
 Player does not regenerate health and cannot use souls or mana. All enemies drop
-potions. Pressing shoot button will activate "turbo" mode which will boost the potion
+potions. Pressing shoot button will activate \'turbo\' mode which will boost the potion
 effects but consume the potion twice as fast. Picking up a potion with an already
 active effect generates a large explosion if also the duration is already at the max.
 margin: "5"
