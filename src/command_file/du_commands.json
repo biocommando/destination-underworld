@@ -285,5 +285,12 @@
                 "max": 40
             }
         }
+    },
+    "synth_params": {
+        ":config": {
+            "state": "SynthParamState",
+            "default": true
+        },
+        "SYNTH_DATA_END": {}
     }
 }

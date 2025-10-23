@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "../command_file/generated/dispatch_synth_params.h"
 
 void init_SynthVoice(SynthVoice *sv, float sample_rate, int key, int channel)
 {
@@ -353,130 +354,128 @@ void Synth_kill_voices(Synth *s, int channel)
         Synth_rearrange_active_voices(s);
 }
 
+void dispatch__handle_synth_params_default(struct synth_params_default_DispatchDto *dto)
+{
+
+    if (dto->state->instrument_count >= 16)
+        return;
+    char name[256];
+    float value;
+    if (sscanf(dto->command, "%[^=]=%f", name, &value) != 2)
+        return;
+
+    if (!strcmp(name, "o1type"))
+        dto->state->currentParams.osc1_type = (int)(5 * value * 0.99);
+    if (!strcmp(name, "o2type"))
+        dto->state->currentParams.osc2_type = (int)(5 * value * 0.99);
+
+    if (!strcmp(name, "o1tune"))
+        dto->state->currentParams.osc1_semitones = -24 + 48 * value;
+    if (!strcmp(name, "o2tune"))
+        dto->state->currentParams.osc2_semitones = -24 + 48 * value;
+
+    if (!strcmp(name, "o1mix"))
+        dto->state->currentParams.osc1_mix = value;
+    if (!strcmp(name, "o2mix"))
+        dto->state->currentParams.osc2_mix = value;
+
+    if (!strcmp(name, "o2o1_fm"))
+        dto->state->currentParams.osc2_to_osc1_fm = value > 0.5 ? 1 : 0;
+
+    if (!strcmp(name, "o1_wt"))
+        dto->state->currentParams.wt1_slot = (int)(MAX_WT_SAMPLE_SLOTS * value * 0.99);
+    if (!strcmp(name, "o2_wt"))
+        dto->state->currentParams.wt2_slot = (int)(MAX_WT_SAMPLE_SLOTS * value * 0.99);
+
+    if (!strcmp(name, "v_a"))
+        dto->state->currentParams.amp_attack = value;
+    if (!strcmp(name, "v_d"))
+        dto->state->currentParams.amp_decay = value;
+    if (!strcmp(name, "v_s"))
+        dto->state->currentParams.amp_sustain = value;
+    if (!strcmp(name, "v_r"))
+        dto->state->currentParams.amp_release = value;
+
+    if (!strcmp(name, "f_a"))
+        dto->state->currentParams.filter_attack = value;
+    if (!strcmp(name, "f_d"))
+        dto->state->currentParams.filter_decay = value;
+    if (!strcmp(name, "f_s"))
+        dto->state->currentParams.filter_sustain = value;
+    if (!strcmp(name, "f_r"))
+        dto->state->currentParams.filter_release = value;
+
+    if (!strcmp(name, "cut"))
+        dto->state->currentParams.filter_cutoff = value;
+    if (!strcmp(name, "env2f"))
+        dto->state->currentParams.filter_mod_amount = value;
+    if (!strcmp(name, "res"))
+        dto->state->currentParams.filter_resonance = value;
+
+    if (!strcmp(name, "phrand"))
+        dto->state->currentParams.randomize_phase = value > 0.5 ? 1 : 0;
+
+    if (!strcmp(name, "dist"))
+        dto->state->currentParams.distortion = value;
+
+    if (!strcmp(name, "env2p"))
+        dto->state->currentParams.env_to_pitch = value > 0.5 ? 1 : 0;
+
+    if (!strcmp(name, "noise"))
+        dto->state->currentParams.noise_amount = value;
+
+    if (!strcmp(name, "volume"))
+        dto->state->currentParams.volume = value * dto->state->gain_adjust;
+    if (!strcmp(name, "pan"))
+        dto->state->currentParams.pan = value;
+
+    if (!strcmp(name, "delsnd"))
+        dto->state->delay_send = value;
+
+    if (!strcmp(name, "wt1shot"))
+        dto->state->currentParams.wt_oneshot = value > 0.5 ? 1 : 0;
+
+    if (!strcmp(name, "keyoffs"))
+        dto->state->currentParams.note_offset = 128 * value - 64;
+
+    if (!strcmp(name, "deltm"))
+    {
+        dto->state->delay_time = 1000 * value;
+        Synth_set_send_delay_params(dto->state->s, dto->state->delay_feed, dto->state->delay_time);
+    }
+    if (!strcmp(name, "delfb"))
+    {
+        dto->state->delay_feed = value;
+        Synth_set_send_delay_params(dto->state->s, dto->state->delay_feed, dto->state->delay_time);
+    }
+    // Global gain adjust in dB.
+    // Modify each instrument gain by this value
+    if (!strcmp(name, "glob_gain_adj_db"))
+        dto->state->gain_adjust = powf(10, value / 20);
+}
+
+void dispatch__handle_synth_params_SYNTH_DATA_END(struct synth_params_SYNTH_DATA_END_DispatchDto *dto)
+{
+    Synth_add_instrument(dto->state->s, dto->state->instrument_count, dto->state->currentParams, dto->state->delay_send);
+    memset(&dto->state->currentParams, 0, sizeof(SynthParams));
+    dto->state->instrument_count++;
+    // Skip drum track in GM (ch num 10 = idx 9)
+    if (dto->state->instrument_count == 9)
+        dto->state->instrument_count++;
+}
+
 void Synth_read_instruments(Synth *s, const char *file)
 {
     FILE *f = fopen(file, "r");
     if (!f)
         return;
-    SynthParams currentParams;
-    memset(&currentParams, 0, sizeof(SynthParams));
-    float delay_send = 0, delay_time = 500, delay_feed = 0.5;
-    int instrument_count = 0;
-    float gain_adjust = 1;
 
-    while (instrument_count < 16)
-    {
-        char line[32];
-        fgets(line, sizeof(line), f);
-        if (feof(f))
-            break;
-        char name[32];
-        float value;
-        if (sscanf(line, "%[^=]=%f", name, &value) == 2)
-        {
+    SynthParamState state;
+    memset(&state, 0, sizeof(state));
+    state.delay_time = 500;
+    state.delay_feed = 0.5;
+    state.gain_adjust = 1;
+    state.s = s;
 
-            if (!strcmp(name, "o1type"))
-                currentParams.osc1_type = (int)(5 * value * 0.99);
-            if (!strcmp(name, "o2type"))
-                currentParams.osc2_type = (int)(5 * value * 0.99);
-
-            if (!strcmp(name, "o1tune"))
-                currentParams.osc1_semitones = -24 + 48 * value;
-            if (!strcmp(name, "o2tune"))
-                currentParams.osc2_semitones = -24 + 48 * value;
-
-            if (!strcmp(name, "o1mix"))
-                currentParams.osc1_mix = value;
-            if (!strcmp(name, "o2mix"))
-                currentParams.osc2_mix = value;
-
-            if (!strcmp(name, "o2o1_fm"))
-                currentParams.osc2_to_osc1_fm = value > 0.5 ? 1 : 0;
-
-            if (!strcmp(name, "o1_wt"))
-                currentParams.wt1_slot = (int)(MAX_WT_SAMPLE_SLOTS * value * 0.99);
-            if (!strcmp(name, "o2_wt"))
-                currentParams.wt2_slot = (int)(MAX_WT_SAMPLE_SLOTS * value * 0.99);
-
-            if (!strcmp(name, "v_a"))
-                currentParams.amp_attack = value;
-            if (!strcmp(name, "v_d"))
-                currentParams.amp_decay = value;
-            if (!strcmp(name, "v_s"))
-                currentParams.amp_sustain = value;
-            if (!strcmp(name, "v_r"))
-                currentParams.amp_release = value;
-
-            if (!strcmp(name, "f_a"))
-                currentParams.filter_attack = value;
-            if (!strcmp(name, "f_d"))
-                currentParams.filter_decay = value;
-            if (!strcmp(name, "f_s"))
-                currentParams.filter_sustain = value;
-            if (!strcmp(name, "f_r"))
-                currentParams.filter_release = value;
-
-            if (!strcmp(name, "cut"))
-                currentParams.filter_cutoff = value;
-            if (!strcmp(name, "env2f"))
-                currentParams.filter_mod_amount = value;
-            if (!strcmp(name, "res"))
-                currentParams.filter_resonance = value;
-
-            if (!strcmp(name, "phrand"))
-                currentParams.randomize_phase = value > 0.5 ? 1 : 0;
-
-            if (!strcmp(name, "dist"))
-                currentParams.distortion = value;
-
-            if (!strcmp(name, "env2p"))
-                currentParams.env_to_pitch = value > 0.5 ? 1 : 0;
-
-            if (!strcmp(name, "noise"))
-                currentParams.noise_amount = value;
-
-            if (!strcmp(name, "volume"))
-                currentParams.volume = value * gain_adjust;
-            if (!strcmp(name, "pan"))
-                currentParams.pan = value;
-
-            if (!strcmp(name, "delsnd"))
-                delay_send = value;
-
-            if (!strcmp(name, "wt1shot"))
-                currentParams.wt_oneshot = value > 0.5 ? 1 : 0;
-
-            if (!strcmp(name, "keyoffs"))
-                currentParams.note_offset = 128 * value - 64;
-
-            if (!strcmp(name, "deltm"))
-            {
-                delay_time = 1000 * value;
-                Synth_set_send_delay_params(s, delay_feed, delay_time);
-            }
-            if (!strcmp(name, "delfb"))
-            {
-                delay_feed = value;
-                Synth_set_send_delay_params(s, delay_feed, delay_time);
-            }
-            // Global gain adjust in dB.
-            // Modify each instrument gain by this value
-            if (!strcmp(name, "glob_gain_adj_db"))
-                gain_adjust = powf(10, value / 20);
-        }
-        else
-        {
-            sscanf(line, "%s", name);
-            if (!strcmp(name, "SYNTH_DATA_END"))
-            {
-                Synth_add_instrument(s, instrument_count, currentParams, delay_send);
-                memset(&currentParams, 0, sizeof(SynthParams));
-                instrument_count++;
-                // Skip drum track in GM (ch num 10 = idx 9)
-                if (instrument_count == 9)
-                    instrument_count++;
-            }
-        }
-    }
-    fclose(f);
+    read_command_file(file, dispatch__synth_params, &state);
 }
