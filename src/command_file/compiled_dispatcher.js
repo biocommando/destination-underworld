@@ -183,6 +183,7 @@ void debug_${prefix}${commandname}_DispatchDto(const struct ${prefix}${commandna
             hfile += `
 struct ${commandSetName}_default_DispatchDto
 {
+    command_file_DispatchDto *parent;
     ${statename} *state;
     char *skip_label;
     const char *command;
@@ -191,6 +192,7 @@ struct ${commandSetName}_default_DispatchDto
 void dispatch__handle_${commandSetName}_default(struct ${commandSetName}_default_DispatchDto *);`
             cfile += `
     struct ${commandSetName}_default_DispatchDto default_dto;
+    default_dto.parent = dto;
     default_dto.state = state;
     default_dto.skip_label = dto->skip_label;
     default_dto.command = dto->command;

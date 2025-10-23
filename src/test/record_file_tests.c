@@ -36,7 +36,7 @@ void record_file__read_write_and_switching_files()
     int sz = fread(rec, 1, 100, f);
     fclose(f);
     rec[sz] = 0;
-    ASSERT(STR_EQ(rec, "_record_count 1\nhello world\n"));
+    ASSERT(STR_EQ(rec, "hello world\n"));
 
     record_file_set_record(fn, "rec1", "rec1 overwriting this record");
     ret = record_file_set_record(fn, "rec2", "rec4 overwriting this record with different key");

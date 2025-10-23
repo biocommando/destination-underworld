@@ -5,6 +5,7 @@
 
 #include "command_file/generated/dispatch_record_file.h"
 #include "record_file.h"
+#include "linked_list.h"
 
 #define REC_MAX_LENGTH command_file_LINE_MAX
 
@@ -16,8 +17,7 @@ struct mem_record
 
 struct mem_record_db
 {
-    int sz;
-    struct mem_record *recs;
+    LinkedList recs;
 
     int dirty;
 
@@ -43,11 +43,9 @@ static inline void write_current_db_to_file()
     FILE *f = fopen(state.current_file, "w");
     if (!f)
         return;
-    // Optional meta information in the beginning of the file
-    fprintf(f, "_record_count: \"%d\"\n", state.sz);
-    for (int i = 0; i < state.sz; i++)
+    struct mem_record *rec;
+    LINKED_LIST_FOR_EACH(&state.recs, struct mem_record, rec, 0)
     {
-        const struct mem_record *rec = &state.recs[i];
         fprintf(f, "%s\n", rec->value);
     }
     fclose(f);
@@ -61,30 +59,16 @@ void record_file_flush()
         write_current_db_to_file();
     }
 
-    free(state.recs);
+    linked_list_clear(&state.recs);
     memset(&state, 0, sizeof(state));
 }
 
 void dispatch__handle_record_file_default(struct record_file_default_DispatchDto *dto)
 {
-    if (dto->state->line_idx + 1 > state.sz)
-    {
-        state.sz = dto->state->line_idx + 1;
-        size_t sz = sizeof(struct mem_record) * state.sz;
-        state.recs = (struct mem_record *)realloc(state.recs, sz);
-    }
+    struct mem_record *rec = LINKED_LIST_ADD(&state.recs, struct mem_record);
     int len = strlen(dto->command) + 1;
-    memcpy(&state.recs[dto->state->line_idx].value, dto->command, len);
-    state.recs[dto->state->line_idx].sz = len;
-    dto->state->line_idx++;
-}
-
-void dispatch__handle_record_file__record_count(struct record_file__record_count_DispatchDto *dto)
-{
-    if (state.recs != NULL)
-        return;
-    state.sz = dto->count;
-    state.recs = (struct mem_record *)calloc(state.sz, sizeof(struct mem_record));
+    memcpy(&rec->value, dto->command, len);
+    rec->sz = len;
 }
 
 void record_file_read(const char *file)
@@ -97,7 +81,7 @@ void record_file_read(const char *file)
 }
 
 // Returns the index of the record if found, -1 otherwise
-static int get_record_index(const char *file, const char *id)
+static struct mem_record *get_record_index(const char *file, const char *id)
 {
     if (strcmp(file, state.current_file) != 0)
     {
@@ -105,25 +89,26 @@ static int get_record_index(const char *file, const char *id)
     }
 
     char key[REC_MAX_LENGTH];
-    for (int i = 0; i < state.sz; i++)
+    struct mem_record *rec;
+    LINKED_LIST_FOR_EACH(&state.recs, struct mem_record, rec, 0)
     {
         key[0] = 0;
-        sscanf(state.recs[i].value, "%s", key);
+        sscanf(rec->value, "%s", key);
         if (!strcmp(id, key))
         {
-            return i;
+            return rec;
         }
     }
 
-    return -1;
+    return NULL;
 }
 
 int record_file_get_record(const char *file, const char *id, char *record, size_t sz)
 {
-    int rec_idx = get_record_index(file, id);
-    if (rec_idx >= 0 && state.recs[rec_idx].sz <= sz)
+    struct mem_record *rec = get_record_index(file, id);
+    if (rec && rec->sz <= sz)
     {
-        memcpy(record, state.recs[rec_idx].value, sz > REC_MAX_LENGTH ? REC_MAX_LENGTH : sz);
+        memcpy(record, rec->value, sz > REC_MAX_LENGTH ? REC_MAX_LENGTH : sz);
         return 0;
     }
     return 1;
@@ -143,16 +128,13 @@ int record_file_set_record(const char *file, const char *id, const char *record)
         return 1;
     }
 
-    int rec_idx = get_record_index(file, id);
-    if (rec_idx == -1)
+    struct mem_record *rec = get_record_index(file, id);
+    if (rec == NULL)
     {
-        rec_idx = state.sz;
-        state.sz++;
-        size_t sz = sizeof(struct mem_record) * state.sz;
-        state.recs = (struct mem_record *)realloc(state.recs, sz);
+        rec = LINKED_LIST_ADD(&state.recs, struct mem_record);
     }
-    strcpy(state.recs[rec_idx].value, record);
-    state.recs[rec_idx].sz = length + 1;
+    strcpy(rec->value, record);
+    rec->sz = length + 1;
 
     state.dirty = 1;
     return 0;

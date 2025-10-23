@@ -297,13 +297,6 @@
         ":config": {
             "state": "RecordFileState",
             "default": true
-        },
-        "_record_count": {
-            "count": "int",
-            "validate:count": {
-                "type": "range",
-                "min": 0
-            }
         }
     }
 }
