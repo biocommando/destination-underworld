@@ -98,9 +98,9 @@ void record_file__limits()
     ASSERT(INT_EQ(0, ret));
     char expected[4000];
     memcpy(expected, "rec1 ", 5);
-    memset(expected + 5, 'x', 1023 - 5);
-    expected[1023] = 0;
-    memset(expected + 1024, 1, 4000 - 1024);
+    memset(expected + 5, 'x', 255 - 5);
+    expected[255] = 0;
+    memset(expected + 256, 1, 4000 - 256);
     ASSERT(!memcmp(expected, buf, 4000));
 
     record_file_flush();

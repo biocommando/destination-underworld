@@ -292,5 +292,18 @@
             "default": true
         },
         "SYNTH_DATA_END": {}
+    },
+    "record_file": {
+        ":config": {
+            "state": "RecordFileState",
+            "default": true
+        },
+        "_record_count": {
+            "count": "int",
+            "validate:count": {
+                "type": "range",
+                "min": 0
+            }
+        }
     }
 }

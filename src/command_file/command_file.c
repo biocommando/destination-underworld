@@ -15,7 +15,7 @@ static void parse_parameters(char *params_start, command_file_DispatchDto *dto)
         return;
     int num_args = 0;
     char *p = params_start - 1;
-    while (p && num_args < 32)
+    while (p && num_args < command_file_PARAMS_MAX)
     {
         p = strstr(p + 1, "\"");
         if (!p)

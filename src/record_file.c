@@ -3,9 +3,10 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "command_file/generated/dispatch_record_file.h"
 #include "record_file.h"
 
-#define REC_MAX_LENGTH 1024
+#define REC_MAX_LENGTH command_file_LINE_MAX
 
 struct mem_record
 {
@@ -43,7 +44,7 @@ static inline void write_current_db_to_file()
     if (!f)
         return;
     // Optional meta information in the beginning of the file
-    fprintf(f, "_record_count %d\n", state.sz);
+    fprintf(f, "_record_count: \"%d\"\n", state.sz);
     for (int i = 0; i < state.sz; i++)
     {
         const struct mem_record *rec = &state.recs[i];
@@ -64,48 +65,35 @@ void record_file_flush()
     memset(&state, 0, sizeof(state));
 }
 
+void dispatch__handle_record_file_default(struct record_file_default_DispatchDto *dto)
+{
+    if (dto->state->line_idx + 1 > state.sz)
+    {
+        state.sz = dto->state->line_idx + 1;
+        size_t sz = sizeof(struct mem_record) * state.sz;
+        state.recs = (struct mem_record *)realloc(state.recs, sz);
+    }
+    int len = strlen(dto->command) + 1;
+    memcpy(&state.recs[dto->state->line_idx].value, dto->command, len);
+    state.recs[dto->state->line_idx].sz = len;
+    dto->state->line_idx++;
+}
+
+void dispatch__handle_record_file__record_count(struct record_file__record_count_DispatchDto *dto)
+{
+    if (state.recs != NULL)
+        return;
+    state.sz = dto->count;
+    state.recs = (struct mem_record *)calloc(state.sz, sizeof(struct mem_record));
+}
+
 void record_file_read(const char *file)
 {
     record_file_flush();
     strncpy(state.current_file, file, 1023);
-
-    char line[REC_MAX_LENGTH];
-    FILE *f = fopen(file, "r");
-    if (f == NULL)
-    {
-        return;
-    }
-    int line_idx = 0;
-    while (fgets(line, sizeof(line), f))
-    {
-        if (line[0] == '#')
-        {
-            continue;
-        }
-        size_t line_len = strlen(line);
-        if (line[line_len - 1] == '\n')
-        {
-            line_len--;
-            line[line_len] = '\0';
-        }
-        if (line_len == 0)
-            continue;
-        if (state.recs == NULL && sscanf(line, "_record_count %d", &state.sz) == 1)
-        {
-            state.recs = (struct mem_record *)calloc(state.sz, sizeof(struct mem_record));
-            continue;
-        }
-        if (line_idx + 1 > state.sz)
-        {
-            state.sz = line_idx + 1;
-            size_t sz = sizeof(struct mem_record) * state.sz;
-            state.recs = (struct mem_record *)realloc(state.recs, sz);
-        }
-        memcpy(&state.recs[line_idx].value, line, REC_MAX_LENGTH);
-        state.recs[line_idx].sz = line_len + 1;
-        line_idx++;
-    }
-    fclose(f);
+    RecordFileState rec_state;
+    rec_state.line_idx = 0;
+    read_command_file(file, dispatch__record_file, &rec_state);
 }
 
 // Returns the index of the record if found, -1 otherwise
