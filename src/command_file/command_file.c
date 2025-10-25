@@ -44,8 +44,22 @@ int read_command_file(const char *filename, void (*dispatch)(command_file_Dispat
     {
         if (!fgets(line, command_file_LINE_MAX, f))
             break;
+        int nl_read = 0;
         for (int i = strlen(line) - 1; line[i] == '\n' || line[i] == '\r'; i--)
+        {
             line[i] = 0;
+            nl_read = 1;
+        }
+        if (!nl_read) // Too long line
+        {
+            // Read rest of the line
+            char c;
+            while (fread(&c, 1, 1, f) == 1 && c != '\n' && c != '\r');
+            // Go to the start of the new line sequence, let the normal
+            // process handle the "ghost" empty line
+            fseek(f, -1, SEEK_CUR);
+            continue;
+        }
         if (!*line || *line == '#')
             continue;
         if (*line == ':')

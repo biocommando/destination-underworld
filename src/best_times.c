@@ -21,9 +21,9 @@ static int compare_floats(const void *a, const void *b)
     return 0;
 }
 
-static inline void get_id(char *id, const struct best_times *best_times, int idx)
+static inline void get_id(char *id, const struct best_times *best_times)
 {
-    sprintf(id, "MISSION=%d;MODE=%d;I=%d;", best_times->mission, best_times->game_modifiers, idx);
+    sprintf(id, "MISSION=%d;MODE=%d;", best_times->mission, best_times->game_modifiers);
 }
 
 static inline void get_file(char *file, const char *mission_pack)
@@ -39,11 +39,12 @@ int populate_best_times(const char *mission_pack, struct best_times *best_times)
     get_file(file, mission_pack);
 
     char id[100];
+    get_id(id, best_times);
+    record_file_find_and_read(file, id);
+
     for (int i = 0; i < NUM_BEST_TIMES; i++)
     {
-        get_id(id, best_times, i);
-        best_times->times[i] = 1e10;
-        record_file_scanf(file, id, "%*s %f", &best_times->times[i]);
+        best_times->times[i] = record_file_next_param_as_float(1e10);
     }
 
     qsort(best_times->times, NUM_BEST_TIMES, sizeof(float), compare_floats);
@@ -57,10 +58,12 @@ int save_best_times(const char *mission_pack, const struct best_times *best_time
     get_file(file, mission_pack);
 
     char id[100];
+    get_id(id, best_times);
+    record_file_find_and_modify(file, id);
+
     for (int i = 0; i < NUM_BEST_TIMES; i++)
     {
-        get_id(id, best_times, i);
-        if (record_file_set_record_f(file, "%s %f", id, best_times->times[i]))
+        if (record_file_add_float_param(best_times->times[i]))
         {
             return 1;
         }

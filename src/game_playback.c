@@ -2,6 +2,7 @@
 #include "record_file.h"
 #include "duConstants.h"
 
+#include <stdio.h>
 #include <string.h>
 
 static int record_mode = RECORD_MODE_NONE;
@@ -29,23 +30,28 @@ static int get_event(struct game_playback_event *evt)
 {
     char id[20];
     format_id(id);
-    return record_file_scanf(filename, id, "%*s end=%d time=%ld keys=%ld",
-                             &evt->end, &evt->time_stamp, &evt->key_mask) == 3;
+    if (record_file_find_and_read(filename, id) != 0)
+        return 0;
+    evt->end = record_file_next_param_as_int(evt->end);
+    evt->time_stamp = record_file_next_param_as_int(evt->time_stamp);
+    evt->key_mask = record_file_next_param_as_int(evt->key_mask);
+    return 1;
 }
 
 void game_playback_set_event(const struct game_playback_event *evt)
 {
     char id[20];
     format_id(id);
-    record_file_set_record_f(filename, "%s end=%d time=%ld keys=%ld",
-                             id, evt->end, evt->time_stamp, evt->key_mask);
+    record_file_find_and_modify(filename, id);
+    record_file_add_int_param(evt->end);
+    record_file_add_int_param(evt->time_stamp);
+    record_file_add_int_param(evt->key_mask);
 }
 
 long game_playback_get_time_stamp()
 {
     struct game_playback_event tmp;
-    tmp.end = 0;
-    tmp.time_stamp = 0;
+    memset(&tmp, 0, sizeof(tmp));
     get_event(&tmp);
     return tmp.end ? -1 : tmp.time_stamp;
 }
@@ -53,6 +59,7 @@ long game_playback_get_time_stamp()
 long game_playback_get_key_mask()
 {
     struct game_playback_event tmp;
+    memset(&tmp, 0, sizeof(tmp));
     if (!get_event(&tmp))
         return 0;
     return tmp.key_mask;

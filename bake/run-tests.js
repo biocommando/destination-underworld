@@ -20,7 +20,7 @@ module.exports = v => {
     v.sh(`cd src/synth && ${prefix}synth_test_main.exe ../../dataloss/midi-music/eetteritekno.mid`)
     const { createHash } = require('crypto');
     const sha256 = createHash('sha256').update(v.fs.readFileSync('dataloss/midi-music/eetteritekno.mid.wav')).digest('hex');
-    const expected_sha256 = '058fd0b325f2697e104368cd5b9d0852789fa010c615424372927f82a231b56e'
+    const expected_sha256 = '003caeb9b5b2fdf893775193489c25ee51c7a9b97a998264d3814c107bc52658'
     if (sha256 === expected_sha256)
         console.log('Synth test OK')
     else

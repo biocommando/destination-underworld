@@ -18,7 +18,10 @@ static void read_setting(const char *filename, char **argv, int argc, char *resu
 
   if (!read_cmd_line_arg_str(cmd_line_arg, argv, argc, result, "Setting read from settings.dat"))
   {
-    record_file_scanf(filename, cmd_line_arg, "%*s %s", result);
+    record_file_find_and_read(filename, cmd_line_arg);
+    const char *value = record_file_next_param();
+    if (value)
+      strncpy(result, value, 255);
   }
   LOG("Setting %s = %s\n", cmd_line_arg, result);
 }
@@ -52,15 +55,20 @@ static void read_keys()
   game_settings.keys.restart = ALLEGRO_KEY_R;
   game_settings.keys.map_info = ALLEGRO_KEY_M;
 
-  record_file_scanf(game_settings.settings_file, "key-bindings",
-                    "%*s left=%d right=%d up=%d down=%d "
-                    "shoot=%d weapon0=%d weapon1=%d "
-                    "pwup0=%d pwup1=%d pwup2=%d pwup3=%d "
-                    "restart=%d map_info=%d",
-                    &game_settings.keys.left, &game_settings.keys.right, &game_settings.keys.up, &game_settings.keys.down,
-                    &game_settings.keys.shoot, &game_settings.keys.weapon0, &game_settings.keys.weapon1,
-                    &game_settings.keys.pwup0, &game_settings.keys.pwup1, &game_settings.keys.pwup2, &game_settings.keys.pwup3,
-                    &game_settings.keys.restart, &game_settings.keys.map_info);
+  record_file_find_and_read(game_settings.settings_file, "key-bindings");
+  game_settings.keys.left = record_file_next_param_as_int(game_settings.keys.left);
+  game_settings.keys.right = record_file_next_param_as_int(game_settings.keys.right);
+  game_settings.keys.up = record_file_next_param_as_int(game_settings.keys.up);
+  game_settings.keys.down = record_file_next_param_as_int(game_settings.keys.down);
+  game_settings.keys.shoot = record_file_next_param_as_int(game_settings.keys.shoot);
+  game_settings.keys.weapon0 = record_file_next_param_as_int(game_settings.keys.weapon0);
+  game_settings.keys.weapon1 = record_file_next_param_as_int(game_settings.keys.weapon1);
+  game_settings.keys.pwup0 = record_file_next_param_as_int(game_settings.keys.pwup0);
+  game_settings.keys.pwup1 = record_file_next_param_as_int(game_settings.keys.pwup1);
+  game_settings.keys.pwup2 = record_file_next_param_as_int(game_settings.keys.pwup2);
+  game_settings.keys.pwup3 = record_file_next_param_as_int(game_settings.keys.pwup3);
+  game_settings.keys.restart = record_file_next_param_as_int(game_settings.keys.restart);
+  game_settings.keys.map_info = record_file_next_param_as_int(game_settings.keys.map_info);
 }
 
 void read_settings(char **argv, int argc)
@@ -139,22 +147,31 @@ void get_data_filename(char *dst, const char *file)
 
 void save_settings()
 {
-  record_file_set_record_f(game_settings.settings_file, "graphics--vibration-mode %d", game_settings.vibration_mode);
-  record_file_set_record_f(game_settings.settings_file, "graphics--fullscreen %d", game_settings.fullscreen);
-  record_file_set_record_f(game_settings.settings_file, "audio--music-on %d", game_settings.music_on);
-  record_file_set_record_f(game_settings.settings_file, "audio--music-vol %lf", game_settings.music_vol);
-  record_file_set_record_f(game_settings.settings_file, "audio--sfx-vol %lf", game_settings.sfx_vol);
+  record_file_find_and_modify(game_settings.settings_file, "graphics--vibration-mode");
+  record_file_add_int_param(game_settings.vibration_mode);
+  record_file_find_and_modify(game_settings.settings_file, "graphics--fullscreen");
+  record_file_add_int_param(game_settings.fullscreen);
+  record_file_find_and_modify(game_settings.settings_file, "audio--music-on");
+  record_file_add_int_param(game_settings.music_on);
+  record_file_find_and_modify(game_settings.settings_file, "audio--music-vol");
+  record_file_add_float_param(game_settings.music_vol);
+  record_file_find_and_modify(game_settings.settings_file, "audio--sfx-vol");
+  record_file_add_float_param(game_settings.sfx_vol);
 
-  record_file_set_record_f(game_settings.settings_file,
-                           "key-bindings "
-                           "left=%d right=%d up=%d down=%d "
-                           "shoot=%d weapon0=%d weapon1=%d "
-                           "pwup0=%d pwup1=%d pwup2=%d pwup3=%d "
-                           "restart=%d map_info=%d",
-                           game_settings.keys.left, game_settings.keys.right, game_settings.keys.up, game_settings.keys.down,
-                           game_settings.keys.shoot, game_settings.keys.weapon0, game_settings.keys.weapon1,
-                           game_settings.keys.pwup0, game_settings.keys.pwup1, game_settings.keys.pwup2, game_settings.keys.pwup3,
-                           game_settings.keys.restart, game_settings.keys.map_info);
+  record_file_find_and_modify(game_settings.settings_file, "key-bindings");
+  record_file_add_int_param(game_settings.keys.left);
+  record_file_add_int_param( game_settings.keys.right);
+  record_file_add_int_param( game_settings.keys.up);
+  record_file_add_int_param( game_settings.keys.down);
+  record_file_add_int_param( game_settings.keys.shoot);
+  record_file_add_int_param( game_settings.keys.weapon0);
+  record_file_add_int_param( game_settings.keys.weapon1);
+  record_file_add_int_param( game_settings.keys.pwup0);
+  record_file_add_int_param( game_settings.keys.pwup1);
+  record_file_add_int_param( game_settings.keys.pwup2);
+  record_file_add_int_param( game_settings.keys.pwup3);
+  record_file_add_int_param( game_settings.keys.restart);
+  record_file_add_int_param( game_settings.keys.map_info);
 }
 
 inline GameSettings *get_game_settings()

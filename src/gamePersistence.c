@@ -20,31 +20,29 @@ void create_verification_hash(char *hash_hex, int mission, int game_modifiers, c
     convert_sha1_hash_to_hex(hash_hex, hash);
 }
 
-static inline void read_save_data_record(const char *filename, int slot, const char *suffix, const char *format, void *dst)
+static inline void format_slot_name(int slot, char *name)
 {
-    char key[100];
-    sprintf(key, "slot_%d--%s", slot, suffix);
-    char fullfmt[32];
-    sprintf(fullfmt, "%%*s %s", format);
-    record_file_scanf(filename, key, fullfmt, dst);
+    sprintf(name, "slot_%d", slot);
 }
 
 void load_game_save_data(const char *filename, Enemy *data, int *mission, int *game_modifiers, int slot)
 {
     memset(data, 0, sizeof(Enemy));
 
-    read_save_data_record(filename, slot, "game_modifiers", "%d", game_modifiers);
-    read_save_data_record(filename, slot, "mission", "%d", mission);
-    read_save_data_record(filename, slot, "health", "%d", &data->health);
-    read_save_data_record(filename, slot, "shots", "%d", &data->shots);
-    read_save_data_record(filename, slot, "reload", "%d", &data->reload);
-    read_save_data_record(filename, slot, "rate", "%d", &data->rate);
-    read_save_data_record(filename, slot, "ammo", "%d", &data->ammo);
-    read_save_data_record(filename, slot, "gold", "%d", &data->gold);
-    read_save_data_record(filename, slot, "perks", "%d", &data->perks);
-    read_save_data_record(filename, slot, "xp", "%d", &data->xp);
-    int salt = 0;
-    read_save_data_record(filename, slot, "salt", "%d", &salt);
+    char slot_name[20];
+    format_slot_name(slot, slot_name);
+    record_file_find_and_read(filename, slot_name);
+    *game_modifiers = record_file_next_param_as_int(0);
+    *mission = record_file_next_param_as_int(1);
+    data->health = record_file_next_param_as_int(0);
+    data->shots = record_file_next_param_as_int(0);
+    data->reload = record_file_next_param_as_int(0);
+    data->rate = record_file_next_param_as_int(0);
+    data->ammo = record_file_next_param_as_int(0);
+    data->gold = record_file_next_param_as_int(0);
+    data->perks = record_file_next_param_as_int(0);
+    data->xp = record_file_next_param_as_int(0);
+    int salt = record_file_next_param_as_int(0);
 
     data->hurts_monsters = 1;
     data->sprite = -1;
@@ -53,10 +51,9 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
 
     if (get_game_settings()->require_authentication)
     {
-        char read_hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1] = "";
         char saved_hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
         create_verification_hash(saved_hash_hex, *mission, *game_modifiers, data, salt);
-        read_save_data_record(filename, slot, "hash", "%40s", read_hash_hex);
+        const char *read_hash_hex = record_file_next_param();
         if (strcmp(read_hash_hex, saved_hash_hex) != 0)
         {
             data->alive = 0;
@@ -68,54 +65,54 @@ void load_game_save_data(const char *filename, Enemy *data, int *mission, int *g
 
 void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifiers)
 {
+    *has_save = 0;
     char filename[100];
     sprintf(filename, SAVE_FILENAME, get_game_settings()->mission_pack);
 
-    char rec[100], key[100];
-    if (get_game_settings()->require_authentication)
+    char slot_name[20];
+    format_slot_name(slot, slot_name);
+    if (record_file_find_and_read(filename, slot_name) != 0)
     {
-        sprintf(key, "slot_%d--hash", slot);
-        if (record_file_get_record(filename, key, rec, sizeof(rec)))
-        {
-            *has_save = 0;
-            return;
-        }
+        return;
+    }
+    int _game_modifiers = record_file_next_param_as_int(-1);
+    int _mission = record_file_next_param_as_int(-1);
+
+    if (_game_modifiers < 0 || _mission < 0)
+    {
+        return;
+    }
+    for (int i = 0; i < 9; i++)
+    {
+        record_file_next_param();
     }
 
-    sprintf(key, "slot_%d--game_modifiers", slot);
-    int ret = record_file_get_record(filename, key, rec, sizeof(rec));
-
-    if (ret)
+    if (get_game_settings()->require_authentication && !record_file_next_param())
     {
-        *has_save = 0;
         return;
     }
 
-    sscanf(rec, "%*s %d", game_modifiers);
-
-    sprintf(key, "slot_%d--mission", slot);
-    record_file_scanf(filename, key, "%*s %d", mission);
+    *game_modifiers = _game_modifiers;
+    *mission = _mission;
 
     *has_save = 1;
 }
 
-static inline void write_int_save_data(const char *filename, int slot, const char *suffix, int value)
-{
-    record_file_set_record_f(filename, "slot_%d--%s %d", slot, suffix, value);
-}
-
 void save_game_save_data(const char *filename, Enemy *data, int mission, int game_modifiers, int slot)
 {
-    write_int_save_data(filename, slot, "game_modifiers", game_modifiers);
-    write_int_save_data(filename, slot, "mission", mission);
-    write_int_save_data(filename, slot, "health", data->health);
-    write_int_save_data(filename, slot, "shots", data->shots);
-    write_int_save_data(filename, slot, "reload", data->reload);
-    write_int_save_data(filename, slot, "rate", data->rate);
-    write_int_save_data(filename, slot, "ammo", data->ammo);
-    write_int_save_data(filename, slot, "gold", data->gold);
-    write_int_save_data(filename, slot, "perks", data->perks);
-    write_int_save_data(filename, slot, "xp", data->xp);
+    char slot_name[20];
+    format_slot_name(slot, slot_name);
+    record_file_find_and_modify(filename, slot_name);
+    record_file_add_int_param(game_modifiers);
+    record_file_add_int_param(mission);
+    record_file_add_int_param(data->health);
+    record_file_add_int_param(data->shots);
+    record_file_add_int_param(data->reload);
+    record_file_add_int_param(data->rate);
+    record_file_add_int_param(data->ammo);
+    record_file_add_int_param(data->gold);
+    record_file_add_int_param(data->perks);
+    record_file_add_int_param(data->xp);
 
     if (get_game_settings()->require_authentication)
     {
@@ -123,8 +120,8 @@ void save_game_save_data(const char *filename, Enemy *data, int mission, int gam
         int salt = rand();
         create_verification_hash(hash, mission, game_modifiers, data, salt);
 
-        record_file_set_record_f(filename, "slot_%d--hash %s", slot, hash);
-        record_file_set_record_f(filename, "slot_%d--salt %d", slot, salt);
+        record_file_add_int_param(salt);
+        record_file_add_param(hash);
     }
 }
 

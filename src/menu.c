@@ -351,8 +351,12 @@ static int check_game_modes_beaten(const int *modifiers, int sz)
         int mode = modifiers[i];
         char id[20];
         sprintf(id, "game_modifiers_%d", mode);
-        char key[101], hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
-        if (record_file_scanf(path, id, "%*s %100s %40s", key, hash_hex) != 2)
+        //char key[101], hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
+        record_file_find_and_read(path, id);
+        const char *key = record_file_next_param();
+        const char *hash_hex = record_file_next_param();
+
+        if (!key || !hash_hex)
         {
             LOG("Record not found for %s\n", game_modifiers_to_str(mode));
             continue;

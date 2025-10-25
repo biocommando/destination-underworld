@@ -1,27 +1,38 @@
 #pragma once
 
-#include <stdio.h>
-
 // Writes any pending changes to the file and frees all associated memory.
 void record_file_flush();
 
-// Reads a "record" from a file which means
-// it reads a line from the file that starts with the given id.
-// Reads the whole file on first access to the file and does not
-// do any disk operations before calling one of the get/set functions with
-// a different filename.
-int record_file_get_record(const char *file, const char *id, char *record, size_t sz);
+// Finds a record in the file. The file is in command file format where
+// the record id is the command and it can have any number of parameters.
+// This function setups the internal state to modify or create the record.
+// The record parameters are cleared if found.
+int record_file_find_and_modify(const char *file, const char *id);
 
-// Sets a "record" in a file which means
-// it writes a line to the file that starts with the given id.
-// Writes the new data to the file only when one of the get/set functions is called with
-// a different filename or the file is flushed.
-int record_file_set_record(const char *file, const char *id, const char *record);
+// Finds a record in the file. The file is in command file format where
+// the record id is the command and it can have any number of parameters.
+// This function setups the internal state to read the record.
+int record_file_find_and_read(const char *file, const char *id);
 
-// Similar to record_file_set_record but it formats the record within the call and reads the
-// id from the resulting string.
-int record_file_set_record_f(const char *file, const char *format, ...);
+// Adds a parameter to the record. Must be in "modify" mode.
+int record_file_add_param(const char *param);
 
-// Get the record with given id and does a sscanf to it (so the format will probably start like "%*s ...").
-// Returns the number of variables scanned successfully.
-int record_file_scanf(const char *file, const char *id, const char *format, ...);
+// Adds a parameter to the record that is converted from int to string.
+// Must be in "modify" mode.
+int record_file_add_int_param(int param);
+
+// Adds a parameter to the record that is converted from float to string.
+// Must be in "modify" mode.
+int record_file_add_float_param(float param);
+
+// Gets the next parameter or NULL if no more parameters.
+// Must be in "read" mode.
+const char *record_file_next_param();
+
+// Gets the next parameter and tries to read int from it, returns err on failure.
+// Must be in "read" mode.
+int record_file_next_param_as_int(int err);
+
+// Gets the next parameter and tries to read float from it, returns err on failure.
+// Must be in "read" mode.
+float record_file_next_param_as_float(float err);

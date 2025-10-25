@@ -3,7 +3,6 @@
 #include "settings.h"
 #include "variables.h"
 #include "logging.h"
-#include "record_file.h"
 #include "sha1/du_dmac.h"
 
 #include "command_file/generated/dispatch_read_level.h"

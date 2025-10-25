@@ -43,27 +43,23 @@ static void set_game_mode_beaten_flag(int game_modifiers)
   char id[20];
   sprintf(id, "game_modifiers_%d", game_modifiers);
 
-  char record[200];
-  strcpy(record, id);
-  int len = strlen(record);
-  record[len] = ' ';
-  len++;
+  char key[101];
+  key[100] = 0;
   for (int i = 0; i < 100; i++)
   {
-    record[len] = 'A' + (rand() + time(NULL)) % 26;
-    len++;
+    key[i] = 'A' + (rand() + time(NULL)) % 26;
   }
-  record[len] = ' ';
-  len++;
-  record[len] = 0;
+  char data[200];
+  sprintf(data, "%s %s ", id, key);
   char hash[DMAC_SHA1_HASH_SIZE];
   dmac_sha1_set_ctx(AUTH_CTX_COMPLETED_GAME_MODES);
-  dmac_sha1_calculate_hash(hash, record, len);
+  dmac_sha1_calculate_hash(hash, data, strlen(data));
   char hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
   convert_sha1_hash_to_hex(hash_hex, hash);
-  strcat(record, hash_hex);
 
-  record_file_set_record(path, id, record);
+  record_file_find_and_modify(path, id);
+  record_file_add_param(key);
+  record_file_add_param(hash_hex);
 }
 
 static void display_arena_fight_end_screen(const World *world, GlobalGameState *ggs, const int *record_mode, int no_player_damage)

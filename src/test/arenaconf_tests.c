@@ -23,7 +23,6 @@ void arenaconf__read_arena_configs__valid_and_invalid_entries()
     long_name[sizeof(ac.arenas[0].name) - 1] = 'A';
     // Too long arena name
     fprintf(f, "level_number=\"333\" name=\"%s\"\n", long_name);
-    record_file_set_record_f(testfile, "arena_4 level_number=333 name=%s", long_name);
     fprintf(f, "level_number=\"666\" name=\"One more\"\n");
     fclose(f);
 
@@ -48,10 +47,14 @@ void arenaconf__get_arena_highscore()
 {
     const char *testfile = DATADIR "not-real-missionpack/arcade_mode_highscores.dat";
 
-    record_file_set_record(testfile, "level_number=123;mode=1;", "level_number=123;mode=1; 1");
-    record_file_set_record(testfile, "level_number=321;mode=1;", "level_number=321;mode=1; 2");
-    record_file_set_record(testfile, "level_number=123;mode=2;", "level_number=123;mode=2; 3");
-    record_file_set_record(testfile, "level_number=321;mode=2;", "level_number=321;mode=2; 4");
+    record_file_find_and_modify(testfile, "level_number=123;mode=1;");
+    record_file_add_int_param(1);
+    record_file_find_and_modify(testfile, "level_number=321;mode=1;");
+    record_file_add_int_param(2);
+    record_file_find_and_modify(testfile, "level_number=123;mode=2;");
+    record_file_add_int_param(3);
+    record_file_find_and_modify(testfile, "level_number=321;mode=2;");
+    record_file_add_int_param(4);
 
     ASSERT(INT_EQ(get_arena_highscore(123, 1), 1));
     ASSERT(INT_EQ(get_arena_highscore(321, 1), 2));

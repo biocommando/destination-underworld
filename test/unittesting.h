@@ -46,7 +46,7 @@ typedef struct
 
 #define STR_EQ(a, b)                          \
     _AB_ASSERT_BASE(const char *, "%s", a, b) \
-    _condition_result = !strcmp(_a, _b)
+    _condition_result = _a && _b && !strcmp(_a, _b)
 
 #define ASSERT(condition)                                                     \
     do                                                                        \

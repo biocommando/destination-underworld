@@ -9,22 +9,31 @@
 
 #define REC_MAX_LENGTH command_file_LINE_MAX
 
-struct mem_record
+struct new_mem_record_param
 {
     char value[REC_MAX_LENGTH];
-    size_t sz;
 };
 
-struct mem_record_db
+struct new_mem_record
+{
+    char key[REC_MAX_LENGTH];
+    LinkedList params;
+};
+
+struct new_mem_record_db
 {
     LinkedList recs;
 
     int dirty;
 
     char current_file[1024];
+
+    struct new_mem_record *current;
+    LinkedList_it_state read_iter_state;
+    char access_mode;
 };
 
-static struct mem_record_db state;
+static struct new_mem_record_db state;
 static int init_done = 0;
 
 static inline void init()
@@ -43,10 +52,16 @@ static inline void write_current_db_to_file()
     FILE *f = fopen(state.current_file, "w");
     if (!f)
         return;
-    struct mem_record *rec;
-    LINKED_LIST_FOR_EACH(&state.recs, struct mem_record, rec, 0)
+    struct new_mem_record *rec;
+    LINKED_LIST_FOR_EACH(&state.recs, struct new_mem_record, rec, 0)
     {
-        fprintf(f, "%s\n", rec->value);
+        fprintf(f, "%s:", rec->key);
+        struct new_mem_record_param *param;
+        LINKED_LIST_FOR_EACH(&rec->params, struct new_mem_record_param, param, 0)
+        {
+            fprintf(f, "\"%s\"", param->value);
+        }
+        fprintf(f, "\n");
     }
     fclose(f);
 }
@@ -59,19 +74,33 @@ void record_file_flush()
         write_current_db_to_file();
     }
 
+    struct new_mem_record *rec;
+    LINKED_LIST_FOR_EACH(&state.recs, struct new_mem_record, rec, 0)
+    {
+        linked_list_clear(&rec->params);
+    }
+
     linked_list_clear(&state.recs);
     memset(&state, 0, sizeof(state));
 }
 
-void dispatch__handle_record_file_default(struct record_file_default_DispatchDto *dto)
+static void add_parameter(LinkedList *lst, const char *value)
 {
-    struct mem_record *rec = LINKED_LIST_ADD(&state.recs, struct mem_record);
-    int len = strlen(dto->command) + 1;
-    memcpy(&rec->value, dto->command, len);
-    rec->sz = len;
+    struct new_mem_record_param *param = LINKED_LIST_ADD(lst, struct new_mem_record_param);
+    strcpy(param->value, value);
 }
 
-void record_file_read(const char *file)
+void dispatch__handle_record_file_default(struct record_file_default_DispatchDto *dto)
+{
+    struct new_mem_record *rec = LINKED_LIST_ADD(&state.recs, struct new_mem_record);
+    strcpy(rec->key, dto->command);
+    for (int i = 0; i < command_file_PARAMS_MAX && dto->parent->parameters[i]; i++)
+    {
+        add_parameter(&rec->params, dto->parent->parameters[i]);
+    }
+}
+
+static void record_file_read(const char *file)
 {
     record_file_flush();
     strncpy(state.current_file, file, 1023);
@@ -81,20 +110,17 @@ void record_file_read(const char *file)
 }
 
 // Returns the index of the record if found, -1 otherwise
-static struct mem_record *get_record_index(const char *file, const char *id)
+static struct new_mem_record *get_record_index(const char *file, const char *id)
 {
     if (strcmp(file, state.current_file) != 0)
     {
         record_file_read(file);
     }
 
-    char key[REC_MAX_LENGTH];
-    struct mem_record *rec;
-    LINKED_LIST_FOR_EACH(&state.recs, struct mem_record, rec, 0)
+    struct new_mem_record *rec;
+    LINKED_LIST_FOR_EACH(&state.recs, struct new_mem_record, rec, 0)
     {
-        key[0] = 0;
-        sscanf(rec->value, "%s", key);
-        if (!strcmp(id, key))
+        if (!strcmp(id, rec->key))
         {
             return rec;
         }
@@ -103,61 +129,87 @@ static struct mem_record *get_record_index(const char *file, const char *id)
     return NULL;
 }
 
-int record_file_get_record(const char *file, const char *id, char *record, size_t sz)
+static int record_file_find(const char *file, const char *id, int create)
 {
-    struct mem_record *rec = get_record_index(file, id);
-    if (rec && rec->sz <= sz)
+    struct new_mem_record *rec = get_record_index(file, id);
+    if (!rec && create && strlen(id) < REC_MAX_LENGTH)
     {
-        memcpy(record, rec->value, sz > REC_MAX_LENGTH ? REC_MAX_LENGTH : sz);
-        return 0;
+        rec = LINKED_LIST_ADD(&state.recs, struct new_mem_record);
+        strcpy(rec->key, id);
     }
-    return 1;
+
+    if (rec)
+    {
+        state.current = rec;
+        if (create)
+        {
+            linked_list_clear(&rec->params);
+            state.dirty = 1;
+        }
+        else
+            state.read_iter_state = linked_list_iteration_start(&rec->params);
+        state.access_mode = create ? 'w' : 'r';
+    }
+    return rec ? 0 : -1;
 }
 
-int record_file_set_record(const char *file, const char *id, const char *record)
+int record_file_find_and_modify(const char *file, const char *id)
 {
-    size_t length = strlen(record);
-    if (length >= REC_MAX_LENGTH)
-    {
-        return 1;
-    }
+    return record_file_find(file, id, 1);
+}
 
-    size_t id_length = strlen(id);
-    if (id_length > length || memcmp(id, record, id_length))
-    {
-        return 1;
-    }
+int record_file_find_and_read(const char *file, const char *id)
+{
+    return record_file_find(file, id, 0);
+}
 
-    struct mem_record *rec = get_record_index(file, id);
-    if (rec == NULL)
-    {
-        rec = LINKED_LIST_ADD(&state.recs, struct mem_record);
-    }
-    strcpy(rec->value, record);
-    rec->sz = length + 1;
+int record_file_add_param(const char *param)
+{
+    if (!state.current || state.access_mode != 'w' || state.current->params.count >= command_file_PARAMS_MAX || strlen(param) >= REC_MAX_LENGTH)
+        return -1;
 
-    state.dirty = 1;
+    add_parameter(&state.current->params, param);
     return 0;
 }
 
-int record_file_set_record_f(const char *file, const char *format, ...)
+int record_file_add_int_param(int param)
 {
-    va_list args;
-    va_start(args, format);
-    char record[REC_MAX_LENGTH];
-    vsnprintf(record, REC_MAX_LENGTH, format, args);
-    char id[REC_MAX_LENGTH];
-    sscanf(record, "%s", id);
-    return record_file_set_record(file, id, record);
+    char sval[20];
+    sprintf(sval, "%d", param);
+    return record_file_add_param(sval);
 }
 
-int record_file_scanf(const char *file, const char *id, const char *format, ...)
+int record_file_add_float_param(float param)
 {
-    va_list args;
-    va_start(args, format);
-    char record[REC_MAX_LENGTH];
-    int err = record_file_get_record(file, id, record, REC_MAX_LENGTH);
-    if (err)
-        return 0;
-    return vsscanf(record, format, args);
+    char sval[20];
+    sprintf(sval, "%f", param);
+    return record_file_add_param(sval);
+}
+
+const char *record_file_next_param()
+{
+    if (state.access_mode != 'r')
+        return NULL;
+    const struct new_mem_record_param *param = (const struct new_mem_record_param *)linked_list_iterate(&state.read_iter_state);
+    if (!param)
+        return NULL;
+    return param->value;
+}
+
+int record_file_next_param_as_int(int err)
+{
+    const char *value = record_file_next_param();
+    int ret = err;
+    if (value)
+        sscanf(value, "%d", &ret);
+    return ret;
+}
+
+float record_file_next_param_as_float(float err)
+{
+    const char *value = record_file_next_param();
+    float ret = err;
+    if (value)
+        sscanf(value, "%f", &ret);
+    return ret;
 }

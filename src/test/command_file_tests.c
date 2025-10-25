@@ -59,6 +59,10 @@ void command_file__smoke_test()
     fprintf(f, "\"1\" \"upper\"\n");
     fprintf(f, "asd \"do\" ddsad \"nothing\"\n");
     fprintf(f, "set: \"a\"\"2\"\n");
+    // Let's add a really long line in between
+    for (int i = 0; i < 50; i++)
+        fprintf(f, "set:\"X\"\"2\" ");
+    fprintf(f, "\n");
     fprintf(f, "increment: \"2\" \"4\"\n");
     fprintf(f, "# comment!\n");
     fprintf(f, "set:\"l\"\"3\"\n");

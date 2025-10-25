@@ -27,35 +27,6 @@ void read_arena_configs(const char *filename, ArenaConfigs *config)
 {
     memset(config, 0, sizeof(ArenaConfigs));
     read_command_file(filename, dispatch__arena_conf, config);
-    /*unsigned num = 0;
-    record_file_scanf(filename, "number_of_arenas", "%*s %u", &num);
-    if (num > ARENACONF_MAX_NUMBER_OF_ARENAS)
-    {
-        LOG("Invalid number of arenas %d\n", num);
-        num = ARENACONF_MAX_NUMBER_OF_ARENAS;
-    }
-    config->number_of_arenas = num;
-
-    for (unsigned i = 0; i < num; i++)
-    {
-        char arena_key[100];
-        sprintf(arena_key, "arena_%u", i);
-        char record[256];
-        if (record_file_get_record(filename, arena_key, record, sizeof(record)) != 0)
-            continue;
-        sscanf(record, "%*s level_number=%d", &config->arenas[i].level_number);
-        char *name = strstr(record, "name=");
-        if (name && strlen(name + 5) < sizeof(config->arenas[i].name))
-        {
-            name += 5;
-            strcpy(config->arenas[i].name, name);
-        }
-        else
-        {
-            sprintf(config->arenas[i].name, "Arena level %u", i + 1);
-        }
-        LOG("Read arena config: '%s' = %d\n", config->arenas[i].name, config->arenas[i].level_number);
-    }*/
 }
 
 static void get_arena_highscores_path(char *path)
@@ -74,9 +45,8 @@ int get_arena_highscore(int mission, int game_mode)
     get_arena_highscores_path(path);
     char key[64];
     get_arena_highscore_key(key, mission, game_mode);
-    int score = 0;
-    record_file_scanf(path, key, "%*s %d", &score);
-    return score;
+    record_file_find_and_read(path, key);
+    return record_file_next_param_as_int(0);
 }
 
 void set_arena_highscore(int mission, int game_mode, int score)
@@ -85,5 +55,6 @@ void set_arena_highscore(int mission, int game_mode, int score)
     get_arena_highscores_path(path);
     char key[64];
     get_arena_highscore_key(key, mission, game_mode);
-    record_file_set_record_f(path, "%s %d", key, score);
+    record_file_find_and_modify(path, key);
+    record_file_add_int_param(score);
 }
