@@ -66,7 +66,7 @@ void save_settings();
  * Reads an argument using read_cmd_line_arg_str. Parses the output
  * as integer and returns the value. Returns 0 as the default value.
  */
-int read_cmd_line_arg_int(const char *arg, char **argv, int argc, const char *documentation);
+int read_cmd_line_arg_int(const char *arg, char **argv, int argc);
 /*
  * Read command line argument from argv and argc passed from main function.
  * If there's an argument in format:
@@ -74,7 +74,7 @@ int read_cmd_line_arg_int(const char *arg, char **argv, int argc, const char *do
  * the value is set to output variable.
  * On success returns 1, otherwise 0.
  */
-int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output, const char *documentation);
+int read_cmd_line_arg_str(const char *arg, char **argv, int argc, char *output);
 /*
  * Gets filename for a data file that may be a custom resource.
  * If custom resources are in use, sets the path to datadir\mission_pack\file,

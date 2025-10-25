@@ -18,21 +18,32 @@
 #include "midi_playback.h"
 #include "synth/wt_sample_loader.h"
 #include "sha1/du_dmac.h"
+#include "command_line_args.h"
 
 #ifdef ENABLE_LOGGING
 int logging_enabled = 0;
 #endif
 
+static void print_help();
+
 int main(int argc, char **argv)
 {
   printf("Destination Underworld " DU_VERSION "\n");
-  printf("Command line arguments attempted to read:\n");
 
+  if (read_cmd_line_arg_int(ARG_HELP, argv, argc))
+  {
+    print_help();
+    return 0;
+  }
+  else
+  {
+    printf("Run with --help=1 to display all command line options\n");
+  }
   char read_arg[256] = "";
 #ifdef ENABLE_LOGGING
-  logging_enabled = read_cmd_line_arg_int("logging", argv, argc, "Set to 1 to enable logging");
+  logging_enabled = read_cmd_line_arg_int(ARG_LOGGING, argv, argc);
 #endif
-  read_cmd_line_arg_str("player-damage", argv, argc, read_arg, "Set to 1 to enable no damage cheat");
+  read_cmd_line_arg_str(ARG_PLAYER_DAMAGE, argv, argc, read_arg);
   int player_damage_off = 0;
   if (!strcmp(read_arg, "off"))
   {
@@ -41,7 +52,7 @@ int main(int argc, char **argv)
   }
   read_arg[0] = 0;
 
-  read_cmd_line_arg_str("record-mode", argv, argc, read_arg, "Gameplay recording mode: record or play");
+  read_cmd_line_arg_str(ARG_REC_MODE, argv, argc, read_arg);
   int *record_mode = get_playback_mode();
   int record_playback_no_user_interaction = 0;
   if (!strcmp(read_arg, "record"))
@@ -54,7 +65,7 @@ int main(int argc, char **argv)
     *record_mode = RECORD_MODE_PLAYBACK;
     char fname[256];
     FILE *record_input_file = NULL;
-    if (read_cmd_line_arg_str("file", argv, argc, fname, "Gameplay recording file for playback"))
+    if (read_cmd_line_arg_str(ARG_REC_FILE_MODE, argv, argc, fname))
     {
       record_input_file = fopen(fname, "r");
       game_playback_set_filename(fname);
@@ -65,8 +76,7 @@ int main(int argc, char **argv)
       return 0;
     }
     fclose(record_input_file);
-    record_playback_no_user_interaction = read_cmd_line_arg_int("start-without-user-interaction", argv, argc,
-      "Set to 1 so that user doesn't need to press any key to start gameplay recording playback.");
+    record_playback_no_user_interaction = read_cmd_line_arg_int(ARG_REC_NO_KEYPRESS, argv, argc);
     LOG("Playback mode active.\n");
   }
   else if (read_arg[0])
@@ -80,7 +90,7 @@ int main(int argc, char **argv)
   if (get_game_settings()->require_authentication && *record_mode == RECORD_MODE_PLAYBACK)
   {
     char auth_hash_file[256];
-    if (read_cmd_line_arg_str("auth-hash-file", argv, argc, auth_hash_file, "Gameplay recording authentication file"))
+    if (read_cmd_line_arg_str(ARG_REC_AUTH, argv, argc, auth_hash_file))
     {
       FILE *f = fopen(auth_hash_file, "rb");
       char hash[DMAC_SHA1_HASH_SIZE];
@@ -111,7 +121,7 @@ int main(int argc, char **argv)
   wt_sample_read_all(DATADIR);
   progress_load_state("Loading game...", 1);
   srand((int)time(NULL));
-  int game_modifiers = read_cmd_line_arg_int("default-game-mode", argv, argc, "Set default game mode (integer, see source for mapping)");
+  int game_modifiers = read_cmd_line_arg_int(ARG_DEF_GMODE, argv, argc);
 
   progress_load_state("Loading samples...", 1);
   register_sample(SAMPLE_WARP, "warp", SAMPLE_PRIORITY(HIGH, 1), 0);
@@ -169,8 +179,7 @@ int main(int argc, char **argv)
   ggs.game_modifiers = game_modifiers;
   ggs.mission = 1;
   ggs.no_player_interaction = record_playback_no_user_interaction;
-  ggs.setup_screenshot_buffer = read_cmd_line_arg_int("screenshot-buffer", argv, argc,
-    "Set to 1 to enable screenshot capturing");
+  ggs.setup_screenshot_buffer = read_cmd_line_arg_int(ARG_SCREENSHOT, argv, argc);
   while (ggs.mission != 0)
   {
     if (*record_mode != RECORD_MODE_PLAYBACK)
@@ -199,4 +208,55 @@ int main(int argc, char **argv)
   record_file_flush();
   destroy_allegro();
   return 0;
+}
+
+static void print_help_for_arg(const char *arg_and_doc)
+{
+  printf("--%s=<value>\n", arg_and_doc);
+  const char *documentation = &arg_and_doc[strlen(arg_and_doc) + 1];
+  printf("  %s\n", documentation);
+}
+
+static void print_help_for_setting(const char *segment, const char *key_and_doc)
+{
+  printf("--%s--%s=<value>\n", segment, key_and_doc);
+  const char *documentation = &key_and_doc[strlen(key_and_doc) + 1];
+  printf("  %s\n", documentation);
+}
+
+static void print_help()
+{
+  puts("Accepted command line arguments:");
+  puts("\n** General:");
+  print_help_for_arg(ARG_HELP);
+  print_help_for_arg(ARG_SCREENSHOT);
+  puts("\n** Gameplay recording and playback:");
+  print_help_for_arg(ARG_REC_MODE);
+  print_help_for_arg(ARG_REC_FILE_MODE);
+  print_help_for_arg(ARG_REC_NO_KEYPRESS);
+  print_help_for_arg(ARG_REC_AUTH);
+
+  puts("\n** Fine tuning for custom mission packs:");
+  print_help_for_arg(ARG_DEF_GMODE);
+  print_help_for_arg(ARG_SETTINGS_DAT);
+
+  puts("\n** Debugging:\n");
+#ifdef ENABLE_LOGGING
+  print_help_for_arg(ARG_LOGGING);
+#endif
+  print_help_for_arg(ARG_PLAYER_DAMAGE);
+
+  puts("\n** Override game settings:");
+  print_help_for_setting(SETTING_MISSION_PACK);
+  print_help_for_setting(SETTING_CUSTOM_RES);
+  print_help_for_setting(SETTING_REQ_AUTH);
+  puts("");
+  print_help_for_setting(SETTING_VIBRATE);
+  print_help_for_setting(SETTING_FULLSCREEN);
+  print_help_for_setting(SETTING_MENU_FONT);
+  print_help_for_setting(SETTING_GAME_FONT);
+  puts("");
+  print_help_for_setting(SETTING_MUSIC_ON);
+  print_help_for_setting(SETTING_MUSIC_VOL);
+  print_help_for_setting(SETTING_SFX_VOL);
 }
