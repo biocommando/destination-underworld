@@ -46,6 +46,9 @@ void enemy_logic(World *world)
                     spawn_body_parts(enm, &world->visual_fx);
                 }
             }
+            // enemy will be removed -> remove reference that would be left dangling otherwise
+            if (enm->death_animation == death_anim_max && enm == world->boss)
+                world->boss = NULL;
             continue;
         }
         if (enm->roomid != world->current_room)

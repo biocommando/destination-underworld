@@ -4,7 +4,7 @@
     arg "\0" doc
 
 #define ARG_HELP CMD_ARG_AND_DOC("help", "Display this help message")
-#define ARG_PLAYER_DAMAGE CMD_ARG_AND_DOC("player-damage", "Set to 1 to enable no damage cheat")
+#define ARG_PLAYER_DAMAGE CMD_ARG_AND_DOC("player-damage", "Set to 'off' to enable no damage cheat")
 #define ARG_LOGGING CMD_ARG_AND_DOC("logging", "Set to 1 to enable logging")
 #define ARG_REC_MODE CMD_ARG_AND_DOC("record-mode", "Gameplay recording mode: record or play")
 #define ARG_REC_FILE_MODE CMD_ARG_AND_DOC("file", "Gameplay recording file for playback")
