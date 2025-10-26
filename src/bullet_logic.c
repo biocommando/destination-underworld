@@ -106,8 +106,8 @@ void bullet_logic(World *world, GlobalGameState *ggs)
 
                     trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (world->plr.x - 240) / 8, 900 + rand() % 200);
                     world->plr.reload = 100;
-                    break;
                 }
+                break;
             }
             if (bullet->hurts_flags & BULLET_HURTS_MONSTERS)
             {

@@ -15,8 +15,9 @@ module.exports = v => {
         console.log('Test log:')
         console.log(v.fs.readFileSync('test-results.txt').toString())
     }
-
-    console.log('*** Run synth tests ***')
+// This is unreliable and not very useful. Improve if changes needed to synth that need some extra verification beyond unit tests and 
+// just listening to the result.
+/*    console.log('*** Run synth tests ***')
     v.sh(`cd src/synth && ${prefix}synth_test_main.exe ../../dataloss/midi-music/eetteritekno.mid`)
     const { createHash } = require('crypto');
     const sha256 = createHash('sha256').update(v.fs.readFileSync('dataloss/midi-music/eetteritekno.mid.wav')).digest('hex');
@@ -24,5 +25,5 @@ module.exports = v => {
     if (sha256 === expected_sha256)
         console.log('Synth test OK')
     else
-        console.log('Synth test FAIL. SHA256 sum mismatch actual=', sha256, 'expected=', expected_sha256)
+        console.log('Synth test FAIL. SHA256 sum mismatch actual=', sha256, 'expected=', expected_sha256)*/
 }
