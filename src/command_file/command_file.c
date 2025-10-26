@@ -44,13 +44,13 @@ int read_command_file(const char *filename, void (*dispatch)(command_file_Dispat
     {
         if (!fgets(line, command_file_LINE_MAX, f))
             break;
-        int nl_read = 0;
-        for (int i = strlen(line) - 1; line[i] == '\n' || line[i] == '\r'; i--)
+        int line_len = strlen(line);
+        for (int i = line_len - 1; line[i] == '\n' || line[i] == '\r'; i--)
         {
             line[i] = 0;
-            nl_read = 1;
+            line_len--;
         }
-        if (!nl_read) // Too long line
+        if (line_len == command_file_LINE_MAX - 1) // Too long line
         {
             // Read rest of the line
             char c;

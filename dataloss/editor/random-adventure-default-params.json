@@ -11,6 +11,7 @@
     "numberOfRooms": 8,
     "numberOfMissions": 4,
     "packName": null,
+    "baseEnemyProbability": 0.15,
     "randomEnemyProperties": {
         "useDefault": false,
         "targetPowerScores": [

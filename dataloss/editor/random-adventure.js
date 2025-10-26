@@ -8,7 +8,7 @@ let customParams = {}
 const configFile = process.argv.pop()
 if (configFile.endsWith('.json')) customParams = JSON.parse(fs.readFileSync(configFile))
 
-const params = {...defaultParams, ...customParams}
+const params = { ...defaultParams, ...customParams }
 
 const numMissions = params.numberOfMissions
 
@@ -107,7 +107,7 @@ function createOneMission(mission) {
         const possibleSpawnSpots = map.filter(t => t.id === ids.floor && t.room === room && t.x > 1)
         possibleSpawnSpots.sort(() => Math.random() - 0.5)
         types.forEach(type => {
-            spawnerInfos.push({room, mission, type})
+            spawnerInfos.push({ room, mission, type })
             if (type === 'hydra') {
                 const spawnSpot1 = possibleSpawnSpots.pop()
                 const spawnSpot2 = possibleSpawnSpots.pop()
@@ -125,7 +125,7 @@ function createOneMission(mission) {
                 script.push(`on secondary_timer: ms(2000) do start_secondary_timer: time = 0`)
             } else if (type === 'positional') {
                 for (let y = 0; y < 12; y++) {
-                    map.push({x: 5, y, id: ids.positionalTrigger(0), room})
+                    map.push({ x: 5, y, id: ids.positionalTrigger(0), room })
                 }
                 script.push('// "Positional" spawner')
                 for (let i = 0; i < numEnemies; i++) {
@@ -208,7 +208,8 @@ function createOneMission(mission) {
                 }
             }
 
-            if ((x != 15 || y != 5) && x > 1 && Math.random() > 0.85 + Math.log(enemies) / (13 + room)) {
+            if ((x != 15 || y != 5) && x > 1
+                && Math.random() > (1 - params.baseEnemyProbability) + Math.log(enemies) / (13 + room)) {
                 const missionRoom = room + mission - 1
                 let enemyTypeMax = params.baseEnemyTypeMax - 0.001
                 if (missionRoom >= params.roomsThatIntroduceNewEnemyTypes[0]) enemyTypeMax += 1
@@ -302,25 +303,31 @@ for (let m = 0; m < numMissions; m++) {
     createOneMission(m + 1)
 }
 
-let enemyProperties = `type-0 turret=0 rate=25 health=2 gold=0 fast=0 hurts-monsters=0 potion-for-potion-only=5
-type-1 turret=0 rate=20 health=3 gold=0 fast=0 hurts-monsters=0 potion-for-potion-only=2
-type-2 turret=0 rate=15 health=5 gold=1 fast=1 hurts-monsters=0 potion-for-potion-only=4
-type-3 turret=0 rate=10 health=6 gold=1 fast=1 hurts-monsters=0 potion-for-potion-only=3
-type-4 turret=1 rate=5 health=8 gold=1 fast=0 hurts-monsters=1 potion-for-potion-only=3`
+let enemyProperties = `# Adept
+type="0" turret="0"  rate="25" health="2"  gold="0"  fast="0"  hurts-monsters="0"  potion-for-potion-only="5"
+# Magician
+type="1" turret="0"  rate="20" health="3"  gold="0"  fast="0"  hurts-monsters="0"  potion-for-potion-only="2"
+# Imp
+type="2" turret="0"  rate="15" health="5"  gold="1"  fast="1"  hurts-monsters="0"  potion-for-potion-only="4"
+# Alien
+type="3" turret="0"  rate="10" health="6"  gold="1"  fast="1"  hurts-monsters="0"  potion-for-potion-only="3"
+# Alien turret
+type="4" turret="1"  rate="5"  health="8"  gold="1"  fast="0"  hurts-monsters="1"  potion-for-potion-only="3"
+`
 
 let enemyHelp = ''
 
 if (!params.randomEnemyProperties.useDefault) {
-    enemyHelp = `
+    enemyHelp = `(empty line)
 Custom enemy profiles
-#color 1
-#sprite 6 10 55 0 0
-#sprite 6 10 87 0 1
-#sprite 6 10 119 0 2
-#sprite 6 10 151 0 3
-#sprite 6 10 183 0 4
-#margin 40
-
+color_ref: "1"
+sprite: "17" "10" "55" "0" "0"
+sprite: "17" "10" "87" "0" "1"
+sprite: "17" "10" "119" "0" "2"
+sprite: "17" "10" "151" "0" "3"
+sprite: "17" "10" "183" "0" "4"
+margin: "40"
+(empty line)
 `
     enemyProperties = ''
     for (let e = 0; e < 5; e++) {
@@ -348,17 +355,16 @@ Custom enemy profiles
             }
         }
 
-        enemyProperties += `type-${e} turret=${turret} rate=${rate} health=${health} gold=${gold} fast=${fast} hurts-monsters=${hurtsMonsters} potion-for-potion-only=${potionForPotionOnly}
-`
-        enemyHelp += `Health: ${health}, Fire rate: ${Math.round(400 / rate * (fast + 1)) / 10} / sec, ${turret ? 'Stationary' : (fast ? 'Moves fast' : 'Moves slow')}${hurtsMonsters ? ', Friendly fire' : ''}${gold ? ', Possesses a soul' : ''}
-
+        enemyProperties += [e, turret, rate, health, gold, fast, hurtsMonsters, potionForPotionOnly].map(x => '"' + x + '"').join('') + '\n'
+        enemyHelp += `Health\\. ${health}, Fire rate\\. ${Math.round(400 / rate * (fast + 1)) / 10} / sec, ${turret ? 'Stationary' : (fast ? 'Moves fast' : 'Moves slow')}${hurtsMonsters ? ', Friendly fire' : ''}${gold ? ', Possesses a soul' : ''}
+(empty line)
 `
         console.log(`Enemy ${e} created with power score ${powerScore}`)
     }
-    enemyHelp += '#margin 5'
+    enemyHelp += 'margin: "5"'
 }
 
-fs.writeFileSync(packName + '/arenas.dat', 'number_of_arenas 0')
+fs.writeFileSync(packName + '/arenas.dat', '')
 fs.writeFileSync(packName + '/enemy-properties.dat', enemyProperties)
 
 spawnerInfos.sort((a, b) => a.mission * 10 + a.room - b.mission * 10 - b.room)
@@ -370,7 +376,7 @@ function getSpawnerInfoTable() {
         const rooms = [1, 2, 3, 4, 5, 6, 7, 8].map(room => {
             const info = infos.find(i => i.room === room)
             if (info) {
-                return {hydra: ' HYDRA  ', positional: ' AMBUSH ', timed: ' REINF. '}[info.type]
+                return { hydra: ' HYDRA  ', positional: ' AMBUSH ', timed: ' REINF. ' }[info.type]
             } else {
                 return '        '
             }
@@ -382,27 +388,27 @@ function getSpawnerInfoTable() {
     return rows
 }
 
-fs.writeFileSync(packName + '/help.dat', `#color 128 128 64 1
+fs.writeFileSync(packName + '/help.dat', `color: "128" "128" "64" "1"
 A random-generated dungeon pack for Destination Underworld.
-#color 192 64 32 2
+color: "192" "64" "32" "2"
 ${enemyHelp}
-
-#color 2
+(empty line)
+color_ref: "2"
 Map trap info
-#color 64 64 64 3
+color: "64" "64" "64" "3"
 HYDRA         = When an enemy is killed, two are spawned at a random location
 AMBUSH        = When the player gets near the middle of the level,
                 enemies spawn at random locations
 REINFORCEMENT = New enemies are spawned in the same location periodically
-
-#color 1
+(empty line)
+color_ref: "1"
 LEVEL | ROOM 1 |    2   |    3   |    4   |    5   |    6   |    7   |    8
-#color 3
+color_ref "3"
 ${getSpawnerInfoTable()}
-#color 255 255 255 4
-
+color: "255" "255" "255" "4"
+(empty line)
 ((press space to continue))
-#doc-end
+doc_end
 `)
 
 fs.writeFileSync(packName + '/readme.txt', `Running the game with this custom mission pack:
@@ -416,6 +422,6 @@ IF EXIST mission1 (
 )
 DestinationUnderworld.exe --general--mission-pack=${packName} --default-game-mode=${params.defaultGameMode}`)
 
-fs.writeFileSync(packName + '/mission-counts.dat', 'base ' + numMissions)
+fs.writeFileSync(packName + '/mission-counts.dat', 'initial_count: "' + numMissions + '"')
 
 console.log(`Created files for pack named ${packName}`)
