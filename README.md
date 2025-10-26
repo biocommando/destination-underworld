@@ -6,11 +6,16 @@ the code and finetuning the difficulty level.
 
 # Development Enviroment
 
+The game can be built and run on either Windows or Linux. On Linux the
+allegro5 libraries need to be installed via package manager (see Allegro
+documentation). The text onwards talks about Windows build but everything
+on top level applies to Linux as well.
+
 The game requires GCC (MinGW) for compiling. The Windows binaries for the
 game programming library [allegro5](https://liballeg.org) need to be
 installed on the computer. By default, it's assumed that the binary package
 is located in `.\allegro` in the project root directory but the location
-can be modified in `environment.txt`. The build process and level editor
+can be modified in `bake\environment-common.js`. The build process and level editor
 also use NodeJS scripts so `node` needs to be also installed.
 
 So, the list of dependencies in short:
@@ -20,13 +25,24 @@ So, the list of dependencies in short:
 
 ## Building
 
-There's a batch file `make.bat` in the root directory that compiles the program.
-To create a release package, use `create_release.bat` that copies all the required
-files to run the game under `.\DestinationUnderworldRelease` directory.
+The project uses its own `Bake` build system that is basically a simple NodeJS based
+task sequencer. You can build a debug build using simply `node bake.js` which is
+equivalent to `node bake.js debug`. The debug build creates the game executable
+`DestinationUnderworld.exe` and test programs `unittests.exe` and `test-du.exe`.
 
-You'll need to have a separate `environment-release.txt` file for creating release.
-This is to allow different compile flags than in debug mode, and injecting a secret
-dmac key. For testing, you can just copy `environment.txt` to `environment-release.txt`.
+Other targets are listed in `bake.json`. The most commonly used are:
+- `release`: Creates a release build and copies all the required 
+  files to run the game under `.\DestinationUnderworldRelease` directory.
+  Uses the `environment-release.js` Bake script that assumes that you define your
+  own `auth_setup` configuration that setups a custom `DMAC_SHA1_KEY_FN` function.
+  This function should copy a 64 byte DMAC key to the `char *key` argument, selected
+  based on the `int ctx` which can be 0..3. A very simplistic implementation would be
+  `void dmac_sha1_default_key_fn(char *key, int ctx) { memset(key, 0, 64); sprintf(key, "<a random string here>%c", ctx); }`
+  If you don't care about authenticating data files and recordings, you can just use a dummy
+  script like `module.exports = ()=>{}`.
+- `test`: Run unit and play tests
+- `unit-tests`: Compile unit tests
+- `dispatchers`: Generate command file dispatcher code from `du_commands.json`
 
 ## Level editor
 
@@ -36,7 +52,8 @@ If you want to edit something else than the levels from the default level pack
 syntax: `run-level-editor.bat --mission-pack~NAME`, example:
 `.\run-level-editor.bat --mission-pack~Tunnels-of-Devil--m1l4tfxf`.
 
-The level editor UI is a bit arcane and especially the more advanced level editor stuff like conditional items or scripted events can be difficult to understand.
+The level editor UI is a bit arcane and especially the more advanced level editor
+stuff like conditional items or scripted events can be difficult to understand.
 I'll try to find some time to document the editor at some point.
 
 # License
