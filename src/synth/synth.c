@@ -182,16 +182,13 @@ void init_Synth(Synth *s, float sample_rate)
     s->sample_rate = sample_rate;
     init_BasicDelay(&s->send_delay, sample_rate, sample_rate);
 
-    memset(s->active_voices, -1, sizeof(s->active_voices));
     memset(s->instruments, 0, sizeof(s->instruments));
     memset(s->send_delay_amounts, 0, sizeof(s->send_delay_amounts));
+    s->voices = linked_list_create();
 
     s->total_volume = 1;
 
     s->diagnostics_max_n_voices = 0;
-
-    for (int i = 0; i < SYNTH_MAX_VOICES; i++)
-        s->voices[i].active = 0;
 }
 
 void free_Synth(Synth *s)
@@ -204,47 +201,19 @@ void Synth_handle_midi_event(Synth *s, unsigned char *event_data, unsigned flags
     if ((event_data[0] & 0xF0) == 0b10000000)
     {
         int channel = event_data[0] & 0xF;
-        for (int i = 0; i < SYNTH_MAX_VOICES && s->active_voices[i] >= 0; i++)
+
+        SynthVoice *v;
+        LINKED_LIST_FOR_EACH(&s->voices, SynthVoice, v, 0)
         {
-            SynthVoice *v = &s->voices[s->active_voices[i]];
             if (v->channel == channel && v->key == event_data[1])
                 SynthVoice_release(v);
         }
     }
     else if ((event_data[0] & 0xF0) == 0b10010000)
     {
-        int n_active_voices = 0;
         int channel = event_data[0] & 0xF;
-        int new_voice_idx = -1;
-        for (int i = 0; i < SYNTH_MAX_VOICES; i++)
-        {
-            if (!s->voices[i].active)
-            {
-                new_voice_idx = i;
-                break;
-            }
-        }
-#ifdef SYNTH_COUNT_ACTIVE_VOICES
-for (int i = 0; i < SYNTH_MAX_VOICES; i++)
-{
-    n_active_voices += s->voices[i].active ? 1 : 0;
-}
-#endif
-        if (new_voice_idx == SYNTH_MAX_VOICES)
-        {
-            if (s->diagnostics_max_n_voices != 999)
-            {
-                s->diagnostics_max_n_voices = 999;
-                printf("WARN: Max synth voice count reached %d\n", SYNTH_MAX_VOICES);
-            }
-            return;
-        }
-        if (s->diagnostics_max_n_voices < n_active_voices + 1)
-        {
-            s->diagnostics_max_n_voices = n_active_voices;
-        }
 
-        SynthVoice *new_voice = &s->voices[new_voice_idx];
+        SynthVoice *new_voice = LINKED_LIST_ADD(&s->voices, SynthVoice);
         init_SynthVoice(new_voice, s->sample_rate, event_data[1], channel);
         new_voice->volume = event_data[2] / 127.0f;
         new_voice->delay_send = s->send_delay_amounts[channel];
@@ -254,14 +223,6 @@ for (int i = 0; i < SYNTH_MAX_VOICES; i++)
             new_voice->allow_note_stealing = 0;
 
         new_voice->active = 1;
-        for (int i = 0; i < SYNTH_MAX_VOICES; i++)
-        {
-            if (s->active_voices[i] < 0)
-            {
-                s->active_voices[i] = new_voice_idx;
-                break;
-            }
-        }
     }
 }
 
@@ -285,23 +246,6 @@ static inline float soft_clip(const float f)
     return f * (27 + f2) / (27 + 9 * f2);
 }
 
-static int Synth_active_voice_sort_function(const void *a, const void *b)
-{
-    int arg1 = *(const int *)a;
-    int arg2 = *(const int *)b;
-
-    if (arg1 < arg2)
-        return 1;
-    if (arg1 > arg2)
-        return -1;
-    return 0;
-}
-
-static inline void Synth_rearrange_active_voices(Synth *s)
-{
-    qsort(s->active_voices, SYNTH_MAX_VOICES, sizeof(int), Synth_active_voice_sort_function);
-}
-
 void Synth_process(Synth *s, float *buffer_left, [[maybe_unused]] float *buffer_right, int buffer_size)
 {
     for (int i = 0; i < buffer_size; i++)
@@ -309,21 +253,12 @@ void Synth_process(Synth *s, float *buffer_left, [[maybe_unused]] float *buffer_
         float sample_left = 0;
         float sample_right = 0;
         float delay_send_sample = 0;
-        int active_voices_modified = 0;
-        for (int j = 0; j < SYNTH_MAX_VOICES && s->active_voices[j] >= 0; j++)
+
+        SynthVoice *voice;
+        LINKED_LIST_FOR_EACH(&s->voices, SynthVoice, voice, SynthVoice_ended(voice))
         {
-            const int vi = s->active_voices[j];
-            SynthVoice *voice = &s->voices[vi];
             SynthVoice_process(voice, &delay_send_sample, &sample_left, &sample_right);
-            if (SynthVoice_ended(voice))
-            {
-                s->active_voices[j] = -1;
-                active_voices_modified = 1;
-                voice->active = 0;
-            }
         }
-        if (active_voices_modified)
-            Synth_rearrange_active_voices(s);
         const double delay_output = BasicDelay_process(&s->send_delay, delay_send_sample);
         buffer_left[i] = soft_clip(sample_left + delay_output) * s->total_volume;
         i++;
@@ -333,25 +268,13 @@ void Synth_process(Synth *s, float *buffer_left, [[maybe_unused]] float *buffer_
 
 void Synth_kill_all_voices(Synth *s)
 {
-    memset(s->active_voices, -1, sizeof(s->active_voices));
-    for (int i = 0; i < SYNTH_MAX_VOICES; i++)
-        s->voices[i].active = 0;
+    linked_list_clear(&s->voices);
 }
 
 void Synth_kill_voices(Synth *s, int channel)
 {
-    int voices_killed = 0;
-    for (int i = 0; i < SYNTH_MAX_VOICES && s->active_voices[i] >= 0; i++)
-    {
-        if (s->voices[s->active_voices[i]].channel == channel)
-        {
-            s->voices[s->active_voices[i]].active = 0;
-            s->active_voices[i] = -1;
-            voices_killed = 1;
-        }
-    }
-    if (voices_killed)
-        Synth_rearrange_active_voices(s);
+    SynthVoice *voice;
+    LINKED_LIST_FOR_EACH(&s->voices, SynthVoice, voice, voice->channel == channel);
 }
 
 void dispatch__handle_synth_params_default(struct synth_params_default_DispatchDto *dto)

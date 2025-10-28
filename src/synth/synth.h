@@ -4,6 +4,7 @@
 #include "adsr_envelope.h"
 #include "basic_oscillator.h"
 #include "basic_delay.h"
+#include "../linked_list.h"
 
 // Ported from C++ code
 
@@ -141,8 +142,6 @@ void SynthVoice_set_params(SynthVoice *sv, const SynthParams *params);
  */
 int SynthVoice_ended(SynthVoice *sv);
 
-#define SYNTH_MAX_VOICES 32
-
 /*
  * A substractive synthesizer with roughly the following kind of architecture.
  * Signal sources and destinations marked by `*NUMBER`.
@@ -173,14 +172,8 @@ ADSR envelope -> *3
  */
 typedef struct
 {
-    // All possible synth voices
-    SynthVoice voices[SYNTH_MAX_VOICES];
-    // An index list of voices that are active.
-    // Inactive voice slots are marked with value -1.
-    // Array is sorted in descending order.
-    // E.g. if voices at index 1, 4 and 15 are active this array
-    // would contain: [15, 4, 1, -1, -1, ..., -1]
-    int active_voices[SYNTH_MAX_VOICES];
+    // All active synth voices
+    LinkedList voices;
 
     // Synth sample rate in Hz
     float sample_rate;
