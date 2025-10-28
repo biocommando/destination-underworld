@@ -49,3 +49,5 @@ void read_enemy_configs(World *world);
  * mode-<game_mode> (e.g. "mode-0").
  */
 int read_mission_count(int game_mode);
+
+void read_game_tuning_params();

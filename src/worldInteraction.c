@@ -9,6 +9,7 @@
 #include "boss_logic.h"
 #include "sampleRegister.h"
 #include "duColors.h"
+#include "game_tuning.h"
 
 static inline int is_passable(const World *world, int x, int y)
 {
@@ -135,7 +136,8 @@ void move_bullet(Bullet *bb, World *world)
 }
 static inline double randomized_bullet_direction(double dir)
 {
-    return dir + 0.03 - 0.01 * (pr_get_random() % 7);
+    const double spread = 0.03 - 0.01 * (pr_get_random() % 7);
+    return dir + spread * get_tuning_params()->bullet_spread_multiplier;
 }
 
 Bullet *get_next_available_bullet(World *world)
@@ -145,10 +147,11 @@ Bullet *get_next_available_bullet(World *world)
 
 int shoot_one_shot_at_xy(double x, double y, double dx, double dy, Enemy *enm, int hurts_monsters, World *world)
 {
-    int num_shots = (*world->game_modifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? 2 : 1;
+    const GameTuningParams *gt = get_tuning_params();
+    int num_shots = (*world->game_modifiers & GAMEMODIFIER_DOUBLED_SHOTS) != 0 ? gt->doubled_shots_shot_multiplier : 1;
     if (enm == &world->plr && check_potion_effect(world, POTION_EFFECT_BOOSTED_SHOTS))
     {
-        num_shots *= 2;
+        num_shots *= gt->boost_potion_shot_multiplier;
     }
     if (check_potion_effect(world, POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS))
     {
@@ -210,7 +213,7 @@ int shoot(Enemy *enm, World *world)
     enm->reload = enm->rate;
     if (enm == &world->plr && check_potion_effect(world, POTION_EFFECT_FAST_PLAYER))
     {
-        enm->reload /= 2;
+        enm->reload /= get_tuning_params()->fast_potion_reload_divider;
     }
     int sample_plays = 0;
     for (int i = 0; i < enm->shots; i++)
@@ -331,12 +334,12 @@ Enemy *ns_spawn_enemy(int x, int y, int type, int room_id, World *world)
     int difficulty = (*world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : 0;
 
     if (difficulty == DIFFICULTY_BRUTAL)
-        new_enemy->health++;
+        new_enemy->health += get_tuning_params()->brutal_enemy_health_bonus;
 
     new_enemy->xp = calculate_xp(new_enemy);
     // A little compensation for killing the boss. Doesn't really add much value so late in game.
     if (type == ENEMY_TYPE_COUNT)
-        new_enemy->xp += 500;
+        new_enemy->xp += get_tuning_params()->boss_killing_xp_bonus;
 
     new_enemy->roomid = room_id;
     return new_enemy;
@@ -349,9 +352,9 @@ Potion *spawn_potion(int x, int y, int type, int room_id, World *world, int smal
         return NULL;
     p->location.x = x;
     p->location.y = y;
-    p->duration_boost = POTION_DURATION_BIG_BOOST;
+    p->duration_boost = get_tuning_params()->potion_duration_big_boost;
     if (small)
-        p->duration_boost = POTION_DURATION_MINI_BOOST;
+        p->duration_boost = get_tuning_params()->potion_duration_mini_boost;
     p->effects = 0;
     if (type == POTION_ID_SHIELD)
         p->effects = POTION_EFFECT_SHIELD_OF_FIRE | POTION_EFFECT_ALL_BULLETS_HURT_MONSTERS;
@@ -442,50 +445,50 @@ void change_room_if_at_exit_point(World *world)
 
 void set_player_start_state(World *world, GlobalGameState *ggs)
 {
+    const GameTuningParams *gt = get_tuning_params();
     int difficulty = GET_DIFFICULTY(world);
-    int excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 0 : 5;
-    if (ggs->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
-    {
-        excess_gold_limit = difficulty == DIFFICULTY_BRUTAL ? 2 : 7;
-    }
+    int initial_gold_cap = difficulty == DIFFICULTY_BRUTAL ? 0 : gt->initial_gold_cap;
+    int healing_cost = gt->healing_powerup_cost + ((ggs->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) ? gt->overpriced_powerups_cost_increase : 0);
+    int excess_gold_limit = initial_gold_cap + healing_cost - 1;
     if (ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
     {
-        excess_gold_limit = 0;
+        excess_gold_limit = healing_cost - 1;
     }
 
-    world->plr_max_health = (world->plr.perks & PERK_INCREASE_MAX_HEALTH) ? 7 : 6;
+    world->plr_max_health = (world->plr.perks & PERK_INCREASE_MAX_HEALTH) ? gt->max_health_with_perk : gt->max_health;
 
     if (world->plr.gold > excess_gold_limit)
     {
-        int excess_gold = world->plr.gold - (difficulty == DIFFICULTY_BRUTAL ? 0 : 5);
+        int excess_gold = world->plr.gold - initial_gold_cap;
         if (ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD)
         {
             excess_gold = world->plr.gold;
         }
-        if (ggs->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS)
-            excess_gold /= 3;
-        world->plr.health += excess_gold * (difficulty == DIFFICULTY_BRUTAL ? 2 : 3);
+        for (; excess_gold >= healing_cost; excess_gold -= healing_cost)
+        {
+            world->plr.health += difficulty == DIFFICULTY_BRUTAL ? gt->healing_powerup_amount_brutal : gt->healing_powerup_amount;
+        }
         world->plr.health = world->plr.health > world->plr_max_health ? world->plr_max_health : world->plr.health;
 
         if (ggs->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS)
         {
-            world->plr.health *= 3;
+            world->plr.health *= gt->healing_powerup_multiplier_overpowered;
         }
     }
 
-    world->plr.gold = world->plr.gold > 5 ? 5 : world->plr.gold;
+    world->plr.gold = world->plr.gold > gt->initial_gold_cap ? gt->initial_gold_cap : world->plr.gold;
 
-    if (world->plr.health < 3)
-        world->plr.health = 3;
-    if (world->plr.ammo < 10)
-        world->plr.ammo = 10;
+    if (world->plr.health < gt->min_starting_health)
+        world->plr.health = gt->min_starting_health;
+    if (world->plr.ammo < gt->min_starting_ammo)
+        world->plr.ammo = gt->min_starting_ammo;
 
-    world->powerups.cluster_strength = 16;
+    world->powerups.cluster_strength = gt->cluster_strength;
 
     if ((ggs->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) != 0)
     {
-        world->powerups.cluster_strength = 5;
-        world->plr.gold = 20;
+        world->powerups.cluster_strength = gt->multiplied_gold_mode_cluster_strength;
+        world->plr.gold = gt->multiplied_gold_mode_initial_gold;
     }
     else if (difficulty == DIFFICULTY_BRUTAL)
         world->plr.gold = 0;
@@ -507,14 +510,15 @@ void set_player_start_state(World *world, GlobalGameState *ggs)
     if (world->plr.perks & PERK_START_WITH_SPEED_POTION)
     {
         world->potion_effect_flags = POTION_EFFECT_FAST_PLAYER;
-        world->potion_duration = POTION_DURATION_BIG_BOOST;
+        world->potion_duration = gt->potion_duration_big_boost;
     }
 }
 
 inline void apply_timed_potion_effects(World *world)
 {
 
-    int potion_effect_divider = world->potion_turbo_mode ? 2 : 1;
+    const GameTuningParams *gt = get_tuning_params();
+    int potion_effect_divider = world->potion_turbo_mode ? gt->potion_turbo_mode_effect_amount : 1;
 
     if (world->plr.health > 0 && check_potion_effect(world, POTION_EFFECT_HEALING))
     {
@@ -522,7 +526,7 @@ inline void apply_timed_potion_effects(World *world)
         {
             if (world->plr.health < world->plr_max_health)
                 world->plr.health++;
-            world->potion_healing_counter = 25;
+            world->potion_healing_counter = gt->initial_potion_healing_counter;
         }
         else
         {
@@ -535,7 +539,7 @@ inline void apply_timed_potion_effects(World *world)
         if (world->potion_shield_counter <= 0)
         {
             create_cluster_explosion(world, world->plr.x, world->plr.y, 4, 1, &world->plr);
-            world->potion_shield_counter = 15;
+            world->potion_shield_counter = gt->initial_potion_shield_counter;
         }
         else
         {
@@ -546,15 +550,16 @@ inline void apply_timed_potion_effects(World *world)
 
 inline Enemy *create_turret(World *world)
 {
+    const GameTuningParams *gt = get_tuning_params();
     Enemy *enm = ns_spawn_enemy(world->plr.x, world->plr.y, 9, world->current_room, world);
-    enm->ammo = 128;
+    enm->ammo = gt->turret_ammo;
     enm->rate = 0;
-    enm->shots = 2;
-    enm->reload = 10;
-    enm->move = 10;
+    enm->shots = gt->turret_shots;
+    enm->reload = gt->turret_reload;
+    enm->move = gt->turret_move;
     enm->dx = world->plr.dx;
     enm->dy = world->plr.dy;
-    enm->health = 20;
+    enm->health = gt->turret_health;
     enm->gold = 0;
     enm->turret = TURRET_TYPE_PLAYER;
     enm->hurts_monsters = 1;
@@ -614,19 +619,20 @@ void kill_enemy(Enemy *enm, World *world)
         world->visual_fx.hint.loc.y = enm->y - 15;
         world->visual_fx.hint.dim = 6;
     }
+    const GameTuningParams *gt = get_tuning_params();
     if ((*world->game_modifiers & GAMEMODIFIER_MULTIPLIED_GOLD) == 0)
     {
-        if (world->plr.health < 3 && world->plr.health > 0)
-            world->plr.health++;
-        world->plr.ammo += 7;
-        if (world->plr.ammo > 15)
-            world->plr.ammo = 15;
+        if (world->plr.health < gt->kill_health_cap && world->plr.health > 0)
+            world->plr.health += gt->kill_health_bonus;
+        world->plr.ammo += gt->kill_ammo_bonus;
+        if (world->plr.ammo > gt->ammo_cap)
+            world->plr.ammo = gt->ammo_cap;
     }
     if (enm->potion >= POTION_ID_SHIELD)
     {
         int potion = enm->potion;
         // if almost out of health, spawn healing potion
-        if (world->plr.health == 1)
+        if (world->plr.health == gt->instant_heal_potion_drop_health_threshold)
             potion = POTION_ID_INSTANT_HEAL;
         spawn_potion(enm->x, enm->y, potion, world->current_room, world, 1);
     }

@@ -31,6 +31,7 @@
 #include "vfx.h"
 #include "sha1/du_dmac.h"
 #include "screenshot.h"
+#include "game_tuning.h"
 
 static void set_game_mode_beaten_flag(int game_modifiers)
 {
@@ -248,6 +249,7 @@ void game(GlobalGameState *ggs)
 
     int vibrations = 0;
 
+    read_game_tuning_params();
     init_world(&world);
     read_enemy_configs(&world);
     int mission_count = read_mission_count(ggs->game_modifiers);
@@ -541,7 +543,8 @@ void game(GlobalGameState *ggs)
                 break;
             }
             // Perks may have been updated
-            world.plr_max_health = (world.plr.perks & PERK_INCREASE_MAX_HEALTH) ? 7 : 6;
+            world.plr_max_health = (world.plr.perks & PERK_INCREASE_MAX_HEALTH) ?
+                get_tuning_params()->max_health_with_perk : get_tuning_params()->max_health;
         }
     }
 

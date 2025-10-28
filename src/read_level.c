@@ -4,11 +4,13 @@
 #include "variables.h"
 #include "logging.h"
 #include "sha1/du_dmac.h"
+#include "game_tuning.h"
 
 #include "command_file/generated/dispatch_read_level.h"
 #include "command_file/generated/dispatch_enemy_properties.h"
 #include "command_file/generated/dispatch_mission_counts.h"
 #include "command_file/generated/dispatch_data_file_auth.h"
+#include "command_file/generated/dispatch_game_tuning.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -339,6 +341,26 @@ void read_enemy_configs(World *world)
     }
     
     read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
+}
+
+static GameTuningParams _tuning_params;
+
+const GameTuningParams *get_tuning_params()
+{
+    return &_tuning_params;
+}
+
+void read_game_tuning_params()
+{
+    char fname[256];
+    sprintf(fname, DATADIR "%s/game-tuning.dat", get_game_settings()->mission_pack);
+    if (check_authentication(fname))
+    {
+        LOG_FATAL("game tuning authentication failed!!");
+        exit(1);
+    }
+    memset(&_tuning_params, 0, sizeof(_tuning_params));
+    read_command_file(fname, dispatch__game_tuning, &_tuning_params);
 }
 
 void dispatch__handle_mission_counts_mode_override(struct mission_counts_mode_override_DispatchDto *dto)

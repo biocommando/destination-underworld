@@ -298,5 +298,410 @@
             "state": "RecordFileState",
             "default": true
         }
+    },
+    "game_tuning": {
+        ":config": {
+            "state": "GameTuningParams",
+            "fieldsetter": true
+        },
+        "max_health_with_perk": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "max_health": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "turret_ammo": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "turret_shots": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "turret_reload": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "turret_move": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "turret_health": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "kill_ammo_bonus": {
+            "field": "int"
+        },
+        "ammo_cap": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "kill_health_bonus": {
+            "field": "int"
+        },
+        "kill_health_cap": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "instant_heal_potion_drop_health_threshold": {
+            "field": "int"
+        },
+        "potion_turbo_mode_effect_amount": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "initial_potion_healing_counter": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "initial_potion_shield_counter": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "potion_duration_big_boost": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "potion_duration_mini_boost": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "multiplied_gold_mode_initial_gold": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "multiplied_gold_mode_cluster_strength": {
+            "field": "int"
+        },
+        "cluster_strength": {
+            "field": "int"
+        },
+        "min_starting_ammo": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "min_starting_health": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "initial_gold_cap": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "healing_powerup_amount": {
+            "field": "int"
+        },
+        "healing_powerup_amount_brutal": {
+            "field": "int"
+        },
+        "healing_powerup_perk_bonus": {
+            "field": "int"
+        },
+        "healing_powerup_multiplier_overpowered": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "healing_powerup_cost": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "protection_powerup_cost": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "protection_powerup_amount": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "protection_powerup_perk_bonus": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "turret_powerup_cost": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "turret_powerup_cost_brutal": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "turret_powerup_perk_blast_intensity": {
+            "field": "int"
+        },
+        "turret_powerup_perk_blast_directions": {
+            "field": "int"
+        },
+        "turret_powerup_overpowered_speed_boost": {
+            "field": "float"
+        },
+        "blast_powerup_cost": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "blast_powerup_cost_brutal": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "blast_powerup_projectile_speed": {
+            "field": "float",
+            "validate:field": {
+                "type": "range",
+                "min": 0.001
+            }
+        },
+        "blast_powerup_overpowered_blast_intensity": {
+            "field": "int"
+        },
+        "blast_powerup_overpowered_blast_directions": {
+            "field": "int"
+        },
+        "overpriced_powerups_cost_increase": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "boss_killing_xp_bonus": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "brutal_enemy_health_bonus": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "fast_potion_reload_divider": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "doubled_shots_shot_multiplier": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "boost_potion_shot_multiplier": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "bullet_spread_multiplier": {
+            "field": "float"
+        },
+        "breakable_wall_durability": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "weapon_1_num_shots": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "weapon_1_rate": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "weapon_1_brutal_shots": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "weapon_1_brutal_rate": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "weapon_2_num_shots": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "weapon_2_rate": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "weapon_2_brutal_shots": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "weapon_2_brutal_rate": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "undetected_enemy_move_probability": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "enemy_speed": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "fast_enemy_speed": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "plr_speed": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "fast_potion_plr_speed_bonus": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "fast_potion_plr_speed_bonus_turbo": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 0
+            }
+        },
+        "perk_xp_base": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        },
+        "perk_xp_level_multiplier": {
+            "field": "float",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
+        }
     }
 }

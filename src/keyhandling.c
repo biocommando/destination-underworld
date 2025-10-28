@@ -4,6 +4,7 @@
 #include "worldInteraction.h"
 #include "sampleRegister.h"
 #include "vfx.h"
+#include "game_tuning.h"
 
 int handle_direction_keys(World *world, int key_up, int key_down, int key_left, int key_right)
 {
@@ -68,26 +69,28 @@ void handle_weapon_change_keys(World *world, int key_x, int key_z)
     }
     const int difficulty = GET_DIFFICULTY(world);
     int play_sample = 0;
+    const GameTuningParams *gt = get_tuning_params();
     if (key_x && world->plr.reload == 0) // Power
     {
-        world->plr.shots = 6;
-        world->plr.rate = 200;
+        world->plr.shots = gt->weapon_2_num_shots;
+        world->plr.rate = gt->weapon_2_rate;
         if (difficulty == DIFFICULTY_BRUTAL)
         {
             // better damage output but enemies are stronger
-            world->plr.shots = 4;
-            world->plr.rate = 30;
+            world->plr.shots = gt->weapon_2_brutal_shots;
+            world->plr.rate = gt->weapon_2_brutal_rate;
         }
         world->plr.reload = 20;
         play_sample = 1;
     }
     else if (key_z && world->plr.reload == 0) // Speed
     {
-        world->plr.shots = 1;
-        world->plr.rate = 7;
+        world->plr.shots = gt->weapon_1_num_shots;
+        world->plr.rate = gt->weapon_1_rate;
         if (difficulty == DIFFICULTY_BRUTAL)
         {
-            world->plr.rate = 12;
+            world->plr.shots = gt->weapon_1_brutal_shots;
+            world->plr.rate = gt->weapon_1_brutal_rate;
         }
         world->plr.reload = 20;
         play_sample = 1;
@@ -117,12 +120,16 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
         return 0;
     }
 
-    const int price_bonus = (*world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ? 2 : 0;
-    const int cost_heal = 1 + price_bonus;
-    const int cost_protection = 2 + price_bonus;
+    const GameTuningParams *gt = get_tuning_params();
+    const int price_bonus = (*world->game_modifiers & GAMEMODIFIER_OVERPRICED_POWERUPS) != 0 ?
+        gt->overpriced_powerups_cost_increase : 0;
+    const int cost_heal = gt->healing_powerup_cost + price_bonus;
+    const int cost_protection = gt->protection_powerup_cost + price_bonus;
     const int difficulty = GET_DIFFICULTY(world);
-    const int cost_turret = (difficulty == DIFFICULTY_BRUTAL ? 4 : 3) + price_bonus;
-    const int cost_blast = (difficulty == DIFFICULTY_BRUTAL ? 8 : 6) + price_bonus;
+    const int cost_turret_base = (difficulty == DIFFICULTY_BRUTAL ? gt->turret_powerup_cost_brutal : gt->turret_powerup_cost);
+    const int cost_turret = cost_turret_base + price_bonus;
+    const int cost_blast_base = (difficulty == DIFFICULTY_BRUTAL ? gt->blast_powerup_cost_brutal : gt->blast_powerup_cost);
+    const int cost_blast = cost_blast_base + price_bonus;
 
     const int overpowered = (*world->game_modifiers & GAMEMODIFIER_OVERPOWERED_POWERUPS) != 0;
 
@@ -130,13 +137,13 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
 
     int max_health = world->plr_max_health;
     if (overpowered)
-        max_health *= 3;
+        max_health *= gt->healing_powerup_multiplier_overpowered;
     if (key_a && world->plr.gold >= cost_heal && world->plr.health > 0 && world->plr.health < max_health && world->plr.reload == 0)
     {
         world->plr.gold -= cost_heal;
-        int health_bonus = difficulty == DIFFICULTY_BRUTAL ? 2 : 3;
+        int health_bonus = difficulty == DIFFICULTY_BRUTAL ? gt->healing_powerup_amount_brutal : gt->healing_powerup_amount;
         if (world->plr.perks & PERK_IMPROVE_HEALTH_POWERUP)
-            health_bonus++;
+            health_bonus += gt->healing_powerup_perk_bonus;
         world->plr.health += health_bonus;
         if (world->plr.health > world->plr_max_health)
         {
@@ -154,9 +161,9 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
         *plr_rune_of_protection_active == 0 && !world->visual_fx.rune_of_protection_animation)
     {
         world->plr.gold -= cost_protection;
-        *plr_rune_of_protection_active = 1;
+        *plr_rune_of_protection_active = gt->protection_powerup_amount;
         if (world->plr.perks & PERK_IMPROVE_SHIELD_POWERUP)
-            *plr_rune_of_protection_active = 3;
+            *plr_rune_of_protection_active += gt->protection_powerup_perk_bonus;
         world->plr.reload = 40;
         trigger_sample(SAMPLE_PROTECTION, 255);
         return cost_protection;
@@ -167,8 +174,8 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
         if (overpowered)
         {
             Enemy *created = create_turret(world);
-            created->dx *= 2;
-            created->dy *= 2;
+            created->dx *= gt->turret_powerup_overpowered_speed_boost;
+            created->dy *= gt->turret_powerup_overpowered_speed_boost;
         }
 
         world->plr.gold -= cost_turret;
@@ -185,11 +192,12 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
             node = node ? node->next : world->bullets.first;
             Bullet *b = (Bullet *)node->obj;
             b->bullet_type = BULLET_TYPE_CLUSTER;
-            b->dx *= 0.5;
-            b->dy *= 0.5;
+            b->dx *= gt->blast_powerup_projectile_speed;
+            b->dy *= gt->blast_powerup_projectile_speed;
             if (overpowered)
             {
-                create_cluster_explosion(world, world->plr.x, world->plr.y, 16, 16, &world->plr);
+                create_cluster_explosion(world, world->plr.x, world->plr.y,
+                    gt->blast_powerup_overpowered_blast_directions, gt->blast_powerup_overpowered_blast_intensity, &world->plr);
             }
             world->plr.gold -= cost_blast;
             world->plr.reload = 40;

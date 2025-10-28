@@ -3,6 +3,7 @@
 #include "logging.h"
 #include "vfx.h"
 #include "settings.h"
+#include "game_tuning.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -106,7 +107,7 @@ Tile create_tile(int symbol)
     if (symbol == TILE_SYM_BREAKABLE_WALL)
     {
         t.data = WALL_NORMAL;
-        t.durability = 5;
+        t.durability = get_tuning_params()->breakable_wall_durability;
         t.is_wall = 1;
         tile_properties_set = 1;
     }
@@ -199,6 +200,7 @@ inline int get_wall_type_at(const World *world, int x, int y)
 
 void init_player(World *world, Enemy *plrautosave)
 {
+    const GameTuningParams *gt = get_tuning_params();
     Enemy *plr = &world->plr;
     if (!plrautosave->alive)
     {
@@ -206,14 +208,15 @@ void init_player(World *world, Enemy *plrautosave)
         plr->alive = 1;
         plr->killed = 0;
         plr->sprite = -1;
-        plr->shots = 1;
-        plr->health = 3;
-        plr->rate = 7;
+        plr->shots = gt->weapon_1_num_shots;
+        plr->health = gt->kill_health_cap;
+        plr->rate = gt->weapon_1_rate;
         if ((*world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
         {
-            plr->rate = 12;
+            plr->rate = gt->weapon_1_brutal_rate;
+            plr->shots = gt->weapon_1_brutal_shots;
         }
-        plr->ammo = 15;
+        plr->ammo = gt->ammo_cap;
         plr->gold = 0;
         plr->hurts_monsters = 1;
     }
@@ -230,13 +233,14 @@ inline int check_potion_effect(World *w, int effect_id)
 
 inline int get_plr_speed(World *world)
 {
-    int plr_speed = 4;
+    const GameTuningParams *gt = get_tuning_params();
+    int plr_speed = gt->plr_speed;
     if (check_potion_effect(world, POTION_EFFECT_FAST_PLAYER))
     {
-      plr_speed++;
+      plr_speed += gt->fast_potion_plr_speed_bonus;
       if (world->potion_turbo_mode)
       {
-        plr_speed += 2;
+        plr_speed += gt->fast_potion_plr_speed_bonus_turbo;
       }
     }
     return plr_speed;

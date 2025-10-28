@@ -6,6 +6,7 @@
 #include "sprites.h"
 #include "sampleRegister.h"
 #include "vfx.h"
+#include "game_tuning.h"
 #include <math.h>
 
 static inline void set_directions(Enemy *enm, Coordinates *aim_at, int aim_window)
@@ -24,6 +25,7 @@ void enemy_logic(World *world)
 {
     const int death_anim_max = 16;
     Enemy *enm;
+    const GameTuningParams *gt = get_tuning_params();
     LINKED_LIST_FOR_EACH(&world->enm, Enemy, enm, enm->death_animation == death_anim_max)
     {
         if (!enm->alive)
@@ -104,7 +106,7 @@ void enemy_logic(World *world)
                 }
                 else
                 {
-                    if (pr_get_random() % 30 == 0)
+                    if (pr_get_random() % gt->undetected_enemy_move_probability == 0)
                     {
                         enm->move = pr_get_random() % 2;
                         enm->move = pr_get_random() % 2;
@@ -114,13 +116,13 @@ void enemy_logic(World *world)
                 }
                 if (!check_potion_effect(world, POTION_EFFECT_STOP_ENEMIES))
                 {
-                    int speed = 1;
+                    int speed = gt->enemy_speed;
                     if (is_boss)
                         speed = world->boss_fight_config->speed;
                     else if (enm->turret == TURRET_TYPE_ENEMY)
                         speed = 0;
                     else if (enm->fast)
-                        speed = 2;
+                        speed = gt->fast_enemy_speed;
 
                     enemy_reload(enm, speed ? speed : 1);
 
@@ -160,7 +162,8 @@ void enemy_logic(World *world)
                     create_explosion(enm->x, enm->y, world, &world->visual_fx, 1);
                     create_explosion(enm->x, enm->y, world, &world->visual_fx, 2);
                     if (world->plr.perks & PERK_IMPROVE_TURRET_POWERUP)
-                        create_cluster_explosion(world, enm->x, enm->y, 32, 1, &world->plr);
+                        create_cluster_explosion(world, enm->x, enm->y,
+                            gt->turret_powerup_perk_blast_directions, gt->turret_powerup_perk_blast_intensity, &world->plr);
                     enm->ammo = -1;
                     enm->shots = 1;
                     enm->alive = 0;

@@ -30,7 +30,7 @@ int main(int argc, char **argv)
         if (feof(f))
             break;
         // Whitelisting
-        if (!strstr(path, "mission") && !strstr(path, "enemy-properties.dat"))
+        if (!strstr(path, "mission") && !strstr(path, "enemy-properties.dat") && !strstr(path, "game-tuning.dat"))
             continue;
         if (path[strlen(path) - 1] == '\n')
             path[strlen(path) - 1] = 0;

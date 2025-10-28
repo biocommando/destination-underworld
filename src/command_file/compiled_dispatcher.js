@@ -66,12 +66,12 @@ const inputFile = process.argv.pop()
 const fs = require('fs')
 
 let cfile, hfile, statename, commandsname, commandname
-let debug_print
+let debug_print, fieldsetters
 let command_idx = 0
 
 function write_files() {
     if (cfile) {
-        cfile += '}\n' + debug_print + '\n'
+        cfile += '}\n' + debug_print + '\n' + fieldsetters + '\n'
         fs.writeFileSync(`dispatch_${commandsname}.h`, hfile)
         fs.writeFileSync(`dispatch_${commandsname}.c`, cfile)
         cfile = undefined
@@ -102,6 +102,7 @@ void dispatch__${name}(command_file_DispatchDto *dto);
     statename = 'State'
     commandname = 'Command'
     debug_print = ''
+    fieldsetters = ''
 }
 const json = JSON.parse(fs.readFileSync(inputFile).toString())
 
@@ -145,12 +146,19 @@ struct ${prefix}${commandname}_DispatchDto
             return;
         }
 `
+                    let format = 's'
+
+                    if (!['int', 'float', 'str'].includes(def[command][param]))
+                        throw `invalid parameter type: ${commandSetName}.${command}.${param} ${def[command][param]}` 
+
                     if (def[command][param] === 'str') {
                         hfile += `    const char *${param};\n`
                         cfile += `        cd.${param} = dto->parameters[${command_idx}];\n`
                     } else {
-                        hfile += `    int ${param};\n`
-                        cfile += `        if (sscanf(dto->parameters[${command_idx}], "%d", &cd.${param}) != 1)
+                        const ctype = def[command][param] === 'float' ? 'double' : 'int'
+                        format = def[command][param] === 'float' ? 'lf' : 'd'
+                        hfile += `    ${ctype} ${param};\n`
+                        cfile += `        if (sscanf(dto->parameters[${command_idx}], "%${format}", &cd.${param}) != 1)
         {
             printf("Invalid ${commandname}.${param} at index ${command_idx}\\n");
             return;
@@ -159,9 +167,9 @@ struct ${prefix}${commandname}_DispatchDto
                     }
                     const validator = def[command]['validate:' + param]
                     if (validator) {
-                        cfile += generate_validator(validator, param, def[command][param])
+                        cfile += generate_validator(validator, param, def[command][param], command)
                     }
-                    debug_print += `    printf("${param} = %${def[command][param] === 'str' ? 's' : 'd'}\\n", dto->${param});\n`
+                    debug_print += `    printf("${param} = %${format}\\n", dto->${param});\n`
                     command_idx++;
                 })
                 debug_print += '}'
@@ -173,9 +181,17 @@ struct ${prefix}${commandname}_DispatchDto
 
 void dispatch__handle_${prefix}${commandname}(struct ${prefix}${commandname}_DispatchDto *);
 
-void debug_${prefix}${commandname}_DispatchDto(const struct ${prefix}${commandname}_DispatchDto *);
+${config.debug?'':'//'}void debug_${prefix}${commandname}_DispatchDto(const struct ${prefix}${commandname}_DispatchDto *);
 `
-
+                if (config.fieldsetter) {
+                    fieldsetters += `void dispatch__handle_${prefix}${commandname}(struct ${prefix}${commandname}_DispatchDto *dto)
+{
+    dto->state->${commandname} = dto->field;
+}
+`
+                }
+                if (!config.debug)
+                    debug_print = ''
             })
         if (!defaultHandler) {
             cfile += `    printf("Command '%s' not recognized\\n", dto->command);\n`
@@ -201,37 +217,50 @@ void dispatch__handle_${commandSetName}_default(struct ${commandSetName}_default
         }
     })
 
-function generate_validator(validate, param, type) {
+function generate_validator(validate, param, type, command) {
     let validator =  ''
 
     const rangeValidator = (param, paramName) => {
         validator += '        if (!('
-        validator += validate.min !== undefined ? `${param} >= ${validate.min}` : 1
-        validator += ' && '
-        validator += validate.max !== undefined ? `${param} <= ${validate.max}` : 1
+        const expressions = []
+        if (validate.min !== undefined)
+            expressions.push(`${param} >= ${validate.min}`)
+        if (validate.max !== undefined)
+            expressions.push(`${param} <= ${validate.max}`)
+        validator += expressions.join(' && ')
+        const format = {
+            str: 'd',
+            int: 'd',
+            float: 'lf'
+        }[type]
         validator += `)) {
-            printf("Validation ${validate.type} ${validate.min}..${validate.max} failed for parameter ${paramName}=%d\\n", ${param});
+            printf("Validation ${validate.type} ${validate.min}..${validate.max} failed for parameter ${paramName}=%${format}\\n", ${param});
             return;
         }
 `
     }
 
-    if (validate.type === 'range' && type === 'int') {
+    if (validate.type === 'range' && (type === 'int' || type === 'float')) {
         rangeValidator('cd.' + param, param)
     } else if (validate.type === 'length' && type === 'str') {
         validator += `        int length__${param} = strlen(cd.${param});\n`
         rangeValidator('length__' + param, param)
-    } else if (validate.type === 'choice') {
+    } else if (validate.type === 'choice' && (type === 'int' || type === 'str')) {
         const compare = (aVar, bConst) => type === 'int' ? `${aVar} == ${bConst}` : `!strcmp(${aVar}, "${bConst}")`
         validator += '        if (!(\n            '
         validator += validate.options.map(option => compare('cd.' + param, option)).join('\n         || ')
+        const format = {
+            str: 's',
+            int: 'd',
+            float: 'lf'
+        }[type]
         validator += `)) {
-            printf("Validation ${validate.type} ${validate.options} failed for parameter ${param}=%${type === 'str' ? 's' : 'd'}\\n", cd.${param});
+            printf("Validation ${validate.type} ${validate.options} failed for parameter ${param}=%${format}\\n", cd.${param});
             return;
         }
 `
     } else {
-        throw `invalid validator for ${param}: ${JSON.stringify(validate)}`
+        throw `invalid validator for ${command}.${param}: ${JSON.stringify(validate)}`
     }
     return validator
 }
