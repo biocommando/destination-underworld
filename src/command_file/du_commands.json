@@ -702,6 +702,27 @@
                 "type": "range",
                 "min": 1
             }
+        },
+        "blood_stains_enabled": {
+            "field": "int",
+            "validate:field": {
+                "type": "choice",
+                "options": [0, 1]
+            }
+        },
+        "blast_powerup_perk_turret_enabled": {
+            "field": "int",
+            "validate:field": {
+                "type": "choice",
+                "options": [0, 1]
+            }
+        },
+        "blast_powerup_perk_timed_cluster_rate": {
+            "field": "int",
+            "validate:field": {
+                "type": "range",
+                "min": 1
+            }
         }
     }
 }

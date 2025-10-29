@@ -9,6 +9,7 @@
 #include "helpers.h"
 #include "game_playback.h"
 #include "vfx.h"
+#include "game_tuning.h"
 
 static const double expl_sin_cos_table[2][10] = {
     {0.19866933079506122, 0.7367955455941375, 0.9934909047357762,
@@ -131,7 +132,7 @@ void draw_map_floors(const World *world, int vibration_intensity)
                 }
             }
 
-            if (tile->is_blood_stained)
+            if (tile->is_blood_stained && get_tuning_params()->blood_stains_enabled)
             {
                 for (int j = 0; j < 10; j++)
                 {
@@ -393,8 +394,11 @@ void move_and_draw_body_parts(World *world)
                     bodypart->velocity *= friction;
                     bonesturn = bodypart->velocity > 1;
 
-                    ALLEGRO_COLOR blood_col = al_map_rgb(170 + rand() % 20, 10 + rand() % 8, 17 + rand() % 10);
-                    al_draw_line(bp_orig_x, bp_orig_y, bodypart->x, bodypart->y, blood_col, 3);
+                    if (get_tuning_params()->blood_stains_enabled)
+                    {
+                        ALLEGRO_COLOR blood_col = al_map_rgb(170 + rand() % 20, 10 + rand() % 8, 17 + rand() % 10);
+                        al_draw_line(bp_orig_x, bp_orig_y, bodypart->x, bodypart->y, blood_col, 3);
+                    }
                 }
 
                 if (bodypart->anim == 4)

@@ -48,6 +48,8 @@ blast_powerup_cost_brutal: "8"
 blast_powerup_projectile_speed: "0.5"
 blast_powerup_overpowered_blast_intensity: "16"
 blast_powerup_overpowered_blast_directions: "16"
+blast_powerup_perk_turret_enabled: "1"
+blast_powerup_perk_timed_cluster_rate: "16"
 
 overpriced_powerups_cost_increase: "2"
 boss_killing_xp_bonus: "500"
@@ -82,3 +84,5 @@ fast_potion_plr_speed_bonus_turbo: "2"
 
 perk_xp_base: "300"
 perk_xp_level_multiplier: "2"
+
+blood_stains_enabled: "1"

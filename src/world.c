@@ -26,6 +26,7 @@ void init_world(World *world)
 {
     init_spritesheet(world);
 
+    world->time_stamp = 0;
     world->kills = 0;
     world->play_boss_sound = 1;
 

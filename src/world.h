@@ -485,6 +485,8 @@ typedef struct
     LinkedList killed_enemy_stats;
     // List that manages all the other linked lists
     LinkedList *management_list;
+    // Incremented by one each frame
+    long time_stamp;
 } World;
 
 // Global state that is persisted over different game(...) calls.

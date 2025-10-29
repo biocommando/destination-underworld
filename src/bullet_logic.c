@@ -9,11 +9,12 @@
 #include "boss_logic.h"
 #include "duColors.h"
 #include "vfx.h"
+#include "game_tuning.h"
 #include <math.h>
 
 static inline void create_blast_powerup_explosion(const Bullet *bullet, World *world)
 {
-    if (world->plr.perks & PERK_IMPROVE_BLAST_POWERUP)
+    if (world->plr.perks & PERK_IMPROVE_BLAST_POWERUP && get_tuning_params()->blast_powerup_perk_turret_enabled)
     {
         Enemy *e = create_turret(world);
         e->x = bullet->x;
@@ -52,14 +53,11 @@ void bullet_logic(World *world, GlobalGameState *ggs)
 
                 break;
             }
-            int frame_cnt = bullet->y;
-            if (bullet->dx > 0.2 || bullet->dx < -0.2)
-                frame_cnt = bullet->x;
             if (rand() % 400 == 0)
                 create_flame_fx(bullet->x, bullet->y, world, &world->visual_fx);
-            if ((world->plr.perks & PERK_IMPROVE_BLAST_POWERUP) && bullet->bullet_type == BULLET_TYPE_CLUSTER)
+            if (j == 0 && (world->plr.perks & PERK_IMPROVE_BLAST_POWERUP) && bullet->bullet_type == BULLET_TYPE_CLUSTER)
             {
-                if (frame_cnt % 64 == 0)
+                if (world->time_stamp % get_tuning_params()->blast_powerup_perk_timed_cluster_rate == 0)
                     create_cluster_explosion(world, bullet->x, bullet->y, 4, 1, &world->plr);
             }
             if ((bullet->hurts_flags & BULLET_HURTS_PLAYER) && bullet_hit(&world->plr, bullet)) // Player gets hit

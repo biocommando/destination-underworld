@@ -50,6 +50,8 @@ typedef struct {
     double blast_powerup_projectile_speed; // 0.5
     int blast_powerup_overpowered_blast_intensity; // 16
     int blast_powerup_overpowered_blast_directions; // 16
+    int blast_powerup_perk_timed_cluster_rate; // 16
+    int blast_powerup_perk_turret_enabled; // 1
 
     int overpriced_powerups_cost_increase; // 2
     int boss_killing_xp_bonus; // 500
@@ -84,6 +86,8 @@ typedef struct {
 
     int perk_xp_base; // 300
     double perk_xp_level_multiplier; // 2
+
+    int blood_stains_enabled; // 1
 } GameTuningParams;
 
 const GameTuningParams *get_tuning_params();

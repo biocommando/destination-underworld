@@ -259,7 +259,6 @@ void game(GlobalGameState *ggs)
 
     int *record_mode = get_playback_mode();
     long playback_next_event_time_stamp = init_playback(&world, ggs, *record_mode);
-    long time_stamp = 0;
 
     read_level(&world, ggs->mission, 1);
     ggs->custom_next_mission_set = 0;
@@ -300,11 +299,11 @@ void game(GlobalGameState *ggs)
         }
 
         cleanup_bodyparts(&world, &world.visual_fx);
-        if (time_stamp % 6 == 0)
+        if (world.time_stamp % 6 == 0)
         {
             reset_sample_triggers();
         }
-        time_stamp++;
+        world.time_stamp++;
         draw_map_floors(&world, vibrations);
         move_and_draw_body_parts(&world);
         draw_wall_shadows(&world);
@@ -325,21 +324,21 @@ void game(GlobalGameState *ggs)
             if (*record_mode == RECORD_MODE_PLAYBACK)
             {
                 int has_more = 1;
-                if (time_stamp >= playback_next_event_time_stamp)
+                if (world.time_stamp >= playback_next_event_time_stamp)
                 {
                     key_press_mask = game_playback_get_key_mask();
                     game_playback_next();
                     playback_next_event_time_stamp = game_playback_get_time_stamp();
                     has_more = playback_next_event_time_stamp != -1;
                     LOG("Timestamp=%ld, keymask=0x%lx, Next timestamp: %ld\n",
-                        time_stamp, key_press_mask, playback_next_event_time_stamp);
+                        world.time_stamp, key_press_mask, playback_next_event_time_stamp);
                 }
                 if (!has_more)
                 {
                     world.visual_fx.hint.time_shows = 0;
                     trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-                    display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, time_stamp - 1);
+                    display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1);
 
                     if (!ggs->no_player_interaction)
                         wait_key_press(ALLEGRO_KEY_ENTER);
@@ -414,7 +413,7 @@ void game(GlobalGameState *ggs)
                 {
                     key_press_mask = new_key_press_mask;
 
-                    game_playback_add_key_event(time_stamp, key_press_mask);
+                    game_playback_add_key_event(world.time_stamp, key_press_mask);
                     game_playback_next();
                 }
             }
@@ -433,7 +432,7 @@ void game(GlobalGameState *ggs)
             world.visual_fx.hint.time_shows = 0;
             trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-            display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, time_stamp - 1);
+            display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1);
 
             if (*record_mode != RECORD_MODE_PLAYBACK)
                 wait_key_press(ALLEGRO_KEY_ENTER);
@@ -473,7 +472,7 @@ void game(GlobalGameState *ggs)
         draw_player_legend(&world, legend_x, legend_y);
 
         draw_hint(&world.visual_fx);
-        if (world.boss_fight && time_stamp % 3 == 0)
+        if (world.boss_fight && world.time_stamp % 3 == 0)
         {
             boss_logic(&world, 0);
         }
@@ -498,7 +497,7 @@ void game(GlobalGameState *ggs)
         if (world.plr.health > 0)
         {
             apply_game_screen_transform(vibrations);
-            if (time_stamp > 1) // Removes the glitch when starting the game; most visible when restarting the level
+            if (world.time_stamp > 1) // Removes the glitch when starting the game; most visible when restarting the level
                 al_flip_display();
         }
         else
@@ -549,12 +548,12 @@ void game(GlobalGameState *ggs)
     }
 
     if (*record_mode == RECORD_MODE_RECORD)
-        finalize_recording(time_stamp);
+        finalize_recording(world.time_stamp);
 
     if (ggs->setup_screenshot_buffer)
         screenshot(SCREENSHOT_ACT_DESTROY);
     if (*record_mode != RECORD_MODE_NONE)
-        write_recording_complete_state_file(&world, ggs, time_stamp);
+        write_recording_complete_state_file(&world, ggs, world.time_stamp);
 
     al_destroy_bitmap(world.spr);
     add_managed_list(NULL, &world.management_list);
