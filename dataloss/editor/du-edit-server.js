@@ -43,9 +43,18 @@ http.createServer((req,res) => {
                 })
                 return
             }
+            else if (cmd === 'mission-pack') {
+                if (param) {
+                    missionPack = param
+                    console.log('Using mission pack', missionPack)
+                }
+                res.end(missionPack)
+                return
+            }
             else
             {
                 res.end('unknown command')
+                return
             }
         }
         if (url === '/')

@@ -69,6 +69,9 @@
 </head>
 
 <body>
+    Pack:
+    <span id="mission-pack"></span>
+    <button onclick="api('mission-pack')">Change</button>
     <button onclick="clearScripts(),clearMap(),renderMap()">New</button>
     <button onclick="api('save')">Save</button>
     <button onclick="api('load')">Load</button>
@@ -416,9 +419,21 @@ no_more_levels  -->
         clearScripts()
         renderMap();
 
-        let mission = ''
+        let mission = '', missionPack = 'core-pack'
 
         function api(cmd) {
+            if (cmd === 'mission-pack') {
+                const mp = prompt('Mission pack?', missionPack)
+                if (mp) {
+                    fetch('/api/mission-pack/' + mp)
+                        .then(x => x.text())
+                        .then(t => {
+                            missionPack = t
+                            updateMissionPack()
+                        })
+                }
+                return
+            }
             mission = prompt('Mission? (e.g. 1 or 1-mode-6)', mission)
             if (!mission) return
             if (cmd === 'save') {
@@ -439,6 +454,12 @@ no_more_levels  -->
                 })
             }
         }
+
+        function updateMissionPack() {
+            document.getElementById('mission-pack').innerText = missionPack
+        }
+
+        updateMissionPack()
 
         // Hide standalone edit controls when server backend is used
         fetch('/').then(x => {
