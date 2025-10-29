@@ -1,0 +1,10 @@
+# mini bot
+type="0" turret="0"  rate="120" health="1"  gold="0"  fast="1"  hurts-monsters="0"  potion-for-potion-only="5"
+# humanoid robot
+type="1" turret="0"  rate="50" health="3"  gold="0"  fast="1"  hurts-monsters="0"  potion-for-potion-only="2"
+# titan
+type="2" turret="0"  rate="60" health="12"  gold="1"  fast="0"  hurts-monsters="0"  potion-for-potion-only="4"
+# mechanical frog
+type="3" turret="0"  rate="15" health="8"  gold="1"  fast="0"  hurts-monsters="0"  potion-for-potion-only="3"
+# flying ball
+type="4" turret="0"  rate="2"  health="30"  gold="3"  fast="0"  hurts-monsters="0"  potion-for-potion-only="3"

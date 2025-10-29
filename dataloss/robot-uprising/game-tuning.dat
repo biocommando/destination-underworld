@@ -1,0 +1,88 @@
+max_health_with_perk: "12"
+max_health: "10"
+
+turret_ammo: "128"
+turret_shots: "8"
+turret_reload: "50"
+turret_move: "20"
+turret_health: "20"
+
+kill_ammo_bonus: "10"
+ammo_cap: "20"
+
+kill_health_bonus: "1"
+kill_health_cap: "5"
+
+instant_heal_potion_drop_health_threshold: "1"
+potion_turbo_mode_effect_amount: "2"
+
+initial_potion_healing_counter: "25"
+initial_potion_shield_counter: "15"
+
+potion_duration_big_boost: "250"
+potion_duration_mini_boost: "50"
+
+multiplied_gold_mode_initial_gold: "50"
+multiplied_gold_mode_cluster_strength: "4"
+cluster_strength: "4"
+
+min_starting_ammo: "10"
+min_starting_health: "3"
+initial_gold_cap: "5"
+
+healing_powerup_amount: "5"
+healing_powerup_amount_brutal: "4"
+healing_powerup_perk_bonus: "3"
+healing_powerup_multiplier_overpowered: "3"
+healing_powerup_cost: "1"
+protection_powerup_cost: "2"
+protection_powerup_amount: "3"
+protection_powerup_perk_bonus: "3"
+turret_powerup_cost: "2"
+turret_powerup_cost_brutal: "3"
+turret_powerup_perk_blast_intensity: "2"
+turret_powerup_perk_blast_directions: "32"
+turret_powerup_overpowered_speed_boost: "1.2"
+blast_powerup_cost: "3"
+blast_powerup_cost_brutal: "3"
+blast_powerup_projectile_speed: "0.2"
+blast_powerup_overpowered_blast_intensity: "2"
+blast_powerup_overpowered_blast_directions: "16"
+blast_powerup_perk_turret_enabled: "0"
+blast_powerup_perk_timed_cluster_rate: "16"
+
+overpriced_powerups_cost_increase: "2"
+boss_killing_xp_bonus: "500"
+
+brutal_enemy_health_bonus: "1"
+
+fast_potion_reload_divider: "2"
+doubled_shots_shot_multiplier: "2"
+boost_potion_shot_multiplier: "2"
+bullet_spread_multiplier: "1"
+
+breakable_wall_durability: "5"
+
+weapon_1_num_shots: "1"
+weapon_1_rate: "15"
+weapon_1_brutal_shots: "1"
+weapon_1_brutal_rate: "15"
+
+weapon_2_num_shots: "3"
+weapon_2_rate: "60"
+weapon_2_brutal_shots: "3"
+weapon_2_brutal_rate: "60"
+
+undetected_enemy_move_probability: "30"
+
+enemy_speed: "1"
+fast_enemy_speed: "3"
+
+plr_speed: "4"
+fast_potion_plr_speed_bonus: "1"
+fast_potion_plr_speed_bonus_turbo: "2"
+
+perk_xp_base: "800"
+perk_xp_level_multiplier: "2.5"
+
+blood_stains_enabled: "0"
