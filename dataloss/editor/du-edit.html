@@ -465,6 +465,32 @@ no_more_levels  -->
         fetch('/').then(x => {
             document.getElementById('standalone-edits').innerHTML = ''
         })
+
+        document.addEventListener('keypress', e => {
+            if (e.target !== document.body)
+                return
+            if (e.code === 'KeyA')
+                document.getElementById('edit-mode').value = 'add'
+            else if (e.code === 'KeyS')
+                document.getElementById('edit-mode').value = 'select'
+            else if (e.code === 'KeyD')
+                document.getElementById('edit-mode').value = 'delete'
+            else if (e.code === 'KeyF')
+                document.getElementById('edit-mode').value = 'fill'
+            else if (e.code === 'KeyR')
+                document.getElementById('edit-mode').value = 'replace'
+            else if (e.code === 'KeyP')
+                document.getElementById('edit-mode').value = 'pick'
+            else if (e.code === 'KeyW')
+            {
+                const paint = document.getElementById('paint')
+                if (Number(paint.value) !== 46)
+                    paint.value = 46
+                else
+                    paint.value = 120
+                cursor.paintId = Number(paint.value)
+            }
+        })
     </script>
 </body>
 
