@@ -43,13 +43,17 @@ module.exports = v => {
     fs.mkdirSync(`${dest}`)
     fs.mkdirSync(`${dest}dataloss`)
     fs.mkdirSync(`${dest}dataloss/midi-music`)
-    fs.mkdirSync(`${dest}dataloss/core-pack`)
     fs.mkdirSync(`${dest}dataloss/editor`)
     fs.mkdirSync(`${dest}dataloss/editor/edit-res`)
 
+    function copyMissionPackEssentials(packName) {
+        fs.mkdirSync(`${dest}dataloss/${packName}`)
+        starCopy('dataloss/' + packName, /^mission.*$/, `${dest}dataloss/${packName}`)
+        starCopy('dataloss/' + packName, /^(enemy-properties|arenas|help|game-tuning|sprites|sounds)\.dat$/, `${dest}dataloss/${packName}`)
+    }
 
-    starCopy('dataloss/core-pack', /^mission.*$/, `${dest}dataloss/core-pack`)
-    starCopy('dataloss/core-pack', /^(enemy-properties|arenas|help)\.dat$/, `${dest}dataloss/core-pack`)
+    copyMissionPackEssentials('core-pack')
+
     fs.copyFileSync('dataloss/core-pack/best_times.dat.template', `${dest}dataloss/core-pack/best_times.dat`)
     
     const mpAuthOut = v.sh(`${v.mpAuthEx} core-pack ./dataloss/core-pack/ no-debug-prints`).toString()
@@ -67,6 +71,10 @@ module.exports = v => {
 
     starCopy('dataloss', /^(sel|warp|bt[1-2]|select_weapon|throw|healing|rune_of_protection|turret|blast|spawn|potion_(shield|stop|fast|boost|heal)|ex[1-6]|die[1-6]|wet_[1-3]|menusel|menuchg)\.ogg$/, `${dest}dataloss`)
     
+    copyMissionPackEssentials('robot-uprising')
+    starCopy('dataloss/robot-uprising', /^(disassemble(|2)|parts_scatter)\.ogg$/, `${dest}dataloss/robot-uprising`)
+    starCopy('dataloss/robot-uprising', /^sprites\.png$/, `${dest}dataloss/robot-uprising`)
+
     starCopy('dataloss/midi-music', /\.(mid|ini)$/, `${dest}dataloss/midi-music`)
     renameMidiFiles(`${dest}dataloss/midi-music`)
 
@@ -74,6 +82,7 @@ module.exports = v => {
 
     if (v.isWindows) {
         starCopy(`${v.allegro_path}/bin`, /allegro_monolith-5.2/, dest)
+        fs.writeFileSync(`${dest}RobotUprising.bat`, 'DestinationUnderworld.exe --general--mission-pack=robot-uprising')
     }
     starCopy(`.`, /^DestinationUnderworld(\.exe)?$/, dest)
 }
