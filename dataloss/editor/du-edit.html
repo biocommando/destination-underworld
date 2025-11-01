@@ -453,7 +453,7 @@ no_more_levels  -->
         function updateMissionPack(newpack) {
             let url = '/api/mission-pack'
             if (newpack)
-                url = '/' + newpack
+                url += '/' + newpack
             fetch(url)
                 .then(x => x.text())
                 .then(t => {

@@ -1,7 +1,7 @@
 function bossToIni(fileData) {
 const fs = require('fs')
 
-let hasInitProperties = true
+let hasInitProperties = false
 const main = {
     health: 50,
     fire_rate: 10,
@@ -76,6 +76,18 @@ const set_waypoint_sequence = seq => {
 
 const implicit_arena_game_mode = () => game_mode.arena = 1
 
+const modify_rect = (trig, x, y, x2, y2, terrain_type) => {
+    const result = []
+    for (let _x = x; _x <= x2; _x++)
+    {
+        for (let _y = y; _y <= y2; _y++)
+        {
+            result.push(`on ${trig} do modify_terrain: x = ${_x}, y = ${_y}, terrain_type = ${terrain_type}`)
+        }
+    }
+    return result
+}
+
 const intermediateBossFileForDebug = []
 let lineProcessingDone = false
 
@@ -126,7 +138,7 @@ try {
                 let trigger_value = x.split(':')[1].split(' do ')[0].trim()
                 if (trigger_type === 'waypoint_reached') {
                     let wp = waypoints.find(y => y.name === trigger_value)
-                    const coords = x.split(' do ')[1].split(':')[1]
+                    const coords = trigger_value
                     if (!wp && coords.split(';')[1]) {
                         wp = { name: coords.trim(), x: coords.split(';')[0].trim(), y: coords.split(';')[1].trim(), value: getNextId() }
                         waypoints.push(wp)
@@ -177,6 +189,7 @@ try {
                 }
                 events.push(evt)
             } else if (x.startsWith('set ')) {
+                hasInitProperties = true
                 let mainName = 'main'
                 x = x.replace(/\[([a-zA-Z0-9_]*)\]/, (_, name) => {
                     mainName = name
