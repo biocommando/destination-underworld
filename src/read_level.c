@@ -87,11 +87,11 @@ static inline void place_lev_object(World *world, int x, int y, int id, int room
             world->map[room_to - 1][x][y].data = tile.data;
         }
     }
-    else if (id >= 200 && id <= 205)
+    else if (id >= LEVEL_OBJ_ENEMY_TYPE_START && id <= LEVEL_OBJ_ENEMY_TYPE_START + ENEMY_TYPE_COUNT)
     {
         if (!world->rooms_visited[room_to - 1])
         {
-            spawn_enemy(x, y, id - 200, room_to, world);
+            spawn_enemy(x, y, id - LEVEL_OBJ_ENEMY_TYPE_START, room_to, world);
         }
     }
     else if (id >= 300 && id <= 306)
@@ -118,6 +118,8 @@ void dispatch__handle_read_level_header(struct read_level_header_DispatchDto *dt
 void dispatch__handle_read_level_object(struct read_level_object_DispatchDto *dto)
 {
     place_lev_object(dto->state->world, dto->x, dto->y, dto->id, dto->room);
+    if (dto->id == LEVEL_OBJ_BOSS_ID)
+        dto->state->has_boss = 1;
 }
 
 void dispatch__handle_read_level_condition(struct read_level_condition_DispatchDto *dto)
@@ -242,8 +244,18 @@ static inline void read_level_cmd_file(World *world, int room_to, const char *fi
         world->map_wall_color[1] = g;
         world->map_wall_color[2] = b;
     }
+    var = get_var("floor_color_base", &variables);
+    if (var)
+    {
+        int r = 1, g = 1, b = 1;
+        sscanf(var, "%d %d %d", &r, &g, &b);
+        LOG_TRACE("Floor color %d %d %d\n", r, g, b);
+        world->map_floor_color_base[0] = r ? 1 : 0;
+        world->map_floor_color_base[1] = g ? 1 : 0;
+        world->map_floor_color_base[2] = b ? 1 : 0;
+    }
     var = get_var("mute_bosstalk", &variables);
-    world->play_boss_sound = var ? 0 : 1;
+    world->play_boss_sound = var ? 0 : read_level_state.has_boss;
     var = get_var("story_image", &variables);
     if (var)
     {
@@ -284,6 +296,9 @@ int read_level(World *world, int mission, int room_to)
         world->map_wall_color[1] = 1 / 2.0f;
         world->map_wall_color[2] = 2.0f / 5;
     }
+    world->map_floor_color_base[0] = 1;
+    world->map_floor_color_base[1] = 1;
+    world->map_floor_color_base[2] = 1;
 
     char mission_name[256];
     sprintf(mission_name, DATADIR "%s/mission%d", get_game_settings()->mission_pack, mission);

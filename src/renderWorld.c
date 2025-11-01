@@ -99,6 +99,10 @@ static const int shadow_base_col = floor_base_col - 44;
 void draw_map_floors(const World *world, int vibration_intensity)
 {
     int lava_fluctuations = progress_lava_fluctuations();
+#define FLOOR(shade)                                         \
+    al_map_rgb(world->map_floor_color_base[0] ? (shade) : 0, \
+               world->map_floor_color_base[1] ? (shade) : 0, \
+               world->map_floor_color_base[2] ? (shade) : 0)
     for (int y = 0; y < MAPMAX_Y; y++)
     {
         for (int x = 0; x < MAPMAX_X; x++)
@@ -112,11 +116,11 @@ void draw_map_floors(const World *world, int vibration_intensity)
             // tile is always non-null
             if (tile->is_floor || tile->is_exit_point || tile->is_exit_level)
             {
-                ALLEGRO_COLOR drawn_color = GRAY(floorcol);
+                ALLEGRO_COLOR drawn_color = FLOOR(floorcol);
 
                 if (tile->is_exit_point)
                 {
-                    drawn_color = GRAY(shadowcol);
+                    drawn_color = FLOOR(shadowcol);
                 }
                 if (tile->is_exit_level)
                 {
@@ -126,7 +130,7 @@ void draw_map_floors(const World *world, int vibration_intensity)
                 if (!tile->is_exit_level)
                 {
                     double multiplier = 1.2 + expl_sin_cos_table[0][(int)(x * 0.66)] * 0.15;
-                    ALLEGRO_COLOR pattern_color = GRAY(floorcol * multiplier);
+                    ALLEGRO_COLOR pattern_color = FLOOR(floorcol * multiplier);
                     al_draw_filled_rectangle((x)*TILESIZE, (y)*TILESIZE, x * TILESIZE + HALFTILESIZE, y * TILESIZE + HALFTILESIZE, pattern_color);
                     al_draw_filled_rectangle((x)*TILESIZE + HALFTILESIZE, (y)*TILESIZE + HALFTILESIZE, (x + 1) * TILESIZE, (y + 1) * TILESIZE, pattern_color);
                 }
@@ -155,8 +159,8 @@ void draw_map_floors(const World *world, int vibration_intensity)
                 {
                     double angle = (lava_fluctuations + i * 20) * ALLEGRO_PI / 50;
                     draw_sprite_animated_centered(world->spr, SPRITE_ID_SPARKLES,
-                                                    TO_PIXEL_COORDINATES(x) + sin(angle) * 10,
-                                                    TO_PIXEL_COORDINATES(y) + cos(angle) * 10, (rand() % 4), 0);
+                                                  TO_PIXEL_COORDINATES(x) + sin(angle) * 10,
+                                                  TO_PIXEL_COORDINATES(y) + cos(angle) * 10, (rand() % 4), 0);
                 }
             }
         }
@@ -240,7 +244,7 @@ void draw_player_legend(const World *world, int x, int y)
                 weapon_text = "Leech";
             if (world->plr.shots == 4)
                 weapon_text = "Shield";
-    
+
             if (world->plr.reload)
                 weapon_text = "Wait";
         }
@@ -413,7 +417,7 @@ void move_and_draw_body_parts(World *world)
                 if (in_air)
                 {
                     draw_sprite_scaled_animated_centered(world->spr, SPRITE_ID_BODY_PART, (int)bodypart->x, (int)bodypart->y,
-                                                bodypart->anim > 1, bodypart->type - 1, bodypart->z * 0.03 + 1);
+                                                         bodypart->anim > 1, bodypart->type - 1, bodypart->z * 0.03 + 1);
                     bodypart->z += bodypart->dz;
                     if (bodypart->z < 0 && bodypart->dz < -2)
                     {
@@ -426,7 +430,7 @@ void move_and_draw_body_parts(World *world)
                 else
                 {
                     draw_sprite_animated_centered(world->spr, SPRITE_ID_BODY_PART, (int)bodypart->x, (int)bodypart->y,
-                                                bodypart->anim > 1, bodypart->type - 1);
+                                                  bodypart->anim > 1, bodypart->type - 1);
                 }
             }
         }
@@ -491,7 +495,7 @@ int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
         {
             struct explosion_circle *c = &ex->circles[j];
             if (c->r < .5)
-             continue;
+                continue;
 
             draw_explosion_circle(c->loc.x + ex->x, c->loc.y + ex->y, c->i * .9, c->r);
             draw_explosion_circle(c->loc.x + ex->x, c->loc.y + ex->y, c->i, c->r * .8);
@@ -596,9 +600,9 @@ void display_level_info(const World *world, int mission, int next_mission, int m
         float time2 = best_times.times[2];
 
         al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Time: %.1f secs. Best times: %s%.1f, %s%.1f, %s%.1f",
-                    time_secs, beat_idx == 0 ? "*" : "", time0,
-                    beat_idx == 1 ? "*" : "", time1,
-                    beat_idx == 2 ? "*" : "", time2);
+                      time_secs, beat_idx == 0 ? "*" : "", time0,
+                      beat_idx == 1 ? "*" : "", time1,
+                      beat_idx == 2 ? "*" : "", time2);
         const int *record_mode = get_playback_mode();
         if (beat_idx >= 0 && *record_mode != RECORD_MODE_PLAYBACK)
         {
@@ -694,7 +698,7 @@ void show_ingame_info_screen(const World *world)
         int num_enemies = 0;
         const Enemy *enm;
         // Casting const away is ok as list is not modified
-        LINKED_LIST_FOR_EACH((LinkedList*)&world->enm, Enemy, enm, 0)
+        LINKED_LIST_FOR_EACH((LinkedList *)&world->enm, Enemy, enm, 0)
         {
             if (enm->alive && enm->roomid == i + 1 && enm != world->boss)
                 num_enemies++;
@@ -758,7 +762,7 @@ void show_ingame_info_screen(const World *world)
         int num_enemies = 0;
         const Enemy *enm;
         // Casting const away is ok as list is not modified
-        LINKED_LIST_FOR_EACH((LinkedList*)&world->enm, const Enemy, enm, 0)
+        LINKED_LIST_FOR_EACH((LinkedList *)&world->enm, const Enemy, enm, 0)
         {
             if (enm->alive && enm->sprite == et)
                 num_enemies++;

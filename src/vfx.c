@@ -186,7 +186,7 @@ void create_sparkles(int x, int y, int count, int color, int circle_duration, Wo
 void spawn_body_parts(const Enemy *enm, WorldFx *world_fx)
 {
     BodyPartsContainer *bp_container = LINKED_LIST_ADD(&world_fx->bodypart_container, BodyPartsContainer);
-    if (world_fx->bodypart_container.count > ENEMYCOUNT)
+    if (world_fx->bodypart_container.count > BODYPART_CONTAINER_LIMIT)
         linked_list_remove(&world_fx->bodypart_container, world_fx->bodypart_container.first);
     
     bp_container->roomid = enm->roomid;

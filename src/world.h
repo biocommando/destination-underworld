@@ -466,6 +466,10 @@ typedef struct
     // RGB color for map's walls
     float map_wall_color[3];
 
+    // RGB base colors for floor.
+    // 0 = don't use the color, 1 = use the color
+    int map_floor_color_base[3];
+
     // When this reaches zero, all potion effect flags are cleared.
     int potion_duration;
     // All active effects; the potion effects stack on each other so

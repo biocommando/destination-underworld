@@ -8,4 +8,5 @@ typedef struct
     BossFightConfig *bfconfig;
     BossFightEventConfig *bfevent;
     VarState *variables;
+    int has_boss;
 } LevelState;

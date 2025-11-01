@@ -28,7 +28,7 @@ void init_world(World *world)
 
     world->time_stamp = 0;
     world->kills = 0;
-    world->play_boss_sound = 1;
+    world->play_boss_sound = 0;
 
     for (int i = 0; i < ROOMCOUNT; i++)
     {
