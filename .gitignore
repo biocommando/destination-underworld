@@ -9,11 +9,11 @@ screenshot*_*.png
 **/Old/
 allegro/
 *.dll
-dataloss/**/save.dat
-dataloss/**/best_times.dat
-dataloss/**/arena_highscores.dat
-dataloss/**/auth.dat
-dataloss/recording--level-complete-state.dat
+data/**/save.dat
+data/**/best_times.dat
+data/**/arena_highscores.dat
+data/**/auth.dat
+data/recording--level-complete-state.dat
 environment-release.txt
 local/
 open-du-edit.html

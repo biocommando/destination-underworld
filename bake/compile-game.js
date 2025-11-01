@@ -1,5 +1,5 @@
 module.exports = v => {
-    v.sh(`${v.mpAuthEx} core-pack ./dataloss/core-pack/ no-debug-prints > ./dataloss/core-pack/auth.dat`)
+    v.sh(`${v.mpAuthEx} core-pack ./data/core-pack/ no-debug-prints > ./data/core-pack/auth.dat`)
     v.sh(`cd src && ${v.compiler} ${v.compiler_flags} ${v.auth_setup} ` +
         `-c *.c sha1/du_dmac.c command_file/*.c ${v.allegro_cflags}`)
     v.sh(`${v.compiler} ${v.compiler_flags} ${v.auth_setup} ${v.objFiles} ` +

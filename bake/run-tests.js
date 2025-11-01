@@ -18,9 +18,9 @@ module.exports = v => {
 // This is unreliable and not very useful. Improve if changes needed to synth that need some extra verification beyond unit tests and 
 // just listening to the result.
 /*    console.log('*** Run synth tests ***')
-    v.sh(`cd src/synth && ${prefix}synth_test_main.exe ../../dataloss/midi-music/eetteritekno.mid`)
+    v.sh(`cd src/synth && ${prefix}synth_test_main.exe ../../data/midi-music/eetteritekno.mid`)
     const { createHash } = require('crypto');
-    const sha256 = createHash('sha256').update(v.fs.readFileSync('dataloss/midi-music/eetteritekno.mid.wav')).digest('hex');
+    const sha256 = createHash('sha256').update(v.fs.readFileSync('data/midi-music/eetteritekno.mid.wav')).digest('hex');
     const expected_sha256 = '003caeb9b5b2fdf893775193489c25ee51c7a9b97a998264d3814c107bc52658'
     if (sha256 === expected_sha256)
         console.log('Synth test OK')

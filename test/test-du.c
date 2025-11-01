@@ -25,7 +25,7 @@ int play_one()
     system(cmd);
     FILE *f1, *f2;
     f1 = fopen(complete_state, "r");
-    f2 = fopen("dataloss/recording--level-complete-state.dat", "r");
+    f2 = fopen("data/recording--level-complete-state.dat", "r");
     int line = 0;
     int ok = 1;
     while (!feof(f1))

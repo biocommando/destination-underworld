@@ -412,7 +412,7 @@ doc_end
 `)
 
 fs.writeFileSync(packName + '/readme.txt', `Running the game with this custom mission pack:
-1. Copy the directory ${packName} under dataloss directory
+1. Copy the directory ${packName} under data directory
 2. Run the ${packName}.bat file`)
 
 fs.writeFileSync(packName + '/' + packName + '.bat', `

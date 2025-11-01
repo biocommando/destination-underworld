@@ -43,44 +43,44 @@ module.exports = v => {
     }
 
     fs.mkdirSync(`${dest}`)
-    fs.mkdirSync(`${dest}dataloss`)
-    fs.mkdirSync(`${dest}dataloss/midi-music`)
-    fs.mkdirSync(`${dest}dataloss/editor`)
-    fs.mkdirSync(`${dest}dataloss/editor/edit-res`)
+    fs.mkdirSync(`${dest}data`)
+    fs.mkdirSync(`${dest}data/midi-music`)
+    fs.mkdirSync(`${dest}data/editor`)
+    fs.mkdirSync(`${dest}data/editor/edit-res`)
 
     function copyMissionPackEssentials(packName) {
-        fs.mkdirSync(`${dest}dataloss/${packName}`)
-        starCopy('dataloss/' + packName, /^mission.*$/, `${dest}dataloss/${packName}`)
-        starCopy('dataloss/' + packName, /^(enemy-properties|arenas|help|game-tuning|sprites|sounds)\.dat$/, `${dest}dataloss/${packName}`)
+        fs.mkdirSync(`${dest}data/${packName}`)
+        starCopy('data/' + packName, /^mission.*$/, `${dest}data/${packName}`)
+        starCopy('data/' + packName, /^(enemy-properties|arenas|help|game-tuning|sprites|sounds)\.dat$/, `${dest}data/${packName}`)
     }
 
     copyMissionPackEssentials('core-pack')
 
-    fs.copyFileSync('dataloss/core-pack/best_times.dat.template', `${dest}dataloss/core-pack/best_times.dat`)
+    fs.copyFileSync('data/core-pack/best_times.dat.template', `${dest}data/core-pack/best_times.dat`)
     
-    const mpAuthOut = v.sh(`${v.mpAuthEx} core-pack ./dataloss/core-pack/ no-debug-prints`).toString()
-    fs.writeFileSync(`${dest}dataloss/core-pack/auth.dat`, mpAuthOut)
+    const mpAuthOut = v.sh(`${v.mpAuthEx} core-pack ./data/core-pack/ no-debug-prints`).toString()
+    fs.writeFileSync(`${dest}data/core-pack/auth.dat`, mpAuthOut)
 
-    starCopy('dataloss/editor', /\.(md|js|json|html)$/, `${dest}dataloss/editor`)
-    starCopy('dataloss/editor/edit-res', /./, `${dest}dataloss/editor/edit-res`)
+    starCopy('data/editor', /\.(md|js|json|html)$/, `${dest}data/editor`)
+    starCopy('data/editor/edit-res', /./, `${dest}data/editor/edit-res`)
 
-    starCopy('dataloss', /^(sprites|sounds|settings)\.dat$/, `${dest}dataloss`)
+    starCopy('data', /^(sprites|sounds|settings)\.dat$/, `${dest}data`)
 
-    starCopy('dataloss', /^white-rabbit\.TTF(-license\.txt)?$/, `${dest}dataloss`)
+    starCopy('data', /^white-rabbit\.TTF(-license\.txt)?$/, `${dest}data`)
 
-    starCopy('dataloss', /^sprites\.png$/, `${dest}dataloss`)
-    starCopy('dataloss', /^(ending|hell)\.jpg$/, `${dest}dataloss`)
+    starCopy('data', /^sprites\.png$/, `${dest}data`)
+    starCopy('data', /^(ending|hell)\.jpg$/, `${dest}data`)
 
-    starCopy('dataloss', /^(sel|warp|bt[1-2]|select_weapon|throw|healing|rune_of_protection|turret|blast|spawn|potion_(shield|stop|fast|boost|heal)|ex[1-6]|die[1-6]|wet_[1-3]|menusel|menuchg)\.ogg$/, `${dest}dataloss`)
+    starCopy('data', /^(sel|warp|bt[1-2]|select_weapon|throw|healing|rune_of_protection|turret|blast|spawn|potion_(shield|stop|fast|boost|heal)|ex[1-6]|die[1-6]|wet_[1-3]|menusel|menuchg)\.ogg$/, `${dest}data`)
     
     copyMissionPackEssentials('robot-uprising')
-    starCopy('dataloss/robot-uprising', /^(disassemble(|2)|parts_scatter)\.ogg$/, `${dest}dataloss/robot-uprising`)
-    starCopy('dataloss/robot-uprising', /^sprites\.png$/, `${dest}dataloss/robot-uprising`)
+    starCopy('data/robot-uprising', /^(disassemble(|2)|parts_scatter)\.ogg$/, `${dest}data/robot-uprising`)
+    starCopy('data/robot-uprising', /^sprites\.png$/, `${dest}data/robot-uprising`)
 
-    starCopy('dataloss/midi-music', /\.(mid|ini)$/, `${dest}dataloss/midi-music`)
-    renameMidiFiles(`${dest}dataloss/midi-music`)
+    starCopy('data/midi-music', /\.(mid|ini)$/, `${dest}data/midi-music`)
+    renameMidiFiles(`${dest}data/midi-music`)
 
-    starCopy('dataloss', /^wt_sample_slot_\d*\.wav$/, `${dest}dataloss`)
+    starCopy('data', /^wt_sample_slot_\d*\.wav$/, `${dest}data`)
 
     if (v.isWindows) {
         starCopy(`${v.allegro_path}/bin`, /allegro_monolith-5.2/, dest)

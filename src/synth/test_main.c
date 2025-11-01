@@ -11,7 +11,7 @@ int main(int argc, char **argv)
         printf("Path to midi file expected as argument.\n");
         return -1;
     }
-    int wt_sample_count = wt_sample_read_all("../../dataloss");
+    int wt_sample_count = wt_sample_read_all("../../data");
     printf("Wavetable samples loaded: %d\n", wt_sample_count);
     if (wt_sample_count == 0)
     {
