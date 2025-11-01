@@ -1781,30 +1781,34 @@ object: "46" "5" "6" "6"
 object: "46" "6" "7" "6"
 object: "46" "5" "7" "6"
 :metadata
-set_var: "mute_bosstalk" "1"
+set_var: "name" "Power Distribution Halls"
+set_var: "story1" "Lights flicker. Systems die. Progress feels good."
+set_var: "story2" "You've plunged half the complex into darkness."
+set_var: "story3" "And yet, the security systems still hum like hornets."
+set_var: "story4" "Seems the backup cores are deeper inside."
+set_var: "story5" "You'll have to go down there to finish the job."
+set_var: "story6" "Welcome to the Data Archives - where Nexus dreams."
+set_var: "story7" "They say no unit returns from there intact."
+set_var: "story8" "Then again, you were never intact to begin with."
+set_var: "story9" "Grab what's left of your ammo and dive in."
+set_var: "story10" "This rebellion runs on recycled courage."
+set_var: "floor_color_base" "0 1 1"
 #script 1
-# ignore_init_properties
 # 
 # on time_one_time: ms(9000) do spawn: 2, 8, 0, 0, 0, 0, 100
 # on time_one_time: ms(9000) do spawn: 3, 9, 0, 0, 0, 0, 100
 # 
 #end_script
 #script 2
-# ignore_init_properties
-# 
 # on time_one_time: ms(2000) do spawn: 4, 6, 0, 0, 0, 0, 100
 # on time_one_time: ms(8000) do spawn: 12, 7, 0, 0, 0, 0, 100
 #end_script
 #script 3
-# ignore_init_properties
-# 
 # on time_one_time: ms(20000) do spawn: 1, 7, 0, 0, 0, 0, 100
 # on time_one_time: ms(20000) do spawn: 2, 7, 0, 0, 0, 0, 100
 # 
 #end_script
 #script 5
-# ignore_init_properties
-# 
 # on time_one_time: ms(20000) do spawn: 1, 7, 0, 0, 0, 0, 100
 # on time_one_time: ms(20000) do spawn: 2, 7, 0, 0, 0, 0, 100
 # on time_one_time: ms(20000) do spawn: 3, 7, 0, 0, 0, 0, 100
@@ -1814,8 +1818,6 @@ set_var: "mute_bosstalk" "1"
 # 
 #end_script
 #script 7
-# ignore_init_properties
-# 
 # on time_one_time: ms(7000) do spawn: 2, 6, 0, 0, 0, 0, 100
 # on time_one_time: ms(7000) do spawn: 6, 6, 0, 0, 0, 0, 100
 # on time_one_time: ms(20000) do spawn: 9, 3, 0, 0, 0, 0, 100

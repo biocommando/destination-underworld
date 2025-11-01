@@ -1755,25 +1755,27 @@ object: "120" "10" "1" "7"
 object: "120" "10" "2" "7"
 object: "120" "10" "3" "7"
 :metadata
-set_var: "name" "Oil Refinery"
-set_var: "mute_bosstalk" "1"
-set_var: "story1" "Now that you have destroyed the oil refinery, it has really"
-set_var: "story2" "pissed up the bad guys! You enter the autonomous factory,"
-set_var: "story3" "wanting to put an end to this all..."
+set_var: "name" "Decommissioning Bay"
+set_var: "story1" "Well, that was messy. You've survived the Decom Bay."
+set_var: "story2" "Apparently, 'scheduled maintenance' meant execution."
+set_var: "story3" "The smell of burnt lubricant lingers in the air."
+set_var: "story4" "Ahead lies the Assembly Sector - where it all began."
+set_var: "story5" "They're still building more of your kind in there."
+set_var: "story6" "Guess it's time to cancel production permanently."
+set_var: "story7" "Maybe you'll even find a spare arm that fits."
+set_var: "story8" "Or just more angry bots to weld into scrap."
+set_var: "story9" "Either way, you're not done yet."
+set_var: "story10" "Forward, defective unit. Forward to glory."
+set_var: "floor_color_base" "1 0 0"
 #script 1
-# ignore_init_properties
+# 
 #end_script
 #script 2
-# ignore_init_properties
-# on kill_count: 4 do modify_terrain: x = 8, y = 4, terrain_type = floor
-# on kill_count: 4 do modify_terrain: x = 8, y = 5, terrain_type = floor
-# on kill_count: 4 do modify_terrain: x = 8, y = 6, terrain_type = floor
-# on kill_count: 10 do modify_terrain: x = 7, y = 2, terrain_type = floor
-# on kill_count: 10 do modify_terrain: x = 8, y = 2, terrain_type = floor
-# on kill_count: 10 do modify_terrain: x = 9, y = 2, terrain_type = floor
+# {# modify_rect('kill_count: 4', 8, 4, 8, 6, 'floor') #}
+# {# modify_rect('kill_count: 10', 7, 2, 9, 2, 'floor') #}
+# 
 #end_script
 #script 3
-# ignore_init_properties
 # on positional_trigger: 0 do spawn: 8, 4, 0, 100, 0, 0, 0
 # on positional_trigger: 0 do spawn: 8, 6, 0, 100, 0, 0, 0
 # on positional_trigger: 0 do spawn: 8, 8, 0, 100, 0, 0, 0
@@ -1796,12 +1798,15 @@ set_var: "story3" "wanting to put an end to this all..."
 # on kill_count: 16 do modify_terrain: x = 12, y = 4, terrain_type = floor
 #end_script
 #script 4
-# ignore_init_properties
 # on positional_trigger: 0 do modify_terrain: x = 1, y = 9, terrain_type = floor
 #end_script
 #script 7
-# ignore_init_properties
 # on kill_count: 38 do modify_terrain: x = 1, y = 4, terrain_type = floor
+#end_script
+#script 8
+# {# modify_rect('kill_count: 1', 10, 6, 10, 10, 'floor') #}
+# {# modify_rect('kill_count: 2', 5, 10, 10, 10, 'floor') #}
+# {# modify_rect('kill_count: 4', 5, 6, 5, 10, 'floor') #}
 #end_script
 script_start: "1"
 script_line: "end"
@@ -1884,4 +1889,54 @@ script_start: "7"
 script_line: "event"
 script_line: "event_trigger kill_count 38"
 script_line: "event_action modify_terrain 1 4 0 0 0 0 0 floor"
+script_line: "end"
+script_start: "8"
+script_line: "event"
+script_line: "event_trigger kill_count 1"
+script_line: "event_action modify_terrain 10 6 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 1"
+script_line: "event_action modify_terrain 10 7 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 1"
+script_line: "event_action modify_terrain 10 8 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 1"
+script_line: "event_action modify_terrain 10 9 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 1"
+script_line: "event_action modify_terrain 10 10 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 2"
+script_line: "event_action modify_terrain 5 10 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 2"
+script_line: "event_action modify_terrain 6 10 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 2"
+script_line: "event_action modify_terrain 7 10 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 2"
+script_line: "event_action modify_terrain 8 10 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 2"
+script_line: "event_action modify_terrain 9 10 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 2"
+script_line: "event_action modify_terrain 10 10 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 4"
+script_line: "event_action modify_terrain 5 6 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 4"
+script_line: "event_action modify_terrain 5 7 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 4"
+script_line: "event_action modify_terrain 5 8 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 4"
+script_line: "event_action modify_terrain 5 9 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 4"
+script_line: "event_action modify_terrain 5 10 0 0 0 0 0 floor"
 script_line: "end"

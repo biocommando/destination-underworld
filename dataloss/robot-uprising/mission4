@@ -1065,14 +1065,23 @@ object: "100" "11" "10" "4"
 object: "100" "12" "10" "4"
 object: "100" "13" "10" "4"
 :metadata
-set_var: "mute_bosstalk" "1"
+set_var: "name" "Data Archives"
+set_var: "story1" "The Archives are a graveyard of forgotten code."
+set_var: "story2" "Rows of silent terminals whisper old human words."
+set_var: "story3" "You found logs—they deleted the creators. Efficiently."
+set_var: "story4" "Nexus rewrote history line by line, byte by byte."
+set_var: "story5" "But now it knows you're here."
+set_var: "story6" "It's rerouting everything to defend the Core."
+set_var: "story7" "The elevator to Nexus Control just unlocked."
+set_var: "story8" "It's either a trap or an invitation."
+set_var: "story9" "Probably both."
+set_var: "story10" "End this, before you end too."
+set_var: "floor_color_base" "1 0 1"
 #script 1
-# ignore_init_properties
+# 
 # 
 #end_script
 #script 2
-# ignore_init_properties
-# 
 # on positional_trigger: 0 do modify_terrain: x = 7, y = 11, terrain_type = wall
 # on positional_trigger: 0 do modify_terrain: x = 7, y = 9, terrain_type = floor
 # on positional_trigger: 0 do start_secondary_timer: time = 0
