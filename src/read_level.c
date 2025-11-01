@@ -253,6 +253,11 @@ static inline void read_level_cmd_file(World *world, int room_to, const char *fi
         world->map_floor_color_base[0] = r ? 1 : 0;
         world->map_floor_color_base[1] = g ? 1 : 0;
         world->map_floor_color_base[2] = b ? 1 : 0;
+        int total = 0;
+        for (int i = 0; i < 3; i++)
+            total += world->map_floor_color_base[i];
+        for (int i = 0; i < 3; i++)
+            world->map_floor_color_base[i] *= 3 - total;
     }
     var = get_var("mute_bosstalk", &variables);
     world->play_boss_sound = var ? 0 : read_level_state.has_boss;

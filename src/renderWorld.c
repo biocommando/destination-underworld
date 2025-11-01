@@ -99,10 +99,10 @@ static const int shadow_base_col = floor_base_col - 44;
 void draw_map_floors(const World *world, int vibration_intensity)
 {
     int lava_fluctuations = progress_lava_fluctuations();
-#define FLOOR(shade)                                         \
-    al_map_rgb(world->map_floor_color_base[0] ? (shade) : 0, \
-               world->map_floor_color_base[1] ? (shade) : 0, \
-               world->map_floor_color_base[2] ? (shade) : 0)
+#define FLOOR(shade)                                             \
+    al_map_rgb(MIN(world->map_floor_color_base[0] * (shade), 255), \
+               MIN(world->map_floor_color_base[1] * (shade), 255), \
+               MIN(world->map_floor_color_base[2] * (shade), 255))
     for (int y = 0; y < MAPMAX_Y; y++)
     {
         for (int x = 0; x < MAPMAX_X; x++)
