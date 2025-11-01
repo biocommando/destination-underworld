@@ -425,12 +425,7 @@ no_more_levels  -->
             if (cmd === 'mission-pack') {
                 const mp = prompt('Mission pack?', missionPack)
                 if (mp) {
-                    fetch('/api/mission-pack/' + mp)
-                        .then(x => x.text())
-                        .then(t => {
-                            missionPack = t
-                            updateMissionPack()
-                        })
+                    updateMissionPack(mp)
                 }
                 return
             }
@@ -455,8 +450,16 @@ no_more_levels  -->
             }
         }
 
-        function updateMissionPack() {
-            document.getElementById('mission-pack').innerText = missionPack
+        function updateMissionPack(newpack) {
+            let url = '/api/mission-pack'
+            if (newpack)
+                url = '/' + newpack
+            fetch(url)
+                .then(x => x.text())
+                .then(t => {
+                    missionPack = t
+                    document.getElementById('mission-pack').innerText = missionPack
+                })
         }
 
         updateMissionPack()
