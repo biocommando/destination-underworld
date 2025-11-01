@@ -428,7 +428,7 @@ void change_room_if_at_exit_point(World *world)
             for (int x = 0; x < MAPMAX_X; x++)
                 for (int y = 0; y < MAPMAX_Y; y++)
                 {
-                    if (world->visual_fx.floor_fx[world->current_room][x][y] & 1)
+                    if (world->visual_fx.floor_fx[world->current_room - 1][x][y] & 1)
                     {
                         ns_get_tile_at_mut(world, x, y)->is_blood_stained = 1;
                     }
@@ -594,7 +594,10 @@ void kill_enemy(Enemy *enm, World *world)
             world->potion_duration = 0;
     }
 
-    world->visual_fx.floor_fx[enm->roomid][enm->x / TILESIZE][enm->y / TILESIZE] |= 1;
+    WITH_SANITIZED_TILE_COORDINATES(enm->x, enm->y)
+    {
+        world->visual_fx.floor_fx[enm->roomid - 1][ok_x][ok_y] |= 1;
+    }
     Tile *tile = get_tile_at_mut(world, enm->x, enm->y);
     if (tile)
     {
