@@ -43,8 +43,9 @@ become `a = "1"`).
 Supported metadata entries:
 - name = Level name displayed in the info screen and when starting the level
 - wall_color = RGB definition for top-most wall layer (example: "0.5 1 0.8")
-- storyX (where X = number in range 0-10) = Story lines displayed after level (max length 60 characters)
-- mute_bosstalk = Don't play the sample associated to the boss if the level has scripting definitions
+- floor_color_base = RGB on/off flags for floor color
+- storyX (where X = number in range 1-10) = Story lines displayed after level (max length 60 characters)
+- mute_bosstalk = Don't play the sample associated to the boss if the level has a boss
 - story_image = A custom image displayed after level (file name)
 
 ## compiled_script:

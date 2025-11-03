@@ -8,11 +8,10 @@ For more documentation on the actions and trigger conditions, see bossfightconf.
 
 The format that the game itself reads isn't very easy to program directly
 so there's a transpiler that uses a custom language (BOSS). The language has
-4 kinds of commands:
+3 kinds of commands:
 - event definition
 - set game initialization property
 - set event property
-- ignore default game initialization properties
 
 ## Event definitions
 Event definitions have the following format:
@@ -29,25 +28,35 @@ The event name is optional.
   ```
   on waypoint_reached: 6;5 do disallow_firing
   ```
+	* Triggers when the boss reaches this coordinate in waypoint mode
 - time_interval
+	* Triggers when primary timer modulo this value (number of frames / 3) is 0
 - time_one_time
+	* Triggers when primary timer reaches this value (number of frames / 3)
 - health
+	* Triggers when boss health goes to or below this level
 - secondary_timer
+	* Triggers when secondary timer reaches this value (initially not started)
 - kill_count
+	* Triggers when this many enemies have been killed in this room
 - positional_trigger
+	* Triggers from "positional trigger" objects in the level
 
 ### Action types and values.
 If value is said to be key-value list, it means that it has format 'key = value, key = value, ...'
 and only the keys are listed:
 
 - set_waypoint, value similar to waypoint_reached
+	* Set the next coordinate where the boss tries to walk to
 
 - spawn, value `x, y, prob1, prob2, prob3, prob4, prob5`; contains spawn coordinates and probabilities for
 each enemy type (should sum up to 100).
 
 - fire_in_circle, keys: number_of_directions, intensity
+	* Trigger a cluster explosion at the boss coordinates
 
 - modify_terrain, keys: x, y, terrain_type
+	* types: floor, wall, level_exit
 
 - start_secondary_timer, keys: time
 
@@ -56,16 +65,20 @@ each enemy type (should sum up to 100).
 - spawn_potion: keys: x, y, type
 
 - allow_firing
+	* Allow boss to shoot the player
 
 - disallow_firing
+	* Don't allow boss to shoot the player
 
 - clear_waypoint
+	* Change the movement mode back to "normal movement"
 
 - stop_secondary_timer
 
 **Special trigger types:**
 - never = event not triggered unless overridden with valid trigger
 - inherit = event trigger inherited when overridden
+
 **Special event actions:**
 - nothing = doesn't do anything. Should be used with "never" trigger type.
 - inherit = event action inherited when overridden
@@ -84,10 +97,15 @@ functions (see below).
 
 The following initialization properties are understood:
 - health = boss health
+	* Needs to be set in the same room as where the boss is
 - speed = boss speed
+	* Needs to be set in the same room as where the boss is
 - fire_rate = boss fire rate
+	* Needs to be set in the same room as where the boss is
 - player_initial_gold = override player's initial gold amount
+	* Needs to be set in the first room
 - time_starts_at = start primary timer with this value
+	* Room specific
 
 Set the properties using syntax:
 ```
@@ -107,14 +125,6 @@ Syntax:
 ```
 set_event_property name: initially_disabled = 1 or 0
 ```
-
-## Ignoring default game initialization properties
-
-If the level is not a boss level, you should add this line to the code:
-```
-ignore_init_properties
-```
-This way the default properties won't be added to the resulting script file.
 
 # Preprocessing
 
@@ -147,6 +157,12 @@ For the javascript execution there are a couple of convenience functions/variabl
 	```
 		{# implicit_arena_game_mode() #}
 		set [brutal] health = 20
+	```
+- `modify_rect(trig, x, y, x2, y2, terrain_type)`
+	* Creates events with `trig` as the trigger for changing all tiles in a rectangular area to the provided terrain type
+	* Example: after killing 10 enemies, change 2x3 area at x=5, y=7 to floor:
+	```
+		{# modify_rect('kill_count: 10', 5, 7, 7, 10, 'floor') #}
 	```
 
 # Comments

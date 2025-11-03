@@ -49,8 +49,9 @@ Other targets are listed in `bake.json`. The most commonly used are:
 Run the level editor using the `run-level-editor.bat` under the root directory.
 If you want to edit something else than the levels from the default level pack
 ("core-pack"), you'll need to pass the level pack name to the batch file using the
-syntax: `run-level-editor.bat --mission-pack~NAME`, example:
-`.\run-level-editor.bat --mission-pack~Tunnels-of-Devil--m1l4tfxf`.
+syntax: `run-level-editor.bat --mission-pack NAME`, example:
+`.\run-level-editor.bat --mission-pack robot-uprising`. You can also change the
+level pack from the UI.
 
 The level editor UI is a bit arcane and especially the more advanced level editor
 stuff like conditional items or scripted events can be difficult to understand.
