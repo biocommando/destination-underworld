@@ -30,6 +30,8 @@ typedef struct
     double dy;
     // depth movement vector
     double dz;
+    // The color of the blood trail
+    ALLEGRO_COLOR blood_trail_color;
 } BodyPart;
 
 enum TurretType
@@ -238,7 +240,7 @@ typedef struct
     // of the effect.
     double intensity;
     // Each individual "circle group"
-    struct explosion_circle circles[10];
+    struct explosion_circle circles[MAX_EXPL_CIRCLES];
     // Does the explosion have a blast wave effect? This is change based.
     int emit_blast_wave;
 } Explosion;

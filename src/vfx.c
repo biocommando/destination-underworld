@@ -118,10 +118,10 @@ static inline int comp_expl_circle(const void *elem1, const void *elem2)
 
 void create_explosion(int x, int y, const World *world, WorldFx *world_fx, double intensity)
 {
-    const double circle_max_radius = 17;
+    const double circle_max_radius = EXPL_CIRCLE_MAX_RADIUS;
 
     Explosion *ex = LINKED_LIST_ADD(&world_fx->explosion, Explosion);
-    if (world_fx->explosion.count > 200)
+    if (world_fx->explosion.count > EXPL_LIMIT)
         linked_list_remove(&world_fx->explosion, world_fx->explosion.first);
 
     ex->x = x - 16 + rand() % 32;
@@ -141,9 +141,10 @@ void create_explosion(int x, int y, const World *world, WorldFx *world_fx, doubl
         c->loc.x = (1 - 2 * random()) * circle_max_radius * scale;
         c->loc.y = (1 - 2 * random()) * circle_max_radius * scale;
         if (rand() % 2)
-            c->r = MAX(random() * circle_max_radius * scale, 5);
+            c->r = random() * circle_max_radius * scale;
         else
-            c->r = MAX((0.5 + 0.5 * random()) * circle_max_radius * scale, 5);
+            c->r = (0.5 + 0.5 * random()) * circle_max_radius * scale;
+        c->r = MAX(c->r, 5);
     }
     // Sort so that most intense are on top (last)
     qsort(ex->circles, ex->circle_count, sizeof(struct explosion_circle), comp_expl_circle);
@@ -195,12 +196,14 @@ void spawn_body_parts(const Enemy *enm, WorldFx *world_fx)
         BodyPart *bp = &bp_container->bodyparts[j];
         bp->exists = 1;
         bp->type = rand() % 6 + 1;
-        bp->x = enm->x;
-        bp->y = enm->y;
         bp->anim = rand() % 3;
         double ang = 2 * M_PI * ((double)(rand() % 1000)) / 1000.0;
         bp->dx = sin(ang);
         bp->dy = cos(ang);
+        // Spread the body parts initially so that non-bounced parts don't look like ass
+        // in some special situations
+        bp->x = enm->x + (rand() % HALFTILESIZE) * bp->dx;
+        bp->y = enm->y + (rand() % HALFTILESIZE) * bp->dy;
         bp->velocity = 20 + rand() % 10;
         bp->dz = j % 2 ? rand() % 15 : rand() % 10;
         if (rand() % 8 == 0)
@@ -208,6 +211,7 @@ void spawn_body_parts(const Enemy *enm, WorldFx *world_fx)
             bp->dz += 5;
         }
         bp->z = 1;
+        bp->blood_trail_color = al_map_rgb(170 + rand() % 20, 10 + rand() % 8, 17 + rand() % 10);
     }
 }
 

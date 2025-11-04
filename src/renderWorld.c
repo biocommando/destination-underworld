@@ -400,8 +400,8 @@ void move_and_draw_body_parts(World *world)
 
                     if (get_tuning_params()->blood_stains_enabled)
                     {
-                        ALLEGRO_COLOR blood_col = al_map_rgb(170 + rand() % 20, 10 + rand() % 8, 17 + rand() % 10);
-                        al_draw_line(bp_orig_x, bp_orig_y, bodypart->x, bodypart->y, blood_col, 3);
+                        al_draw_line(bp_orig_x, bp_orig_y, bodypart->x, bodypart->y,
+                            bodypart->blood_trail_color, 3);
                     }
                 }
 
@@ -483,9 +483,23 @@ void progress_and_draw_flame_fx(WorldFx *world_fx)
     }
 }
 
+// log(sqrt(j) + 2) / 10
+static const double _log_sqrt_table[] = {
+    0.06931471805599453,
+    0.10986122886681096,
+    0.12279471772995157,
+    0.13169578969248166,
+    0.13862943611198905,
+    0.14436354751788102,
+    0.14927894250605617,
+    0.15359531053788888,
+    0.15745207675794884,
+    0.16094379124341002,
+};
+
 int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
 {
-    const double circle_max_radius = 17;
+    const double circle_max_radius = EXPL_CIRCLE_MAX_RADIUS;
     int vibrations = 0;
     Explosion *ex;
     LINKED_LIST_FOR_EACH(&world_fx->explosion, Explosion, ex, ex->phase >= 30)
@@ -507,7 +521,7 @@ int progress_and_draw_explosions(const World *world, WorldFx *world_fx)
 
             c->loc.x += c->loc.x > circle_max_radius / 2 ? move_speed : -move_speed;
             c->loc.y += c->loc.y > circle_max_radius / 2 ? move_speed : -move_speed;
-            double multiplier_factor = log(sqrt(j) + 2) / 10;
+            double multiplier_factor = _log_sqrt_table[j];
             double intensity_multiplier = (1 - multiplier_factor) + random() * multiplier_factor;
             c->i *= intensity_multiplier;
             c->r *= intensity_multiplier;

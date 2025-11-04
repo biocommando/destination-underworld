@@ -22,6 +22,9 @@
 #define ENEMY_TYPE_COUNT 5 // all "normal" enemies excluding the special boss type
 #define LEVEL_OBJ_ENEMY_TYPE_START 200
 #define LEVEL_OBJ_BOSS_ID (LEVEL_OBJ_ENEMY_TYPE_START + ENEMY_TYPE_COUNT)
+#define MAX_EXPL_CIRCLES 10
+#define EXPL_CIRCLE_MAX_RADIUS 17
+#define EXPL_LIMIT 200
 #define MAX_VIBRATIONS 16
 #define FLAME_FX_COUNT 256
 #define EMBERS_PER_FLAME_FX 10
