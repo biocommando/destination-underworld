@@ -90,7 +90,7 @@ void move_enemy(Enemy *enm, World *world)
         }
         if (t && t->is_positional_trigger)
         {
-            pos_trigger_set(world->boss_fight_config->state.positional_trigger_flags, t->data);
+            pos_trigger_set(&world->boss_fight_config->state, t->data);
             // No point in having the flag set anymore as the condition can trigger only once
             t->is_positional_trigger = 0;
         }

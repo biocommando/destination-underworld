@@ -294,14 +294,14 @@ const char *bossfight_event_type_to_str(int value);
  *  1 = triggered
  * -1 = inactive
  */
-int pos_trigger_state(const int *positional_trigger_flags, int ptrig_idx);
+int pos_trigger_state(const BossFightState *bfconf, int ptrig_idx);
 
 /*
  * Mark all positional triggers in triggered state to inactive state.
  */
-void pos_trigger_clear(int *positional_trigger_flags);
+void pos_trigger_clear(BossFightState *bfconf);
 
 /*
  * Set positional trigger state to triggered.
  */
-void pos_trigger_set(int *positional_trigger_flags, int ptrig_idx);
+void pos_trigger_set(BossFightState *bfconf, int ptrig_idx);
