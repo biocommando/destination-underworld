@@ -454,6 +454,34 @@ object: "600" "2" "5" "2"
 object: "205" "13" "6" "2"
 object: "120" "11" "0" "1"
 object: "46" "5" "5" "1"
+#conditions
+condition: "game_modifiers = 16" "COND_brutal"
+goto: "+SKIP_COND_brutal"
+:COND_brutal
+object: "303" "4" "5" "1"
+:+SKIP_COND_brutal
+#conditions
+condition: "game_modifiers ! 16" "COND_neg_brutal"
+goto: "+SKIP_COND_neg_brutal"
+:COND_neg_brutal
+:+SKIP_COND_neg_brutal
+#conditions
+condition: "game_modifiers = 200" "COND_potion_only"
+goto: "+SKIP_COND_potion_only"
+:COND_potion_only
+object: "305" "5" "5" "1"
+object: "306" "9" "2" "1"
+object: "306" "9" "3" "1"
+object: "306" "9" "4" "1"
+object: "306" "9" "5" "1"
+object: "306" "9" "6" "1"
+object: "306" "9" "7" "1"
+object: "306" "9" "8" "1"
+object: "306" "9" "9" "1"
+object: "305" "5" "4" "1"
+object: "305" "5" "6" "1"
+object: "300" "11" "5" "2"
+:+SKIP_COND_potion_only
 :metadata
 set_var: "name" "Nexus Core"
 set_var: "story1" "You've reached the Core Chamber. It's enormous."

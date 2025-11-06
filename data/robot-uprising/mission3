@@ -317,7 +317,6 @@ object: "120" "2" "5" "2"
 object: "120" "2" "6" "2"
 object: "120" "2" "4" "2"
 object: "120" "3" "4" "2"
-object: "120" "4" "4" "2"
 object: "120" "5" "4" "2"
 object: "120" "6" "4" "2"
 object: "120" "7" "4" "2"
@@ -1780,6 +1779,24 @@ object: "46" "6" "6" "6"
 object: "46" "5" "6" "6"
 object: "46" "6" "7" "6"
 object: "46" "5" "7" "6"
+object: "120" "4" "4" "2"
+#conditions
+condition: "game_modifiers = 16" "COND_brutal"
+goto: "+SKIP_COND_brutal"
+:COND_brutal
+object: "303" "5" "7" "2"
+:+SKIP_COND_brutal
+#conditions
+condition: "game_modifiers ! 16" "COND_neg_brutal"
+goto: "+SKIP_COND_neg_brutal"
+:COND_neg_brutal
+:+SKIP_COND_neg_brutal
+#conditions
+condition: "game_modifiers = 200" "COND_potion_only"
+goto: "+SKIP_COND_potion_only"
+:COND_potion_only
+object: "300" "11" "9" "1"
+:+SKIP_COND_potion_only
 :metadata
 set_var: "name" "Power Distribution Halls"
 set_var: "story1" "Lights flicker. Systems die. Progress feels good."
@@ -1800,8 +1817,11 @@ set_var: "floor_color_base" "0 1 1"
 # 
 #end_script
 #script 2
-# on time_one_time: ms(2000) do spawn: 4, 6, 0, 0, 0, 0, 100
-# on time_one_time: ms(8000) do spawn: 12, 7, 0, 0, 0, 0, 100
+# on [first_spawn] time_one_time: ms(2000) do spawn: 4, 6, 0, 0, 0, 0, 100
+# on [second_spawn] time_one_time: ms(8000) do spawn: 12, 7, 0, 0, 0, 0, 100
+# 
+# on {# override_event('first_spawn', 'brutal') #} time_one_time: ms(99999999) do @inherit
+# on {# override_event('second_spawn', 'brutal') #} time_one_time: ms(99999999) do @inherit
 #end_script
 #script 3
 # on time_one_time: ms(20000) do spawn: 1, 7, 0, 0, 0, 0, 100
@@ -1834,8 +1854,14 @@ script_start: "2"
 script_line: "event"
 script_line: "event_trigger time_one_time 16"
 script_line: "event_action spawn 0 0 0 0 100 4 6"
+script_line: "event_override 16"
+script_line: "event_trigger time_one_time 833333"
+script_line: "event_action spawn 0 0 0 0 100 4 6"
 script_line: "event"
 script_line: "event_trigger time_one_time 66"
+script_line: "event_action spawn 0 0 0 0 100 12 7"
+script_line: "event_override 16"
+script_line: "event_trigger time_one_time 833333"
 script_line: "event_action spawn 0 0 0 0 100 12 7"
 script_line: "end"
 script_start: "3"

@@ -1064,6 +1064,26 @@ object: "100" "12" "3" "4"
 object: "100" "11" "10" "4"
 object: "100" "12" "10" "4"
 object: "100" "13" "10" "4"
+#conditions
+condition: "game_modifiers = 16" "COND_brutal"
+goto: "+SKIP_COND_brutal"
+:COND_brutal
+object: "303" "2" "2" "2"
+object: "303" "10" "8" "2"
+:+SKIP_COND_brutal
+#conditions
+condition: "game_modifiers = 200" "COND_potion_only"
+goto: "+SKIP_COND_potion_only"
+:COND_potion_only
+object: "305" "7" "3" "1"
+object: "306" "7" "4" "3"
+object: "306" "9" "6" "3"
+:+SKIP_COND_potion_only
+#conditions
+condition: "game_modifiers ! 16" "COND_neg_brutal"
+goto: "+SKIP_COND_neg_brutal"
+:COND_neg_brutal
+:+SKIP_COND_neg_brutal
 :metadata
 set_var: "name" "Data Archives"
 set_var: "story1" "The Archives are a graveyard of forgotten code."
