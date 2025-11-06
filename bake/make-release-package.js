@@ -26,7 +26,8 @@ function renameMidiFiles(targetDir) {
     du ost 3 : 8-bit Apocalypse
     psykeily : Alien Spacecraft
     2025-11-dutheme : Weird Horror
-    prob2 : Lord of Lies`
+    prob2 : Lord of Lies
+    Project_1 : Battle Bot Disassembly`
         
     names.split('\n').forEach(x => {
         const [origName, newName] = x.split(':').map(x => x.trim())
