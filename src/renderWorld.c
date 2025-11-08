@@ -99,7 +99,7 @@ static const int shadow_base_col = floor_base_col - 44;
 void draw_map_floors(const World *world, int vibration_intensity)
 {
     int lava_fluctuations = progress_lava_fluctuations();
-#define FLOOR(shade)                                             \
+#define FLOOR(shade)                                               \
     al_map_rgb(MIN(world->map_floor_color_base[0] * (shade), 255), \
                MIN(world->map_floor_color_base[1] * (shade), 255), \
                MIN(world->map_floor_color_base[2] * (shade), 255))
@@ -401,7 +401,7 @@ void move_and_draw_body_parts(World *world)
                     if (get_tuning_params()->blood_stains_enabled)
                     {
                         al_draw_line(bp_orig_x, bp_orig_y, bodypart->x, bodypart->y,
-                            bodypart->blood_trail_color, 3);
+                                     bodypart->blood_trail_color, 3);
                     }
                 }
 
