@@ -1749,10 +1749,12 @@ set_var: "floor_color_base" "0 0 1"
 # 
 #end_script
 #script 2
-# on positional_trigger: 0 do modify_terrain: x = 9, y = 9, terrain_type = wall
-# on positional_trigger: 1 do modify_terrain: x = 3, y = 1, terrain_type = wall
+# on [pt1] positional_trigger: 0 do modify_terrain: x = 9, y = 9, terrain_type = wall
+# on [pt2] positional_trigger: 1 do modify_terrain: x = 3, y = 1, terrain_type = wall
 # on kill_count: 36 do modify_terrain: x = 12, y = 1, terrain_type = floor
 # on kill_count: 50 do modify_terrain: x = 3, y = 1, terrain_type = floor
+# on kill_count: 50 do toggle_event_enabled: event_id = pt1, enabled = 0
+# on kill_count: 50 do toggle_event_enabled: event_id = pt2, enabled = 0
 # 
 # on kill_count: 50 do spawn: 9, 5, 0, 0, 0, 0, 100
 # on kill_count: 50 do spawn: 13, 5, 0, 0, 0, 0, 100
@@ -1815,6 +1817,12 @@ script_line: "event_action modify_terrain 12 1 0 0 0 0 0 floor"
 script_line: "event"
 script_line: "event_trigger kill_count 50"
 script_line: "event_action modify_terrain 3 1 0 0 0 0 0 floor"
+script_line: "event"
+script_line: "event_trigger kill_count 50"
+script_line: "event_action toggle_event_enabled 0 0"
+script_line: "event"
+script_line: "event_trigger kill_count 50"
+script_line: "event_action toggle_event_enabled 1 0"
 script_line: "event"
 script_line: "event_trigger kill_count 50"
 script_line: "event_action spawn 0 0 0 0 100 9 5"
