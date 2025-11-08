@@ -328,15 +328,15 @@ const char *bossfight_trigger_to_str(int value)
     case BFCONF_TRIGGER_TYPE_TIME_ONE_TIME:
         return "Time one time";
     case BFCONF_TRIGGER_TYPE_HEALTH:
-        return "Health";
+        return "Boss health";
     case BFCONF_TRIGGER_TYPE_WAYPOINT_REACHED:
-        return "Waypoint reached";
+        return "Boss waypoint reached";
     case BFCONF_TRIGGER_TYPE_SECONDARY_TIMER:
         return "Secondary timer";
     case BFCONF_TRIGGER_TYPE_PLAYER_KILLCOUNT_REACHED:
         return "Kill count reached";
     case BFCONF_TRIGGER_TYPE_POSITIONAL_TRIGGER:
-        return "positional trigger";
+        return "Positional trigger";
     case BFCONF_TRIGGER_TYPE_NEVER:
         return "Never";
     default:
@@ -353,23 +353,25 @@ const char *bossfight_event_type_to_str(int value)
     case BFCONF_EVENT_TYPE_SPAWN:
         return "Spawn";
     case BFCONF_EVENT_TYPE_ALLOW_FIRING:
-        return "Allow firing";
+        return "Boss: Allow shooting";
     case BFCONF_EVENT_TYPE_DISALLOW_FIRING:
-        return "Disallow firing";
+        return "Boss: stop shooting";
     case BFCONF_EVENT_TYPE_FIRE_IN_CIRCLE:
-        return "Fire in circle";
+        return "Boss: explosion";
     case BFCONF_EVENT_TYPE_MODIFY_TERRAIN:
         return "Modify terrain";
     case BFCONF_EVENT_TYPE_SET_WAYPOINT:
-        return "Set waypoint";
+        return "Set boss waypoint";
     case BFCONF_EVENT_TYPE_CLEAR_WAYPOINT:
-        return "Clear waypoint";
+        return "Clear boss waypoint";
     case BFCONF_EVENT_TYPE_START_SECONDARY_TIMER:
         return "Start secondary timer";
     case BFCONF_EVENT_TYPE_STOP_SECONDARY_TIMER:
         return "Stop secondary timer";
     case BFCONF_EVENT_TYPE_TOGGLE_EVENT_ENABLED:
-        return "Toggle event enabled";
+        return "Set event enable";
+    case BFCONF_EVENT_TYPE_SPAWN_POTION:
+        return "Spawn potion";
 
     default:
         return "";
