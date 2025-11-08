@@ -832,8 +832,7 @@ void show_ingame_info_screen(const World *world)
                 ev->event_type == ev_p->event_type)
             {
                 same_count++;
-                if (e != num_events - 1)
-                    continue;
+                continue;
             }
             if (same_count > 0)
             {
@@ -847,6 +846,8 @@ void show_ingame_info_screen(const World *world)
             y += 12;
             ev_p = ev;
         }
+        if (same_count)
+            al_draw_textf(get_font_tiny(), GRAY(200), 5, y, 0, "    times %d", same_count + 1);
 
         al_flip_display();
         wait_key_presses(keys, 2);
