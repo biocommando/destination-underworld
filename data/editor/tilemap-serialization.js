@@ -157,6 +157,17 @@ function deserializeTileMapNew(fileAsString) {
 
 function serializeTileMap(data, newline = '\n') {
     const lines = []
+    data.objects.sort((a, b) => {
+        if (a.room !== b.room)
+            return a.room - b.room
+        if (a.y !== b.y)
+            return a.y - b.y
+        if (a.x !== b.x)
+            return a.x - b.x
+        if (a.id !== b.id)
+            return a.id - b.id
+        return 0
+    })
     function serializeList(list) {
         list.forEach(obj => {
             lines.push(`object: "${obj.id}" "${obj.x}" "${obj.y}" "${obj.room}"`)
