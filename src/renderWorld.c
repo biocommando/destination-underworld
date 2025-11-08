@@ -670,7 +670,7 @@ inline void draw_hint(WorldFx *world_fx)
 void show_ingame_info_screen(const World *world)
 {
     wait_key_release(ALLEGRO_KEY_M);
-    al_clear_to_color(BLACK);
+    al_clear_to_color(GRAY(32));
     const int map_tile_size = 8;
     const int max_minimaps_per_row = SCREEN_W / (map_tile_size * (MAPMAX_X + 1));
     for (int i = 0; i < ROOMCOUNT; i++)
@@ -811,7 +811,7 @@ void show_ingame_info_screen(const World *world)
     if (pressed >= ALLEGRO_KEY_1 && pressed <= ALLEGRO_KEY_8)
     {
         int room = pressed - ALLEGRO_KEY_1;
-        al_clear_to_color(BLACK);
+        al_clear_to_color(GRAY(32));
         int y = 5;
         al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Triggers for room %d (press space to go back)", room + 1);
         y += 12;
