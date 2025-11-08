@@ -195,3 +195,4 @@ object: "60" "10" "5" "1"
 object: "60" "9" "5" "1"
 :metadata
 set_var: "wall_color" "0 0 0"
+set_var: "name" "Limbo"

@@ -670,7 +670,9 @@ inline void draw_hint(WorldFx *world_fx)
 void show_ingame_info_screen(const World *world)
 {
     wait_key_release(ALLEGRO_KEY_M);
-    al_clear_to_color(GRAY(32));
+    ALLEGRO_COLOR bgcol = GRAY(16);
+    ALLEGRO_COLOR textcol = GRAY(200);
+    al_clear_to_color(bgcol);
     const int map_tile_size = 8;
     const int max_minimaps_per_row = SCREEN_W / (map_tile_size * (MAPMAX_X + 1));
     for (int i = 0; i < ROOMCOUNT; i++)
@@ -700,7 +702,7 @@ void show_ingame_info_screen(const World *world)
                 al_draw_filled_rectangle(xx, yy, xx + map_tile_size, yy + map_tile_size, color);
                 if (world->map[i][x][y].is_exit_point)
                 {
-                    al_draw_textf(get_font_tiny(), GRAY(200), xx, yy, 0, "%d", world->map[i][x][y].data);
+                    al_draw_textf(get_font_tiny(), textcol, xx, yy, 0, "%d", world->map[i][x][y].data);
                 }
             }
         }
@@ -717,7 +719,7 @@ void show_ingame_info_screen(const World *world)
             if (enm->alive && enm->roomid == i + 1 && enm != world->boss)
                 num_enemies++;
         }
-        al_draw_textf(get_font_tiny(), GRAY(200), offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1,
+        al_draw_textf(get_font_tiny(), textcol, offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1,
                       num_enemies);
         for (int e = 0; e < world->boss_fight_configs[i].num_events; e++)
         {
@@ -727,19 +729,19 @@ void show_ingame_info_screen(const World *world)
                 int xx = offset_x + evt->parameters[0] * map_tile_size;
                 int yy = offset_y + evt->parameters[1] * map_tile_size;
                 al_draw_rectangle(xx, yy, xx + map_tile_size, yy + map_tile_size, WHITE, 1);
-                // al_draw_textf(get_font_tiny(), GRAY(200), xx + map_info_offset, yy, 0, "x");
+                // al_draw_textf(get_font_tiny(), textcol, xx + map_info_offset, yy, 0, "x");
             }
             else if (evt->event_type == BFCONF_EVENT_TYPE_SPAWN)
             {
                 int xx = offset_x + evt->spawn_point.x * map_tile_size;
                 int yy = offset_y + evt->spawn_point.y * map_tile_size;
-                al_draw_line(xx, yy, xx + map_tile_size, yy + map_tile_size, BLACK, 1);
+                al_draw_line(xx + 1, yy + 1, xx + map_tile_size - 1, yy + map_tile_size - 1, BLACK, 1);
             }
             else if (evt->event_type == BFCONF_EVENT_TYPE_SPAWN_POTION)
             {
                 int xx = offset_x + evt->parameters[0] * map_tile_size;
                 int yy = offset_y + evt->parameters[1] * map_tile_size;
-                al_draw_line(xx + map_tile_size, yy, xx, yy + map_tile_size, WHITE, 1);
+                al_draw_line(xx + map_tile_size - 1, yy + 1, xx + 1, yy + map_tile_size - 1, WHITE, 1);
             }
         }
     }
@@ -747,43 +749,43 @@ void show_ingame_info_screen(const World *world)
     const int y_incr = 12;
     int offset_y = map_tile_size + map_tile_size * (MAPMAX_Y + 1) * (max_minimaps_per_row - 1);
 
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "Legend:");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "Legend:");
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "  : floor");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : floor");
     al_draw_filled_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, GRAY(127));
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "  : wall");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : wall");
     al_draw_filled_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, RED);
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "  : exit level");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : exit level");
     al_draw_filled_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, BLUE);
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "  : YOU");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : YOU");
     al_draw_filled_circle(offset_x + map_tile_size / 2, offset_y + map_tile_size / 2, map_tile_size / 2, WHITE);
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "- 1-8: room entrance");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "- 1-8: room entrance");
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "  : tile may be swapped");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : tile may be swapped");
     al_draw_filled_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, GRAY(127));
     al_draw_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, WHITE, 1);
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "  : enemy spawn point");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : enemy spawn point");
     al_draw_filled_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, GRAY(127));
-    al_draw_line(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, BLACK, 1);
+    al_draw_line(offset_x + 1, offset_y + 1, offset_x + map_tile_size - 1, offset_y + map_tile_size - 1, BLACK, 1);
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "  : potion spawn point");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : potion spawn point");
     al_draw_filled_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, GRAY(127));
-    al_draw_line(offset_x + map_tile_size, offset_y, offset_x, offset_y + map_tile_size, WHITE, 1);
+    al_draw_line(offset_x + map_tile_size - 1, offset_y + 1, offset_x + 1, offset_y + map_tile_size - 1, WHITE, 1);
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x, offset_y, 0, "(press space to continue)");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "(press space to continue)");
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x + 30, offset_y, 0, "(press 1 - 8 to show");
+    al_draw_textf(get_font(), textcol, offset_x + 30, offset_y, 0, "(press 1 - 8 to show");
     offset_y += y_incr;
-    al_draw_textf(get_font(), GRAY(200), offset_x + 30, offset_y, 0, "room events)");
+    al_draw_textf(get_font(), textcol, offset_x + 30, offset_y, 0, "room events)");
 
     offset_y = map_tile_size * (MAPMAX_Y + 1) * max_minimaps_per_row;
     offset_x = map_tile_size;
-    al_draw_textf(get_font_tiny(), GRAY(200), offset_x, offset_y, 0, "Enemy counts:          Kills: %d", world->kills);
+    al_draw_textf(get_font_tiny(), textcol, offset_x, offset_y, 0, "Enemy counts:          Kills: %d", world->kills);
     offset_y += map_tile_size;
 
     for (int et = 0; et < ENEMY_TYPE_COUNT; et++)
@@ -798,7 +800,7 @@ void show_ingame_info_screen(const World *world)
         }
         draw_sprite_animated(world->spr, SPRITE_ID_ENEMY(et), offset_x, offset_y, 0, 0);
         offset_x += TILESIZE;
-        al_draw_textf(get_font_tiny(), GRAY(200), offset_x, offset_y + HALFTILESIZE, 0, "%d", num_enemies);
+        al_draw_textf(get_font_tiny(), textcol, offset_x, offset_y + HALFTILESIZE, 0, "%d", num_enemies);
         offset_x += TILESIZE;
     }
 
@@ -807,18 +809,18 @@ void show_ingame_info_screen(const World *world)
     const int keys[] = {ALLEGRO_KEY_SPACE, ALLEGRO_KEY_ESCAPE, ALLEGRO_KEY_M, ALLEGRO_KEY_1,
                         ALLEGRO_KEY_2, ALLEGRO_KEY_3, ALLEGRO_KEY_4, ALLEGRO_KEY_5,
                         ALLEGRO_KEY_6, ALLEGRO_KEY_7, ALLEGRO_KEY_8};
-    int pressed = wait_key_presses(keys, 11);
+    int pressed = wait_key_presses(keys, sizeof(keys) / sizeof(int));
     if (pressed >= ALLEGRO_KEY_1 && pressed <= ALLEGRO_KEY_8)
     {
         int room = pressed - ALLEGRO_KEY_1;
-        al_clear_to_color(GRAY(32));
+        al_clear_to_color(bgcol);
         int y = 5;
-        al_draw_textf(get_font(), GRAY(200), 5, y, 0, "Triggers for room %d (press space to go back)", room + 1);
+        al_draw_textf(get_font(), textcol, 5, y, 0, "Events for room %d (press space to go back)", room + 1);
         y += 12;
         int num_events = world->boss_fight_configs[room].num_events;
         if (num_events == 0)
         {
-            al_draw_textf(get_font(), GRAY(200), 5, y, 0, "NO EVENTS");
+            al_draw_textf(get_font(), textcol, 5, y, 0, "NO EVENTS");
         }
         const BossFightEventConfig *ev_p = NULL;
         int same_count = 0;
@@ -836,18 +838,18 @@ void show_ingame_info_screen(const World *world)
             }
             if (same_count > 0)
             {
-                al_draw_textf(get_font_tiny(), GRAY(200), 5, y, 0, "    times %d", same_count + 1);
+                al_draw_textf(get_font_tiny(), textcol, 5, y, 0, "    times %d", same_count + 1);
                 same_count = 0;
                 y += 8;
             }
-            al_draw_textf(get_font(), GRAY(200), 5, y, 0, "if %s = %d then %s",
+            al_draw_textf(get_font(), textcol, 5, y, 0, "if %s = %d then %s",
                           bossfight_trigger_to_str(ev->trigger_type), ev->trigger_value,
                           bossfight_event_type_to_str(ev->event_type));
             y += 12;
             ev_p = ev;
         }
         if (same_count)
-            al_draw_textf(get_font_tiny(), GRAY(200), 5, y, 0, "    times %d", same_count + 1);
+            al_draw_textf(get_font_tiny(), textcol, 5, y, 0, "    times %d", same_count + 1);
 
         al_flip_display();
         wait_key_presses(keys, 2);
