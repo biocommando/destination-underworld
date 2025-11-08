@@ -214,6 +214,8 @@ void Synth_handle_midi_event(Synth *s, unsigned char *event_data, unsigned flags
         int channel = event_data[0] & 0xF;
 
         SynthVoice *new_voice = LINKED_LIST_ADD(&s->voices, SynthVoice);
+        if (s->voices.count > (size_t)s->diagnostics_max_n_voices)
+            s->diagnostics_max_n_voices = s->voices.count;
         init_SynthVoice(new_voice, s->sample_rate, event_data[1], channel);
         new_voice->volume = event_data[2] / 127.0f;
         new_voice->delay_send = s->send_delay_amounts[channel];
