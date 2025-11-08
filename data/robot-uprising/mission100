@@ -223,6 +223,7 @@ set_var: "name" "Arena -- Death Factory"
 # 
 # on kill_count: 150 do start_secondary_timer: time = 0
 # on secondary_timer: ms(10000) do spawn: 8, 9, 0, 0, 0, 0, 100
+# on secondary_timer: ms(10000) do start_secondary_timer: time = 0
 # 
 #end_script
 script_start: "1"
@@ -277,4 +278,7 @@ script_line: "event_action start_secondary_timer 0"
 script_line: "event"
 script_line: "event_trigger secondary_timer 83"
 script_line: "event_action spawn 0 0 0 0 100 8 9"
+script_line: "event"
+script_line: "event_trigger secondary_timer 83"
+script_line: "event_action start_secondary_timer 0"
 script_line: "end"
