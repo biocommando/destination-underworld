@@ -6,12 +6,14 @@
 
 int main(int argc, char **argv)
 {
-    if (argc < 2)
+    if (argc < 3)
     {
-        printf("Path to midi file expected as argument.\n");
+        puts("Following paths expected arguments:");
+        puts("midi file");
+        puts("data directory");
         return -1;
     }
-    int wt_sample_count = wt_sample_read_all("../../data");
+    int wt_sample_count = wt_sample_read_all(argv[2]);
     printf("Wavetable samples loaded: %d\n", wt_sample_count);
     if (wt_sample_count == 0)
     {
