@@ -7,13 +7,12 @@
 #define MAX_PLAYLIST_LEN 128
 
 static MidiPlayer midi_player;
-static MidiFile midi_file;
-static int midi_file_ready = 0;
 
 struct playlist_entry
 {
     char *path;
     char *meta_f;
+    MidiFile midi_file;
 };
 
 static struct playlist_entry playlist[MAX_PLAYLIST_LEN];
@@ -60,6 +59,11 @@ static void load_playlist()
                 pe->path = (char *)malloc(strlen(fname) + 1);
                 strcpy(pe->path, fname);
                 pe->meta_f = meta_f_name;
+
+                init_midi_file(&pe->midi_file);
+                pe->midi_file.sample_rate = midi_player.sample_rate;
+                read_midi_file(pe->path, &pe->midi_file);
+
                 playlist_entries++;
                 if (playlist_entries == MAX_PLAYLIST_LEN)
                     break;
@@ -86,11 +90,13 @@ void free_midi_playback()
     for (int i = 0; i < MAX_PLAYLIST_LEN; i++)
     {
         struct playlist_entry *pe = &playlist[i];
-        free(pe->path);
-        free(pe->meta_f);
+        if (pe->path)
+        {
+            free(pe->path);
+            free(pe->meta_f);
+            free_midi_file(&pe->midi_file);
+        }
     }
-    if (midi_file_ready)
-        free_midi_file(&midi_file);
     free_midi_player(&midi_player);
 }
 
@@ -103,8 +109,6 @@ void next_midi_track(int index)
 {
     if (playlist_entries == 0)
         return;
-    if (midi_file_ready)
-        free_midi_file(&midi_file);
     if (index >= 0)
         current_playlist_entry = index;
     else
@@ -112,11 +116,7 @@ void next_midi_track(int index)
     if (current_playlist_entry >= playlist_entries)
         current_playlist_entry = 0;
     Synth_read_instruments(&midi_player.synth, playlist[current_playlist_entry].meta_f);
-    init_midi_file(&midi_file);
-    midi_file.sample_rate = midi_player.sample_rate;
-    read_midi_file(playlist[current_playlist_entry].path, &midi_file);
-    midi_file_ready = 1;
-    midi_player_set_midi_file(&midi_player, &midi_file);
+    midi_player_set_midi_file(&midi_player, &playlist[current_playlist_entry].midi_file);
 }
 
 static int randomize_midi_playlist_sorter([[maybe_unused]] const void *a, [[maybe_unused]] const void *b)

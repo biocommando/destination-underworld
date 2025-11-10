@@ -7,7 +7,7 @@
  * Sample rate in Hz.
  *
  * Calling this function reads the playlist from datadir\midi-music by adding all the .mid files
- * that also have the metadata file that is suffixed with "_meta.ini".
+ * that also have the metadata file that is suffixed with "_meta.ini" and preloads all .mid files.
  */
 void init_midi_playback(float sample_rate);
 

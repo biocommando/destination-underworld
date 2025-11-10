@@ -391,10 +391,6 @@ void dispatch__handle_synth_params_SYNTH_DATA_END(struct synth_params_SYNTH_DATA
 
 void Synth_read_instruments(Synth *s, const char *file)
 {
-    FILE *f = fopen(file, "r");
-    if (!f)
-        return;
-
     SynthParamState state;
     memset(&state, 0, sizeof(state));
     state.delay_time = 500;
