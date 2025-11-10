@@ -679,6 +679,8 @@ void show_ingame_info_screen(const World *world)
     {
         const int offset_x = map_tile_size + map_tile_size * (MAPMAX_X + 1) * (i % max_minimaps_per_row);
         const int offset_y = map_tile_size + map_tile_size * (MAPMAX_Y + 1) * (i / max_minimaps_per_row);
+        al_draw_filled_rectangle(offset_x - map_tile_size / 2, offset_y - map_tile_size / 2,
+                                 offset_x + map_tile_size * MAPMAX_X - map_tile_size / 2, offset_y + map_tile_size * MAPMAX_Y - map_tile_size / 2, GRAY(32));
         for (int x = 0; x < MAPMAX_X; x++)
         {
             for (int y = 0; y < MAPMAX_Y; y++)
@@ -717,7 +719,11 @@ void show_ingame_info_screen(const World *world)
         LINKED_LIST_FOR_EACH((LinkedList *)&world->enm, Enemy, enm, 0)
         {
             if (enm->alive && enm->roomid == i + 1 && enm != world->boss)
+            {
                 num_enemies++;
+                al_draw_filled_circle(offset_x + enm->x / TILESIZE * map_tile_size + map_tile_size / 2,
+                                      offset_y + enm->y / TILESIZE * map_tile_size + map_tile_size / 2, 1.5, RED);
+            }
         }
         al_draw_textf(get_font_tiny(), textcol, offset_x, offset_y - map_tile_size, 0, "#%d - Enemies: %d", i + 1,
                       num_enemies);
@@ -760,8 +766,9 @@ void show_ingame_info_screen(const World *world)
     al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : exit level");
     al_draw_filled_rectangle(offset_x, offset_y, offset_x + map_tile_size, offset_y + map_tile_size, BLUE);
     offset_y += y_incr;
-    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : YOU");
+    al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "  : YOU    : enemies");
     al_draw_filled_circle(offset_x + map_tile_size / 2, offset_y + map_tile_size / 2, map_tile_size / 2, WHITE);
+    al_draw_filled_circle(offset_x + 72, offset_y + map_tile_size / 2, 1.5, RED);
     offset_y += y_incr;
     al_draw_textf(get_font(), textcol, offset_x, offset_y, 0, "- 1-8: room entrance");
     offset_y += y_incr;
