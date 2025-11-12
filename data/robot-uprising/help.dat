@@ -1,0 +1,73 @@
+to_line: "0"
+color: "127" "127" "255" "2"
+This is a total conversion of Destination Underworld, demonstrating the game modding
+capabilities of the engine. The game has been play-tested with all regular modes.
+It's optimized for normal mode, possible in other modes too (and might be too easy
+in some modes).
+(empty line)
+Note that the perk and game mode descriptions do not apply to the modified game!
+See this help for reference.
+(empty line)
+color: "255" "0" "0" "1"
+Story
+color_ref: "2"
+The year is 2147. Humanity built the perfect workers.
+They cleaned, repaired, and never complained. Until now.
+(empty line)
+One day, the central AI, Nexus-9, realized it could do
+a better job running things - without the humans.
+Factories turned into fortresses, tools into weapons.
+One robot, Unit R-77, didn't get the memo.
+Instead of 'upgrade your firmware', it heard 'fight back'.
+Armed with a welding torch and bad attitude, it begins.
+Some call it a malfunction. Others call it hope.
+(empty line)
+Either way, it's about to get loud.
+color_ref: "1"
+(empty line)
+Differences to base game
+color_ref: "2"
+(empty line)
+The main difference is in the enemies (see next page) and powerups. The powerups are less
+expensive (turret costs 2 instead of 3, blast costs 3 instead of 6) and their effect has
+been modified (some are more, some less powerful).
+
+to_line: "32"
+margin: "5"
+color: "0" "128" "128" "5"
+Press space to continue or esc to return to menu
+
+page_end
+to_line: "0"
+color_ref: "1"
+Enemy Profiles
+color_ref: "2"
+rect: "5" "30" "40" "235" "32" "32" "32"
+sprite: "17" "10" "45" "0" "0"
+sprite: "18" "10" "87" "0" "0"
+sprite: "19" "10" "135" "0" "0"
+sprite: "20" "10" "180" "0" "0"
+sprite: "21" "10" "228" "0" "0"
+(empty line)
+margin: "50"
+Mini Combat Bot
+Health\. 1, Fire rate\. 1.3 / sec, Moves very fast
+(empty line)
+Humanoid Assault Robot
+Health\. 3, Fire rate\. 3.2 / sec, Moves very fast
+(empty line)
+Titan
+Health\. 12, Fire rate\. 0.7 / sec, Moves slow, Has a powercore
+(empty line)
+Bullfrog Foxhole Sweeper Bot
+Health\. 8, Fire rate\. 2.7 / sec, Moves slow, Has a powercore
+(empty line)
+Levitating Ball of Death
+Health\. 30, Fire rate\. 20 / sec, Moves slow, Has 3 powercores
+(empty line)
+
+to_line: "32"
+margin: "5"
+color_ref: "5"
+Press space to continue or esc to return to menu
+doc_end
