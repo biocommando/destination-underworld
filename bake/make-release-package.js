@@ -26,6 +26,7 @@ function renameMidiFiles(targetDir) {
     du ost 3 : 8-bit Apocalypse
     psykeily : Alien Spacecraft
     2025-11-dutheme : Weird Horror
+    2025-11-chill-melody : Wild Walrus on a Vacation
     prob2 : Lord of Lies
     Project_1 : Battle Bot Disassembly`
         
