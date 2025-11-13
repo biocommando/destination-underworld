@@ -5,8 +5,8 @@
         "gen-version",
         "sha1",
         "mpauth",
-        "synth",
         "gen-cmd-dispatchers",
+        "synth",
         "compile-game"
     ],
     "environment-debug": [
