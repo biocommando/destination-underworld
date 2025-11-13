@@ -25,6 +25,7 @@ int logging_enabled = 0;
 #endif
 
 static void print_help();
+static void exit_actions();
 
 int main(int argc, char **argv)
 {
@@ -171,6 +172,7 @@ int main(int argc, char **argv)
     progress_load_state("Loading menu...", 1);
     randomize_midi_playlist();
     next_midi_track(-1);
+    atexit(exit_actions);
 
     GlobalGameState ggs;
     memset(&ggs, 0, sizeof(ggs));
@@ -201,13 +203,18 @@ int main(int argc, char **argv)
             }
         }
     }
+    return 0;
+}
+
+static void exit_actions()
+{
+    printf("Exiting game...\n");
     progress_load_state("Exiting game...", 0);
     destroy_registered_samples();
 
     wt_sample_free();
     record_file_flush();
     destroy_allegro();
-    return 0;
 }
 
 static void print_help_for_arg(const char *arg_and_doc)
