@@ -217,6 +217,12 @@ static inline void read_level_cmd_file(World *world, int room_to, const char *fi
     read_level_state.world = world;
     read_command_file(filename, dispatch__read_level, &read_level_state);
 
+    IF_command_file_RequiredFlags_NOT_SET(&read_level_state.required_flags, 
+    {
+        LOG_FATAL("Level header command missing\n");
+        exit(1);
+    });
+
     const char *var = get_var("name", &variables);
     if (var && strlen(var) < 64)
     {
@@ -356,11 +362,16 @@ void read_enemy_configs(World *world)
     sprintf(fname, DATADIR "%s/enemy-properties.dat", get_game_settings()->mission_pack);
     if (check_authentication(fname))
     {
-        LOG_FATAL("enemy config authentication failed!!");
+        LOG_FATAL("enemy config authentication failed!!\n");
         exit(1);
     }
     
-    read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
+    int err = read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
+    if (err != 0)
+    {
+        LOG_FATAL("Failed to read required file: %s\n", fname);
+        exit(1);
+    }
 }
 
 static GameTuningParams _tuning_params;
@@ -376,11 +387,16 @@ void read_game_tuning_params()
     sprintf(fname, DATADIR "%s/game-tuning.dat", get_game_settings()->mission_pack);
     if (check_authentication(fname))
     {
-        LOG_FATAL("game tuning authentication failed!!");
+        LOG_FATAL("game tuning authentication failed!!\n");
         exit(1);
     }
     memset(&_tuning_params, 0, sizeof(_tuning_params));
-    read_command_file(fname, dispatch__game_tuning, &_tuning_params);
+    int err = read_command_file(fname, dispatch__game_tuning, &_tuning_params);
+    if (err != 0)
+    {
+        LOG_FATAL("Failed to read required file: %s\n", fname);
+        exit(1);
+    }
 }
 
 void dispatch__handle_mission_counts_mode_override(struct mission_counts_mode_override_DispatchDto *dto)

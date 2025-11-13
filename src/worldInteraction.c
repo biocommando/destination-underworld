@@ -464,7 +464,7 @@ void set_player_start_state(World *world, GlobalGameState *ggs)
         {
             excess_gold = world->plr.gold;
         }
-        for (; excess_gold >= healing_cost; excess_gold -= healing_cost)
+        for (; healing_cost && excess_gold >= healing_cost; excess_gold -= healing_cost)
         {
             world->plr.health += difficulty == DIFFICULTY_BRUTAL ? gt->healing_powerup_amount_brutal : gt->healing_powerup_amount;
         }

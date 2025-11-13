@@ -114,8 +114,10 @@ Object.keys(json)
         statename = config.state
         const prefix = config.prefix || `${commandSetName}_`
         const defaultHandler = !!config.default
+        const defaultRequired = !!config.defaultrequired
         hfile = hfile.replace('$$STATE_H$$', 'state_' + statename + '.h')
-        cfile += `    ${statename} *state = (${statename} *)dto->state;\n`
+        cfile += `    ${statename} *state = (${statename} *)dto->state;\n{REQUIRED_FLAGS_INIT_PLACEHOLDER}\n`
+        let requiredCount = 0
         Object.keys(def).filter(x => x !== ':config')
             .forEach(command => {
                 command_idx = 0
@@ -138,7 +140,7 @@ struct ${prefix}${commandname}_DispatchDto
         cd.state = state;
         cd.skip_label = dto->skip_label;
 `
-                const params = Object.keys(def[command]).filter(x => !x.startsWith('validate:'))
+                const params = Object.keys(def[command]).filter(x => !x.startsWith('validate:') && x !== ':required')
                 params.slice(0, 32).forEach(param => {
                     cfile += `        if (!dto->parameters[${command_idx}])
         {
@@ -149,7 +151,7 @@ struct ${prefix}${commandname}_DispatchDto
                     let format = 's'
 
                     if (!['int', 'float', 'str'].includes(def[command][param]))
-                        throw `invalid parameter type: ${commandSetName}.${command}.${param} ${def[command][param]}` 
+                        throw `invalid parameter type: ${commandSetName}.${command}.${param} ${def[command][param]}`
 
                     if (def[command][param] === 'str') {
                         hfile += `    const char *${param};\n`
@@ -173,6 +175,17 @@ struct ${prefix}${commandname}_DispatchDto
                     command_idx++;
                 })
                 debug_print += '}'
+
+                let required = defaultRequired
+                if (def[command][':required'] !== undefined) {
+                    required = def[command][':required']
+                }
+                if (required) {
+                    cfile += `        SET_command_file_RequiredFlags_FLAG(${requiredCount}, state->required_flags.flags);\n`
+                    requiredCount++
+                    if (requiredCount > 800)
+                        console.log('WARNING: max number of required fields reached!')
+                }
                 cfile += `        dispatch__handle_${prefix}${commandname}(&cd);
         return;
     }
@@ -181,7 +194,7 @@ struct ${prefix}${commandname}_DispatchDto
 
 void dispatch__handle_${prefix}${commandname}(struct ${prefix}${commandname}_DispatchDto *);
 
-${config.debug?'':'//'}void debug_${prefix}${commandname}_DispatchDto(const struct ${prefix}${commandname}_DispatchDto *);
+${config.debug ? '' : '//'}void debug_${prefix}${commandname}_DispatchDto(const struct ${prefix}${commandname}_DispatchDto *);
 `
                 if (config.fieldsetter) {
                     fieldsetters += `void dispatch__handle_${prefix}${commandname}(struct ${prefix}${commandname}_DispatchDto *dto)
@@ -215,10 +228,15 @@ void dispatch__handle_${commandSetName}_default(struct ${commandSetName}_default
     dispatch__handle_${commandSetName}_default(&default_dto);
 `
         }
+        if (requiredCount > 0) {
+            cfile = cfile.replace('{REQUIRED_FLAGS_INIT_PLACEHOLDER}', `    state->required_flags.count = ${requiredCount};`)
+        } else {
+            cfile = cfile.replace('{REQUIRED_FLAGS_INIT_PLACEHOLDER}\n', '')
+        }
     })
 
 function generate_validator(validate, param, type, command) {
-    let validator =  ''
+    let validator = ''
 
     const rangeValidator = (param, paramName) => {
         validator += '        if (!('
