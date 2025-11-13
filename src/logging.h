@@ -30,3 +30,15 @@
 
 #define LOG_ERROR(...) LOG_PREFIX("ERROR", __VA_ARGS__)
 #define LOG_FATAL(...) LOG_PREFIX("FATAL", __VA_ARGS__)
+
+#define FATAL(expression, ...)                  \
+    do                                          \
+    {                                           \
+        if (expression)                         \
+        {                                       \
+            extern int exit_due_to_fatal_error; \
+            exit_due_to_fatal_error = 1;        \
+            LOG_FATAL(__VA_ARGS__);             \
+            exit(1);                            \
+        }                                       \
+    } while (0)

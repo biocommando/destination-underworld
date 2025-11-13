@@ -33,6 +33,8 @@
 #include "screenshot.h"
 #include "game_tuning.h"
 
+int exit_due_to_fatal_error = 0;
+
 static void set_game_mode_beaten_flag(int game_modifiers)
 {
     if (!get_game_settings()->require_authentication)

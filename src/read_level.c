@@ -109,10 +109,7 @@ static inline void place_lev_object(World *world, int x, int y, int id, int room
 
 void dispatch__handle_read_level_header(struct read_level_header_DispatchDto *dto)
 {
-    if (dto->version == 3)
-        return;
-    LOG_FATAL("legacy format file!\n");
-    exit(1);
+    FATAL(dto->version != 3, "legacy format file!\n");
 }
 
 void dispatch__handle_read_level_object(struct read_level_object_DispatchDto *dto)
@@ -219,8 +216,7 @@ static inline void read_level_cmd_file(World *world, int room_to, const char *fi
 
     IF_command_file_RequiredFlags_NOT_SET(&read_level_state.required_flags,
                                           {
-                                              LOG_FATAL("Level header command missing\n");
-                                              exit(1);
+                                              FATAL(1, "Level header command missing\n");
                                           });
 
     const char *var = get_var("name", &variables);
@@ -333,11 +329,7 @@ int read_level(World *world, int mission, int room_to)
     }
     auth_check_result = check_authentication(filename);
     fclose(f);
-    if (auth_check_result)
-    {
-        LOG_FATAL("level authentication failed!!");
-        exit(1);
-    }
+    FATAL(auth_check_result, "level authentication failed!!");
 
     read_level_cmd_file(world, room_to, filename);
 
@@ -360,18 +352,10 @@ void read_enemy_configs(World *world)
 {
     char fname[256];
     sprintf(fname, DATADIR "%s/enemy-properties.dat", get_game_settings()->mission_pack);
-    if (check_authentication(fname))
-    {
-        LOG_FATAL("enemy config authentication failed!!\n");
-        exit(1);
-    }
+    FATAL(check_authentication(fname), "enemy config authentication failed!!\n");
 
     int err = read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
-    if (err != 0)
-    {
-        LOG_FATAL("Failed to read required file: %s\n", fname);
-        exit(1);
-    }
+    FATAL(err != 0, "Failed to read required file: %s\n", fname);
 }
 
 static GameTuningParams _tuning_params;
@@ -385,22 +369,13 @@ void read_game_tuning_params()
 {
     char fname[256];
     sprintf(fname, DATADIR "%s/game-tuning.dat", get_game_settings()->mission_pack);
-    if (check_authentication(fname))
-    {
-        LOG_FATAL("game tuning authentication failed!!\n");
-        exit(1);
-    }
+    FATAL(check_authentication(fname), "game tuning authentication failed!!\n");
     memset(&_tuning_params, 0, sizeof(_tuning_params));
     int err = read_command_file(fname, dispatch__game_tuning, &_tuning_params);
-    if (err != 0)
-    {
-        LOG_FATAL("Failed to read required file: %s\n", fname);
-        exit(1);
-    }
+    FATAL(err != 0, "Failed to read required file: %s\n", fname);
     IF_command_file_RequiredFlags_NOT_SET(&_tuning_params.required_flags,
                                           {
-                                              LOG_FATAL("All tuning parameters need to be defined!\n");
-                                              exit(1);
+                                              FATAL(1, "All tuning parameters need to be defined!\n");
                                           });
 }
 
@@ -430,15 +405,10 @@ int read_mission_count(int game_mode)
     smc.game_mode = game_mode;
 
     int err = read_command_file(fname, dispatch__mission_counts, &smc);
-    if (err != 0)
-    {
-        LOG_FATAL("Could not read file %s\n", fname);
-        exit(1);
-    }
+    FATAL(err != 0, "Could not read file %s\n", fname);
     IF_command_file_RequiredFlags_NOT_SET(&smc.required_flags,
                                           {
-                                              LOG_FATAL("initial_count required\n");
-                                              exit(1);
+                                              FATAL(1, "initial_count required\n");
                                           });
 
     return smc.count;

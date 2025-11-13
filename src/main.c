@@ -208,7 +208,13 @@ int main(int argc, char **argv)
 
 static void exit_actions()
 {
+    extern int exit_due_to_fatal_error;
     printf("Exiting game...\n");
+    if (exit_due_to_fatal_error)
+    {
+        progress_load_state("FATAL ERROR!", 0);
+        wait_delay_ms(3000);
+    }
     progress_load_state("Exiting game...", 0);
     destroy_registered_samples();
 
