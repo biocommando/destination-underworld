@@ -1,4 +1,6 @@
 #pragma once
+#include "command_file/generated/required_flags.h"
+
 typedef struct {
     int max_health_with_perk; // 7
     int max_health; // 6
@@ -88,6 +90,8 @@ typedef struct {
     double perk_xp_level_multiplier; // 2
 
     int blood_stains_enabled; // 1
+
+    command_file_RequiredFlags required_flags;
 } GameTuningParams;
 
 const GameTuningParams *get_tuning_params();

@@ -203,7 +203,7 @@ void dispatch__handle_read_level_script_start(struct read_level_script_start_Dis
 }
 
 static inline void read_level_cmd_file(World *world, int room_to, const char *filename)
-{ 
+{
     int boss_exists = world->boss != NULL;
     LevelState read_level_state;
     memset(&read_level_state, 0, sizeof(LevelState));
@@ -217,11 +217,11 @@ static inline void read_level_cmd_file(World *world, int room_to, const char *fi
     read_level_state.world = world;
     read_command_file(filename, dispatch__read_level, &read_level_state);
 
-    IF_command_file_RequiredFlags_NOT_SET(&read_level_state.required_flags, 
-    {
-        LOG_FATAL("Level header command missing\n");
-        exit(1);
-    });
+    IF_command_file_RequiredFlags_NOT_SET(&read_level_state.required_flags,
+                                          {
+                                              LOG_FATAL("Level header command missing\n");
+                                              exit(1);
+                                          });
 
     const char *var = get_var("name", &variables);
     if (var && strlen(var) < 64)
@@ -339,7 +339,7 @@ int read_level(World *world, int mission, int room_to)
         exit(1);
     }
 
-   read_level_cmd_file(world, room_to, filename);
+    read_level_cmd_file(world, room_to, filename);
 
     return 0;
 }
@@ -365,7 +365,7 @@ void read_enemy_configs(World *world)
         LOG_FATAL("enemy config authentication failed!!\n");
         exit(1);
     }
-    
+
     int err = read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
     if (err != 0)
     {
@@ -397,6 +397,11 @@ void read_game_tuning_params()
         LOG_FATAL("Failed to read required file: %s\n", fname);
         exit(1);
     }
+    IF_command_file_RequiredFlags_NOT_SET(&_tuning_params.required_flags,
+                                          {
+                                              LOG_FATAL("All tuning parameters need to be defined!\n");
+                                              exit(1);
+                                          });
 }
 
 void dispatch__handle_mission_counts_mode_override(struct mission_counts_mode_override_DispatchDto *dto)
@@ -424,7 +429,17 @@ int read_mission_count(int game_mode)
     memset(&smc, 0, sizeof(smc));
     smc.game_mode = game_mode;
 
-    read_command_file(fname, dispatch__mission_counts, &smc);
+    int err = read_command_file(fname, dispatch__mission_counts, &smc);
+    if (err != 0)
+    {
+        LOG_FATAL("Could not read file %s\n", fname);
+        exit(1);
+    }
+    IF_command_file_RequiredFlags_NOT_SET(&smc.required_flags,
+                                          {
+                                              LOG_FATAL("initial_count required\n");
+                                              exit(1);
+                                          });
 
     return smc.count;
 }

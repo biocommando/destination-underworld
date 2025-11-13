@@ -140,7 +140,8 @@
             "validate:count": {
                 "type": "range",
                 "min": 0
-            }
+            },
+            ":required": true
         }
     },
     "help": {
@@ -303,7 +304,8 @@
     "game_tuning": {
         ":config": {
             "state": "GameTuningParams",
-            "fieldsetter": true
+            "fieldsetter": true,
+            "defaultrequired": true
         },
         "max_health_with_perk": {
             "field": "int",
