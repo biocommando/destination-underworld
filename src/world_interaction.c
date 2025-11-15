@@ -1,14 +1,14 @@
 #include "logging.h"
-#include "worldInteraction.h"
+#include "world_interaction.h"
 #include <stdio.h>
 #include <math.h>
 #include "settings.h"
 #include "helpers.h"
-#include "predictableRandom.h"
+#include "predictable_random.h"
 #include "vfx.h"
 #include "boss_logic.h"
-#include "sampleRegister.h"
-#include "duColors.h"
+#include "sample_register.h"
+#include "du_colors.h"
 #include "game_tuning.h"
 
 static inline int is_passable(const World *world, int x, int y)

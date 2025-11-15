@@ -2,13 +2,13 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include "menu.h"
-#include "gamePersistence.h"
-#include "duColors.h"
+#include "game_persistence.h"
+#include "du_colors.h"
 #include "helpers.h"
 #include "settings.h"
 #include "sprites.h"
 #include "logging.h"
-#include "sampleRegister.h"
+#include "sample_register.h"
 #include "midi_playback.h"
 #include "record_file.h"
 #include "sha1/du_dmac.h"

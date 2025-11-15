@@ -1,8 +1,8 @@
 
 #include "help.h"
 #include "sprites.h"
-#include "duColors.h"
-#include "duConstants.h"
+#include "du_colors.h"
+#include "du_constants.h"
 #include "settings.h"
 #include "command_file/generated/dispatch_help.h"
 

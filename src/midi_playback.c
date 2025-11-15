@@ -1,6 +1,6 @@
 #include "midi_playback.h"
 #include "allegro5/allegro.h"
-#include "duConstants.h"
+#include "du_constants.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -1,7 +1,7 @@
 #include "potion_logic.h"
-#include "worldInteraction.h"
+#include "world_interaction.h"
 #include "sprites.h"
-#include "sampleRegister.h"
+#include "sample_register.h"
 #include "vfx.h"
 #include <math.h>
 

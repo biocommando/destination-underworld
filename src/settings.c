@@ -4,7 +4,7 @@
 #include "logging.h"
 #include "settings.h"
 #include "record_file.h"
-#include "duConstants.h"
+#include "du_constants.h"
 #include "allegro_management.h"
 #include "command_line_args.h"
 

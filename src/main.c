@@ -5,11 +5,11 @@
 #include <math.h>
 #include "game.h"
 #include "logging.h"
-#include "duConstants.h"
+#include "du_constants.h"
 #include "world.h"
 #include "menu.h"
 #include "settings.h"
-#include "sampleRegister.h"
+#include "sample_register.h"
 #include "loadindicator.h"
 #include "sprites.h"
 #include "record_file.h"

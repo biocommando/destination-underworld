@@ -1,6 +1,6 @@
 #include "arenaconf.h"
 
-#include "duConstants.h"
+#include "du_constants.h"
 #include "world.h"
 #include "settings.h"
 #include "record_file.h"

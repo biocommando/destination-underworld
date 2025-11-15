@@ -1,6 +1,6 @@
-#include "sampleRegister.h"
+#include "sample_register.h"
 #include "settings.h"
-#include "duConstants.h"
+#include "du_constants.h"
 #include "logging.h"
 #include "record_file.h"
 #include <stdio.h>

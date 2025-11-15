@@ -4,7 +4,7 @@
 #include "../arenaconf.h"
 #include "../record_file.h"
 #include "../settings.h"
-#include "../duConstants.h"
+#include "../du_constants.h"
 
 void arenaconf__read_arena_configs__valid_and_invalid_entries()
 {

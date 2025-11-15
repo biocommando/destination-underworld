@@ -1,13 +1,13 @@
 #include "bullet_logic.h"
 
 #include "logging.h"
-#include "predictableRandom.h"
-#include "worldInteraction.h"
-#include "renderWorld.h"
+#include "predictable_random.h"
+#include "world_interaction.h"
+#include "render_world.h"
 #include "sprites.h"
-#include "sampleRegister.h"
+#include "sample_register.h"
 #include "boss_logic.h"
-#include "duColors.h"
+#include "du_colors.h"
 #include "vfx.h"
 #include "game_tuning.h"
 #include <math.h>

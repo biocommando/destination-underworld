@@ -1,7 +1,7 @@
 #include "allegro_management.h"
 #include "allegro5/allegro_acodec.h"
 #include "allegro5/allegro_ttf.h"
-#include "duConstants.h"
+#include "du_constants.h"
 #include "gen_version_info.h"
 #include "midi_playback.h"
 #include "settings.h"

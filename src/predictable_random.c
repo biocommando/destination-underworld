@@ -1,4 +1,4 @@
-#include "predictableRandom.h"
+#include "predictable_random.h"
 #include <stdint.h>
 
 #define PREDICTABLE_RANDOM_SEED 8507

@@ -1,8 +1,8 @@
 #include "keyhandling.h"
 #include <stdio.h>
-#include "duConstants.h"
-#include "worldInteraction.h"
-#include "sampleRegister.h"
+#include "du_constants.h"
+#include "world_interaction.h"
+#include "sample_register.h"
 #include "vfx.h"
 #include "game_tuning.h"
 

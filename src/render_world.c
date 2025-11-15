@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <math.h>
-#include "renderWorld.h"
-#include "duColors.h"
-#include "predictableRandom.h"
+#include "render_world.h"
+#include "du_colors.h"
+#include "predictable_random.h"
 #include "sprites.h"
 #include "best_times.h"
 #include "settings.h"

@@ -1,8 +1,8 @@
 #include "boss_logic.h"
 #include "logging.h"
-#include "predictableRandom.h"
-#include "worldInteraction.h"
-#include "sampleRegister.h"
+#include "predictable_random.h"
+#include "world_interaction.h"
+#include "sample_register.h"
 #include "bossfightconf.h"
 #include "vfx.h"
 #include <math.h>

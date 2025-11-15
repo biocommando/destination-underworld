@@ -1,6 +1,6 @@
 #include "game_playback.h"
 #include "record_file.h"
-#include "duConstants.h"
+#include "du_constants.h"
 
 #include <stdio.h>
 #include <string.h>
