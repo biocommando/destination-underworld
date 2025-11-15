@@ -29,7 +29,7 @@ function renameMidiFiles(targetDir) {
     2025-11-chill-melody : Wild Walrus on a Vacation
     prob2 : Lord of Lies
     Project_1 : Battle Bot Disassembly`
-        
+
     names.split('\n').forEach(x => {
         const [origName, newName] = x.split(':').map(x => x.trim())
         fs.renameSync(targetDir + '/' + origName + '.mid', targetDir + '/' + newName + '.mid')
@@ -52,14 +52,15 @@ module.exports = v => {
 
     function copyMissionPackEssentials(packName) {
         fs.mkdirSync(`${dest}data/${packName}`)
-        starCopy('data/' + packName, /^mission.*$/, `${dest}data/${packName}`)
-        starCopy('data/' + packName, /^(enemy-properties|arenas|help|game-tuning|sprites|sounds)\.dat$/, `${dest}data/${packName}`)
+        starCopy('data/' + packName, /^mission\d*$/, `${dest}data/${packName}`)
+        starCopy('data/' + packName, /^mission\d*-mode-\d*$/, `${dest}data/${packName}`)
+        starCopy('data/' + packName, /^(enemy-properties|arenas|help|game-tuning|sprites|sounds|mission-counts)\.dat$/, `${dest}data/${packName}`)
     }
 
     copyMissionPackEssentials('core-pack')
 
     fs.copyFileSync('data/core-pack/best_times.dat.template', `${dest}data/core-pack/best_times.dat`)
-    
+
     const mpAuthOut = v.sh(`${v.mpAuthEx} core-pack ./data/core-pack/ no-debug-prints`).toString()
     fs.writeFileSync(`${dest}data/core-pack/auth.dat`, mpAuthOut)
 
@@ -74,10 +75,12 @@ module.exports = v => {
     starCopy('data', /^(ending|hell)\.jpg$/, `${dest}data`)
 
     starCopy('data', /^(sel|warp|bt[1-2]|select_weapon|throw|healing|rune_of_protection|turret|blast|spawn|potion_(shield|stop|fast|boost|heal)|ex[1-6]|die[1-6]|wet_[1-3]|menusel|menuchg)\.ogg$/, `${dest}data`)
-    
+
     copyMissionPackEssentials('robot-uprising')
     starCopy('data/robot-uprising', /^(disassemble(|2)|parts_scatter)\.ogg$/, `${dest}data/robot-uprising`)
     starCopy('data/robot-uprising', /^sprites\.png$/, `${dest}data/robot-uprising`)
+
+    copyMissionPackEssentials('classic')
 
     starCopy('data/midi-music', /\.(mid|ini)$/, `${dest}data/midi-music`)
     renameMidiFiles(`${dest}data/midi-music`)

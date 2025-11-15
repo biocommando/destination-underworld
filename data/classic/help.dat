@@ -1,0 +1,17 @@
+'Classic' is the game converted from old mission format, from files
+dating back to 2011. The game tuning tries to be as close to the
+experience back then, but there are some inevident differences.
+The boss in particular is different as there's no way to allow player
+to have infinite ammo just in that mission. The new boss is as
+frustrating as the original boss but has a bit more variety.
+(empty line)
+The game is not possible in potion only mode.
+(empty line)
+Modifications to base game\.
+- Turret powerup shoots only in 8 directions
+- No cap for number of souls at start of level
+- No circle of protection or blast powerups
+- No perks
+to_line: "32"
+Press space to go back to menu
+doc_end
