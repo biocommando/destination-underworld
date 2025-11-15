@@ -87,6 +87,7 @@ module.exports = v => {
     if (v.isWindows) {
         starCopy(`${v.allegro_path}/bin`, /allegro_monolith-5.2/, dest)
         fs.writeFileSync(`${dest}RobotUprising.bat`, 'DestinationUnderworld.exe --general--mission-pack=robot-uprising')
+        fs.writeFileSync(`${dest}Classic.bat`, 'DestinationUnderworld.exe --general--mission-pack=classic')
     }
     starCopy(`.`, /^DestinationUnderworld(\.exe)?$/, dest)
 }
