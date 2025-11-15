@@ -4,20 +4,17 @@
 
 #define MAX_NUM_SAMPLES 64
 
-// TODO: the explanation is no longer valid as music does not use the same sample
-// playback interface
-// Default priority = 128.
-// To eliminate the need to do some hacks to keep the music playing
-// let's keep the priority numbers below that
 #define SAMPLE_PRIORITY_NORMAL 40
 #define SAMPLE_PRIORITY_HIGH 80
 #define SAMPLE_PRIORITY_LOW 0
 
+// There's a limit how many samples can be played at once, so certain samples can be marked as
+// higher priority.
 #define SAMPLE_PRIORITY(base_level, add_level) (SAMPLE_PRIORITY_##base_level + add_level)
 
 /*
  * Set sample with the given filename to sample registry with the given id and priority.
- * If the "trigger group" is not zero, the all the samples in the same group will be marked as
+ * If the "trigger group" is not zero, all the samples in the same group will be marked as
  * triggered when one sample is played from that group.
  */
 void register_sample(int id, const char *fname, int priority, int group);

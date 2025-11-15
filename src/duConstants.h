@@ -8,11 +8,15 @@
 #define ANIM_FRAME_COUNT 40
 #define TO_PIXEL_COORDINATES(point) ((point) * TILESIZE + HALFTILESIZE)
 
+// Verifies that x and y are within legal map axis limits.
+// Sets the validated x and y to ok_x, ok_y
 #define WITH_SANITIZED_NS_TILE_COORDINATES(x, y) \
     const unsigned ok_x = x;             \
     const unsigned ok_y = y;             \
     if (ok_x < MAPMAX_X && ok_y < MAPMAX_Y)
 
+// Same as WITH_SANITIZED_NS_TILE_COORDINATES but scales the
+// pixel X/Y coordinates to map coordinates
 #define WITH_SANITIZED_TILE_COORDINATES(x, y) \
     WITH_SANITIZED_NS_TILE_COORDINATES(x / TILESIZE, y / TILESIZE)
 

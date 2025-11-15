@@ -9,9 +9,22 @@ void save_game(Enemy *autosave, int mission, int game_modifiers, int slot);
 /*
  * Writes a game state to the provided file. Uses the record file format.
  * The syntax is:
- * slot_[slot]--[property] [value]
- * The following properties are saved:
- * game_modifiers, mission, health, shots, reload, rate, ammo, gold
+ * key:
+ * - slot_[slot]
+ * parameters:
+ * - game_modifiers
+ * - mission
+ * - health
+ * - shots
+ * - reload
+ * - rate
+ * - ammo
+ * - gold
+ * - perks
+ * - xp
+ * - salt (only if authentication required)
+ * - hash (only if authentication required)
+ *
  * (shots, reload, rate = weapon selection)
  */
 void save_game_save_data(const char *filename, Enemy *data, int mission, int game_modifiers, int slot);

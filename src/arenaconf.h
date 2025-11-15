@@ -23,12 +23,11 @@ typedef struct
 } ArenaConfigs;
 
 /*
- * Read the ArenaConfigs structure. Uses record file format.
- * Expects to find following types of records:
- * number_of_arenas amount
- *   Read this many ArenaConfigs from the file
- * arena_%d level_number=%d name=%s
- *   Populates ArenaConfig structure. The name can have spaces etc.
+ * Read the ArenaConfigs structure. Uses command file format.
+ * Expects to find following types of commands:
+ * "level_id" "level_name"
+ *
+ * Populates ArenaConfig structure.
  */
 void read_arena_configs(const char *filename, ArenaConfigs *config);
 
@@ -37,10 +36,12 @@ void read_arena_configs(const char *filename, ArenaConfigs *config);
  * return 0.
  *
  * Uses record file format. The records have the following format:
- * level_number=%d;mode=%d; %d
+ * key=level_number=%d;mode=%d
  * Where the placeholders are:
  * - level number that corresponds to the level_number field read in read_arena_configs.
  * - the game modifiers flags
+ *
+ * parameters:
  * - the highscore (number of kills)
  */
 int get_arena_highscore(int mission, int game_mode);

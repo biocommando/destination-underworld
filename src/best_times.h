@@ -19,13 +19,16 @@ struct best_times
  * fields initialized already, only the times array will be populated based
  * on the data game mode and mission number data.
  *
- * Best times file uses record file format. The syntax is:
- * MISSION=%d;MODE=%d;I=%d; %f
+ * Best times file uses record file format. The key is:
+ * MISSION=%d;MODE=%d;I=%d;
  *
  * where:
  * MISSION = best_times.mission
  * MODE = best_times.game_modifiers
  * I = the index in best_times.times array
+ *
+ * parameters:
+ * - The time in seconds
  *
  * If record is not found, initializes array with value 1e10.
  */

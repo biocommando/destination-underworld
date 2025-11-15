@@ -1,5 +1,9 @@
 #pragma once
 
+// Contains definiton and documentation for all supported command line parameters.
+// Format is such that the constant strings contain 2 null terminated strings:
+// first is the command, and the second is the documentation string.
+
 #define CMD_ARG_AND_DOC(arg, doc) \
     arg "\0" doc
 

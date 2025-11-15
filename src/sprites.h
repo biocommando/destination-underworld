@@ -42,8 +42,9 @@ int set_sprite(int sprite_id, DuSprite sprite);
  */
 DuSprite *get_sprite(int sprite_id);
 /*
- * Reads sprites with ids min...max from provided file.
- * Uses the command_file format.
+ * Reads sprites from provided file.
+ * Uses the command_file format with the following syntax:
+ * "id" "x" "y" "width" "height"
  */
 int read_sprites_from_file(const char *filename);
 /*

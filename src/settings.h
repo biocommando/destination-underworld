@@ -46,7 +46,7 @@ typedef struct
 /*
  * Read game settings. The settings are read from file settings.dat.
  * The file uses record file format with the following structure:
- * [setting id] [value]
+ * [setting id]: "[value]"
  * The settings can be overridden with command line arguments using the following
  * syntax:
  * --[setting id]=[value]

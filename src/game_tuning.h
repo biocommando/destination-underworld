@@ -94,4 +94,7 @@ typedef struct {
     command_file_RequiredFlags required_flags;
 } GameTuningParams;
 
+/*
+ * Get the global game tuning parameters object.
+ */
 const GameTuningParams *get_tuning_params();

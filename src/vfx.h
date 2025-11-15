@@ -40,6 +40,12 @@ void create_shade_around_hit_point(int x, int y, int roomid, int spread, WorldFx
  */
 void create_flame_fx_ember(int x, int y, struct flame_ember_fx *f);
 
+/*
+ * Creates a flame at x, y.
+ */
 void create_flame_fx(int x, int y, const World *world, WorldFx *world_fx);
 
+/*
+ * Creates the death ray line for Uber wizard mode.
+ */
 void create_uber_wizard_weapon_fx(const World *world, WorldFx *world_fx, int x2, int y2, int type);

@@ -107,4 +107,7 @@ void draw_hint(WorldFx *world_fx);
  * Displays a level info screen that contains the mini map and some metadata on the level.
  */
 void show_ingame_info_screen(const World *world);
+/*
+ * Draws the death ray line in Uber wizard mode.
+ */
 void draw_uber_wizard_weapon_fx(WorldFx *world);
