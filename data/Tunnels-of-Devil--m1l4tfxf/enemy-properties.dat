@@ -1,5 +1,0 @@
-type-0 turret=0 rate=29 health=3 gold=0 fast=0 hurts-monsters=0 potion-for-potion-only=4
-type-1 turret=0 rate=29 health=5 gold=0 fast=0 hurts-monsters=0 potion-for-potion-only=5
-type-2 turret=0 rate=14 health=3 gold=1 fast=1 hurts-monsters=0 potion-for-potion-only=4
-type-3 turret=0 rate=8 health=7 gold=1 fast=1 hurts-monsters=1 potion-for-potion-only=4
-type-4 turret=1 rate=6 health=5 gold=1 fast=0 hurts-monsters=0 potion-for-potion-only=3
