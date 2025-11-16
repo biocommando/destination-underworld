@@ -366,6 +366,8 @@ margin: "40"
 
 fs.writeFileSync(packName + '/arenas.dat', '')
 fs.writeFileSync(packName + '/enemy-properties.dat', enemyProperties)
+const gameTuning = fs.readFileSync('../core-pack/game-tuning.dat')
+fs.writeFileSync(packName + '/game-tuning.dat', gameTuning)
 
 spawnerInfos.sort((a, b) => a.mission * 10 + a.room - b.mission * 10 - b.room)
 
