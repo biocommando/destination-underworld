@@ -59,7 +59,6 @@ void linked_list__list_add_remove_clear_access()
     assert_int_list_contents_equal(&lst, "");
     linked_list_clear(&lst);
     assert_int_list_contents_equal(&lst, "");
-    return 0;
 }
 
 void test_managed_lists(LinkedList *lists)
