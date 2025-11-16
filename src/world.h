@@ -517,6 +517,8 @@ typedef struct
     Enemy *player;
     // Set to 1 to allow saving a buffer of screenshots (slow) with a keypress
     int setup_screenshot_buffer;
+    // Set this to non zero length string for loading another mission pack.
+    char mission_pack[64];
 } GlobalGameState;
 
 

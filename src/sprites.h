@@ -47,6 +47,8 @@ DuSprite *get_sprite(int sprite_id);
  * "id" "x" "y" "width" "height"
  */
 int read_sprites_from_file(const char *filename);
+// Reset sprite database for reloading from different file
+void reset_sprites();
 /*
  * Draw a sprite from the sprite sheet on the screen. The x, y position is the upper left corner
  * of the sprite.

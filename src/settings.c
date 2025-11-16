@@ -36,7 +36,10 @@ static void read_setting(const char *filename, char **argv, int argc, char *resu
     {                                                                        \
         read_setting(game_settings.settings_file, argv, argc, buf, setting); \
         if (!buf[0] || sscanf(buf, format_str, result_var) == 0)             \
+        {                                                                    \
+            *result_var = 0;                                                 \
             LOG("Read error\n");                                             \
+        }                                                                    \
                                                                              \
     } while (0)
 
@@ -76,7 +79,7 @@ static void read_keys()
     game_settings.keys.map_info = record_file_next_param_as_int(game_settings.keys.map_info);
 }
 
-void read_settings(char **argv, int argc)
+void read_settings(char **argv, int argc, const char *mission_pack)
 {
     char buf[256], file_name[256] = DATADIR "settings.dat";
 
@@ -85,7 +88,14 @@ void read_settings(char **argv, int argc)
 
     LOG("Settings file: %s\n", file_name);
 
-    READ_SETTING(game_settings.mission_pack, "%s", SETTING_MISSION_PACK);
+    if (!mission_pack || strlen(mission_pack) > 63)
+    {
+        READ_SETTING(game_settings.mission_pack, "%s", SETTING_MISSION_PACK);
+    }
+    else
+    {
+        strcpy(game_settings.mission_pack, mission_pack);
+    }
     READ_SETTING(&game_settings.custom_resources, "%d", SETTING_CUSTOM_RES);
     READ_SETTING(&game_settings.require_authentication, "%d", SETTING_REQ_AUTH);
 

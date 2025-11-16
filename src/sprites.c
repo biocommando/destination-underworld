@@ -62,6 +62,11 @@ int read_sprites_from_file(const char *filename)
     return 0;
 }
 
+void reset_sprites()
+{
+    init_ok = 0;
+}
+
 void draw_sprite(const ALLEGRO_BITMAP *sprite_sheet, int sprite_id, int x, int y)
 {
     DuSprite *s = get_sprite(sprite_id);

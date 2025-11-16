@@ -73,6 +73,7 @@ static void load_playlist()
                 free(meta_f_name);
             }
         }
+        al_destroy_fs_entry(next);
     }
     al_close_directory(e);
     al_destroy_fs_entry(e);

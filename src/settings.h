@@ -55,7 +55,7 @@ typedef struct
  *
  * The read result is saved to a global variable that can be using get_game_settings.
  */
-void read_settings(char **argv, int argc);
+void read_settings(char **argv, int argc, const char *mission_pack);
 
 /*
  * Saves settings similarly as in read_settings. Note that any command line overrides

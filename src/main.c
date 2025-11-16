@@ -26,6 +26,8 @@ int logging_enabled = 0;
 
 static void print_help();
 static void exit_actions();
+static void register_samples();
+static void main_menu_loop(GlobalGameState *ggs, int *record_mode);
 
 int main(int argc, char **argv)
 {
@@ -86,7 +88,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    read_settings(argv, argc);
+    read_settings(argv, argc, NULL);
 
     if (get_game_settings()->require_authentication && *record_mode == RECORD_MODE_PLAYBACK)
     {
@@ -125,6 +127,84 @@ int main(int argc, char **argv)
     int game_modifiers = read_cmd_line_arg_int(ARG_DEF_GMODE, argv, argc);
 
     progress_load_state("Loading samples...", 1);
+    register_samples();
+
+    progress_load_state("Loading sprites...", 1);
+    {
+        char path[256];
+        get_data_filename(path, "sprites.dat");
+        read_sprites_from_file(path);
+    }
+
+    progress_load_state("Loading menu...", 1);
+    randomize_midi_playlist();
+    next_midi_track(-1);
+    atexit(exit_actions);
+
+    while (1)
+    {
+        GlobalGameState ggs;
+        memset(&ggs, 0, sizeof(ggs));
+        if (player_damage_off)
+            ggs.cheats |= 1;
+        ggs.game_modifiers = game_modifiers;
+        ggs.mission = 1;
+        ggs.no_player_interaction = record_playback_no_user_interaction;
+        ggs.setup_screenshot_buffer = read_cmd_line_arg_int(ARG_SCREENSHOT, argv, argc);
+        main_menu_loop(&ggs, record_mode);
+        if (*ggs.mission_pack)
+        {
+            record_file_flush();
+            destroy_registered_samples();
+            reset_sprites();
+
+            read_settings(argv, argc, ggs.mission_pack);
+
+            register_samples();
+            {
+                char path[256];
+                get_data_filename(path, "sprites.dat");
+                read_sprites_from_file(path);
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+    return 0;
+}
+
+static void main_menu_loop(GlobalGameState *ggs, int *record_mode)
+{
+    while (ggs->mission != 0)
+    {
+        if (*record_mode != RECORD_MODE_PLAYBACK)
+            menu(0, ggs);
+        else if (!ggs->no_player_interaction)
+        {
+            al_clear_to_color(al_map_rgb(0, 0, 0));
+            al_draw_textf(get_menu_title_font(), al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
+            al_flip_display();
+            wait_key_press(ALLEGRO_KEY_ENTER);
+        }
+        if (*ggs->mission_pack)
+            break;
+        while (ggs->mission > 0)
+        {
+            game(ggs);
+            if (*record_mode == RECORD_MODE_PLAYBACK)
+            {
+                ggs->mission = 0;
+                break;
+            }
+        }
+    }
+}
+
+static void register_samples()
+{
+    destroy_registered_samples();
     register_sample(SAMPLE_WARP, "warp", SAMPLE_PRIORITY(HIGH, 1), 0);
     register_sample(SAMPLE_BOSSTALK_1, "boss_level_start", SAMPLE_PRIORITY(HIGH, 2), 0);
     register_sample(SAMPLE_BOSSTALK_2, "boss_level_boss_dies", SAMPLE_PRIORITY(HIGH, 2), 0);
@@ -161,49 +241,6 @@ int main(int argc, char **argv)
 
     register_sample(SAMPLE_MENU_CHANGE, "menu_change", SAMPLE_PRIORITY(HIGH, 1), 0);
     register_sample(SAMPLE_MENU_SELECT, "menu_select", SAMPLE_PRIORITY(HIGH, 1), 0);
-
-    progress_load_state("Loading sprites...", 1);
-    {
-        char path[256];
-        get_data_filename(path, "sprites.dat");
-        read_sprites_from_file(path);
-    }
-
-    progress_load_state("Loading menu...", 1);
-    randomize_midi_playlist();
-    next_midi_track(-1);
-    atexit(exit_actions);
-
-    GlobalGameState ggs;
-    memset(&ggs, 0, sizeof(ggs));
-    if (player_damage_off)
-        ggs.cheats |= 1;
-    ggs.game_modifiers = game_modifiers;
-    ggs.mission = 1;
-    ggs.no_player_interaction = record_playback_no_user_interaction;
-    ggs.setup_screenshot_buffer = read_cmd_line_arg_int(ARG_SCREENSHOT, argv, argc);
-    while (ggs.mission != 0)
-    {
-        if (*record_mode != RECORD_MODE_PLAYBACK)
-            menu(0, &ggs);
-        else if (!ggs.no_player_interaction)
-        {
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_textf(get_menu_title_font(), al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2, ALLEGRO_ALIGN_CENTRE, "Press enter to start demo playback");
-            al_flip_display();
-            wait_key_press(ALLEGRO_KEY_ENTER);
-        }
-        while (ggs.mission > 0)
-        {
-            game(&ggs);
-            if (*record_mode == RECORD_MODE_PLAYBACK)
-            {
-                ggs.mission = 0;
-                break;
-            }
-        }
-    }
-    return 0;
 }
 
 static void exit_actions()

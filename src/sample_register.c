@@ -126,4 +126,5 @@ void destroy_registered_samples()
     {
         al_destroy_sample(sample_register[i].sample);
     }
+    sample_reg_idx = 0;
 }

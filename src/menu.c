@@ -351,7 +351,7 @@ static int check_game_modes_beaten(const int *modifiers, int sz)
         int mode = modifiers[i];
         char id[20];
         sprintf(id, "game_modifiers_%d", mode);
-        //char key[101], hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
+        // char key[101], hash_hex[DMAC_SHA1_HASH_SIZE * 2 + 1];
         record_file_find_and_read(path, id);
         const char *key = record_file_next_param();
         const char *hash_hex = record_file_next_param();
@@ -609,16 +609,17 @@ static const char *vibration_intensity_fmt(int i)
 
 static int display_set_keys_menu()
 {
-    #define ADD_ITEM(label, key) \
-        key_to_change[m.num_items - 1] = &keys->key; \
-        add_menu_item(&m, label, "Current: %s", al_keycode_to_name(keys->key));
+#define ADD_ITEM(label, key)                     \
+    key_to_change[m.num_items - 1] = &keys->key; \
+    add_menu_item(&m, label, "Current: %s", al_keycode_to_name(keys->key));
     int *key_to_change[NUM_MENU_ITEMS];
     struct game_control_keys *keys = &get_game_settings()->keys;
     int default_selection = 0;
     while (1)
     {
         struct menu m = create_menu("Set keys");
-        add_menu_item(&m, "Go back", "Go back to game settings menu");
+        struct menu_item *mi = add_menu_item(&m, "Go back", "Go back to game settings menu");
+        m.cancel_menu_item_id = mi->item_id;
         ADD_ITEM("Move left", left);
         ADD_ITEM("Move right", right);
         ADD_ITEM("Move up", up);
@@ -725,6 +726,7 @@ static int display_main_menu()
     add_menu_item(&m, "Start new game", "");
     add_menu_item(&m, "Load game", "");
     add_menu_item(&m, "Game options", "Change the game options");
+    add_menu_item(&m, "Change level pack", "Current: %s", get_game_settings()->mission_pack);
     add_menu_item(&m, "View help", "");
     add_menu_item(&m, "Exit", "");
     display_menu(&m);
@@ -751,21 +753,21 @@ static void display_perk_menu(Enemy *player)
     int required_xp = calculate_next_perk_xp(player->perks);
     int enough_xp = required_xp <= player->xp;
     struct menu m = create_menu("Perks");
-    m.cancel_menu_item_id = 123;
+    m.cancel_menu_item_id = get_menu_item_id("Return");
     struct menu_item *mi = add_menu_item(&m, "(meta)", "Available XP: %d\nNext upgrade cost: %d", player->xp, required_xp);
     mi->meta = 1;
     mi->selectable = 0;
     add_menu_item(&m, "Return", "");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_INCREASE_MAX_HEALTH, "Iron skin", "Increases maximum health by one.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_HEALTH_POWERUP, "Healer", "Improves the Heal powerup.\n+1 health per use.");
-    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_SHIELD_POWERUP, "Protector", "Improves the Shield powerup.\nGuards from 3 hits instead of 1.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_SHIELD_POWERUP, "Protecqtor", "Improves the Shield powerup.\nGuards from 3 hits instead of 1.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_TURRET_POWERUP, "Engineer", "Improves the Turret powerup.\nThe spawned turret explodes after shooting.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_BLAST_POWERUP, "Annihilator", "Improves the Torrent of Fire powerup.\nMakes the projectile shoot fireballs while traveling\nand spawn a turret when it explodes.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SPEED_POTION, "Speedrunner", "Start level with Potion of Gotta Go Fast.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SHIELD_POWERUP, "Paranoid", "Start level with Shield powerup active.");
     display_menu(&m);
     int selected_id = m.items[m.selected_item].item_id;
-    if (selected_id == m.cancel_menu_item_id || selected_id == get_menu_item_id("Return"))
+    if (selected_id == get_menu_item_id("Return"))
         return;
     player->xp -= required_xp;
     player->perks |= selected_id;
@@ -774,7 +776,7 @@ static void display_perk_menu(Enemy *player)
 static int display_exit_to_main_menu_menu()
 {
     struct menu m = create_menu("Exit to main menu?");
-    m.cancel_menu_item_id = 123;
+    m.cancel_menu_item_id = get_menu_item_id("No");
 
     struct menu_item *mi = add_menu_item(&m, "(meta)", "You will lose all progress. Are you sure?");
     mi->meta = 1;
@@ -791,6 +793,59 @@ static int display_exit_to_main_menu_menu()
     if (m.items[m.selected_item].item_id == get_menu_item_id("Exit"))
         return 2;
     return 0;
+}
+
+static int change_level_pack_menu(GlobalGameState *ggs)
+{
+    struct menu m = create_menu("Change level pack");
+
+    struct menu_item *cancel_mi = add_menu_item(&m, "Cancel", "Return to main menu");
+    cancel_mi->item_id = 1;
+    m.cancel_menu_item_id = 1;
+
+    ALLEGRO_FS_ENTRY *e = al_create_fs_entry(DATADIR);
+    al_open_directory(e);
+    ALLEGRO_FS_ENTRY *next;
+    while (1)
+    {
+        next = al_read_directory(e);
+        if (!next)
+            break;
+        if (al_get_fs_entry_mode(next) & ALLEGRO_FILEMODE_ISDIR)
+        {
+            const char *name = al_get_fs_entry_name(next);
+            for (int idx = strlen(name); idx >= 0; idx--)
+            {
+                if (name[idx] == '\\' || name[idx] == '/')
+                {
+                    name += idx + 1;
+                    break;
+                }
+            }
+
+            if (strlen(name) > 63)
+                continue;
+            char marker_file_path[100];
+            sprintf(marker_file_path, DATADIR "%s/mission-counts.dat", name);
+            FILE *f = fopen(marker_file_path, "r");
+            if (f)
+            {
+                fclose(f);
+                int current = !strcmp(name, get_game_settings()->mission_pack);
+                struct menu_item *mi = add_menu_item(&m, name, current ? "Current level pack" : "");
+                mi->selectable = !current;
+            }
+        }
+        al_destroy_fs_entry(next);
+    }
+    al_close_directory(e);
+    al_destroy_fs_entry(e);
+    display_menu(&m);
+    struct menu_item *selected = &m.items[m.selected_item];
+    if (selected->item_id == 1)
+        return 0;
+    strcpy(ggs->mission_pack, selected->name);
+    return 1;
 }
 
 int menu(int ingame, GlobalGameState *ggs)
@@ -889,7 +944,7 @@ int menu(int ingame, GlobalGameState *ggs)
                 }
             }
         }
-        if (main_menu_selection == get_menu_item_id("Load"))
+        else if (main_menu_selection == get_menu_item_id("Load"))
         {
             int load_slot = display_load_game_menu();
             if (load_slot != 0)
@@ -898,15 +953,21 @@ int menu(int ingame, GlobalGameState *ggs)
                 do_load_game(&ggs->plrautosave, &ggs->mission, &ggs->game_modifiers, load_slot - 1);
             }
         }
-        if (main_menu_selection == get_menu_item_id("Game options"))
+        else if (main_menu_selection == get_menu_item_id("Game options"))
         {
             game_option_menu();
         }
-        if (main_menu_selection == get_menu_item_id("View help"))
+        else if (main_menu_selection == get_menu_item_id("Change level pack"))
+        {
+            exit_menu = change_level_pack_menu(ggs);
+            if (exit_menu)
+                ggs->mission = 0;
+        }
+        else if (main_menu_selection == get_menu_item_id("View help"))
         {
             show_help(menu_sprites);
         }
-        if (main_menu_selection == get_menu_item_id("Exit"))
+        else if (main_menu_selection == get_menu_item_id("Exit"))
         {
             ggs->mission = 0;
             exit_menu = 1;
