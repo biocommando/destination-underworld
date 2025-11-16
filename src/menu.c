@@ -103,14 +103,14 @@ static struct menu_item *add_menu_item(struct menu *m, const char *name, const c
     va_start(args, description);
 
     char full_description[300], *start = full_description;
-    vsprintf(full_description, description, args);
+    vsnprintf(full_description, 300, description, args);
 
     int descr_idx = 0;
     struct menu_item *mi = &m->items[m->num_items];
     mi->meta = 0;
     mi->selectable = 1;
     m->num_items++;
-    strcpy(mi->name, name);
+    strncpy(mi->name, name, sizeof(mi->name) - 1);
     mi->item_id = get_menu_item_id(name);
     char *c = start;
     int cont = 1;
@@ -720,13 +720,32 @@ static void game_option_menu()
     }
 }
 
+static void get_mission_pack_name(const char *mission_pack, char *name)
+{
+    char pack_name_path[100];
+    sprintf(pack_name_path, DATADIR "%s/pack-name.dat", mission_pack);
+    FILE *f = fopen(pack_name_path, "r");
+    if (f)
+    {
+        size_t amt = fread(name, 1, 99, f);
+        name[amt] = 0;
+        fclose(f);
+    }
+    else
+    {
+        strcpy(name, mission_pack);
+    }
+}
+
 static int display_main_menu()
 {
     struct menu m = create_menu("DESTINATION UNDERWORLD");
     add_menu_item(&m, "Start new game", "");
     add_menu_item(&m, "Load game", "");
     add_menu_item(&m, "Game options", "Change the game options");
-    add_menu_item(&m, "Change level pack", "Current: %s", get_game_settings()->mission_pack);
+    char mission_pack_name[100];
+    get_mission_pack_name(get_game_settings()->mission_pack, mission_pack_name);
+    add_menu_item(&m, "Change level pack", "Current: %s", mission_pack_name);
     add_menu_item(&m, "View help", "");
     add_menu_item(&m, "Exit", "");
     display_menu(&m);
@@ -797,6 +816,7 @@ static int display_exit_to_main_menu_menu()
 
 static int change_level_pack_menu(GlobalGameState *ggs)
 {
+    char mission_pack_ids[NUM_MENU_ITEMS][64];
     struct menu m = create_menu("Change level pack");
 
     struct menu_item *cancel_mi = add_menu_item(&m, "Cancel", "Return to main menu");
@@ -831,8 +851,10 @@ static int change_level_pack_menu(GlobalGameState *ggs)
             if (f)
             {
                 fclose(f);
+                strcpy(mission_pack_ids[m.num_items], name);
                 int current = !strcmp(name, get_game_settings()->mission_pack);
-                struct menu_item *mi = add_menu_item(&m, name, current ? "Current level pack" : "");
+                struct menu_item *mi = add_menu_item(&m, "", current ? "Current level pack" : "");
+                get_mission_pack_name(name, mi->name);
                 mi->selectable = !current;
             }
         }
@@ -841,10 +863,9 @@ static int change_level_pack_menu(GlobalGameState *ggs)
     al_close_directory(e);
     al_destroy_fs_entry(e);
     display_menu(&m);
-    struct menu_item *selected = &m.items[m.selected_item];
-    if (selected->item_id == 1)
+    if (m.items[m.selected_item].item_id == 1)
         return 0;
-    strcpy(ggs->mission_pack, selected->name);
+    strcpy(ggs->mission_pack, mission_pack_ids[m.selected_item]);
     return 1;
 }
 
