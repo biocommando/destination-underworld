@@ -54,7 +54,7 @@ module.exports = v => {
         fs.mkdirSync(`${dest}data/${packName}`)
         starCopy('data/' + packName, /^mission\d*$/, `${dest}data/${packName}`)
         starCopy('data/' + packName, /^mission\d*-mode-\d*$/, `${dest}data/${packName}`)
-        starCopy('data/' + packName, /^(enemy-properties|arenas|help|game-tuning|sprites|sounds|mission-counts)\.dat$/, `${dest}data/${packName}`)
+        starCopy('data/' + packName, /^(enemy-properties|arenas|help|game-tuning|sprites|sounds|mission-counts|pack-name)\.dat$/, `${dest}data/${packName}`)
     }
 
     copyMissionPackEssentials('core-pack')
