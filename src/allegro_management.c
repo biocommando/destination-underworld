@@ -60,7 +60,7 @@ void wait_timer_event()
 {
     ALLEGRO_EVENT event;
     ALLEGRO_TIMEOUT tmo;
-    al_init_timeout(&tmo, 0.1);
+    al_init_timeout(&tmo, 0.05);
     al_wait_for_event_until(timer_queue, &event, &tmo);
 }
 
@@ -116,7 +116,7 @@ void wait_delay(int v)
 
 void wait_delay_ms(int ms)
 {
-    wait_delay(ms / 10);
+    wait_delay(ms / 5);
 }
 
 void wait_key_press(int key)
@@ -196,7 +196,7 @@ int init_allegro()
 
     init_midi_playback(44100);
 
-    TRY_INIT(timer = al_create_timer(1.0 / 100), NOT_NULL);
+    TRY_INIT(timer = al_create_timer(5.0 / 1000), NOT_NULL);
     TRY_INIT(io_queue = al_create_event_queue(), NOT_NULL);
     TRY_INIT(timer_queue = al_create_event_queue(), NOT_NULL);
     al_register_event_source(io_queue, al_get_keyboard_event_source());

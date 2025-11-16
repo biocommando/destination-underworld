@@ -35,7 +35,7 @@ void wait_delay(int v);
 
 /*
  * Waits for ms milliseconds. Note that wait resolution is "tick" which
- * is 10 ms.
+ * is 5 ms.
  */
 void wait_delay_ms(int ms);
 
