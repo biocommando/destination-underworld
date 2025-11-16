@@ -138,6 +138,7 @@ int main(int argc, char **argv)
 
     progress_load_state("Loading menu...", 1);
     randomize_midi_playlist();
+    consume_event_queue();
     next_midi_track(-1);
     atexit(exit_actions);
 
