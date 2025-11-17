@@ -241,45 +241,53 @@ set_var: "story6" "as you prepare for the Hell's last stand..."
 #script 1
 # // Boss for "power-up only" mode
 # 
-# set health = 50
-# set fire_rate = 10
-# set speed = 3
+# set('health', 50)
+# set('fire_rate', 10)
+# set('speed', 3)
 # 
-# on time_one_time: 1 do set_waypoint: 12;2
-# {# set_waypoint_sequence(['12;2', '9;2', '12;9', '7;9']) #}
+# e.on(time_one_time).is(1).do(set_waypoint).to('12;2')
+# set_waypoint_sequence(['12;2', '9;2', '12;9', '7;9'])
 # 
-# {# _destroy_wall_time1 = 1000 * 5 #}
-# {# _destroy_wall_time2 = 1000 * 15 #}
+# let _destroy_wall_time1 = 1000 * 5
+# let _destroy_wall_time2 = 1000 * 15
 # 
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 1, y = 4, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time1 #}) do modify_terrain: x = 2, y = 4, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 3, y = 4, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time1 #}) do modify_terrain: x = 2, y = 2, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 3, y = 2, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time1 #}) do modify_terrain: x = 4, y = 2, terrain_type = floor
+# function clear_wall(x, y, time) {
+#    e.on(time_one_time).is(ms(time)).do(modify_terrain).to(`x = ${x}, y = ${y}, terrain_type = floor`)
+# }
 # 
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 4, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 5, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 6, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 7, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 8, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time2 #}) do modify_terrain: x = 5, y = 9, terrain_type = floor
+# clear_wall(1, 4, _destroy_wall_time2)
+# clear_wall(2, 4, _destroy_wall_time1)
+# clear_wall(3, 4, _destroy_wall_time2)
+# clear_wall(2, 2, _destroy_wall_time1)
+# clear_wall(3, 2, _destroy_wall_time2)
+# clear_wall(4, 2, _destroy_wall_time1)
 # 
-# on time_one_time: ms({# _destroy_wall_time2 #}) do start_secondary_timer: time = 0
+# clear_wall(5, 4, _destroy_wall_time2)
+# clear_wall(5, 5, _destroy_wall_time2)
+# clear_wall(5, 6, _destroy_wall_time2)
+# clear_wall(5, 7, _destroy_wall_time2)
+# clear_wall(5, 8, _destroy_wall_time2)
+# clear_wall(5, 9, _destroy_wall_time2)
+# 
+# e.on(time_one_time).is(ms(_destroy_wall_time2)).do(start_secondary_timer).to('time = 0')
 # 
 # // Use secondary timer because it can be stopped
 # 
-# on secondary_timer: ms(2000) do fire_in_circle: number_of_directions = 8, intensity = 1
-# on secondary_timer: ms(4000) do fire_in_circle: number_of_directions = 8, intensity = 1
-# on secondary_timer: ms(6000) do fire_in_circle: number_of_directions = 8, intensity = 1
-# on secondary_timer: ms(8000) do fire_in_circle: number_of_directions = 8, intensity = 1
-# on secondary_timer: ms(10000) do fire_in_circle: number_of_directions = 16, intensity = 3
-# on secondary_timer: ms(10000) do start_secondary_timer: time = 0
+# function circfire(time, ndir=8, intens=1) {
+#    e.on(secondary_timer).is(ms(time)).do(fire_in_circle).to(`number_of_directions = ${ndir}, intensity = ${intens}`)
+# }
+# 
+# circfire(2000)
+# circfire(4000)
+# circfire(6000)
+# circfire(8000)
+# circfire(10000, 16, 3)
+# e.on(secondary_timer).is(ms(10000)).do(start_secondary_timer).to('time = 0')
 # 
 # // Death
-# on health: 0 do modify_terrain: x = 14, y = 5, terrain_type = level_exit
-# on health: 0 do modify_terrain: x = 14, y = 6, terrain_type = level_exit
-# on health: 0 do stop_secondary_timer
+# e.on(health).is(0).do(modify_terrain).to('x = 14, y = 5, terrain_type = level_exit')
+# e.on(health).is(0).do(modify_terrain).to('x = 14, y = 6, terrain_type = level_exit')
+# e.on(health).is(0).do(stop_secondary_timer).to('')
 #end_script
 script_start: "1"
 script_line: "health 50 "

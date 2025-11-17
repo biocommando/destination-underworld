@@ -216,6 +216,7 @@ object: "46" "2" "1" "2"
 object: "46" "3" "1" "2"
 object: "46" "4" "1" "2"
 object: "46" "5" "1" "2"
+object: "113" "6" "1" "2"
 object: "46" "7" "1" "2"
 object: "46" "8" "1" "2"
 object: "46" "9" "1" "2"
@@ -226,8 +227,13 @@ object: "46" "13" "1" "2"
 object: "46" "14" "1" "2"
 object: "120" "15" "1" "2"
 object: "120" "0" "2" "2"
+object: "120" "1" "2" "2"
 object: "46" "2" "2" "2"
+object: "600" "2" "2" "2"
 object: "120" "3" "2" "2"
+object: "120" "4" "2" "2"
+object: "120" "5" "2" "2"
+object: "113" "6" "2" "2"
 object: "46" "7" "2" "2"
 object: "46" "8" "2" "2"
 object: "46" "9" "2" "2"
@@ -584,12 +590,6 @@ object: "122" "12" "11" "3"
 object: "122" "13" "11" "3"
 object: "122" "14" "11" "3"
 object: "122" "15" "11" "3"
-object: "113" "6" "1" "2"
-object: "113" "6" "2" "2"
-object: "120" "4" "2" "2"
-object: "120" "5" "2" "2"
-object: "120" "1" "2" "2"
-object: "600" "2" "2" "2"
 #conditions
 condition: "game_modifiers ! 16" "COND_1"
 goto: "+SKIP_COND_1"
@@ -627,13 +627,16 @@ set_var: "story3" "poorly guarder you won't probably even break a sweat! Well,"
 set_var: "story4" "if the temperatures weren't so melting hot, that is."
 set_var: "mute_bosstalk" "1"
 #script 1
-# ignore_init_properties
+# 
 #end_script
 #script 2
-# ignore_init_properties
-# on positional_trigger: 0 do modify_terrain: x = 6, y = 1, terrain_type = floor
-# on positional_trigger: 0 do modify_terrain: x = 4, y = 2, terrain_type = floor
-# on positional_trigger: 0 do modify_terrain: x = 5, y = 2, terrain_type = floor
+# 'js'
+# function _to_floor(x, y) {
+#    e.on(positional_trigger).is(0).do(modify_terrain).to(`x = ${x}, y = ${y}, terrain_type = floor`)
+# }
+# _to_floor(6, 1)
+# _to_floor(4, 2)
+# _to_floor(5, 2)
 #end_script
 script_start: "1"
 script_line: "end"

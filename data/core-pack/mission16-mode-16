@@ -204,51 +204,58 @@ set_var: "story6" "as you prepare for the Hell's last stand..."
 #script 1
 # // Boss for "brutally hard" mode
 # 
-# {# _start_time = 18667 #}
+# let _start_time = 18667
 # 
-# set health = 15
-# set player_initial_gold = 0
-# set time_starts_at = ms({# _start_time #})
+# set('health', 15)
+# set('player_initial_gold', 0)
+# set('time_starts_at', ms(_start_time))
 # 
 # // North-West room
 # // This is the initial room for the player.
 # // After a short while spawns turrets in each cornet with one-time trigger.
 # // Same room will eventually have entrance to the boss room.
-# on time_one_time: ms({#_start_time + 2667#}) do spawn: 1, 1, 0, 0, 0, 0, 100
-# on time_one_time: ms({#_start_time + 2667#}) do spawn: 5, 1, 0, 0, 0, 0, 100
-# on time_one_time: ms({#_start_time + 2667#}) do spawn: 1, 5, 0, 0, 0, 0, 100
-# on time_one_time: ms({#_start_time + 2667#}) do spawn: 5, 5, 0, 0, 0, 0, 100
+# e.on(time_one_time).is(ms(_start_time + 2667)).do(spawn).to('1, 1, 0, 0, 0, 0, 100')
+# e.on(time_one_time).is(ms(_start_time + 2667)).do(spawn).to('5, 1, 0, 0, 0, 0, 100')
+# e.on(time_one_time).is(ms(_start_time + 2667)).do(spawn).to('1, 5, 0, 0, 0, 0, 100')
+# e.on(time_one_time).is(ms(_start_time + 2667)).do(spawn).to('5, 5, 0, 0, 0, 0, 100')
 # 
 # // South-West room, has moderately difficult enemies
-# on time_interval: ms(40000) do spawn: 1, 7, 0, 100, 0, 0, 0
-# on time_interval: ms(40000) do spawn: 5, 7, 0, 100, 0, 0, 0
-# on time_interval: ms(40000) do spawn: 1, 10, 0, 100, 0, 0, 0
-# on time_interval: ms(40000) do spawn: 5, 10, 0, 100, 0, 0, 0
+# const sw_spawn = s => e.on(time_interval).is(ms(40000)).do(spawn).to(s)
+# sw_spawn('1, 7, 0, 100, 0, 0, 0')
+# sw_spawn('5, 7, 0, 100, 0, 0, 0')
+# sw_spawn('1, 10, 0, 100, 0, 0, 0')
+# sw_spawn('5, 10, 0, 100, 0, 0, 0')
 # 
 # // South-East room, has easy enemies
-# on time_interval: ms(26667) do spawn: 7, 5, 100, 0, 0, 0, 0
-# on time_interval: ms(26667) do spawn: 14, 5, 100, 0, 0, 0, 0
-# on time_interval: ms(26667) do spawn: 7, 10, 100, 0, 0, 0, 0
-# on time_interval: ms(26667) do spawn: 14, 10, 100, 0, 0, 0, 0
+# const se_spawn = s => e.on(time_interval).is(ms(26667)).do(spawn).to(s)
+# se_spawn('7, 5, 100, 0, 0, 0, 0')
+# se_spawn('14, 5, 100, 0, 0, 0, 0')
+# se_spawn('7, 10, 100, 0, 0, 0, 0')
+# se_spawn('14, 10, 100, 0, 0, 0, 0')
 # 
 # // North-East room, always spawns an imp in the middle
-# on time_interval: ms(40000) do spawn: 13, 2, 0, 0, 100, 0, 0
+# e.on(time_interval).is(ms(40000)).do(spawn).to('13, 2, 0, 0, 100, 0, 0')
 # 
-# {# _destroy_wall_time = _start_time + 106668 #}
+# let _destroy_wall_time = _start_time + 106668
 # 
-# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 6, y = 1, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 6, y = 2, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 6, y = 3, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 7, y = 4, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 8, y = 4, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 2, y = 6, terrain_type = floor
-# on time_one_time: ms({# _destroy_wall_time #}) do modify_terrain: x = 4, y = 6, terrain_type = floor
+# function clear_wall(x, y) {
+#    e.on(time_one_time).is(ms(_destroy_wall_time)).do(modify_terrain)
+#     .to(`x = ${x}, y = ${y}, terrain_type = floor`)
+# }
+# 
+# clear_wall(6, 1)
+# clear_wall(6, 2)
+# clear_wall(6, 3)
+# clear_wall(7, 4)
+# clear_wall(8, 4)
+# clear_wall(2, 6)
+# clear_wall(4, 6)
 # 
 # // Death
 # 
-# on health: 0 do modify_terrain: x = 9, y = 1, terrain_type = floor
-# on health: 0 do modify_terrain: x = 9, y = 2, terrain_type = floor
-# on health: 0 do modify_terrain: x = 9, y = 3, terrain_type = floor
+# e.on(health).is(0).do(modify_terrain).to('x = 9, y = 1, terrain_type = floor')
+# e.on(health).is(0).do(modify_terrain).to('x = 9, y = 2, terrain_type = floor')
+# e.on(health).is(0).do(modify_terrain).to('x = 9, y = 3, terrain_type = floor')
 # 
 #end_script
 script_start: "1"

@@ -199,9 +199,9 @@ object: "120" "15" "11" "1"
 condition: "game_modifiers = 232" "COND_potion"
 goto: "+SKIP_COND_potion"
 :COND_potion
-object: "305" "9" "9" "1"
 object: "301" "13" "6" "1"
 object: "306" "4" "9" "1"
+object: "305" "9" "9" "1"
 :+SKIP_COND_potion
 :metadata
 set_var: "name" "Arena -- Area 51"
@@ -209,41 +209,41 @@ set_var: "mute_bosstalk" "1"
 set_var: "wall_color" "0.1 0.1 0.5"
 #script 1
 # // Add a hint to the compiler that this is an arena fight
-# {# implicit_arena_game_mode() #}
+# implicit_arena_game_mode()
 # 
-# set player_initial_gold = 5
+# set('player_initial_gold', 5)
 # 
-# set [powerup_only] player_initial_gold = -1
-# set [over_powerup] player_initial_gold = 10
-# set [potion_only] player_initial_gold = 0
+# set('player_initial_gold', -1, 'powerup_only')
+# set('player_initial_gold', 10, 'over_powerup')
+# set('player_initial_gold', 0, 'potion_only')
 # 
-# {# _spawn_interval = 7000 #}
+# let _spawn_interval = 7000
 # 
-# on [evt_alien_spawn_1] time_interval: ms({# _spawn_interval #}) do spawn: 11, 2, 0, 0, 0, 100, 0
-# on time_interval: ms({#_spawn_interval#}) do spawn: 12, 2, 50, 50, 0, 0, 0
-# on time_interval: ms({#_spawn_interval#}) do spawn: 13, 2, 100, 0, 0, 0, 0
+# e('evt_alien_spawn_1').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('11, 2, 0, 0, 0, 100, 0')
+# e.on(time_interval).is(ms(_spawn_interval)).do(spawn).to('12, 2, 50, 50, 0, 0, 0')
+# e.on(time_interval).is(ms(_spawn_interval)).do(spawn).to('13, 2, 100, 0, 0, 0, 0')
 # 
-# on [evt_alien_spawn_2] time_interval: ms({# _spawn_interval #}) do spawn: 11, 9, 0, 0, 0, 100, 0
-# on time_interval: ms({# _spawn_interval #}) do spawn: 12, 9, 50, 50, 0, 0, 0
-# on time_interval: ms({# _spawn_interval #}) do spawn: 13, 9, 100, 0, 0, 0, 0
+# e('evt_alien_spawn_2').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('11, 9, 0, 0, 0, 100, 0')
+# e.on(time_interval).is(ms(_spawn_interval)).do(spawn).to('12, 9, 50, 50, 0, 0, 0')
+# e.on(time_interval).is(ms(_spawn_interval)).do(spawn).to('13, 9, 100, 0, 0, 0, 0')
 # 
-# on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 5, 10, 0, 100, 0, 0, 0
-# on time_interval: ms({# _spawn_interval * 2 #}) do spawn: 1, 5, 0, 100, 0, 0, 0
+# e.on(time_interval).is(ms(_spawn_interval * 2)).do(spawn).to('5, 10, 0, 100, 0, 0, 0')
+# e.on(time_interval).is(ms(_spawn_interval * 2)).do(spawn).to('1, 5, 0, 100, 0, 0, 0')
 # 
-# on {# override_event('evt_alien_spawn_1', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do @inherit
-# on {# override_event('evt_alien_spawn_2', 'brutal') #} time_interval: ms({# _spawn_interval * 2 #}) do @inherit
+# e(override_event('evt_alien_spawn_1', 'brutal')).on(time_interval).is(ms(_spawn_interval * 2)).inherit()
+# e(override_event('evt_alien_spawn_2', 'brutal')).on(time_interval).is(ms(_spawn_interval * 2)).inherit()
 # 
-# on kill_count: 50 do modify_terrain: x = 4, y = 8, terrain_type = floor
-# on kill_count: 50 do modify_terrain: x = 5, y = 8, terrain_type = floor
-# on kill_count: 50 do modify_terrain: x = 6, y = 8, terrain_type = floor
+# e.on(kill_count).is(50).do(modify_terrain).to('x = 4, y = 8, terrain_type = floor')
+# e.on(kill_count).is(50).do(modify_terrain).to('x = 5, y = 8, terrain_type = floor')
+# e.on(kill_count).is(50).do(modify_terrain).to('x = 6, y = 8, terrain_type = floor')
 # 
-# on kill_count: 100 do modify_terrain: x = 9, y = 6, terrain_type = floor
-# on kill_count: 100 do modify_terrain: x = 9, y = 7, terrain_type = floor
+# e.on(kill_count).is(100).do(modify_terrain).to('x = 9, y = 6, terrain_type = floor')
+# e.on(kill_count).is(100).do(modify_terrain).to('x = 9, y = 7, terrain_type = floor')
 # 
-# on kill_count: 150 do modify_terrain: x = 6, y = 6, terrain_type = floor
-# on kill_count: 150 do modify_terrain: x = 2, y = 6, terrain_type = floor
-# on kill_count: 150 do modify_terrain: x = 3, y = 6, terrain_type = floor
-# on kill_count: 150 do modify_terrain: x = 9, y = 10, terrain_type = floor
+# e.on(kill_count).is(150).do(modify_terrain).to('x = 6, y = 6, terrain_type = floor')
+# e.on(kill_count).is(150).do(modify_terrain).to('x = 2, y = 6, terrain_type = floor')
+# e.on(kill_count).is(150).do(modify_terrain).to('x = 3, y = 6, terrain_type = floor')
+# e.on(kill_count).is(150).do(modify_terrain).to('x = 9, y = 10, terrain_type = floor')
 #end_script
 script_start: "1"
 script_line: "health 50 "

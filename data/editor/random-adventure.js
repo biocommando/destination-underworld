@@ -52,7 +52,7 @@ function createOneMission(mission) {
     }
 
     let map = []
-    let scripts = new Array(8).fill().map(() => ['ignore_init_properties'])
+    let scripts = new Array(8).fill().map(() => [])
 
     function fillWithWalls(room) {
         for (let x = 0; x < 16; x++) {
@@ -101,7 +101,7 @@ function createOneMission(mission) {
     }
 
     function createEnemySpawnerScript(types, numEnemies, enemyProbs, room) {
-        const script = ['ignore_init_properties']
+        const script = []
         const enemyProbsStr = enemyProbs.join(', ')
 
         const possibleSpawnSpots = map.filter(t => t.id === ids.floor && t.room === room && t.x > 1)
@@ -113,16 +113,16 @@ function createOneMission(mission) {
                 const spawnSpot2 = possibleSpawnSpots.pop()
                 script.push('// "Hydra" spawner')
                 for (let i = 0; i < numEnemies; i++) {
-                    script.push(`on kill_count: ${i + 1} do spawn: ${spawnSpot1.x}, ${spawnSpot1.y}, ${enemyProbsStr}`)
-                    script.push(`on kill_count: ${i + 1} do spawn: ${spawnSpot2.x}, ${spawnSpot2.y}, ${enemyProbsStr}`)
+                    script.push(`e.on(kill_count).is(${i + 1}).do(spawn).to('${spawnSpot1.x}, ${spawnSpot1.y}, ${enemyProbsStr}')`)
+                    script.push(`e.on(kill_count).is(${i + 1}).do(spawn).to('${spawnSpot2.x}, ${spawnSpot2.y}, ${enemyProbsStr}')`)
                 }
             } else if (type === 'timed') {
                 const spawnSpot = possibleSpawnSpots.pop()
                 script.push('// "Timed" spawner')
-                script.push(`on time_one_time: 1 do start_secondary_timer: time = 0`)
-                script.push(`on time_one_time: ms(${2000 * numEnemies}) do stop_secondary_timer`)
-                script.push(`on secondary_timer: ms(2000) do spawn: ${spawnSpot.x}, ${spawnSpot.y}, ${enemyProbsStr}`)
-                script.push(`on secondary_timer: ms(2000) do start_secondary_timer: time = 0`)
+                script.push(`e.on(time_one_time).is(1).do(start_secondary_timer).to('time = 0')`)
+                script.push(`e.on(time_one_time).is(ms(${2000 * numEnemies})).do(stop_secondary_timer).to('')`)
+                script.push(`e.on(secondary_timer).is(ms(2000)).do(spawn).to('${spawnSpot.x}, ${spawnSpot.y}, ${enemyProbsStr}')`)
+                script.push(`e.on(secondary_timer).is(ms(2000)).do(start_secondary_timer).to('time = 0')`)
             } else if (type === 'positional') {
                 for (let y = 0; y < 12; y++) {
                     map.push({ x: 5, y, id: ids.positionalTrigger(0), room })
@@ -131,7 +131,7 @@ function createOneMission(mission) {
                 for (let i = 0; i < numEnemies; i++) {
                     const spawnSpot = possibleSpawnSpots.pop()
                     if (spawnSpot) {
-                        script.push(`on positional_trigger: 0 do spawn: ${spawnSpot.x}, ${spawnSpot.y}, ${enemyProbsStr}`)
+                        script.push(`e.on(positional_trigger).is(0).do(spawn).to('${spawnSpot.x}, ${spawnSpot.y}, ${enemyProbsStr}')`)
                     }
                 }
             } else {

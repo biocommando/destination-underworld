@@ -210,27 +210,27 @@ set_var: "story6" "as you prepare for the Hell's last stand..."
 #script 1
 # // Boss for "explosion madness" mode
 # 
-# set health = 50
-# set fire_rate = 10
-# set speed = 2
-# set player_initial_gold = 5
+# set('health', 50)
+# set('fire_rate', 10)
+# set('speed', 2)
+# set('player_initial_gold', 5)
 # 
-# on time_one_time: 1 do set_waypoint: 2;1
-# {# set_waypoint_sequence(['2;1', '2;8']) #}
+# e.on(time_one_time).is(1).do(set_waypoint).to('2;1')
+# set_waypoint_sequence(['2;1', '2;8'])
 # 
 # // Spawning -- use secondary timer because it can be stopped
 # 
-# on time_one_time: 1 do start_secondary_timer: time = 0
+# e.on(time_one_time).is(1).do(start_secondary_timer).to('time = 0')
 # 
-# on secondary_timer: ms(5333) do spawn: 3, 3, 50, 50, 0, 0, 0
-# on secondary_timer: ms(5333) do spawn: 3, 8, 50, 50, 0, 0, 0
-# on secondary_timer: ms(5333) do start_secondary_timer: time = 0
+# e.on(secondary_timer).is(ms(5333)).do(spawn).to('3, 3, 50, 50, 0, 0, 0')
+# e.on(secondary_timer).is(ms(5333)).do(spawn).to('3, 8, 50, 50, 0, 0, 0')
+# e.on(secondary_timer).is(ms(5333)).do(start_secondary_timer).to('time = 0')
 # 
 # // Death
 # 
-# on health: 0 do modify_terrain: x = 9, y = 4, terrain_type = level_exit
-# on health: 0 do modify_terrain: x = 9, y = 5, terrain_type = level_exit
-# on health: 0 do stop_secondary_timer
+# e.on(health).is(0).do(modify_terrain).to('x = 9, y = 4, terrain_type = level_exit')
+# e.on(health).is(0).do(modify_terrain).to('x = 9, y = 5, terrain_type = level_exit')
+# e.on(health).is(0).do(stop_secondary_timer).to('')
 # 
 # 
 #end_script

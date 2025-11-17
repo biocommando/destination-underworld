@@ -156,6 +156,7 @@ object: "46" "3" "9" "1"
 object: "46" "4" "9" "1"
 object: "46" "5" "9" "1"
 object: "46" "6" "9" "1"
+object: "46" "7" "9" "1"
 object: "46" "8" "9" "1"
 object: "46" "9" "9" "1"
 object: "46" "10" "9" "1"
@@ -196,7 +197,6 @@ object: "120" "12" "11" "1"
 object: "120" "13" "11" "1"
 object: "120" "14" "11" "1"
 object: "120" "15" "11" "1"
-object: "46" "7" "9" "1"
 #conditions
 condition: "game_modifiers ! 232" "COND_no_potion"
 goto: "+SKIP_COND_no_potion"
@@ -215,74 +215,73 @@ set_var: "mute_bosstalk" "1"
 set_var: "wall_color" "0.7 0 0.3"
 #script 1
 # // Add a hint to the compiler that this is an arena fight
-# {# implicit_arena_game_mode() #}
+# implicit_arena_game_mode()
 # 
-# {# _spawn_interval = 5000 #}
+# let _spawn_interval = 5000
 # 
 # // Init
-# on time_one_time: 1 do start_secondary_timer: time = 0
+# e.on(time_one_time).is(1).do(start_secondary_timer).to('time = 0')
 # 
-# on [DisableExtraEnemy] time_one_time: 1 do toggle_event_enabled: event_id = SpawnC1, enabled = 0
+# e('DisableExtraEnemy').on(time_one_time).is(1).do(toggle_event_enabled).to('event_id = SpawnC1, enabled = 0')
 # 
-# {# disable_event('DisableExtraEnemy', 'brutal') #}
+# disable_event('DisableExtraEnemy', 'brutal')
 # 
 # // Spawn imps
-# on [SpawnA1] time_interval: ms({# _spawn_interval #}) do spawn: 2, 5, 0, 0, 100, 0, 0
-# on [SpawnA2] time_interval: ms({# _spawn_interval #}) do spawn: 13, 6, 0, 0, 100, 0, 0
+# e('SpawnA1').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('2, 5, 0, 0, 100, 0, 0')
+# e('SpawnA2').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('13, 6, 0, 0, 100, 0, 0')
 # 
-# on {# override_event('SpawnA1', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do @inherit
-# on {# override_event('SpawnA2', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do @inherit
+# e(override_event('SpawnA1', 'brutal')).on(time_interval).is(ms(_spawn_interval * 1.5)).inherit()
+# e(override_event('SpawnA2', 'brutal')).on(time_interval).is(ms(_spawn_interval * 1.5)).inherit()
 # 
 # // Spawn others
-# on [SpawnB1] time_interval: ms({# _spawn_interval #}) do spawn: 6, 9, 70, 30, 0, 0, 0
-# on [SpawnB2] time_interval: ms({# _spawn_interval #}) do spawn: 7, 8, 70, 30, 0, 0, 0
+# e('SpawnB1').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('6, 9, 70, 30, 0, 0, 0')
+# e('SpawnB2').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('7, 8, 70, 30, 0, 0, 0')
 # 
-# set_event_property SpawnB1: initially_disabled = 1
-# set_event_property SpawnB2: initially_disabled = 1
+# set_event_property('SpawnB1', 'initially_disabled', 1)
+# set_event_property('SpawnB2', 'initially_disabled', 1)
 # 
-# on [SpawnC1] time_interval: ms({# _spawn_interval #}) do spawn: 7, 3, 40, 50, 10, 0, 0
+# e('SpawnC1').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('7, 3, 40, 50, 10, 0, 0')
 # 
 # // Enable others, disable imps
-# {# _enable_others_at = _spawn_interval * 2 #}
-# on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnA1, enabled = 0
-# on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnA2, enabled = 0
-# on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnB1, enabled = 1
-# on secondary_timer: ms({# _enable_others_at #}) do toggle_event_enabled: event_id = SpawnB2, enabled = 1
+# let _enable_others_at = _spawn_interval * 2
+# e.on(secondary_timer).is(ms(_enable_others_at)).do(toggle_event_enabled).to('event_id = SpawnA1, enabled = 0')
+# e.on(secondary_timer).is(ms(_enable_others_at)).do(toggle_event_enabled).to('event_id = SpawnA2, enabled = 0')
+# e.on(secondary_timer).is(ms(_enable_others_at)).do(toggle_event_enabled).to('event_id = SpawnB1, enabled = 1')
+# e.on(secondary_timer).is(ms(_enable_others_at)).do(toggle_event_enabled).to('event_id = SpawnB2, enabled = 1')
 # 
 # // Enable imps, disable others
-# {# _enable_imps_at = _enable_others_at + _spawn_interval * 3 #}
-# on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnA1, enabled = 1
-# on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnA2, enabled = 1
-# on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnB1, enabled = 0
-# on secondary_timer: ms({# _enable_imps_at #}) do toggle_event_enabled: event_id = SpawnB2, enabled = 0
+# let _enable_imps_at = _enable_others_at + _spawn_interval * 3
+# e.on(secondary_timer).is(ms(_enable_imps_at)).do(toggle_event_enabled).to('event_id = SpawnA1, enabled = 1')
+# e.on(secondary_timer).is(ms(_enable_imps_at)).do(toggle_event_enabled).to('event_id = SpawnA2, enabled = 1')
+# e.on(secondary_timer).is(ms(_enable_imps_at)).do(toggle_event_enabled).to('event_id = SpawnB1, enabled = 0')
+# e.on(secondary_timer).is(ms(_enable_imps_at)).do(toggle_event_enabled).to('event_id = SpawnB2, enabled = 0')
 # 
-# on secondary_timer: ms({# _enable_imps_at #}) do start_secondary_timer: time = 0
+# e.on(secondary_timer).is(ms(_enable_imps_at)).do(start_secondary_timer).to('time = 0')
 # 
 # // Let's enable delayed spawns after score has reached certain value
 # 
-# on [SpawnDelayed1] time_interval: ms({# _spawn_interval #}) do spawn: 4, 10, 50, 50, 0, 0, 0
-# on [SpawnDelayed2] time_interval: ms({# _spawn_interval #}) do spawn: 10, 10, 50, 50, 0, 0, 0
+# e('SpawnDelayed1').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('4, 10, 50, 50, 0, 0, 0')
+# e('SpawnDelayed2').on(time_interval).is(ms(_spawn_interval)).do(spawn).to('10, 10, 50, 50, 0, 0, 0')
 # 
-# set_event_property SpawnDelayed1: initially_disabled = 1
-# set_event_property SpawnDelayed2: initially_disabled = 1
+# set_event_property('SpawnDelayed1', 'initially_disabled', 1)
+# set_event_property('SpawnDelayed2', 'initially_disabled', 1)
 # 
-# on kill_count: 30 do toggle_event_enabled: event_id = SpawnDelayed1, enabled = 1
-# on kill_count: 30 do toggle_event_enabled: event_id = SpawnDelayed2, enabled = 1
+# e.on(kill_count).is(30).do(toggle_event_enabled).to('event_id = SpawnDelayed1, enabled = 1')
+# e.on(kill_count).is(30).do(toggle_event_enabled).to('event_id = SpawnDelayed2, enabled = 1')
 # 
-# on kill_count: 150 do modify_terrain: x = 3, y = 7, terrain_type = floor
-# on kill_count: 150 do modify_terrain: x = 5, y = 7, terrain_type = floor
-# on kill_count: 150 do modify_terrain: x = 9, y = 7, terrain_type = floor
-# on kill_count: 150 do modify_terrain: x = 11, y = 7, terrain_type = floor
+# function clear_wall(x, y) {
+#    e.on(kill_count).is(150).do(modify_terrain).to(`x = ${x}, y = ${y}, terrain_type = floor`)
+# }
 # 
-# on kill_count: 150 do modify_terrain: x = 4, y = 4, terrain_type = floor
-# on kill_count: 150 do modify_terrain: x = 10, y = 4, terrain_type = floor
+# clear_wall(3, 7)
+# clear_wall(5, 7)
+# clear_wall(9, 7)
+# clear_wall(11, 7)
 # 
+# clear_wall(4, 4)
+# clear_wall(10, 4)
 #end_script
 script_start: "1"
-script_line: "health 50 "
-script_line: "fire_rate 10 "
-script_line: "speed 1 "
-script_line: "player_initial_gold -1 "
 script_line: "event"
 script_line: "event_trigger time_one_time 1"
 script_line: "event_action start_secondary_timer 0"

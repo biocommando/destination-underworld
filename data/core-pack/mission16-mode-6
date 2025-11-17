@@ -394,42 +394,45 @@ set_var: "story4" " "
 set_var: "story5" "You feel how the spirit of the Arch Evil powers you"
 set_var: "story6" "as you prepare for the Hell's last stand..."
 #script 1
-# set health = 180
-# set speed = 1
-# set player_initial_gold = 10
+# set('health', 180)
+# set('speed', 1)
+# set('player_initial_gold', 10)
 #end_script
 #script 2
 # // Boss for "over powerup" mode
 # 
-# set health = 180
-# set speed = 1
-# set player_initial_gold = 10
+# set('health', 180)
+# set('speed', 1)
+# set('player_initial_gold', 10)
 # 
-# on time_interval: ms(5000) do fire_in_circle: number_of_directions = 16, intensity = 2
-# on time_interval: ms(1777) do fire_in_circle: number_of_directions = 6, intensity = 1
-# on time_interval: ms(1100) do fire_in_circle: number_of_directions = 4, intensity = 1
+# e.on(time_interval).is(ms(5000)).do(fire_in_circle).to('number_of_directions = 16, intensity = 2')
+# e.on(time_interval).is(ms(1777)).do(fire_in_circle).to('number_of_directions = 6, intensity = 1')
+# e.on(time_interval).is(ms(1100)).do(fire_in_circle).to('number_of_directions = 4, intensity = 1')
 # 
-# on time_one_time: 1 do modify_terrain: x = 14, y = 3, terrain_type = floor
-# on time_one_time: 1 do allow_firing
+# e.on(time_one_time).is(1).do(modify_terrain).to('x = 14, y = 3, terrain_type = floor')
+# e.on(time_one_time).is(1).do(allow_firing).to('')
 # 
-# on time_one_time: ms(8000) do modify_terrain: x = 10, y = 8, terrain_type = floor
-# on time_one_time: ms(8250) do modify_terrain: x = 11, y = 8, terrain_type = floor
-# on time_one_time: ms(8500) do modify_terrain: x = 10, y = 9, terrain_type = floor
-# on time_one_time: ms(8750) do modify_terrain: x = 11, y = 9, terrain_type = floor
+# e.on(time_one_time).is(ms(8000)).do(modify_terrain).to('x = 10, y = 8, terrain_type = floor')
+# e.on(time_one_time).is(ms(8250)).do(modify_terrain).to('x = 11, y = 8, terrain_type = floor')
+# e.on(time_one_time).is(ms(8500)).do(modify_terrain).to('x = 10, y = 9, terrain_type = floor')
+# e.on(time_one_time).is(ms(8750)).do(modify_terrain).to('x = 11, y = 9, terrain_type = floor')
 # 
-# on time_one_time: ms(9000) do spawn: 10, 8, 0, 0, 100, 0, 0
-# on time_one_time: ms(9000) do spawn: 11, 8, 0, 0, 100, 0, 0
-# on time_one_time: ms(9000) do spawn: 10, 9, 0, 0, 100, 0, 0
-# on time_one_time: ms(9000) do spawn: 11, 9, 0, 0, 100, 0, 0
-# on time_one_time: ms(9500) do spawn: 11, 9, 0, 0, 100, 0, 0
-# on time_one_time: ms(9500) do spawn: 10, 9, 0, 0, 100, 0, 0
+# function one_time_spawn(x, y, time=9000) {
+#    e.on(time_one_time).is(ms(time)).do(spawn).to(`${x}, ${y}, 0, 0, 100, 0, 0`)
+# }
+# one_time_spawn(10, 8)
+# one_time_spawn(11, 8)
+# one_time_spawn(10, 9)
+# one_time_spawn(11, 9)
+# one_time_spawn(11, 9, 9500)
+# one_time_spawn(10, 9, 9500)
 # 
-# on health: 0 do start_secondary_timer: time = 0
+# e.on(health).is(0).do(start_secondary_timer).to('time = 0')
 # 
-# on secondary_timer: ms(1000) do modify_terrain: x = 10, y = 0, terrain_type = level_exit
-# on secondary_timer: ms(1200) do modify_terrain: x = 11, y = 0, terrain_type = level_exit
-# on secondary_timer: ms(1400) do modify_terrain: x = 12, y = 0, terrain_type = level_exit
-# on secondary_timer: ms(1600) do modify_terrain: x = 13, y = 0, terrain_type = level_exit
+# e.on(secondary_timer).is(ms(1000)).do(modify_terrain).to('x = 10, y = 0, terrain_type = level_exit')
+# e.on(secondary_timer).is(ms(1200)).do(modify_terrain).to('x = 11, y = 0, terrain_type = level_exit')
+# e.on(secondary_timer).is(ms(1400)).do(modify_terrain).to('x = 12, y = 0, terrain_type = level_exit')
+# e.on(secondary_timer).is(ms(1600)).do(modify_terrain).to('x = 13, y = 0, terrain_type = level_exit')
 # 
 #end_script
 script_start: "1"

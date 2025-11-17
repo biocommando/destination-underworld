@@ -22,6 +22,7 @@ object: "122" "2" "1" "1"
 object: "122" "3" "1" "1"
 object: "120" "4" "1" "1"
 object: "46" "5" "1" "1"
+object: "600" "5" "1" "1"
 object: "46" "6" "1" "1"
 object: "46" "7" "1" "1"
 object: "46" "8" "1" "1"
@@ -38,6 +39,7 @@ object: "113" "2" "2" "1"
 object: "122" "3" "2" "1"
 object: "120" "4" "2" "1"
 object: "46" "5" "2" "1"
+object: "600" "5" "2" "1"
 object: "46" "6" "2" "1"
 object: "46" "7" "2" "1"
 object: "46" "8" "2" "1"
@@ -54,8 +56,11 @@ object: "120" "2" "3" "1"
 object: "120" "3" "3" "1"
 object: "120" "4" "3" "1"
 object: "46" "5" "3" "1"
+object: "600" "5" "3" "1"
 object: "46" "6" "3" "1"
+object: "600" "6" "3" "1"
 object: "46" "7" "3" "1"
+object: "600" "7" "3" "1"
 object: "120" "8" "3" "1"
 object: "46" "9" "3" "1"
 object: "46" "10" "3" "1"
@@ -66,8 +71,11 @@ object: "46" "14" "3" "1"
 object: "120" "15" "3" "1"
 object: "120" "0" "4" "1"
 object: "46" "1" "4" "1"
+object: "601" "1" "4" "1"
 object: "46" "2" "4" "1"
+object: "601" "2" "4" "1"
 object: "46" "3" "4" "1"
+object: "601" "3" "4" "1"
 object: "120" "4" "4" "1"
 object: "46" "5" "4" "1"
 object: "46" "6" "4" "1"
@@ -253,11 +261,13 @@ object: "46" "5" "3" "2"
 object: "46" "6" "3" "2"
 object: "46" "7" "3" "2"
 object: "120" "8" "3" "2"
+object: "46" "9" "3" "2"
 object: "46" "10" "3" "2"
 object: "46" "11" "3" "2"
 object: "46" "12" "3" "2"
 object: "46" "13" "3" "2"
 object: "46" "14" "3" "2"
+object: "600" "14" "3" "2"
 object: "1004" "15" "3" "2"
 object: "122" "0" "4" "2"
 object: "122" "1" "4" "2"
@@ -514,6 +524,7 @@ object: "120" "6" "7" "3"
 object: "46" "7" "7" "3"
 object: "120" "8" "7" "3"
 object: "46" "9" "7" "3"
+object: "600" "9" "7" "3"
 object: "46" "10" "7" "3"
 object: "46" "11" "7" "3"
 object: "46" "12" "7" "3"
@@ -530,6 +541,7 @@ object: "120" "6" "8" "3"
 object: "46" "7" "8" "3"
 object: "46" "8" "8" "3"
 object: "46" "9" "8" "3"
+object: "600" "9" "8" "3"
 object: "46" "10" "8" "3"
 object: "46" "11" "8" "3"
 object: "46" "12" "8" "3"
@@ -657,6 +669,7 @@ object: "120" "4" "4" "4"
 object: "120" "5" "4" "4"
 object: "46" "6" "4" "4"
 object: "46" "7" "4" "4"
+object: "100" "8" "4" "4"
 object: "46" "9" "4" "4"
 object: "46" "10" "4" "4"
 object: "46" "11" "4" "4"
@@ -778,25 +791,12 @@ object: "1003" "12" "11" "4"
 object: "120" "13" "11" "4"
 object: "122" "14" "11" "4"
 object: "122" "15" "11" "4"
-object: "600" "5" "3" "1"
-object: "600" "6" "3" "1"
-object: "600" "7" "3" "1"
-object: "601" "1" "4" "1"
-object: "601" "2" "4" "1"
-object: "601" "3" "4" "1"
-object: "600" "5" "2" "1"
-object: "600" "5" "1" "1"
-object: "100" "8" "4" "4"
-object: "600" "9" "7" "3"
-object: "600" "9" "8" "3"
-object: "600" "14" "3" "2"
-object: "46" "9" "3" "2"
 #conditions
 condition: "game_modifiers = 200" "COND_1"
 goto: "+SKIP_COND_1"
 :COND_1
-object: "301" "4" "9" "1"
 object: "305" "6" "2" "1"
+object: "301" "4" "9" "1"
 :+SKIP_COND_1
 :metadata
 set_var: "name" "Terrace of Gluttony"
@@ -812,35 +812,39 @@ set_var: "story9" "better keep it quiet what you're doing here in the"
 set_var: "story10" "basement."
 set_var: "mute_bosstalk" "1"
 #script 1
-# ignore_init_properties
-# on positional_trigger: 0 do spawn: 5, 6, 100, 0, 0, 0, 0
-# on positional_trigger: 0 do spawn: 6, 6, 100, 0, 0, 0, 0
-# on positional_trigger: 0 do spawn: 7, 6, 100, 0, 0, 0, 0
+# 'js'
+# const spawner = x => e.on(positional_trigger).is(0).do(spawn).to(x + ', 6, 100, 0, 0, 0, 0')
 # 
-# on positional_trigger: 1 do modify_terrain: x = 2, y = 3, terrain_type = floor
-# on positional_trigger: 1 do modify_terrain: x = 2, y = 2, terrain_type = floor
-# on positional_trigger: 1 do modify_terrain: x = 2, y = 1, terrain_type = floor
-# on positional_trigger: 1 do modify_terrain: x = 1, y = 1, terrain_type = floor
-# on positional_trigger: 1 do modify_terrain: x = 1, y = 2, terrain_type = floor
-# on positional_trigger: 1 do modify_terrain: x = 3, y = 1, terrain_type = floor
-# on positional_trigger: 1 do modify_terrain: x = 4, y = 1, terrain_type = floor
-# on positional_trigger: 1 do spawn_potion: x = 1, y = 2, type = 3
-# on positional_trigger: 1 do spawn_potion: x = 1, y = 1, type = 2
+# spawner(5)
+# spawner(6)
+# spawner(7)
+# 
+# const to_floor = (x, y) => e.on(positional_trigger).is(1).do(modify_terrain).to(`x = ${x}, y = ${y}, terrain_type = floor`)
+# to_floor(2, 3)
+# to_floor(2, 2)
+# to_floor(2, 1)
+# to_floor(1, 1)
+# to_floor(1, 2)
+# to_floor(3, 1)
+# to_floor(4, 1)
+# 
+# e.on(positional_trigger).is(1).do(spawn_potion).to('x = 1, y = 2, type = 3')
+# e.on(positional_trigger).is(1).do(spawn_potion).to('x = 1, y = 1, type = 2')
 # 
 #end_script
 #script 2
-# ignore_init_properties
-# on positional_trigger: 0 do modify_terrain: x = 9, y = 3, terrain_type = level_exit
+# 'js'
+# e.on(positional_trigger).is(0).do(modify_terrain).to('x = 9, y = 3, terrain_type = level_exit')
 #end_script
 #script 3
-# ignore_init_properties
-# on positional_trigger: 0 do spawn: 6, 3, 0, 100, 0, 0, 0
-# on positional_trigger: 0 do spawn: 7, 3, 100, 0, 0, 0, 0
-# on positional_trigger: 0 do spawn: 6, 5, 100, 0, 0, 0, 0
-# on positional_trigger: 0 do modify_terrain: x = 8, y = 3, terrain_type = floor
-# on positional_trigger: 0 do modify_terrain: x = 8, y = 2, terrain_type = floor
-# on positional_trigger: 0 do modify_terrain: x = 10, y = 6, terrain_type = wall
-# on positional_trigger: 0 do modify_terrain: x = 11, y = 6, terrain_type = wall
+# 'js'
+# e.on(positional_trigger).is(0).do(spawn).to('6, 3, 0, 100, 0, 0, 0')
+# e.on(positional_trigger).is(0).do(spawn).to('7, 3, 100, 0, 0, 0, 0')
+# e.on(positional_trigger).is(0).do(spawn).to('6, 5, 100, 0, 0, 0, 0')
+# e.on(positional_trigger).is(0).do(modify_terrain).to('x = 8, y = 3, terrain_type = floor')
+# e.on(positional_trigger).is(0).do(modify_terrain).to('x = 8, y = 2, terrain_type = floor')
+# e.on(positional_trigger).is(0).do(modify_terrain).to('x = 10, y = 6, terrain_type = wall')
+# e.on(positional_trigger).is(0).do(modify_terrain).to('x = 11, y = 6, terrain_type = wall')
 #end_script
 script_start: "1"
 script_line: "event"

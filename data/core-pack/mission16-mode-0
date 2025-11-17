@@ -399,60 +399,60 @@ set_var: "story4" " "
 set_var: "story5" "You feel how the spirit of the Arch Evil powers you"
 set_var: "story6" "as you prepare for the Hell's last stand..."
 #script 1
-# set health = 40
-# set fire_rate = 20
-# set speed = 2
-# set player_initial_gold = 2
+# set('health', 40)
+# set('fire_rate', 20)
+# set('speed', 2)
+# set('player_initial_gold', 2)
 #end_script
 #script 2
 # // Boss for normal mode
 # 
-# {# _start_time = ms(8000) #}
+# let _start_time = ms(8000)
 # 
-# set health = 40
-# set fire_rate = 20
-# set speed = 2
-# set player_initial_gold = 2
-# set time_starts_at = {# _start_time - 1 #}
+# set('health', 40)
+# set('fire_rate', 20)
+# set('speed', 2)
+# set('player_initial_gold', 2)
+# set('time_starts_at', _start_time - 1)
 # 
 # // initial -> set waypoint to first target
 # 
-# on time_one_time: {# _start_time #} do set_waypoint: 6;9
+# e.on(time_one_time).is(_start_time).do(set_waypoint).to('6;9')
 # 
-# on time_one_time: {# _start_time #} do allow_firing
+# e.on(time_one_time).is(_start_time).do(allow_firing).to('')
 # 
-# on time_one_time: {# _start_time #} do modify_terrain: x = 9, y = 1, terrain_type = floor
+# e.on(time_one_time).is(_start_time).do(modify_terrain).to('x = 9, y = 1, terrain_type = floor')
 # 
 # // Move in circle
-# {# set_waypoint_sequence(['6;9', '6;5', '8;5', '10;5', '12;5', '12;9', '9;9']) #}
+# set_waypoint_sequence(['6;9', '6;5', '8;5', '10;5', '12;5', '12;9', '9;9'])
 # 
 # // Spawn enemies
 # 
-# on time_interval: ms(18667) do spawn: 9, 7, 0, 0, 100, 0, 0
+# e.on(time_interval).is(ms(18667)).do(spawn).to('9, 7, 0, 0, 100, 0, 0')
 # 
-# on waypoint_reached: 6;5 do spawn: 13, 5, 80, 20, 0, 0, 0
-# on waypoint_reached: 12;5 do spawn: 4, 5, 80, 20, 0, 0, 0
-# on waypoint_reached: 6;9 do spawn: 3, 10, 100, 0, 0, 0, 0
-# on waypoint_reached: 12;5 do spawn: 14, 10, 100, 0, 0, 0, 0
+# e.on(waypoint_reached).is('6;5').do(spawn).to('13, 5, 80, 20, 0, 0, 0')
+# e.on(waypoint_reached).is('12;5').do(spawn).to('4, 5, 80, 20, 0, 0, 0')
+# e.on(waypoint_reached).is('6;9').do(spawn).to('3, 10, 100, 0, 0, 0, 0')
+# e.on(waypoint_reached).is('12;5').do(spawn).to('14, 10, 100, 0, 0, 0, 0')
 # 
 # // Firing
 # 
-# on waypoint_reached: 9;9 do fire_in_circle: number_of_directions = 10, intensity = 2
-# on waypoint_reached: 6;5 do disallow_firing
-# on waypoint_reached: 8;5 do allow_firing
-# on waypoint_reached: 10;5 do disallow_firing
-# on waypoint_reached: 12;5 do allow_firing
+# e.on(waypoint_reached).is('9;9').do(fire_in_circle).to('number_of_directions = 10, intensity = 2')
+# e.on(waypoint_reached).is('6;5').do(disallow_firing).to('')
+# e.on(waypoint_reached).is('8;5').do(allow_firing).to('')
+# e.on(waypoint_reached).is('10;5').do(disallow_firing).to('')
+# e.on(waypoint_reached).is('12;5').do(allow_firing).to('')
 # 
 # // Death
 # 
-# on health: 0 do start_secondary_timer: time = 0
+# e.on(health).is(0).do(start_secondary_timer).to('time = 0')
 # 
-# on secondary_timer: ms(500) do modify_terrain: x = 2, y = 4, terrain_type = floor
-# on secondary_timer: ms(750) do modify_terrain: x = 2, y = 5, terrain_type = floor
-# on secondary_timer: ms(1000) do modify_terrain: x = 1, y = 5, terrain_type = floor
-# on secondary_timer: ms(1250) do modify_terrain: x = 1, y = 4, terrain_type = floor
-# on secondary_timer: ms(1500) do modify_terrain: x = 1, y = 3, terrain_type = floor
-# on secondary_timer: ms(1750) do modify_terrain: x = 2, y = 3, terrain_type = floor
+# e.on(secondary_timer).is(ms(500)).do(modify_terrain).to('x = 2, y = 4, terrain_type = floor')
+# e.on(secondary_timer).is(ms(750)).do(modify_terrain).to('x = 2, y = 5, terrain_type = floor')
+# e.on(secondary_timer).is(ms(1000)).do(modify_terrain).to('x = 1, y = 5, terrain_type = floor')
+# e.on(secondary_timer).is(ms(1250)).do(modify_terrain).to('x = 1, y = 4, terrain_type = floor')
+# e.on(secondary_timer).is(ms(1500)).do(modify_terrain).to('x = 1, y = 3, terrain_type = floor')
+# e.on(secondary_timer).is(ms(1750)).do(modify_terrain).to('x = 2, y = 3, terrain_type = floor')
 #end_script
 script_start: "1"
 script_line: "health 40 "

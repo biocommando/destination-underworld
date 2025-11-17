@@ -205,59 +205,59 @@ set_var: "mute_bosstalk" "1"
 set_var: "wall_color" "0 0.2 0.4"
 #script 1
 # // Add a hint to the compiler that this is an arena fight
-# {# implicit_arena_game_mode() #}
+# implicit_arena_game_mode()
 # 
-# set [powerup_only] player_initial_gold = 99
-# set [over_powerup] player_initial_gold = 10
-# set [explosion_madness] player_initial_gold = 3
+# set('player_initial_gold', 99, 'powerup_only')
+# set('player_initial_gold', 10, 'over_powerup')
+# set('player_initial_gold', 3, 'explosion_madness')
 # 
-# {# _interval = 500, _time = 2500 #}
-# {# _nextTime = () => { _time += _interval; return _time }, 0 #}
+# let _interval = 500, _time = 2500
+# const _nextTime = () => { _time += _interval; return _time }
 # 
-# on time_one_time: 1 do start_secondary_timer: time = 0
+# e.on(time_one_time).is(1).do(start_secondary_timer).to('time = 0')
 # 
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 1, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 1, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 3, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 3, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 5, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 5, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 7, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 7, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 9, 10, 100, 0, 0, 0, 0
-# on secondary_timer: ms({# _nextTime() #}) do spawn: 5, 10, 100, 0, 0, 0, 0
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('9, 1, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('5, 1, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('5, 3, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('9, 3, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('9, 5, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('5, 5, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('5, 7, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('9, 7, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('9, 10, 100, 0, 0, 0, 0')
+# e.on(secondary_timer).is(ms(_nextTime())).do(spawn).to('5, 10, 100, 0, 0, 0, 0')
 # 
-# on secondary_timer: ms({# _time #}) do start_secondary_timer: time = 0
+# e.on(secondary_timer).is(ms(_time)).do(start_secondary_timer).to('time = 0')
 # 
-# on [evt_spawn_imp] secondary_timer: ms({# _time #}) do spawn: 7, 10, 0, 0, 100, 0, 0
-# set_event_property evt_spawn_imp: initially_disabled = 1
+# e('evt_spawn_imp').on(secondary_timer).is(ms(_time)).do(spawn).to('7, 10, 0, 0, 100, 0, 0')
+# set_event_property('evt_spawn_imp', 'initially_disabled', 1)
 # 
-# on kill_count: 50 do toggle_event_enabled: event_id = evt_spawn_imp, enabled = 1
+# e.on(kill_count).is(50).do(toggle_event_enabled).to('event_id = evt_spawn_imp, enabled = 1')
 # 
-# on [evt_mod_terrain_1] @never do @nothing
-# on [evt_mod_terrain_2] @never do @nothing
-# on [evt_mod_terrain_3] @never do @nothing
-# on [evt_mod_terrain_4] @never do @nothing
-# on [evt_mod_terrain_5] @never do @nothing
-# on [evt_mod_terrain_6] @never do @nothing
-# on [evt_mod_terrain_7] @never do @nothing
-# on [evt_mod_terrain_8] @never do @nothing
-# on [evt_mod_terrain_9] @never do @nothing
+# e('evt_mod_terrain_1').never().do_nothing()
+# e('evt_mod_terrain_2').never().do_nothing()
+# e('evt_mod_terrain_3').never().do_nothing()
+# e('evt_mod_terrain_4').never().do_nothing()
+# e('evt_mod_terrain_5').never().do_nothing()
+# e('evt_mod_terrain_6').never().do_nothing()
+# e('evt_mod_terrain_7').never().do_nothing()
+# e('evt_mod_terrain_8').never().do_nothing()
+# e('evt_mod_terrain_9').never().do_nothing()
 # 
-# on {# override_event('evt_mod_terrain_1', 'powerup_only') #} kill_count: 30 do modify_terrain: x = 7, y = 2, terrain_type = floor
-# on {# override_event('evt_mod_terrain_2', 'powerup_only') #} kill_count: 31 do modify_terrain: x = 7, y = 4, terrain_type = floor
-# on {# override_event('evt_mod_terrain_3', 'powerup_only') #} kill_count: 32 do modify_terrain: x = 7, y = 6, terrain_type = floor
-# on {# override_event('evt_mod_terrain_4', 'powerup_only') #} kill_count: 40 do modify_terrain: x = 7, y = 8, terrain_type = floor
+# e(override_event('evt_mod_terrain_1', 'powerup_only')).on(kill_count).is(30).do(modify_terrain).to('x = 7, y = 2, terrain_type = floor')
+# e(override_event('evt_mod_terrain_2', 'powerup_only')).on(kill_count).is(31).do(modify_terrain).to('x = 7, y = 4, terrain_type = floor')
+# e(override_event('evt_mod_terrain_3', 'powerup_only')).on(kill_count).is(32).do(modify_terrain).to('x = 7, y = 6, terrain_type = floor')
+# e(override_event('evt_mod_terrain_4', 'powerup_only')).on(kill_count).is(40).do(modify_terrain).to('x = 7, y = 8, terrain_type = floor')
 # 
-# on {# override_event('evt_mod_terrain_1', 'explosion_madness') #} kill_count: 2 do modify_terrain: x = 10, y = 5, terrain_type = floor
-# on {# override_event('evt_mod_terrain_2', 'explosion_madness') #} kill_count: 4 do modify_terrain: x = 11, y = 5, terrain_type = floor
-# on {# override_event('evt_mod_terrain_3', 'explosion_madness') #} kill_count: 6 do modify_terrain: x = 12, y = 5, terrain_type = floor
-# on {# override_event('evt_mod_terrain_4', 'explosion_madness') #} kill_count: 8 do modify_terrain: x = 12, y = 6, terrain_type = floor
-# on {# override_event('evt_mod_terrain_5', 'explosion_madness') #} kill_count: 16 do modify_terrain: x = 12, y = 7, terrain_type = floor
-# on {# override_event('evt_mod_terrain_6', 'explosion_madness') #} kill_count: 24 do modify_terrain: x = 11, y = 7, terrain_type = floor
-# on {# override_event('evt_mod_terrain_7', 'explosion_madness') #} kill_count: 32 do modify_terrain: x = 10, y = 7, terrain_type = floor
-# on {# override_event('evt_mod_terrain_8', 'explosion_madness') #} kill_count: 40 do modify_terrain: x = 11, y = 6, terrain_type = floor
-# on {# override_event('evt_mod_terrain_9', 'explosion_madness') #} kill_count: 48 do modify_terrain: x = 10, y = 6, terrain_type = floor
+# e(override_event('evt_mod_terrain_1', 'explosion_madness')).on(kill_count).is(2).do(modify_terrain).to('x = 10, y = 5, terrain_type = floor')
+# e(override_event('evt_mod_terrain_2', 'explosion_madness')).on(kill_count).is(4).do(modify_terrain).to('x = 11, y = 5, terrain_type = floor')
+# e(override_event('evt_mod_terrain_3', 'explosion_madness')).on(kill_count).is(6).do(modify_terrain).to('x = 12, y = 5, terrain_type = floor')
+# e(override_event('evt_mod_terrain_4', 'explosion_madness')).on(kill_count).is(8).do(modify_terrain).to('x = 12, y = 6, terrain_type = floor')
+# e(override_event('evt_mod_terrain_5', 'explosion_madness')).on(kill_count).is(16).do(modify_terrain).to('x = 12, y = 7, terrain_type = floor')
+# e(override_event('evt_mod_terrain_6', 'explosion_madness')).on(kill_count).is(24).do(modify_terrain).to('x = 11, y = 7, terrain_type = floor')
+# e(override_event('evt_mod_terrain_7', 'explosion_madness')).on(kill_count).is(32).do(modify_terrain).to('x = 10, y = 7, terrain_type = floor')
+# e(override_event('evt_mod_terrain_8', 'explosion_madness')).on(kill_count).is(40).do(modify_terrain).to('x = 11, y = 6, terrain_type = floor')
+# e(override_event('evt_mod_terrain_9', 'explosion_madness')).on(kill_count).is(48).do(modify_terrain).to('x = 10, y = 6, terrain_type = floor')
 # 
 #end_script
 script_start: "1"

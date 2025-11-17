@@ -2,31 +2,49 @@ It's possible to create scripted events to every room in the game.
 The scripts are room-specific. The scripting was originally created
 just for boss fights but has been extended to be more generic.
 
+The scripts used to be implemented in a custom language that would be
+transpiled to the final format but the transpilation was replaced with
+a javascript API for better flexibility, and to make the scripting engine
+a bit less magical.
+
 For more documentation on the actions and trigger conditions, see bossfightconf.h.
 
-# BOSS syntax
+# Javascript API
 
 The format that the game itself reads isn't very easy to program directly
-so there's a transpiler that uses a custom language (BOSS). The language has
-3 kinds of commands:
+so there's a configuration interface that uses a custom Javascript API.
+The API has 3 kinds of commands:
 - event definition
 - set game initialization property
 - set event property
 
 ## Event definitions
-Event definitions have the following format:
-```
-on [event_name] trigger_type: trigger_value do action_type: parameters
+Events are defined as objects that have the following fields:
+- name (optional, for event overloading)
+- trigger_type
+- trigger_value
+- event_type
+- event_value
+
+The events must be passed to `processEvent` function to make them a part of the final export.
+
+There's a helper function `e` for creating event definitions that has the
+following syntax:
+```js
+e.on(trigger_type).is(trigger_value).do(event_type).to(event_value)
+// or named events:
+e(name).on(trigger_type).is(trigger_value).do(event_type).to(event_value)
 ```
 
-The event name is optional.
+The API has defined all the trigger and event types as constants, so you don't need
+to use quotes for the parameters.
 
 ### Trigger types and values
 (if nothing is stated about the value, it's just used as is):
 
 - waypoint_reached, value: `x;y`. The x, y coordinate identifies the waypoint. Example:
-  ```
-  on waypoint_reached: 6;5 do disallow_firing
+  ```js
+  e.on(waypoint_reached).is('6;5').do('disallow_firing').to('')
   ```
 	* Triggers when the boss reaches this coordinate in waypoint mode
 - time_interval
@@ -42,7 +60,7 @@ The event name is optional.
 - positional_trigger
 	* Triggers from "positional trigger" objects in the level
 
-### Action types and values.
+### Event types and values.
 If value is said to be key-value list, it means that it has format 'key = value, key = value, ...'
 and only the keys are listed:
 
@@ -84,10 +102,13 @@ each enemy type (should sum up to 100).
 - inherit = event action inherited when overridden
 
 Special event/trigger types don't use the value field for anything. To
-omit the value (and make the syntax less mind boggling) prefix the special
-types with `@`. Example:
-```
-on [evt_mod_terrain_9] @never do @nothing
+omit the value (and make the syntax less mind boggling) you can use the special
+methods of the `e` event builder function, like:
+```js
+e('evt_mod_terrain_9').never().do_nothing()
+// Inheriting
+e(override_event('evt_mod_terrain_9', 'brutal')).inherit().do(modify_terrain).to('x = 1, y = 1, terrain_type = wall')
+e(override_event('evt_mod_terrain_9', 'brutal')).on(kill_count).is(10).inherit()
 ```
 
 Events can be overridden but it can be only done using the javascript preprocessing
@@ -108,13 +129,15 @@ The following initialization properties are understood:
 	* Room specific
 
 Set the properties using syntax:
-```
-set property = value
+```js
+set(property, value)
 ```
 
 Override the property for certain mode:
-```
-set [mode] property = value
+```js
+set(property, value, mode)
+// Example
+set('player_initial_gold', 10, 'powerup_only')
 ```
 
 ## Setting event property
@@ -122,53 +145,43 @@ set [mode] property = value
 Set a generic property on a named event.
 Currently only one property: initially_disabled (=can be toggled to be on)
 Syntax:
+```js
+set_event_property(name, 'initially_disabled', is_disabled ? 1 : 0)
 ```
-set_event_property name: initially_disabled = 1 or 0
-```
 
-# Preprocessing
-
-- `{#..#}` = execute javascript and replace the snippet with the returned string or list of strings (=lines).
-  - Instead of returning the replacement code, the script can set a special `output` variable instead
-- `ms(..)` = calculate boss timer value for amount of milliseconds
-
-Preprocessing is run in this order so you can use {# .. #} inside ms( .. )
+# Helper functions
 
 For the javascript execution there are a couple of convenience functions/variables available:
+- `ms(..)` = calculate boss timer value for amount of milliseconds
 - `override_event(base_event, game_mode_name)`
 	* Creates a mapping that maps the base event to this event if the game mode flags are specified.
 	Example:
-	```
-	on {# override_event('SpawnA1', 'brutal') #} time_interval: ms({# _spawn_interval * 1.5 #}) do @inherit
+	```js
+	e(override_event('SpawnA1', 'brutal').on(time_interval).is(ms(_spawn_interval * 1.5)).inherit()
 	```
 - `disable_event(name, game_mode_name)`
 	* Disables an event for certain mode
 - `set_waypoint_sequence(sequence)`
 	* Sets boss a route with waypoints. E.g. boss walking between two points:
-	```
-	{# set_waypoint_sequence([ '3;3', '9;9' ]) #}
+	```js
+	set_waypoint_sequence([ '3;3', '9;9' ])
 	```
 - `ms_delta`
 	* Boss timer tick in milliseconds
 - `implicit_arena_game_mode()`
 	* Calling this function sets arena flag to 1 so that you don't need to refer to the arena variant of the
 	game mode when overriding events / properties, so instead of having to write
-	`set [arena_brutal] health = 20` you can write:
+	`set('health', 20, 'arena_brutal')` you can write:
 	```
-		{# implicit_arena_game_mode() #}
-		set [brutal] health = 20
+		implicit_arena_game_mode()
+		set('health', 20, 'brutal')
 	```
-- `modify_rect(trig, x, y, x2, y2, terrain_type)`
-	* Creates events with `trig` as the trigger for changing all tiles in a rectangular area to the provided terrain type
+- `modify_rect(trig_type, trig_value, x, y, x2, y2, terrain_type)`
+	* Creates events with `on(trig_type).is(trig_value)` as the trigger for changing all tiles in a rectangular area to the provided terrain type
 	* Example: after killing 10 enemies, change 2x3 area at x=5, y=7 to floor:
+	```js
+		modify_rect('kill_count', 10, 5, 7, 7, 10, 'floor')
 	```
-		{# modify_rect('kill_count: 10', 5, 7, 7, 10, 'floor') #}
-	```
-
-# Comments
-
-You can add line comments by prefixing any line with a single slash ('/'). Of course, also double slashes
-are valid.
 
 # Game modes
 
