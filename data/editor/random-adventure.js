@@ -15,18 +15,26 @@ const numMissions = params.numberOfMissions
 const placeNames = [
     'Dungeon', 'Castle', 'Keep', 'Labyrinth', 'Cave', 'Cavern', 'Mansion', 'Manor',
     'Fortress', 'Fort', 'Woods', 'Forest', 'Halls', 'City', 'Ruins', 'Tower', 'Citadel',
-    'Tunnels'
+    'Tunnels', 'Stronghold', 'Sanctum', 'Vault', 'Crypt', 'Catacombs', 'Arena', 'Pit', 'Barracks',
+    'Outpost', 'Bastion', 'Chamber', 'Temple', 'Shrine', 'Monastery', 'Harbor', 'Sewers',
+    'Barricade', 'Gorge', 'Canyon', 'Passage', 'Domain', 'Warrens', 'Den', 'Throne Room',
+    'Keepers\' Gate', 'Sanctuary'
 ]
 
 const ominiousWords = [
     'Doom', 'Evil', 'Destruction', 'Demons', 'Devil', 'Sin', 'Abominations', 'Monsters',
     'Damnation', 'Purgatory', 'Hell', 'Spirits', 'Hatred', 'Horrors', 'Terror', 'Enslavement',
-    'Decapitation', 'Ghouls', 'Ghosts'
+    'Decapitation', 'Ghouls', 'Ghosts', 'Torment', 'Suffering', 'Shadows', 'The Fallen', 'The Forsaken', 'Nightmares', 'Oblivion',
+    'Bloodlust', 'Agony', 'The Damned', 'Corruption', 'Despair', 'Malediction', 'Madness',
+    'The Lost', 'The Accursed', 'Twisted Souls', 'Carnage', 'Inferno', 'The Unholy',
+    'Grievance', 'Misery', 'Dread', 'Annihilation'
 ]
 placeNames.sort(() => Math.random() - 0.5)
 ominiousWords.sort(() => Math.random() - 0.5)
 
-const packName = params.packName || `${placeNames.pop()}-of-${ominiousWords.pop()}--${new Date().getTime().toString(36)}`
+const prettyName = `${placeNames.pop()} of ${ominiousWords.pop()}`
+
+const packName = params.packName || `${prettyName.replace(/ /g, '-')}--${new Date().getTime().toString(36)}`
 
 function randomIntFromRange(range) {
     const [min, max] = range
@@ -415,15 +423,8 @@ doc_end
 
 fs.writeFileSync(packName + '/readme.txt', `Running the game with this custom mission pack:
 1. Copy the directory ${packName} under data directory
-2. Run the ${packName}.bat file`)
+2. Select the level pack ${prettyName} from main menu`)
 
-fs.writeFileSync(packName + '/' + packName + '.bat', `
-IF EXIST mission1 (
-    cd ..
-    cd ..
-)
-DestinationUnderworld.exe --general--mission-pack=${packName} --default-game-mode=${params.defaultGameMode}`)
-
-fs.writeFileSync(packName + '/mission-counts.dat', 'initial_count: "' + numMissions + '"')
+fs.writeFileSync(packName + '/mission-counts.dat', 'initial_count: "' + numMissions + '"\nname: "' + prettyName + '"\n')
 
 console.log(`Created files for pack named ${packName}`)
