@@ -13,6 +13,7 @@
 #include "record_file.h"
 #include "sha1/du_dmac.h"
 #include "help.h"
+#include "command_file/generated/dispatch_mission_counts.h"
 
 static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
 {
@@ -723,17 +724,17 @@ static void game_option_menu()
 static void get_mission_pack_name(const char *mission_pack, char *name)
 {
     char pack_name_path[100];
-    sprintf(pack_name_path, DATADIR "%s/pack-name.dat", mission_pack);
-    FILE *f = fopen(pack_name_path, "r");
-    if (f)
+    sprintf(pack_name_path, DATADIR "%s/mission-counts.dat", mission_pack);
+    SetMissionCount smc;
+    memset(&smc, 0, sizeof(smc));
+    int err = read_command_file(pack_name_path, dispatch__mission_counts, &smc);
+    if (err || !*smc.name)
     {
-        size_t amt = fread(name, 1, 99, f);
-        name[amt] = 0;
-        fclose(f);
+        strcpy(name, mission_pack);
     }
     else
     {
-        strcpy(name, mission_pack);
+        strcpy(name, smc.name);
     }
 }
 

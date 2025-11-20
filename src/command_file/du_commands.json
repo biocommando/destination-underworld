@@ -142,6 +142,13 @@
                 "min": 0
             },
             ":required": true
+        },
+        "name": {
+            "misson_name": "str",
+            "validate:mission_name": {
+                "type": "length",
+                "max": "63"
+            }
         }
     },
     "help": {

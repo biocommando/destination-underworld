@@ -395,6 +395,11 @@ void dispatch__handle_mission_counts_initial_count(struct mission_counts_initial
     }
 }
 
+void dispatch__handle_mission_counts_name(struct mission_counts_name_DispatchDto *dto)
+{
+    strcpy(dto->state->name, dto->misson_name);
+}
+
 int read_mission_count(int game_mode)
 {
     char fname[256];
