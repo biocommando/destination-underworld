@@ -8,7 +8,6 @@ void game_loop_rest(double *state)
     while (al_get_time() - *state < 0.025)
     {
         wait_delay(1);
-        consume_event_queue();
     }
     *state = al_get_time();
 }

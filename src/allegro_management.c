@@ -56,6 +56,8 @@ int get_key()
 // Counter for adding a second of silence (or delay tail) after every midi file
 static int midi_track_spacing_counter = 0;
 
+#define TIMER_MS 2
+
 void wait_timer_event()
 {
     ALLEGRO_EVENT event;
@@ -116,7 +118,7 @@ void wait_delay(int v)
 
 void wait_delay_ms(int ms)
 {
-    wait_delay(ms / 5);
+    wait_delay(ms / TIMER_MS);
 }
 
 void wait_key_press(int key)
@@ -196,7 +198,7 @@ int init_allegro()
 
     init_midi_playback(44100);
 
-    TRY_INIT(timer = al_create_timer(5.0 / 1000), NOT_NULL);
+    TRY_INIT(timer = al_create_timer(TIMER_MS / 1000.0), NOT_NULL);
     TRY_INIT(io_queue = al_create_event_queue(), NOT_NULL);
     TRY_INIT(timer_queue = al_create_event_queue(), NOT_NULL);
     al_register_event_source(io_queue, al_get_keyboard_event_source());
