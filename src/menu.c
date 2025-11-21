@@ -73,7 +73,7 @@ static int get_menu_item_id(const char *id_str)
     return id;
 }
 
-#define NUM_MENU_ITEMS 20
+#define NUM_MENU_ITEMS 64
 
 struct menu
 {
@@ -82,6 +82,7 @@ struct menu
     int num_items;
     int selected_item;
     int cancel_menu_item_id;
+    int num_displayed_items;
 };
 
 static void set_item_by_id(struct menu *m, int id)
@@ -143,6 +144,7 @@ struct menu create_menu(const char *title, ...)
     memset(&m, 0, sizeof(m));
     vsprintf(m.title, title, args);
     m.cancel_menu_item_id = MENU_ID_CANCEL_OPTION_NOT_SET;
+    m.num_displayed_items = 10;
     return m;
 }
 
@@ -170,7 +172,15 @@ static void display_menu(struct menu *menu_state)
         al_draw_textf(get_menu_title_font(), DARK_RED, 30, 25, 0, menu_state->title);
         al_draw_textf(get_menu_title_font(), RED, 28, 23, 0, menu_state->title);
         int cursor_y = y_offset;
-        for (int i = 0; i < menu_state->num_items; i++)
+        int start = 0, end = MIN(menu_state->num_items, menu_state->num_displayed_items);
+        if (menu_state->num_items > menu_state->num_displayed_items && menu_state->selected_item >= menu_state->num_displayed_items)
+        {
+            start = menu_state->selected_item - menu_state->num_displayed_items + 1;
+            end = MIN(menu_state->num_items, menu_state->num_displayed_items + start);
+            al_draw_line(30, y_offset - 5, 40, y_offset - 15, RED, 2);
+            al_draw_line(50, y_offset - 5, 40, y_offset - 15, RED, 2);
+        }
+        for (int i = start; i < end; i++)
         {
             struct menu_item *mi = &menu_state->items[i];
             int cursor_y_offset = 0;
@@ -207,6 +217,13 @@ static void display_menu(struct menu *menu_state)
             else
                 cursor_y += menu_item_margin;
         }
+
+        if (end < menu_state->num_items)
+        {
+            al_draw_line(30, cursor_y + 5, 40, cursor_y + 15, RED, 2);
+            al_draw_line(50, cursor_y + 5, 40, cursor_y + 15, RED, 2);
+        }
+
         al_flip_display();
         wait_delay_ms(30);
         if (select_animation_timer > 0)
@@ -289,7 +306,7 @@ static int display_load_game_menu()
 {
     struct menu m = create_menu("Load game");
     m.cancel_menu_item_id = add_menu_item(&m, "Cancel", "Cancel and return to previous menu")->item_id;
-    for (int slot = 0; slot < 9; slot++)
+    for (int slot = 0; slot < 20; slot++)
     {
         char slot_name[32];
         sprintf(slot_name, "Load slot %d", slot);
@@ -302,7 +319,7 @@ static int display_load_game_menu()
         }
         else
         {
-            add_menu_item(&m, slot_name, "EMPTY");
+            add_menu_item(&m, slot_name, "EMPTY\n");
             m.items[m.num_items - 1].selectable = 0;
         }
     }
@@ -315,7 +332,7 @@ static int display_save_game_menu()
     struct menu m = create_menu("Save game");
     struct menu_item *mi = add_menu_item(&m, "Cancel", "Cancel and return to previous menu");
     m.cancel_menu_item_id = mi->item_id;
-    for (int slot = 0; slot < 9; slot++)
+    for (int slot = 0; slot < 20; slot++)
     {
         char slot_name[32];
         sprintf(slot_name, "Save to slot %d", slot);
@@ -529,6 +546,7 @@ static int display_range_menu(const char *title, const char *(*fmt)(int), int ra
     if (m.selected_item >= m.num_items || m.selected_item == 0)
         m.selected_item = 0;
     m.cancel_menu_item_id = m.items[m.selected_item].item_id;
+    m.num_displayed_items = MIN(m.num_items, 15);
     display_menu(&m);
     return range_start + m.selected_item * step;
 }
@@ -561,6 +579,7 @@ static void str_to_upper(char *data)
 static int display_select_track_menu()
 {
     struct menu m = create_menu("Select track");
+    m.num_displayed_items = 20;
     const char *fname;
     const char *current = get_midi_playlist_entry_file_name(-1);
     struct track_filename filenames[NUM_MENU_ITEMS];
