@@ -311,14 +311,15 @@ static void display_menu(struct menu *menu_state)
     al_destroy_bitmap(menubg);
 }
 
-static int display_load_game_menu()
+static int display_save_load_menu(int is_load)
 {
-    struct menu m = create_menu("Load game");
-    m.cancel_menu_item_id = add_menu_item(&m, "Cancel", "Cancel and return to previous menu")->item_id;
+    struct menu m = create_menu(is_load ? "Load game" : "Save game");
+    struct menu_item *mi = add_menu_item(&m, "Cancel", "Cancel and return to previous menu");
+    m.cancel_menu_item_id = mi->item_id;
     for (int slot = 0; slot < 20; slot++)
     {
         char slot_name[32];
-        sprintf(slot_name, "Load slot %d", slot);
+        sprintf(slot_name, "%s slot %d", is_load ? "Load" : "Save to", slot + 1);
         int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
         peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
         if (current_slot_has_save)
@@ -329,36 +330,22 @@ static int display_load_game_menu()
         else
         {
             add_menu_item(&m, slot_name, "EMPTY\n ");
-            m.items[m.num_items - 1].selectable = 0;
+            if (is_load)
+                m.items[m.num_items - 1].selectable = 0;
         }
     }
     display_menu(&m);
     return m.selected_item;
 }
 
+static int display_load_game_menu()
+{
+    return display_save_load_menu(1);
+}
+
 static int display_save_game_menu()
 {
-    struct menu m = create_menu("Save game");
-    struct menu_item *mi = add_menu_item(&m, "Cancel", "Cancel and return to previous menu");
-    m.cancel_menu_item_id = mi->item_id;
-    for (int slot = 0; slot < 20; slot++)
-    {
-        char slot_name[32];
-        sprintf(slot_name, "Save to slot %d", slot);
-        int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
-        peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
-        if (current_slot_has_save)
-        {
-            add_menu_item(&m, slot_name, "Mode: %s\nLevel: %d",
-                          game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
-        }
-        else
-        {
-            add_menu_item(&m, slot_name, "EMPTY\n ");
-        }
-    }
-    display_menu(&m);
-    return m.selected_item;
+    return display_save_load_menu(0);
 }
 
 static int check_game_modes_beaten(const int *modifiers, int sz)
