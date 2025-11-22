@@ -271,6 +271,8 @@ void Synth_process(Synth *s, float *buffer_left, [[maybe_unused]] float *buffer_
 void Synth_kill_all_voices(Synth *s)
 {
     linked_list_clear(&s->voices);
+    // Let's also clear the delay buffer
+    memset(s->send_delay.buffer, 0, sizeof(double) * s->send_delay.bufferLength);
 }
 
 void Synth_kill_voices(Synth *s, int channel)

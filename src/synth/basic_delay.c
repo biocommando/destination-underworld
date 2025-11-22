@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 void init_BasicDelay(BasicDelay *bd, unsigned long bufferLength, int sampleRate)
 {
@@ -20,6 +21,8 @@ void free_BasicDelay(BasicDelay *bd)
 }
 double BasicDelay_process(BasicDelay *bd, double input)
 {
+    if (isnan(input))
+        input = 0;
     const double temp = bd->buffer[bd->index];
     bd->buffer[bd->index] = bd->buffer[bd->index] * bd->feed + input;
     if (++bd->index >= bd->delaySamples)
