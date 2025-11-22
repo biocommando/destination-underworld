@@ -27,6 +27,7 @@ function renameMidiFiles(targetDir) {
     psykeily : Alien Spacecraft
     2025-11-dutheme : Weird Horror
     2025-11-chill-melody : Wild Walrus on a Vacation
+    2025-11-dnb : Devil in the Details
     prob2 : Lord of Lies
     Project_1 : Battle Bot Disassembly`
 
