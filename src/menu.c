@@ -148,6 +148,10 @@ struct menu create_menu(const char *title, ...)
     return m;
 }
 
+#define MENU_TRANSFORM_SCALE 2
+#define MENU_W (DISPLAY_W / MENU_TRANSFORM_SCALE)
+#define MENU_H (DISPLAY_H / MENU_TRANSFORM_SCALE)
+
 static void display_menu(struct menu *menu_state)
 {
     while (!menu_state->items[menu_state->selected_item].selectable)
@@ -168,7 +172,8 @@ static void display_menu(struct menu *menu_state)
     while (1)
     {
         timer++;
-        al_draw_scaled_bitmap(menubg, 0, 0, 480, 360, 0, 0, 480 * 2, 360 * 2, 0);
+        int tint = 64 + abs(timer % 256 - 128);
+        al_draw_tinted_scaled_bitmap(menubg, al_map_rgb(tint, tint, tint), 0, 0, al_get_bitmap_width(menubg), al_get_bitmap_height(menubg), 0, 0, MENU_W, MENU_H, 0);
         al_draw_textf(get_menu_title_font(), DARK_RED, 30, 25, 0, menu_state->title);
         al_draw_textf(get_menu_title_font(), RED, 28, 23, 0, menu_state->title);
         int cursor_y = y_offset;
@@ -179,7 +184,7 @@ static void display_menu(struct menu *menu_state)
             end = MIN(menu_state->num_items, menu_state->num_displayed_items + start);
             if (end - start < menu_state->num_displayed_items)
                 start = end - menu_state->num_displayed_items;
-            al_draw_line(15, cursor_y - 2, SCREEN_W / 2, cursor_y - 2, al_map_rgb(64, 0, 0), 1);
+            al_draw_line(15, cursor_y - 2, MENU_W / 3, cursor_y - 2, al_map_rgb(64, 0, 0), 1);
             al_draw_line(30, cursor_y - 5, 40, cursor_y - 15, RED, 2);
             al_draw_line(50, cursor_y - 5, 40, cursor_y - 15, RED, 2);
         }
@@ -223,7 +228,7 @@ static void display_menu(struct menu *menu_state)
 
         if (end < menu_state->num_items)
         {
-            al_draw_line(15, cursor_y + 2, SCREEN_W / 2, cursor_y + 2, al_map_rgb(64, 0, 0), 1);
+            al_draw_line(15, cursor_y + 2, MENU_W / 3, cursor_y + 2, al_map_rgb(64, 0, 0), 1);
             al_draw_line(30, cursor_y + 5, 40, cursor_y + 15, RED, 2);
             al_draw_line(50, cursor_y + 5, 40, cursor_y + 15, RED, 2);
         }
@@ -817,7 +822,7 @@ static void display_perk_menu(Enemy *player)
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_HEALTH_POWERUP, "Healer", "Improves the Heal powerup.\n+1 health per use.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_SHIELD_POWERUP, "Protector", "Improves the Shield powerup.\nGuards from 3 hits instead of 1.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_TURRET_POWERUP, "Engineer", "Improves the Turret powerup.\nThe spawned turret explodes after shooting.");
-    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_BLAST_POWERUP, "Annihilator", "Improves the Torrent of Fire powerup.\nMakes the projectile shoot fireballs while traveling\nand spawn a turret when it explodes.");
+    add_perk_menu_item(&m, player->perks, enough_xp, PERK_IMPROVE_BLAST_POWERUP, "Annihilator", "Improves the Torrent of Fire powerup. Makes the projectile shoot\nfireballs while traveling and spawn a turret when it explodes.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SPEED_POTION, "Speedrunner", "Start level with Potion of Gotta Go Fast.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SHIELD_POWERUP, "Paranoid", "Start level with Shield powerup active.");
     display_menu(&m);
@@ -911,7 +916,7 @@ int menu(int ingame, GlobalGameState *ggs)
 
     ALLEGRO_TRANSFORM transform;
     al_identity_transform(&transform);
-    al_scale_transform(&transform, 2, 2);
+    al_scale_transform(&transform, MENU_TRANSFORM_SCALE, MENU_TRANSFORM_SCALE);
     al_use_transform(&transform);
 
     int switch_level = 1;
