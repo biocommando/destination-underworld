@@ -7,6 +7,12 @@
 #define MAX_PLAYLIST_LEN 128
 
 static MidiPlayer midi_player;
+static void (*notify_new_track_name)(const char *track_name) = NULL;
+
+void set_notify_next_track_name(void (*notify)(const char *))
+{
+    notify_new_track_name = notify;
+}
 
 struct playlist_entry
 {
@@ -118,6 +124,10 @@ void next_midi_track(int index)
         current_playlist_entry = 0;
     Synth_read_instruments(&midi_player.synth, playlist[current_playlist_entry].meta_f);
     midi_player_set_midi_file(&midi_player, &playlist[current_playlist_entry].midi_file);
+    if (notify_new_track_name)
+    {
+        notify_new_track_name(get_midi_playlist_entry_file_name(current_playlist_entry));
+    }
 }
 
 static int randomize_midi_playlist_sorter([[maybe_unused]] const void *a, [[maybe_unused]] const void *b)

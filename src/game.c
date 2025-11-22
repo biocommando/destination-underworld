@@ -238,6 +238,14 @@ static void reset_screen_transform()
     al_use_transform(&transform);
 }
 
+static const char *midi_track_name = NULL;
+static int midi_track_name_display_count = 0;
+static void notify_track_name_changed(const char *name)
+{
+    midi_track_name = name;
+    midi_track_name_display_count = FRAMES_PER_SECOND * 5;
+}
+
 void game(GlobalGameState *ggs)
 {
     pr_reset_random();
@@ -288,6 +296,8 @@ void game(GlobalGameState *ggs)
     int old_perks = world.plr.perks;
     if (ggs->setup_screenshot_buffer)
         screenshot(SCREENSHOT_ACT_INIT);
+    midi_track_name = get_midi_playlist_entry_file_name(-1);
+    set_notify_next_track_name(notify_track_name_changed);
     while (1)
     {
         if (world.plr.health <= 0)
@@ -491,7 +501,12 @@ void game(GlobalGameState *ggs)
 
         draw_fly_in_text(&fly_in_text);
 
-        if ((ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
+        if (midi_track_name_display_count > 0 && midi_track_name)
+        {
+            midi_track_name_display_count--;
+            al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "Playing: %s", midi_track_name);
+        }
+        else if ((ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT) == 0)
             al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "XP: %d / %d", world.plr.xp, next_perk_xp);
         else
             al_draw_textf(get_font_tiny(), WHITE, 5, SCREEN_H - 10, ALLEGRO_ALIGN_LEFT, "Kills: %d", world.kills);
@@ -539,6 +554,8 @@ void game(GlobalGameState *ggs)
             }
             world.visual_fx.hint.time_shows = 0;
             int switch_level = menu(1, ggs);
+            set_notify_next_track_name(notify_track_name_changed);
+            midi_track_name = get_midi_playlist_entry_file_name(-1);
             if (switch_level)
             {
                 break;
@@ -548,6 +565,7 @@ void game(GlobalGameState *ggs)
                 get_tuning_params()->max_health_with_perk : get_tuning_params()->max_health;
         }
     }
+    set_notify_next_track_name(NULL);
 
     if (*record_mode == RECORD_MODE_RECORD)
         finalize_recording(world.time_stamp);

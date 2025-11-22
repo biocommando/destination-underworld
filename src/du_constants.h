@@ -7,6 +7,7 @@
 #define THIRDTILESIZE 10
 #define ANIM_FRAME_COUNT 40
 #define TO_PIXEL_COORDINATES(point) ((point) * TILESIZE + HALFTILESIZE)
+#define FRAMES_PER_SECOND 40
 
 // Verifies that x and y are within legal map axis limits.
 // Sets the validated x and y to ok_x, ok_y

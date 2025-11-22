@@ -33,6 +33,13 @@ void randomize_midi_playlist();
 
 /*
  * Get the .mid file name without preceeding path at the playlist index. If there are no
- * tracks at the index, returns NULL.
+ * tracks at the index, returns NULL. Use -1 for current track.
  */
 const char *get_midi_playlist_entry_file_name(int index);
+
+/*
+ * Set a callback that is called when track is changed.
+ * Gets the track file name without path.
+ * Remember to reset to NULL when not needed anymore.
+ */
+void set_notify_next_track_name(void (*notify)(const char *));

@@ -603,7 +603,7 @@ void display_level_info(const World *world, int mission, int next_mission, int m
         best_times.game_modifiers = *world->game_modifiers;
         best_times.mission = mission;
         populate_best_times(get_game_settings()->mission_pack, &best_times);
-        float time_secs = (float)completetime / 40;
+        float time_secs = (float)completetime / FRAMES_PER_SECOND;
         int beat_idx = check_time_beaten(&best_times, (float)time_secs);
 
         check_valid_time_for_display(&time_secs);

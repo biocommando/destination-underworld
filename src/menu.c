@@ -173,12 +173,15 @@ static void display_menu(struct menu *menu_state)
         al_draw_textf(get_menu_title_font(), RED, 28, 23, 0, menu_state->title);
         int cursor_y = y_offset;
         int start = 0, end = MIN(menu_state->num_items, menu_state->num_displayed_items);
-        if (menu_state->num_items > menu_state->num_displayed_items && menu_state->selected_item >= menu_state->num_displayed_items)
+        if (menu_state->num_items > menu_state->num_displayed_items && menu_state->selected_item >= menu_state->num_displayed_items / 2)
         {
-            start = menu_state->selected_item - menu_state->num_displayed_items + 1;
+            start = menu_state->selected_item - menu_state->num_displayed_items / 2 + 1;
             end = MIN(menu_state->num_items, menu_state->num_displayed_items + start);
-            al_draw_line(30, y_offset - 5, 40, y_offset - 15, RED, 2);
-            al_draw_line(50, y_offset - 5, 40, y_offset - 15, RED, 2);
+            if (end - start < menu_state->num_displayed_items)
+                start = end - menu_state->num_displayed_items;
+            al_draw_line(15, cursor_y - 2, SCREEN_W / 2, cursor_y - 2, al_map_rgb(64, 0, 0), 1);
+            al_draw_line(30, cursor_y - 5, 40, cursor_y - 15, RED, 2);
+            al_draw_line(50, cursor_y - 5, 40, cursor_y - 15, RED, 2);
         }
         for (int i = start; i < end; i++)
         {
@@ -220,6 +223,7 @@ static void display_menu(struct menu *menu_state)
 
         if (end < menu_state->num_items)
         {
+            al_draw_line(15, cursor_y + 2, SCREEN_W / 2, cursor_y + 2, al_map_rgb(64, 0, 0), 1);
             al_draw_line(30, cursor_y + 5, 40, cursor_y + 15, RED, 2);
             al_draw_line(50, cursor_y + 5, 40, cursor_y + 15, RED, 2);
         }
@@ -319,7 +323,7 @@ static int display_load_game_menu()
         }
         else
         {
-            add_menu_item(&m, slot_name, "EMPTY\n");
+            add_menu_item(&m, slot_name, "EMPTY\n ");
             m.items[m.num_items - 1].selectable = 0;
         }
     }
@@ -345,7 +349,7 @@ static int display_save_game_menu()
         }
         else
         {
-            add_menu_item(&m, slot_name, "EMPTY");
+            add_menu_item(&m, slot_name, "EMPTY\n ");
         }
     }
     display_menu(&m);
@@ -506,15 +510,26 @@ static int display_new_game_menu(int game_modifiers)
 
 static const char *vibration_intensity_fmt(int i);
 
+static struct menu_item *track_name_mi = NULL;
+static void notify_track_name_changed(const char *name)
+{
+    if (track_name_mi)
+    {
+        snprintf(track_name_mi->description[0], sizeof(track_name_mi->description[0]), "Now playing: %s", name);
+    }
+}
+
 static int display_game_options(int default_opt)
 {
+    set_notify_next_track_name(notify_track_name_changed);
     struct menu m = create_menu("Options");
     struct menu_item *mi;
     mi = add_menu_item(&m, "Exit to main menu", "");
     m.cancel_menu_item_id = mi->item_id;
     mi = add_menu_item(&m, "Set music on/off", "Current: %s", get_game_settings()->music_on ? "on" : "off");
     mi->item_id = get_menu_item_id("m.on/off");
-    add_menu_item(&m, "Select music track", "Now playing: %s", get_midi_playlist_entry_file_name(-1));
+    mi = add_menu_item(&m, "Select music track", "Now playing: %s", get_midi_playlist_entry_file_name(-1));
+    track_name_mi = mi;
     mi = add_menu_item(&m, "Set music volume", "Current: %d %%%%", (int)(100 * get_game_settings()->music_vol));
     mi->item_id = get_menu_item_id("m.vol");
     mi = add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * get_game_settings()->sfx_vol));
@@ -529,6 +544,7 @@ static int display_game_options(int default_opt)
     mi->item_id = get_menu_item_id("keys");
     set_item_by_id(&m, default_opt);
     display_menu(&m);
+    track_name_mi = NULL;
     return m.items[m.selected_item].item_id;
 }
 
@@ -716,7 +732,7 @@ static void game_option_menu()
         else if (choice == get_menu_item_id("s.vol"))
         {
             int default_opt = (int)(get_game_settings()->sfx_vol * 100 + 0.5f);
-            int vol = display_range_menu("Set sound volume", percent_fmt, 10, 10, 10, default_opt);
+            int vol = display_range_menu("Set sound volume", percent_fmt, 0, 11, 10, default_opt);
             get_game_settings()->sfx_vol = vol / 100.0f;
         }
         else if (choice == get_menu_item_id("vibrations"))
