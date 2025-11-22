@@ -4,7 +4,7 @@ Kills 12
 Time 1171
 Enemy states
 player: alive 0 killed 1 position 227,196 health 0 ammo 15 roomid 1 rate 12 shots 1 turret 0 gold 4
-enemy #0: alive 1 killed 0 position 15,15 health 50 ammo -1 roomid 1 rate 10 shots 1 turret 0 gold 0
+enemy #0: alive 1 killed 0 position 15,15 health 0 ammo -1 roomid 1 rate 0 shots 1 turret 0 gold 0
 enemy #1: alive 1 killed 0 position 225,246 health 3 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
 enemy #2: alive 1 killed 0 position 229,216 health 3 ammo -1 roomid 1 rate 25 shots 1 turret 0 gold 0
 Dead
