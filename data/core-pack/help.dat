@@ -97,7 +97,7 @@ color_ref: "2"
 Cost\.   2 souls
 Effect\. Guards from one shot, releases explosion on hit
 margin: "50"
-color: "4"
+color_ref: "4"
 Turret
 margin: "70"
 color_ref: "2"
