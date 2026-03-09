@@ -68,14 +68,4 @@ void read_enemy_configs(World *world);
  */
 int read_mission_count(int game_mode);
 
-/*
- * Reads GameTuningParams structure from a command file with syntax:
- * <field_name>: "value" (required)
- * Example:
- * max_health: "6"
- *
- * See all the field names in game_tuning.h.
- *
- * The file read is <mission pack datadir>/game-tuning.dat.
- */
-void read_game_tuning_params();
+int check_authentication(const char *file_to_check);

@@ -165,6 +165,7 @@ typedef struct
 #define GAMEMODIFIER_POTION_ON_DEATH 0x40
 #define GAMEMODIFIER_NO_GOLD 0x80
 #define GAMEMODIFIER_UBER_WIZARD 0x100
+#define GAMEMODIFIER_ROGUE_LIKE 0x200
 
 #define GET_DIFFICULTY(world) ((*(world)->game_modifiers & GAMEMODIFIER_BRUTAL) != 0 ? DIFFICULTY_BRUTAL : DIFFICULTY_NORMAL)
 
@@ -519,6 +520,10 @@ typedef struct
     int setup_screenshot_buffer;
     // Set this to non zero length string for loading another mission pack.
     char mission_pack[64];
+    // A list of GameTuningModifier objects for the rogue like game mode
+    LinkedList rogue_like_modifiers;
+    int rogue_like_gimmick;
+    int enable_rogue_like;
 } GlobalGameState;
 
 

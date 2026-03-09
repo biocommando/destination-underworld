@@ -153,6 +153,7 @@ int main(int argc, char **argv)
         ggs.no_player_interaction = record_playback_no_user_interaction;
         ggs.setup_screenshot_buffer = read_cmd_line_arg_int(ARG_SCREENSHOT, argv, argc);
         main_menu_loop(&ggs, record_mode);
+        linked_list_clear(&ggs.rogue_like_modifiers);
         if (*ggs.mission_pack)
         {
             record_file_flush();

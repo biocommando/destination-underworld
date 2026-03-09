@@ -28,6 +28,7 @@
 #include "boss_logic.h"
 #include "bullet_logic.h"
 #include "read_level.h"
+#include "rogue_like.h"
 #include "vfx.h"
 #include "sha1/du_dmac.h"
 #include "screenshot.h"
@@ -246,6 +247,100 @@ static void notify_track_name_changed(const char *name)
     midi_track_name_display_count = FRAMES_PER_SECOND * 5;
 }
 
+static void show_rogue_like_modifier_menu(GlobalGameState *ggs)
+{
+    if (ggs->mission != LIMBO_MISSION && ggs->mission < mission_count && ggs->enable_rogue_like)
+    {
+        const int max_mods_per_opt = 3;
+        const int max_num_choices = 4;
+        const int num_gimmicks = 3;
+        int mods_per_opt = max_mods_per_opt - 1;
+        int num_choices = 2;
+        int num_bad_mods = 1;
+        if (ggs->rogue_like_gimmick & 1)
+            mods_per_opt = max_mods_per_opt;
+        if (ggs->rogue_like_gimmick & 2)
+            num_choices = max_num_choices;
+
+        struct custom_flat_menu_item menu_items[max_num_choices + num_gimmicks];
+        GameTuningModifier options[max_num_choices * max_mods_per_opt];
+        for (int i = 0; i < num_choices; i++)
+        {
+            while (1)
+            {
+                int ok = 1;
+                GameTuningModifier optionset[mods_per_opt];
+                for (int j = 0; j < mods_per_opt && ok; j++)
+                {
+                    optionset[j] = get_tuning_param_modifier(rand(), j >= mods_per_opt - num_bad_mods);
+                    if (ggs->rogue_like_gimmick & 4)
+                        optionset[j].amount *= 2;
+                    double current_value = get_tuning_param_current_value(get_tuning_params(), optionset[j].param_id);
+                    double new_val = current_value + optionset[j].amount;
+                    if ((current_value > 0 && new_val < 0.01) || (current_value <= 0 && new_val > -0.01))
+                    {
+                        ok = 0;
+                        break;
+                    }
+                    for (int k = 0; k < j; k++)
+                    {
+                        if (optionset[k].param_id == optionset[j].param_id)
+                        {
+                            ok = 0;
+                            break;
+                        }
+                    }
+                }
+                if (ok)
+                {
+                    memcpy(options + i * mods_per_opt, optionset, sizeof(optionset));
+                    break;
+                }
+            }
+            struct custom_flat_menu_item *mi = &menu_items[i];
+            sprintf(mi->name, "Option %c", 'A' + i);
+            *mi->description = 0;
+            for (int j = 0; j < mods_per_opt; j++)
+            {
+                GameTuningModifier *m = &options[j + i * mods_per_opt];
+                double current_value = get_tuning_param_current_value(get_tuning_params(), m->param_id);
+                sprintf(mi->description + strlen(mi->description), "%s %.1lf %s %.1lf = %.1lf\n",
+                        m->description, current_value, m->amount > 0 ? "+" : "-", fabs(m->amount), current_value + m->amount);
+            }
+        }
+        int num_gimmicks_to_choose = 0;
+        int gimmick_map[num_gimmicks];
+        for (int i = 0; i < num_gimmicks; i++)
+        {
+            int mask = 1 << i;
+            if (ggs->rogue_like_gimmick & mask)
+                continue;
+            gimmick_map[num_gimmicks_to_choose] = mask;
+            struct custom_flat_menu_item *mi = &menu_items[num_choices + num_gimmicks_to_choose];
+            num_gimmicks_to_choose++;
+            const char *name = i == 0 ? "3 modifiers per option" : (i == 1 ? "4 options" : "double effect");
+            sprintf(mi->name, "Add gimmick: %s", name);
+            *mi->description = 0;
+        }
+
+        int result = custom_flat_menu("Select modifier", menu_items, num_choices + num_gimmicks_to_choose, 0);
+        if (result >= num_choices)
+        {
+            int mask = gimmick_map[result - num_choices];
+            ggs->rogue_like_gimmick |= mask;
+        }
+        else
+        {
+            int opts = result * mods_per_opt;
+            for (int i = opts; i < mods_per_opt + opts; i++)
+            {
+                GameTuningModifier *m = LINKED_LIST_ADD(&ggs->rogue_like_modifiers, GameTuningModifier);
+                memcpy(m, options + i, sizeof(GameTuningModifier));
+            }
+        }
+    }
+}
+
 void game(GlobalGameState *ggs)
 {
     pr_reset_random();
@@ -260,6 +355,17 @@ void game(GlobalGameState *ggs)
     int vibrations = 0;
 
     read_game_tuning_params();
+    {
+        GameTuningParams new_gt;
+        memcpy(&new_gt, get_tuning_params(), sizeof(GameTuningParams));
+        GameTuningModifier *tuning_modifier;
+        LINKED_LIST_FOR_EACH(&ggs->rogue_like_modifiers, GameTuningModifier, tuning_modifier, 0)
+        {
+            modify_tuning_params(&new_gt, tuning_modifier);
+        }
+        set_tuning_params(&new_gt);
+    }
+
     init_world(&world);
     read_enemy_configs(&world);
     int mission_count = read_mission_count(ggs->game_modifiers);
@@ -447,7 +553,10 @@ void game(GlobalGameState *ggs)
             display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1);
 
             if (*record_mode != RECORD_MODE_PLAYBACK)
+            {
                 wait_key_press(ALLEGRO_KEY_ENTER);
+                show_rogue_like_modifier_menu(ggs);
+            }
 
             if (ggs->mission == mission_count)
             {
@@ -561,8 +670,7 @@ void game(GlobalGameState *ggs)
                 break;
             }
             // Perks may have been updated
-            world.plr_max_health = (world.plr.perks & PERK_INCREASE_MAX_HEALTH) ?
-                get_tuning_params()->max_health_with_perk : get_tuning_params()->max_health;
+            world.plr_max_health = (world.plr.perks & PERK_INCREASE_MAX_HEALTH) ? get_tuning_params()->max_health_with_perk : get_tuning_params()->max_health;
         }
     }
     set_notify_next_track_name(NULL);

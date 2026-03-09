@@ -98,3 +98,17 @@ typedef struct {
  * Get the global game tuning parameters object.
  */
 const GameTuningParams *get_tuning_params();
+
+/*
+ * Reads GameTuningParams structure from a command file with syntax:
+ * <field_name>: "value" (required)
+ * Example:
+ * max_health: "6"
+ *
+ * See all the field names in game_tuning.h.
+ *
+ * The file read is <mission pack datadir>/game-tuning.dat.
+ */
+void read_game_tuning_params();
+
+void set_tuning_params(const GameTuningParams *);

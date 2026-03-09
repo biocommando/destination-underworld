@@ -9,3 +9,11 @@
  * GlobalGameState.
  */
 int menu(int ingame, GlobalGameState *ggs);
+
+struct custom_flat_menu_item
+{
+    char name[100];
+    char description[300];
+};
+
+int custom_flat_menu(const char *title, const struct custom_flat_menu_item *menu, size_t num_items, int has_cancel);

@@ -122,7 +122,7 @@ static struct menu_item *add_menu_item(struct menu *m, const char *name, const c
         {
             cont = *c != 0;
             *c = 0;
-            if (descr_idx < 3)
+            if (descr_idx < 3 && strlen(start) < 100)
             {
                 strcpy(mi->description[descr_idx], start);
             }
@@ -401,7 +401,8 @@ static int display_game_mode_menu(int game_modifiers)
         GAMEMODIFIER_MULTIPLIED_GOLD,
         (GAMEMODIFIER_POTION_ON_DEATH | GAMEMODIFIER_NO_GOLD | GAMEMODIFIER_MULTIPLIED_GOLD),
         (GAMEMODIFIER_UBER_WIZARD | GAMEMODIFIER_NO_GOLD | GAMEMODIFIER_MULTIPLIED_GOLD),
-        -1};
+        -1,
+    };
 
     struct menu m = create_menu("Change game mode");
 
@@ -443,6 +444,10 @@ static int display_game_mode_menu(int game_modifiers)
                                              "Beat the game in all other game modes to unlock the secret game mode.");
         mi->selectable = 0;
     }
+    add_menu_item(&m, "Roguelike",
+                  "Clear levels and choose persistent modifiers\n"
+                  "after each one to build your run.\n"
+                  "Saving is disabled.");
 
     m.cancel_menu_item_id = m.items[m.selected_item].item_id;
 
@@ -451,7 +456,7 @@ static int display_game_mode_menu(int game_modifiers)
     return modifiers[m.selected_item];
 }
 
-static int display_in_game_menu(int game_modifiers, int mission)
+static int display_in_game_menu(int game_modifiers, int mission, int rogue_like)
 {
     struct menu m = create_menu("Paused -- %s -- level %d",
                                 game_modifiers_to_str(game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT), mission);
@@ -471,6 +476,10 @@ static int display_in_game_menu(int game_modifiers, int mission)
         m.items[m.num_items - 2].selectable = 0;
         m.items[m.num_items - 1].selectable = 0;
     }
+    if (rogue_like)
+    {
+        m.items[m.num_items - 2].selectable = 0;
+    }
     add_menu_item(&m, "Game options", "Change the game options");
     add_menu_item(&m, "View help", "");
     add_menu_item(&m, "Exit to main menu", "Abandon current game and lose all progress");
@@ -478,12 +487,12 @@ static int display_in_game_menu(int game_modifiers, int mission)
     return m.items[m.selected_item].item_id;
 }
 
-static int display_new_game_menu(int game_modifiers)
+static int display_new_game_menu(int game_modifiers, int rogue_like)
 {
     struct menu m = create_menu("Start new %s game", game_modifiers_to_str(game_modifiers));
     struct menu_item *mi = add_menu_item(&m, "Exit to main menu", "");
     m.cancel_menu_item_id = mi->item_id;
-    add_menu_item(&m, "Change game mode", "Current: %s", game_modifiers_to_str(game_modifiers));
+    add_menu_item(&m, "Change game mode", "Current: %s%s", game_modifiers_to_str(game_modifiers), rogue_like ? " - roguelike" : "");
     add_menu_item(&m, "Story mode", "Begin a new story mode game");
     mi = add_menu_item(&m, "(meta)", "The levels below are arena fights where you need to kill\nas many enemies as you can before dying yourself.");
     mi->meta = 1;
@@ -913,7 +922,7 @@ int menu(int ingame, GlobalGameState *ggs)
     {
         while (!exit_menu)
         {
-            int ingame_menu_selection = display_in_game_menu(ggs->game_modifiers, ggs->mission);
+            int ingame_menu_selection = display_in_game_menu(ggs->game_modifiers, ggs->mission, ggs->enable_rogue_like);
             // Return game
             if (ingame_menu_selection == get_menu_item_id("Return"))
             {
@@ -967,14 +976,24 @@ int menu(int ingame, GlobalGameState *ggs)
         int main_menu_selection = display_main_menu();
         if (main_menu_selection == get_menu_item_id("Start"))
         {
+            ggs->enable_rogue_like = 0;
             int choice = 0;
             while (choice != get_menu_item_id("Exit") && !exit_menu)
             {
-                choice = display_new_game_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
+                choice = display_new_game_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT, ggs->enable_rogue_like);
 
                 if (choice == get_menu_item_id("Change game mode"))
                 {
                     ggs->game_modifiers = display_game_mode_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
+                    if (ggs->game_modifiers == -1)
+                    {
+                        ggs->game_modifiers = 0;
+                        ggs->enable_rogue_like = 1;
+                    }
+                    else
+                    {
+                        ggs->enable_rogue_like = 0;
+                    }
                 }
                 else if (choice == get_menu_item_id("Story"))
                 {
@@ -1025,4 +1044,32 @@ int menu(int ingame, GlobalGameState *ggs)
     al_destroy_bitmap(menu_sprites);
 
     return switch_level;
+}
+
+int custom_flat_menu(const char *title, const struct custom_flat_menu_item *menu, size_t num_items, int has_cancel)
+{
+    load_menu_sprites();
+
+    ALLEGRO_TRANSFORM transform;
+    al_identity_transform(&transform);
+    al_scale_transform(&transform, MENU_TRANSFORM_SCALE, MENU_TRANSFORM_SCALE);
+    al_use_transform(&transform);
+
+    struct menu m = create_menu(title);
+
+    for (size_t i = 0; i < num_items; i++)
+    {
+        struct menu_item *mi = add_menu_item(&m, menu[i].name, menu[i].description);
+        mi->item_id = (int)i;
+    }
+
+    if (has_cancel)
+    {
+        struct menu_item *cancel_mi = add_menu_item(&m, "Cancel", "Go back");
+        cancel_mi->item_id = -1;
+        m.cancel_menu_item_id = -1;
+    }
+    display_menu(&m);
+    al_destroy_bitmap(menu_sprites);
+    return m.items[m.selected_item].item_id;
 }

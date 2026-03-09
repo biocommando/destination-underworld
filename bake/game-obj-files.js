@@ -34,6 +34,8 @@ module.exports = v => {
         'src/command_file.o',
         'src/strescape.o',
         'src/game.o',
+        'src/rogue_like.o',
+        'src/game_tuning.o',
         'src/synth/adsr_envelope.o',
         'src/synth/basic_delay.o',
         'src/synth/basic_oscillator.o',

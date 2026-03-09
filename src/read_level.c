@@ -10,7 +10,6 @@
 #include "command_file/generated/dispatch_enemy_properties.h"
 #include "command_file/generated/dispatch_mission_counts.h"
 #include "command_file/generated/dispatch_data_file_auth.h"
-#include "command_file/generated/dispatch_game_tuning.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -29,7 +28,7 @@ void dispatch__handle_data_file_auth_entry(struct data_file_auth_entry_DispatchD
     strcpy(dto->skip_label, "EOF");
 }
 
-static int check_authentication(const char *file_to_check)
+int check_authentication(const char *file_to_check)
 {
     if (!get_game_settings()->require_authentication)
         return 0;
@@ -356,27 +355,6 @@ void read_enemy_configs(World *world)
 
     int err = read_command_file(fname, dispatch__enemy_properties, world->enemy_configs);
     FATAL(err != 0, "Failed to read required file: %s\n", fname);
-}
-
-static GameTuningParams _tuning_params;
-
-const GameTuningParams *get_tuning_params()
-{
-    return &_tuning_params;
-}
-
-void read_game_tuning_params()
-{
-    char fname[256];
-    sprintf(fname, DATADIR "%s/game-tuning.dat", get_game_settings()->mission_pack);
-    FATAL(check_authentication(fname), "game tuning authentication failed!!\n");
-    memset(&_tuning_params, 0, sizeof(_tuning_params));
-    int err = read_command_file(fname, dispatch__game_tuning, &_tuning_params);
-    FATAL(err != 0, "Failed to read required file: %s\n", fname);
-    IF_command_file_RequiredFlags_NOT_SET(&_tuning_params.required_flags,
-                                          {
-                                              FATAL(1, "All tuning parameters need to be defined!\n");
-                                          });
 }
 
 void dispatch__handle_mission_counts_mode_override(struct mission_counts_mode_override_DispatchDto *dto)
