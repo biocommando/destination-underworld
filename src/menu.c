@@ -446,9 +446,6 @@ static int display_game_mode_menu(int game_modifiers)
                                              "Beat the game in all other game modes to unlock the secret game mode.");
         mi->selectable = 0;
     }
-    add_menu_item(&m, "Roguelike",
-                  "Clear levels and choose persistent modifiers\n"
-                  "after each one to build your run.");
 
     for (int i = 0; modifiers[i] != -1; i++)
     {
@@ -505,7 +502,11 @@ static int display_new_game_menu(int game_modifiers, int rogue_like)
     struct menu m = create_menu("Start new %s game", game_modifiers_to_str(game_modifiers));
     struct menu_item *mi = add_menu_item(&m, "Exit to main menu", "");
     m.cancel_menu_item_id = mi->item_id;
-    add_menu_item(&m, "Change game mode", "Current: %s%s", game_modifiers_to_str(game_modifiers), rogue_like ? " - roguelike" : "");
+    add_menu_item(&m, "Roguelike mode",
+                  "Roguelike mode: %s\n"
+                  "Clear levels and choose persistent modifiers\n"
+                  "after each one to build your run.", rogue_like ? "ON" : "OFF");
+    add_menu_item(&m, "Change game mode", "Current: %s", game_modifiers_to_str(game_modifiers));
     add_menu_item(&m, "Story mode", "Begin a new story mode game");
     mi = add_menu_item(&m, "(meta)", "The levels below are arena fights where you need to kill\nas many enemies as you can before dying yourself.");
     mi->meta = 1;
@@ -1078,15 +1079,6 @@ int menu(int ingame, GlobalGameState *ggs)
                 if (choice == get_menu_item_id("Change game mode"))
                 {
                     ggs->game_modifiers = display_game_mode_menu(ggs->game_modifiers & ~GAMEMODIFIER_ARENA_FIGHT);
-                    if (ggs->game_modifiers == -1)
-                    {
-                        ggs->game_modifiers = 0;
-                        ggs->enable_rogue_like = 1;
-                    }
-                    else
-                    {
-                        ggs->enable_rogue_like = 0;
-                    }
                 }
                 else if (choice == get_menu_item_id("Story"))
                 {
@@ -1094,6 +1086,10 @@ int menu(int ingame, GlobalGameState *ggs)
                     ggs->mission = 1;
                     ggs->plrautosave.alive = 0;
                     ggs->game_modifiers &= ~GAMEMODIFIER_ARENA_FIGHT;
+                }
+                else if (choice == get_menu_item_id("Roguelike"))
+                {
+                    ggs->enable_rogue_like = !ggs->enable_rogue_like;
                 }
                 else if (choice < ARENACONF_MAX_NUMBER_OF_ARENAS)
                 {

@@ -272,7 +272,10 @@ static void show_rogue_like_modifier_menu(GlobalGameState *ggs)
                 GameTuningModifier optionset[mods_per_opt];
                 for (int j = 0; j < mods_per_opt && ok; j++)
                 {
-                    optionset[j] = get_tuning_param_modifier(rand(), j >= mods_per_opt - num_bad_mods);
+                    if (ggs->game_modifiers & GAMEMODIFIER_BRUTAL)
+                        optionset[j] = get_tuning_param_modifier_brutal(rand(), j >= mods_per_opt - num_bad_mods);
+                    else
+                        optionset[j] = get_tuning_param_modifier(rand(), j >= mods_per_opt - num_bad_mods);
                     if (ggs->rogue_like_gimmick & 4)
                         optionset[j].amount *= 2;
                     double current_value = get_tuning_param_current_value(get_tuning_params(), optionset[j].param_id);

@@ -567,7 +567,7 @@ const char *get_tuning_param_description(int param_id)
     return NULL;
 }
 
-static const int available_params[] = {
+static const int available_params_normal[] = {
     id_max_health_with_perk,
     id_max_health,
     //    id_turret_ammo,
@@ -638,10 +638,81 @@ static const int available_params[] = {
     //    id_blood_stains_enabled,
 };
 
-GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
+static const int available_params_brutal[] = {
+    id_max_health_with_perk,
+    id_max_health,
+    //    id_turret_ammo,
+    //    id_turret_shots,
+    //    id_turret_reload,
+    id_turret_move,
+    //    id_turret_health,
+    id_kill_ammo_bonus,
+    id_ammo_cap,
+    id_kill_health_bonus,
+    id_kill_health_cap,
+    //    id_instant_heal_potion_drop_health_threshold,
+    //    id_potion_turbo_mode_effect_amount,
+    id_initial_potion_healing_counter,
+    id_initial_potion_shield_counter,
+    id_potion_duration_big_boost,
+    id_potion_duration_mini_boost,
+    //    id_multiplied_gold_mode_initial_gold,
+    //    id_multiplied_gold_mode_cluster_strength,
+    id_cluster_strength,
+    id_min_starting_ammo,
+    id_min_starting_health,
+    id_initial_gold_cap,
+    //    id_healing_powerup_amount,
+    id_healing_powerup_amount_brutal,
+    id_healing_powerup_perk_bonus,
+    //    id_healing_powerup_multiplier_overpowered,
+    id_healing_powerup_cost,
+    id_protection_powerup_cost,
+    id_protection_powerup_amount,
+    id_protection_powerup_perk_bonus,
+    //    id_turret_powerup_cost,
+    id_turret_powerup_cost_brutal,
+    id_turret_powerup_perk_blast_intensity,
+    id_turret_powerup_perk_blast_directions,
+    //    id_turret_powerup_overpowered_speed_boost,
+    //    id_blast_powerup_cost,
+    id_blast_powerup_cost_brutal,
+    id_blast_powerup_projectile_speed,
+    //    id_blast_powerup_overpowered_blast_intensity,
+    //    id_blast_powerup_overpowered_blast_directions,
+    id_blast_powerup_perk_timed_cluster_rate,
+    //    id_blast_powerup_perk_turret_enabled,
+    //    id_overpriced_powerups_cost_increase,
+    //    id_boss_killing_xp_bonus,
+    id_brutal_enemy_health_bonus,
+    //    id_fast_potion_reload_divider,
+    //    id_doubled_shots_shot_multiplier,
+    //    id_boost_potion_shot_multiplier,
+    id_bullet_spread_multiplier,
+    id_breakable_wall_durability,
+    //    id_weapon_1_num_shots,
+    //    id_weapon_1_rate,
+    id_weapon_1_brutal_shots,
+    id_weapon_1_brutal_rate,
+    //    id_weapon_2_num_shots,
+    //    id_weapon_2_rate,
+    id_weapon_2_brutal_shots,
+    id_weapon_2_brutal_rate,
+    id_undetected_enemy_move_probability,
+    id_enemy_speed,
+    id_fast_enemy_speed,
+    id_plr_speed,
+    id_fast_potion_plr_speed_bonus,
+    //    id_fast_potion_plr_speed_bonus_turbo,
+    //    id_perk_xp_base,
+    //    id_perk_xp_level_multiplier,
+    //    id_blood_stains_enabled,
+};
+
+static GameTuningModifier _get_tuning_param_modifier(int index, int is_bad, const int *available_params, size_t num_params)
 {
     GameTuningModifier modifier;
-    int id = available_params[index % (sizeof(available_params) / sizeof(int))];
+    int id = available_params[index % num_params];
     modifier.param_id = id;
     if (id == id_max_health_with_perk)
     {
@@ -773,7 +844,7 @@ GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
     }
     else if (id == id_turret_powerup_cost_brutal)
     {
-        modifier.amount = 1;
+        modifier.amount = -1;
     }
     else if (id == id_turret_powerup_perk_blast_intensity)
     {
@@ -793,7 +864,7 @@ GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
     }
     else if (id == id_blast_powerup_cost_brutal)
     {
-        modifier.amount = 1;
+        modifier.amount = -1;
     }
     else if (id == id_blast_powerup_projectile_speed)
     {
@@ -825,7 +896,7 @@ GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
     }
     else if (id == id_brutal_enemy_health_bonus)
     {
-        modifier.amount = 1;
+        modifier.amount = -1;
     }
     else if (id == id_fast_potion_reload_divider)
     {
@@ -861,7 +932,7 @@ GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
     }
     else if (id == id_weapon_1_brutal_rate)
     {
-        modifier.amount = 1;
+        modifier.amount = -2;
     }
     else if (id == id_weapon_2_num_shots)
     {
@@ -877,7 +948,7 @@ GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
     }
     else if (id == id_weapon_2_brutal_rate)
     {
-        modifier.amount = 1;
+        modifier.amount = -2;
     }
     else if (id == id_undetected_enemy_move_probability)
     {
@@ -914,4 +985,14 @@ GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
     if (is_bad)
         modifier.amount *= -1;
     return modifier;
+}
+
+GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
+{
+    return _get_tuning_param_modifier(index, is_bad, available_params_normal, sizeof(available_params_normal) / sizeof(int));
+}
+
+GameTuningModifier get_tuning_param_modifier_brutal(int index, int is_bad)
+{
+    return _get_tuning_param_modifier(index, is_bad, available_params_brutal, sizeof(available_params_brutal) / sizeof(int));
 }
