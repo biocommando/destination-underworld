@@ -119,12 +119,12 @@ long init_playback(World *world, GlobalGameState *ggs, int record_mode)
 
         game_playback_set_filename(record_input_filename);
         game_playback_init();
-        save_game_save_data(record_input_filename, &world->plr, ggs->mission, ggs->game_modifiers, 0);
+        save_game(record_input_filename, &world->plr, ggs->mission, ggs->game_modifiers, 0);
     }
     else if (record_mode == RECORD_MODE_PLAYBACK)
     {
         game_playback_init();
-        load_game_save_data(game_playback_get_filename(), &world->plr, &ggs->mission, &ggs->game_modifiers, 0);
+        load_game(game_playback_get_filename(), &world->plr, &ggs->mission, &ggs->game_modifiers, 0);
         return game_playback_get_time_stamp();
     }
     return 0;
@@ -249,7 +249,7 @@ static void notify_track_name_changed(const char *name)
 
 static void show_rogue_like_modifier_menu(GlobalGameState *ggs)
 {
-    if (ggs->mission != LIMBO_MISSION && ggs->mission < mission_count && ggs->enable_rogue_like)
+    if (ggs->mission != LIMBO_MISSION && ggs->enable_rogue_like)
     {
         const int max_mods_per_opt = 3;
         const int max_num_choices = 4;
@@ -305,7 +305,8 @@ static void show_rogue_like_modifier_menu(GlobalGameState *ggs)
                 GameTuningModifier *m = &options[j + i * mods_per_opt];
                 double current_value = get_tuning_param_current_value(get_tuning_params(), m->param_id);
                 sprintf(mi->description + strlen(mi->description), "%s %.1lf %s %.1lf = %.1lf\n",
-                        m->description, current_value, m->amount > 0 ? "+" : "-", fabs(m->amount), current_value + m->amount);
+                        get_tuning_param_description(m->param_id), current_value, m->amount > 0 ? "+" : "-",
+                        fabs(m->amount), current_value + m->amount);
             }
         }
         int num_gimmicks_to_choose = 0;
@@ -553,10 +554,7 @@ void game(GlobalGameState *ggs)
             display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1);
 
             if (*record_mode != RECORD_MODE_PLAYBACK)
-            {
                 wait_key_press(ALLEGRO_KEY_ENTER);
-                show_rogue_like_modifier_menu(ggs);
-            }
 
             if (ggs->mission == mission_count)
             {
@@ -564,6 +562,8 @@ void game(GlobalGameState *ggs)
                 set_game_mode_beaten_flag(*world.game_modifiers);
                 break;
             }
+            if (*record_mode != RECORD_MODE_PLAYBACK)
+                show_rogue_like_modifier_menu(ggs);
 
             ggs->mission = ggs->next_mission;
             ggs->plrautosave = world.plr;

@@ -1,4 +1,5 @@
 #include "rogue_like.h"
+#include <stddef.h>
 
 static const int id_max_health_with_perk = 0;
 static const int id_max_health = 1;
@@ -425,77 +426,145 @@ static const char *name_perk_xp_base = "perk_xp_base";
 static const char *name_perk_xp_level_multiplier = "perk_xp_level_multiplier";
 static const char *name_blood_stains_enabled = "blood_stains_enabled";
 
-static const char *__get_name(int param_id)
+const char *get_tuning_param_description(int param_id)
 {
-    if (param_id == id_max_health_with_perk) return name_max_health_with_perk;
-if (param_id == id_max_health) return name_max_health;
-if (param_id == id_turret_ammo) return name_turret_ammo;
-if (param_id == id_turret_shots) return name_turret_shots;
-if (param_id == id_turret_reload) return name_turret_reload;
-if (param_id == id_turret_move) return name_turret_move;
-if (param_id == id_turret_health) return name_turret_health;
-if (param_id == id_kill_ammo_bonus) return name_kill_ammo_bonus;
-if (param_id == id_ammo_cap) return name_ammo_cap;
-if (param_id == id_kill_health_bonus) return name_kill_health_bonus;
-if (param_id == id_kill_health_cap) return name_kill_health_cap;
-if (param_id == id_instant_heal_potion_drop_health_threshold) return name_instant_heal_potion_drop_health_threshold;
-if (param_id == id_potion_turbo_mode_effect_amount) return name_potion_turbo_mode_effect_amount;
-if (param_id == id_initial_potion_healing_counter) return name_initial_potion_healing_counter;
-if (param_id == id_initial_potion_shield_counter) return name_initial_potion_shield_counter;
-if (param_id == id_potion_duration_big_boost) return name_potion_duration_big_boost;
-if (param_id == id_potion_duration_mini_boost) return name_potion_duration_mini_boost;
-if (param_id == id_multiplied_gold_mode_initial_gold) return name_multiplied_gold_mode_initial_gold;
-if (param_id == id_multiplied_gold_mode_cluster_strength) return name_multiplied_gold_mode_cluster_strength;
-if (param_id == id_cluster_strength) return name_cluster_strength;
-if (param_id == id_min_starting_ammo) return name_min_starting_ammo;
-if (param_id == id_min_starting_health) return name_min_starting_health;
-if (param_id == id_initial_gold_cap) return name_initial_gold_cap;
-if (param_id == id_healing_powerup_amount) return name_healing_powerup_amount;
-if (param_id == id_healing_powerup_amount_brutal) return name_healing_powerup_amount_brutal;
-if (param_id == id_healing_powerup_perk_bonus) return name_healing_powerup_perk_bonus;
-if (param_id == id_healing_powerup_multiplier_overpowered) return name_healing_powerup_multiplier_overpowered;
-if (param_id == id_healing_powerup_cost) return name_healing_powerup_cost;
-if (param_id == id_protection_powerup_cost) return name_protection_powerup_cost;
-if (param_id == id_protection_powerup_amount) return name_protection_powerup_amount;
-if (param_id == id_protection_powerup_perk_bonus) return name_protection_powerup_perk_bonus;
-if (param_id == id_turret_powerup_cost) return name_turret_powerup_cost;
-if (param_id == id_turret_powerup_cost_brutal) return name_turret_powerup_cost_brutal;
-if (param_id == id_turret_powerup_perk_blast_intensity) return name_turret_powerup_perk_blast_intensity;
-if (param_id == id_turret_powerup_perk_blast_directions) return name_turret_powerup_perk_blast_directions;
-if (param_id == id_turret_powerup_overpowered_speed_boost) return name_turret_powerup_overpowered_speed_boost;
-if (param_id == id_blast_powerup_cost) return name_blast_powerup_cost;
-if (param_id == id_blast_powerup_cost_brutal) return name_blast_powerup_cost_brutal;
-if (param_id == id_blast_powerup_projectile_speed) return name_blast_powerup_projectile_speed;
-if (param_id == id_blast_powerup_overpowered_blast_intensity) return name_blast_powerup_overpowered_blast_intensity;
-if (param_id == id_blast_powerup_overpowered_blast_directions) return name_blast_powerup_overpowered_blast_directions;
-if (param_id == id_blast_powerup_perk_timed_cluster_rate) return name_blast_powerup_perk_timed_cluster_rate;
-if (param_id == id_blast_powerup_perk_turret_enabled) return name_blast_powerup_perk_turret_enabled;
-if (param_id == id_overpriced_powerups_cost_increase) return name_overpriced_powerups_cost_increase;
-if (param_id == id_boss_killing_xp_bonus) return name_boss_killing_xp_bonus;
-if (param_id == id_brutal_enemy_health_bonus) return name_brutal_enemy_health_bonus;
-if (param_id == id_fast_potion_reload_divider) return name_fast_potion_reload_divider;
-if (param_id == id_doubled_shots_shot_multiplier) return name_doubled_shots_shot_multiplier;
-if (param_id == id_boost_potion_shot_multiplier) return name_boost_potion_shot_multiplier;
-if (param_id == id_bullet_spread_multiplier) return name_bullet_spread_multiplier;
-if (param_id == id_breakable_wall_durability) return name_breakable_wall_durability;
-if (param_id == id_weapon_1_num_shots) return name_weapon_1_num_shots;
-if (param_id == id_weapon_1_rate) return name_weapon_1_rate;
-if (param_id == id_weapon_1_brutal_shots) return name_weapon_1_brutal_shots;
-if (param_id == id_weapon_1_brutal_rate) return name_weapon_1_brutal_rate;
-if (param_id == id_weapon_2_num_shots) return name_weapon_2_num_shots;
-if (param_id == id_weapon_2_rate) return name_weapon_2_rate;
-if (param_id == id_weapon_2_brutal_shots) return name_weapon_2_brutal_shots;
-if (param_id == id_weapon_2_brutal_rate) return name_weapon_2_brutal_rate;
-if (param_id == id_undetected_enemy_move_probability) return name_undetected_enemy_move_probability;
-if (param_id == id_enemy_speed) return name_enemy_speed;
-if (param_id == id_fast_enemy_speed) return name_fast_enemy_speed;
-if (param_id == id_plr_speed) return name_plr_speed;
-if (param_id == id_fast_potion_plr_speed_bonus) return name_fast_potion_plr_speed_bonus;
-if (param_id == id_fast_potion_plr_speed_bonus_turbo) return name_fast_potion_plr_speed_bonus_turbo;
-if (param_id == id_perk_xp_base) return name_perk_xp_base;
-if (param_id == id_perk_xp_level_multiplier) return name_perk_xp_level_multiplier;
-if (param_id == id_blood_stains_enabled) return name_blood_stains_enabled;
-return NULL;
+    if (param_id == id_max_health_with_perk)
+        return name_max_health_with_perk;
+    if (param_id == id_max_health)
+        return name_max_health;
+    if (param_id == id_turret_ammo)
+        return name_turret_ammo;
+    if (param_id == id_turret_shots)
+        return name_turret_shots;
+    if (param_id == id_turret_reload)
+        return name_turret_reload;
+    if (param_id == id_turret_move)
+        return name_turret_move;
+    if (param_id == id_turret_health)
+        return name_turret_health;
+    if (param_id == id_kill_ammo_bonus)
+        return name_kill_ammo_bonus;
+    if (param_id == id_ammo_cap)
+        return name_ammo_cap;
+    if (param_id == id_kill_health_bonus)
+        return name_kill_health_bonus;
+    if (param_id == id_kill_health_cap)
+        return name_kill_health_cap;
+    if (param_id == id_instant_heal_potion_drop_health_threshold)
+        return name_instant_heal_potion_drop_health_threshold;
+    if (param_id == id_potion_turbo_mode_effect_amount)
+        return name_potion_turbo_mode_effect_amount;
+    if (param_id == id_initial_potion_healing_counter)
+        return name_initial_potion_healing_counter;
+    if (param_id == id_initial_potion_shield_counter)
+        return name_initial_potion_shield_counter;
+    if (param_id == id_potion_duration_big_boost)
+        return name_potion_duration_big_boost;
+    if (param_id == id_potion_duration_mini_boost)
+        return name_potion_duration_mini_boost;
+    if (param_id == id_multiplied_gold_mode_initial_gold)
+        return name_multiplied_gold_mode_initial_gold;
+    if (param_id == id_multiplied_gold_mode_cluster_strength)
+        return name_multiplied_gold_mode_cluster_strength;
+    if (param_id == id_cluster_strength)
+        return name_cluster_strength;
+    if (param_id == id_min_starting_ammo)
+        return name_min_starting_ammo;
+    if (param_id == id_min_starting_health)
+        return name_min_starting_health;
+    if (param_id == id_initial_gold_cap)
+        return name_initial_gold_cap;
+    if (param_id == id_healing_powerup_amount)
+        return name_healing_powerup_amount;
+    if (param_id == id_healing_powerup_amount_brutal)
+        return name_healing_powerup_amount_brutal;
+    if (param_id == id_healing_powerup_perk_bonus)
+        return name_healing_powerup_perk_bonus;
+    if (param_id == id_healing_powerup_multiplier_overpowered)
+        return name_healing_powerup_multiplier_overpowered;
+    if (param_id == id_healing_powerup_cost)
+        return name_healing_powerup_cost;
+    if (param_id == id_protection_powerup_cost)
+        return name_protection_powerup_cost;
+    if (param_id == id_protection_powerup_amount)
+        return name_protection_powerup_amount;
+    if (param_id == id_protection_powerup_perk_bonus)
+        return name_protection_powerup_perk_bonus;
+    if (param_id == id_turret_powerup_cost)
+        return name_turret_powerup_cost;
+    if (param_id == id_turret_powerup_cost_brutal)
+        return name_turret_powerup_cost_brutal;
+    if (param_id == id_turret_powerup_perk_blast_intensity)
+        return name_turret_powerup_perk_blast_intensity;
+    if (param_id == id_turret_powerup_perk_blast_directions)
+        return name_turret_powerup_perk_blast_directions;
+    if (param_id == id_turret_powerup_overpowered_speed_boost)
+        return name_turret_powerup_overpowered_speed_boost;
+    if (param_id == id_blast_powerup_cost)
+        return name_blast_powerup_cost;
+    if (param_id == id_blast_powerup_cost_brutal)
+        return name_blast_powerup_cost_brutal;
+    if (param_id == id_blast_powerup_projectile_speed)
+        return name_blast_powerup_projectile_speed;
+    if (param_id == id_blast_powerup_overpowered_blast_intensity)
+        return name_blast_powerup_overpowered_blast_intensity;
+    if (param_id == id_blast_powerup_overpowered_blast_directions)
+        return name_blast_powerup_overpowered_blast_directions;
+    if (param_id == id_blast_powerup_perk_timed_cluster_rate)
+        return name_blast_powerup_perk_timed_cluster_rate;
+    if (param_id == id_blast_powerup_perk_turret_enabled)
+        return name_blast_powerup_perk_turret_enabled;
+    if (param_id == id_overpriced_powerups_cost_increase)
+        return name_overpriced_powerups_cost_increase;
+    if (param_id == id_boss_killing_xp_bonus)
+        return name_boss_killing_xp_bonus;
+    if (param_id == id_brutal_enemy_health_bonus)
+        return name_brutal_enemy_health_bonus;
+    if (param_id == id_fast_potion_reload_divider)
+        return name_fast_potion_reload_divider;
+    if (param_id == id_doubled_shots_shot_multiplier)
+        return name_doubled_shots_shot_multiplier;
+    if (param_id == id_boost_potion_shot_multiplier)
+        return name_boost_potion_shot_multiplier;
+    if (param_id == id_bullet_spread_multiplier)
+        return name_bullet_spread_multiplier;
+    if (param_id == id_breakable_wall_durability)
+        return name_breakable_wall_durability;
+    if (param_id == id_weapon_1_num_shots)
+        return name_weapon_1_num_shots;
+    if (param_id == id_weapon_1_rate)
+        return name_weapon_1_rate;
+    if (param_id == id_weapon_1_brutal_shots)
+        return name_weapon_1_brutal_shots;
+    if (param_id == id_weapon_1_brutal_rate)
+        return name_weapon_1_brutal_rate;
+    if (param_id == id_weapon_2_num_shots)
+        return name_weapon_2_num_shots;
+    if (param_id == id_weapon_2_rate)
+        return name_weapon_2_rate;
+    if (param_id == id_weapon_2_brutal_shots)
+        return name_weapon_2_brutal_shots;
+    if (param_id == id_weapon_2_brutal_rate)
+        return name_weapon_2_brutal_rate;
+    if (param_id == id_undetected_enemy_move_probability)
+        return name_undetected_enemy_move_probability;
+    if (param_id == id_enemy_speed)
+        return name_enemy_speed;
+    if (param_id == id_fast_enemy_speed)
+        return name_fast_enemy_speed;
+    if (param_id == id_plr_speed)
+        return name_plr_speed;
+    if (param_id == id_fast_potion_plr_speed_bonus)
+        return name_fast_potion_plr_speed_bonus;
+    if (param_id == id_fast_potion_plr_speed_bonus_turbo)
+        return name_fast_potion_plr_speed_bonus_turbo;
+    if (param_id == id_perk_xp_base)
+        return name_perk_xp_base;
+    if (param_id == id_perk_xp_level_multiplier)
+        return name_perk_xp_level_multiplier;
+    if (param_id == id_blood_stains_enabled)
+        return name_blood_stains_enabled;
+    return NULL;
 }
 
 static const int available_params[] = {
@@ -576,337 +645,270 @@ GameTuningModifier get_tuning_param_modifier(int index, int is_bad)
     modifier.param_id = id;
     if (id == id_max_health_with_perk)
     {
-        modifier.description = name_max_health_with_perk;
         modifier.amount = 1;
     }
     else if (id == id_max_health)
     {
-        modifier.description = name_max_health;
         modifier.amount = 1;
     }
     else if (id == id_turret_ammo)
     {
-        modifier.description = name_turret_ammo;
         modifier.amount = 1;
     }
     else if (id == id_turret_shots)
     {
-        modifier.description = name_turret_shots;
         modifier.amount = 1;
     }
     else if (id == id_turret_reload)
     {
-        modifier.description = name_turret_reload;
         modifier.amount = 1;
     }
     else if (id == id_turret_move)
     {
-        modifier.description = name_turret_move;
         modifier.amount = 2;
     }
     else if (id == id_turret_health)
     {
-        modifier.description = name_turret_health;
         modifier.amount = 1;
     }
     else if (id == id_kill_ammo_bonus)
     {
-        modifier.description = name_kill_ammo_bonus;
         modifier.amount = 1;
     }
     else if (id == id_ammo_cap)
     {
-        modifier.description = name_ammo_cap;
         modifier.amount = 1;
     }
     else if (id == id_kill_health_bonus)
     {
-        modifier.description = name_kill_health_bonus;
         modifier.amount = 1;
     }
     else if (id == id_kill_health_cap)
     {
-        modifier.description = name_kill_health_cap;
         modifier.amount = 1;
     }
     else if (id == id_instant_heal_potion_drop_health_threshold)
     {
-        modifier.description = name_instant_heal_potion_drop_health_threshold;
         modifier.amount = 1;
     }
     else if (id == id_potion_turbo_mode_effect_amount)
     {
-        modifier.description = name_potion_turbo_mode_effect_amount;
         modifier.amount = 1;
     }
     else if (id == id_initial_potion_healing_counter)
     {
-        modifier.description = name_initial_potion_healing_counter;
         modifier.amount = 10;
     }
     else if (id == id_initial_potion_shield_counter)
     {
-        modifier.description = name_initial_potion_shield_counter;
         modifier.amount = 10;
     }
     else if (id == id_potion_duration_big_boost)
     {
-        modifier.description = name_potion_duration_big_boost;
         modifier.amount = 5;
     }
     else if (id == id_potion_duration_mini_boost)
     {
-        modifier.description = name_potion_duration_mini_boost;
         modifier.amount = 5;
     }
     else if (id == id_multiplied_gold_mode_initial_gold)
     {
-        modifier.description = name_multiplied_gold_mode_initial_gold;
         modifier.amount = 1;
     }
     else if (id == id_multiplied_gold_mode_cluster_strength)
     {
-        modifier.description = name_multiplied_gold_mode_cluster_strength;
         modifier.amount = 1;
     }
     else if (id == id_cluster_strength)
     {
-        modifier.description = name_cluster_strength;
         modifier.amount = 1;
     }
     else if (id == id_min_starting_ammo)
     {
-        modifier.description = name_min_starting_ammo;
         modifier.amount = 2;
     }
     else if (id == id_min_starting_health)
     {
-        modifier.description = name_min_starting_health;
         modifier.amount = 1;
     }
     else if (id == id_initial_gold_cap)
     {
-        modifier.description = name_initial_gold_cap;
         modifier.amount = 1;
     }
     else if (id == id_healing_powerup_amount)
     {
-        modifier.description = name_healing_powerup_amount;
         modifier.amount = 1;
     }
     else if (id == id_healing_powerup_amount_brutal)
     {
-        modifier.description = name_healing_powerup_amount_brutal;
         modifier.amount = 1;
     }
     else if (id == id_healing_powerup_perk_bonus)
     {
-        modifier.description = name_healing_powerup_perk_bonus;
         modifier.amount = 1;
     }
     else if (id == id_healing_powerup_multiplier_overpowered)
     {
-        modifier.description = name_healing_powerup_multiplier_overpowered;
         modifier.amount = 1;
     }
     else if (id == id_healing_powerup_cost)
     {
-        modifier.description = name_healing_powerup_cost;
         modifier.amount = -1;
     }
     else if (id == id_protection_powerup_cost)
     {
-        modifier.description = name_protection_powerup_cost;
         modifier.amount = -1;
     }
     else if (id == id_protection_powerup_amount)
     {
-        modifier.description = name_protection_powerup_amount;
         modifier.amount = 1;
     }
     else if (id == id_protection_powerup_perk_bonus)
     {
-        modifier.description = name_protection_powerup_perk_bonus;
         modifier.amount = 1;
     }
     else if (id == id_turret_powerup_cost)
     {
-        modifier.description = name_turret_powerup_cost;
         modifier.amount = -1;
     }
     else if (id == id_turret_powerup_cost_brutal)
     {
-        modifier.description = name_turret_powerup_cost_brutal;
         modifier.amount = 1;
     }
     else if (id == id_turret_powerup_perk_blast_intensity)
     {
-        modifier.description = name_turret_powerup_perk_blast_intensity;
         modifier.amount = 1;
     }
     else if (id == id_turret_powerup_perk_blast_directions)
     {
-        modifier.description = name_turret_powerup_perk_blast_directions;
         modifier.amount = 4;
     }
     else if (id == id_turret_powerup_overpowered_speed_boost)
     {
-        modifier.description = name_turret_powerup_overpowered_speed_boost;
         modifier.amount = 1;
     }
     else if (id == id_blast_powerup_cost)
     {
-        modifier.description = name_blast_powerup_cost;
         modifier.amount = -1;
     }
     else if (id == id_blast_powerup_cost_brutal)
     {
-        modifier.description = name_blast_powerup_cost_brutal;
         modifier.amount = 1;
     }
     else if (id == id_blast_powerup_projectile_speed)
     {
-        modifier.description = name_blast_powerup_projectile_speed;
         modifier.amount = 1;
     }
     else if (id == id_blast_powerup_overpowered_blast_intensity)
     {
-        modifier.description = name_blast_powerup_overpowered_blast_intensity;
         modifier.amount = 3;
     }
     else if (id == id_blast_powerup_overpowered_blast_directions)
     {
-        modifier.description = name_blast_powerup_overpowered_blast_directions;
         modifier.amount = 4;
     }
     else if (id == id_blast_powerup_perk_timed_cluster_rate)
     {
-        modifier.description = name_blast_powerup_perk_timed_cluster_rate;
         modifier.amount = -2;
     }
     else if (id == id_blast_powerup_perk_turret_enabled)
     {
-        modifier.description = name_blast_powerup_perk_turret_enabled;
         modifier.amount = 1;
     }
     else if (id == id_overpriced_powerups_cost_increase)
     {
-        modifier.description = name_overpriced_powerups_cost_increase;
         modifier.amount = 1;
     }
     else if (id == id_boss_killing_xp_bonus)
     {
-        modifier.description = name_boss_killing_xp_bonus;
         modifier.amount = 1;
     }
     else if (id == id_brutal_enemy_health_bonus)
     {
-        modifier.description = name_brutal_enemy_health_bonus;
         modifier.amount = 1;
     }
     else if (id == id_fast_potion_reload_divider)
     {
-        modifier.description = name_fast_potion_reload_divider;
         modifier.amount = 1;
     }
     else if (id == id_doubled_shots_shot_multiplier)
     {
-        modifier.description = name_doubled_shots_shot_multiplier;
         modifier.amount = 1;
     }
     else if (id == id_boost_potion_shot_multiplier)
     {
-        modifier.description = name_boost_potion_shot_multiplier;
         modifier.amount = 1;
     }
     else if (id == id_bullet_spread_multiplier)
     {
-        modifier.description = name_bullet_spread_multiplier;
         modifier.amount = -0.5;
     }
     else if (id == id_breakable_wall_durability)
     {
-        modifier.description = name_breakable_wall_durability;
         modifier.amount = -3;
     }
     else if (id == id_weapon_1_num_shots)
     {
-        modifier.description = name_weapon_1_num_shots;
         modifier.amount = 1;
     }
     else if (id == id_weapon_1_rate)
     {
-        modifier.description = name_weapon_1_rate;
         modifier.amount = -2;
     }
     else if (id == id_weapon_1_brutal_shots)
     {
-        modifier.description = name_weapon_1_brutal_shots;
         modifier.amount = 1;
     }
     else if (id == id_weapon_1_brutal_rate)
     {
-        modifier.description = name_weapon_1_brutal_rate;
         modifier.amount = 1;
     }
     else if (id == id_weapon_2_num_shots)
     {
-        modifier.description = name_weapon_2_num_shots;
         modifier.amount = 1;
     }
     else if (id == id_weapon_2_rate)
     {
-        modifier.description = name_weapon_2_rate;
         modifier.amount = -5;
     }
     else if (id == id_weapon_2_brutal_shots)
     {
-        modifier.description = name_weapon_2_brutal_shots;
         modifier.amount = 1;
     }
     else if (id == id_weapon_2_brutal_rate)
     {
-        modifier.description = name_weapon_2_brutal_rate;
         modifier.amount = 1;
     }
     else if (id == id_undetected_enemy_move_probability)
     {
-        modifier.description = name_undetected_enemy_move_probability;
         modifier.amount = -5;
     }
     else if (id == id_enemy_speed)
     {
-        modifier.description = name_enemy_speed;
         modifier.amount = -1;
     }
     else if (id == id_fast_enemy_speed)
     {
-        modifier.description = name_fast_enemy_speed;
         modifier.amount = -1;
     }
     else if (id == id_plr_speed)
     {
-        modifier.description = name_plr_speed;
         modifier.amount = 1;
     }
     else if (id == id_fast_potion_plr_speed_bonus)
     {
-        modifier.description = name_fast_potion_plr_speed_bonus;
         modifier.amount = 1;
     }
     else if (id == id_fast_potion_plr_speed_bonus_turbo)
     {
-        modifier.description = name_fast_potion_plr_speed_bonus_turbo;
         modifier.amount = 1;
     }
     else if (id == id_perk_xp_base)
     {
-        modifier.description = name_perk_xp_base;
         modifier.amount = 100;
     }
     else if (id == id_perk_xp_level_multiplier)
     {
-        modifier.description = name_perk_xp_level_multiplier;
         modifier.amount = 1;
     }
     if (is_bad)

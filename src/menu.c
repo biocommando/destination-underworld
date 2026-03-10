@@ -13,14 +13,17 @@
 #include "record_file.h"
 #include "sha1/du_dmac.h"
 #include "help.h"
+#include "rogue_like.h"
+#include "game_tuning.h"
 #include "command_file/generated/dispatch_mission_counts.h"
 
-static void do_load_game(Enemy *autosave, int *mission, int *game_modifiers, int slot)
+static void do_load_game(Enemy *autosave, GlobalGameState *ggs, int slot)
 {
-    load_game(autosave, mission, game_modifiers, slot);
+    load_game(NULL, autosave, &ggs->mission, &ggs->game_modifiers, slot);
+    ggs->enable_rogue_like = !(load_rogue_like_modifiers(NULL, slot, &ggs->rogue_like_modifiers, &ggs->rogue_like_gimmick) != 0 || ggs->rogue_like_modifiers.count == 0);
     autosave->alive = 1;
     autosave->killed = 0;
-    if (*mission == 1)
+    if (ggs->mission == 1)
         autosave->alive = 0;
 }
 
@@ -73,17 +76,22 @@ static int get_menu_item_id(const char *id_str)
     return id;
 }
 
-#define NUM_MENU_ITEMS 64
-
 struct menu
 {
     char title[100];
-    struct menu_item items[NUM_MENU_ITEMS];
+    struct menu_item *items;
     int num_items;
-    int selected_item;
+    int selected_item_index;
+    struct menu_item *selected_item;
     int cancel_menu_item_id;
     int num_displayed_items;
 };
+
+static void set_selected_item_index(struct menu *m, int idx)
+{
+    m->selected_item_index = idx;
+    m->selected_item = m->items + idx;
+}
 
 static void set_item_by_id(struct menu *m, int id)
 {
@@ -91,7 +99,7 @@ static void set_item_by_id(struct menu *m, int id)
     {
         if (m->items[i].item_id == id)
         {
-            m->selected_item = i;
+            set_selected_item_index(m, i);
             return;
         }
     }
@@ -99,8 +107,6 @@ static void set_item_by_id(struct menu *m, int id)
 
 static struct menu_item *add_menu_item(struct menu *m, const char *name, const char *description, ...)
 {
-    if (m->num_items >= NUM_MENU_ITEMS)
-        return m->items;
     va_list args;
     va_start(args, description);
 
@@ -108,7 +114,9 @@ static struct menu_item *add_menu_item(struct menu *m, const char *name, const c
     vsnprintf(full_description, 300, description, args);
 
     int descr_idx = 0;
+    m->items = realloc(m->items, (m->num_items + 1) * sizeof(struct menu_item));
     struct menu_item *mi = &m->items[m->num_items];
+    memset(mi, 0, sizeof(struct menu_item));
     mi->meta = 0;
     mi->selectable = 1;
     m->num_items++;
@@ -154,10 +162,11 @@ struct menu create_menu(const char *title, ...)
 
 static void display_menu(struct menu *menu_state)
 {
-    while (!menu_state->items[menu_state->selected_item].selectable)
+    while (!menu_state->items[menu_state->selected_item_index].selectable)
     {
-        menu_state->selected_item = (menu_state->selected_item + 1) % menu_state->num_items;
+        menu_state->selected_item_index = (menu_state->selected_item_index + 1) % menu_state->num_items;
     }
+    set_selected_item_index(menu_state, menu_state->selected_item_index);
     ALLEGRO_BITMAP *menubg = al_load_bitmap(DATADIR "/hell.jpg");
 
     const int font_height = al_get_font_line_height(get_menu_font());
@@ -178,9 +187,9 @@ static void display_menu(struct menu *menu_state)
         al_draw_textf(get_menu_title_font(), RED, 28, 23, 0, menu_state->title);
         int cursor_y = y_offset;
         int start = 0, end = MIN(menu_state->num_items, menu_state->num_displayed_items);
-        if (menu_state->num_items > menu_state->num_displayed_items && menu_state->selected_item >= menu_state->num_displayed_items / 2)
+        if (menu_state->num_items > menu_state->num_displayed_items && menu_state->selected_item_index >= menu_state->num_displayed_items / 2)
         {
-            start = menu_state->selected_item - menu_state->num_displayed_items / 2 + 1;
+            start = menu_state->selected_item_index - menu_state->num_displayed_items / 2 + 1;
             end = MIN(menu_state->num_items, menu_state->num_displayed_items + start);
             if (end - start < menu_state->num_displayed_items)
                 start = end - menu_state->num_displayed_items;
@@ -192,7 +201,7 @@ static void display_menu(struct menu *menu_state)
         {
             struct menu_item *mi = &menu_state->items[i];
             int cursor_y_offset = 0;
-            if (menu_state->selected_item == i)
+            if (menu_state->selected_item_index == i)
             {
                 cursor_y_offset = sin(timer * 0.3) * 3;
                 al_draw_filled_circle(30, cursor_y + font_height / 2, 5 + sin(timer * 0.1) * 2, al_map_rgb(150 + sin(timer * 0.1) * 50, 0, 0));
@@ -200,7 +209,7 @@ static void display_menu(struct menu *menu_state)
             if (!mi->meta)
             {
                 ALLEGRO_COLOR col = mi->selectable ? al_map_rgb(64, 64, 127) : GRAY(127);
-                if (select_animation_timer > 0 && menu_state->selected_item == i)
+                if (select_animation_timer > 0 && menu_state->selected_item_index == i)
                     col = GRAY(128 + ((select_animation_timer / 2) % 2) * 127);
                 al_draw_textf(get_menu_font(), col, 40, cursor_y + cursor_y_offset, 0, mi->name);
                 cursor_y += menu_item_height;
@@ -258,7 +267,7 @@ static void display_menu(struct menu *menu_state)
         }
         if (key_released == ALLEGRO_KEY_UP)
         {
-            int initial_item = menu_state->selected_item - 1;
+            int initial_item = menu_state->selected_item_index - 1;
             do
             {
                 int si = initial_item;
@@ -266,7 +275,7 @@ static void display_menu(struct menu *menu_state)
                     si--;
                 if (si >= 0)
                 {
-                    menu_state->selected_item = si;
+                    set_selected_item_index(menu_state, si);
                     menu_play_sample(SAMPLE_MENU_CHANGE);
                     initial_item = 999;
                 }
@@ -278,7 +287,7 @@ static void display_menu(struct menu *menu_state)
         }
         if (key_released == ALLEGRO_KEY_DOWN)
         {
-            int initial_item = menu_state->selected_item + 1;
+            int initial_item = menu_state->selected_item_index + 1;
             do
             {
                 int si = initial_item;
@@ -286,7 +295,7 @@ static void display_menu(struct menu *menu_state)
                     si++;
                 if (si < menu_state->num_items)
                 {
-                    menu_state->selected_item = si;
+                    set_selected_item_index(menu_state, si);
                     menu_play_sample(SAMPLE_MENU_CHANGE);
                     initial_item = 999;
                 }
@@ -320,12 +329,13 @@ static int display_save_load_menu(int is_load)
     {
         char slot_name[32];
         sprintf(slot_name, "%s slot %d", is_load ? "Load" : "Save to", slot + 1);
-        int current_slot_has_save, current_slot_mission, current_slot_game_modifiers;
-        peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers);
+        int current_slot_has_save, current_slot_mission, current_slot_game_modifiers, current_slot_rogue_like;
+        peek_into_save_data(slot, &current_slot_has_save, &current_slot_mission, &current_slot_game_modifiers, &current_slot_rogue_like);
         if (current_slot_has_save)
         {
-            add_menu_item(&m, slot_name, "Mode: %s\nLevel: %d",
-                          game_modifiers_to_str(current_slot_game_modifiers), current_slot_mission);
+            add_menu_item(&m, slot_name, "Mode: %s%s\nLevel: %d",
+                          game_modifiers_to_str(current_slot_game_modifiers),
+                          current_slot_rogue_like ? " - rogue like" : "", current_slot_mission);
         }
         else
         {
@@ -335,7 +345,8 @@ static int display_save_load_menu(int is_load)
         }
     }
     display_menu(&m);
-    return m.selected_item;
+    free(m.items);
+    return m.selected_item_index;
 }
 
 static int display_load_game_menu()
@@ -406,15 +417,6 @@ static int display_game_mode_menu(int game_modifiers)
 
     struct menu m = create_menu("Change game mode");
 
-    for (int i = 0; modifiers[i] != -1; i++)
-    {
-        if (modifiers[i] == game_modifiers)
-        {
-            m.selected_item = i;
-            break;
-        }
-    }
-
     add_menu_item(&m, game_modifiers_to_str(modifiers[0]), "Normal gameplay");
     add_menu_item(&m, game_modifiers_to_str(modifiers[1]),
                   "- More and tougher enemies\n"
@@ -446,14 +448,22 @@ static int display_game_mode_menu(int game_modifiers)
     }
     add_menu_item(&m, "Roguelike",
                   "Clear levels and choose persistent modifiers\n"
-                  "after each one to build your run.\n"
-                  "Saving is disabled.");
+                  "after each one to build your run.");
 
-    m.cancel_menu_item_id = m.items[m.selected_item].item_id;
+    for (int i = 0; modifiers[i] != -1; i++)
+    {
+        if (modifiers[i] == game_modifiers)
+        {
+            set_selected_item_index(&m, i);
+            break;
+        }
+    }
+
+    m.cancel_menu_item_id = m.selected_item->item_id;
 
     display_menu(&m);
-
-    return modifiers[m.selected_item];
+    free(m.items);
+    return modifiers[m.selected_item_index];
 }
 
 static int display_in_game_menu(int game_modifiers, int mission, int rogue_like)
@@ -478,13 +488,16 @@ static int display_in_game_menu(int game_modifiers, int mission, int rogue_like)
     }
     if (rogue_like)
     {
-        m.items[m.num_items - 2].selectable = 0;
+        add_menu_item(&m, "Display rogue like modifiers", "");
     }
     add_menu_item(&m, "Game options", "Change the game options");
     add_menu_item(&m, "View help", "");
     add_menu_item(&m, "Exit to main menu", "Abandon current game and lose all progress");
     display_menu(&m);
-    return m.items[m.selected_item].item_id;
+
+    int ret = m.selected_item->item_id;
+    free(m.items);
+    return ret;
 }
 
 static int display_new_game_menu(int game_modifiers, int rogue_like)
@@ -506,7 +519,9 @@ static int display_new_game_menu(int game_modifiers, int rogue_like)
     }
     set_item_by_id(&m, get_menu_item_id("Story"));
     display_menu(&m);
-    return m.items[m.selected_item].item_id;
+    int ret = m.selected_item->item_id;
+    free(m.items);
+    return ret;
 }
 
 static const char *vibration_intensity_fmt(int i);
@@ -546,7 +561,9 @@ static int display_game_options(int default_opt)
     set_item_by_id(&m, default_opt);
     display_menu(&m);
     track_name_mi = NULL;
-    return m.items[m.selected_item].item_id;
+    int ret = m.selected_item->item_id;
+    free(m.items);
+    return ret;
 }
 
 static int display_range_menu(const char *title, const char *(*fmt)(int), int range_start, int count, int step, int default_opt)
@@ -559,13 +576,15 @@ static int display_range_menu(const char *title, const char *(*fmt)(int), int ra
         sprintf(item, fmt(val), val);
         add_menu_item(&m, item, "");
     }
-    m.selected_item = (default_opt - range_start) / step;
-    if (m.selected_item >= m.num_items || m.selected_item == 0)
-        m.selected_item = 0;
-    m.cancel_menu_item_id = m.items[m.selected_item].item_id;
+    int opt_idx = (default_opt - range_start) / step;
+    if (opt_idx >= m.num_items || opt_idx == 0)
+        opt_idx = 0;
+    set_selected_item_index(&m, opt_idx);
+    m.cancel_menu_item_id = m.selected_item->item_id;
     m.num_displayed_items = MIN(m.num_items, 15);
     display_menu(&m);
-    return range_start + m.selected_item * step;
+    free(m.items);
+    return range_start + m.selected_item_index * step;
 }
 
 #define TRACK_FN_SORTER_FNAME_LEN 32
@@ -599,22 +618,24 @@ static int display_select_track_menu()
     m.num_displayed_items = 20;
     const char *fname;
     const char *current = get_midi_playlist_entry_file_name(-1);
-    struct track_filename filenames[NUM_MENU_ITEMS];
-    memset(filenames, 0, sizeof(filenames));
-    for (int i = 0; i < NUM_MENU_ITEMS && (fname = get_midi_playlist_entry_file_name(i)); i++)
+    struct track_filename *filenames = NULL;
+    int fn_count = 0;
+    for (int i = 0; (fname = get_midi_playlist_entry_file_name(i)); i++)
     {
+        fn_count++;
+        filenames = realloc(filenames, sizeof(struct track_filename) * fn_count);
         // Copy first 31 characters and convert to upper case
         memcpy(filenames[i].name, fname, TRACK_FN_SORTER_FNAME_LEN - 1);
         str_to_upper(filenames[i].name);
         filenames[i].id = i;
     }
-    qsort(filenames, NUM_MENU_ITEMS, sizeof(struct track_filename), alpabetical_order);
-    for (int i = 0; i < NUM_MENU_ITEMS && *filenames[i].name; i++)
+    qsort(filenames, fn_count, sizeof(struct track_filename), alpabetical_order);
+    for (int i = 0; i < fn_count; i++)
     {
         fname = get_midi_playlist_entry_file_name(filenames[i].id);
         add_menu_item(&m, fname, "");
         if (!strcmp(current, fname))
-            m.selected_item = i;
+            set_selected_item_index(&m, i);
     }
     add_menu_item(&m, "Randomize", "");
     int randomize_idx = m.num_items - 1;
@@ -623,9 +644,12 @@ static int display_select_track_menu()
     m.items[cancel_idx].item_id = 1;
     m.cancel_menu_item_id = 1;
     display_menu(&m);
-    if (m.selected_item == randomize_idx)
+    free(m.items);
+    if (m.selected_item_index == randomize_idx)
         return -2;
-    return m.selected_item == cancel_idx ? -1 : filenames[m.selected_item].id;
+    int ret = m.selected_item_index == cancel_idx ? -1 : filenames[m.selected_item_index].id;
+    free(filenames);
+    return ret;
 }
 
 static const char *percent_fmt([[maybe_unused]] int i)
@@ -646,6 +670,7 @@ static const char *vibration_intensity_fmt(int i)
 
 static int display_set_keys_menu()
 {
+    const int NUM_MENU_ITEMS = 32;
 #define ADD_ITEM(label, key)                     \
     key_to_change[m.num_items - 1] = &keys->key; \
     add_menu_item(&m, label, "Current: %s", al_keycode_to_name(keys->key));
@@ -671,14 +696,14 @@ static int display_set_keys_menu()
         ADD_ITEM("Restart level", restart);
         ADD_ITEM("Display map info", map_info);
 
-        m.selected_item = default_selection;
+        set_selected_item_index(&m, default_selection);
         display_menu(&m);
-        default_selection = m.selected_item;
+        default_selection = m.selected_item_index;
 
-        if (m.selected_item > 0)
+        if (m.selected_item_index > 0)
         {
             al_clear_to_color(BLACK);
-            al_draw_textf(get_font(), WHITE, 100, 100, 0, "Press new key for %s", m.items[m.selected_item].name);
+            al_draw_textf(get_font(), WHITE, 100, 100, 0, "Press new key for %s", m.selected_item->name);
             al_flip_display();
             int key = 0;
             while (!key)
@@ -687,10 +712,12 @@ static int display_set_keys_menu()
                 wait_delay_ms(30);
             }
             wait_key_release(key);
-            *key_to_change[m.selected_item - 1] = key;
+            *key_to_change[m.selected_item_index - 1] = key;
+            free(m.items);
         }
         else
         {
+            free(m.items);
             break;
         }
     }
@@ -786,7 +813,9 @@ static int display_main_menu()
     add_menu_item(&m, "View help", "");
     add_menu_item(&m, "Exit", "");
     display_menu(&m);
-    return m.items[m.selected_item].item_id;
+    int ret = m.selected_item->item_id;
+    free(m.items);
+    return ret;
 }
 
 static void load_menu_sprites()
@@ -822,7 +851,8 @@ static void display_perk_menu(Enemy *player)
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SPEED_POTION, "Speedrunner", "Start level with Potion of Gotta Go Fast.");
     add_perk_menu_item(&m, player->perks, enough_xp, PERK_START_WITH_SHIELD_POWERUP, "Paranoid", "Start level with Shield powerup active.");
     display_menu(&m);
-    int selected_id = m.items[m.selected_item].item_id;
+    int selected_id = m.selected_item->item_id;
+    free(m.items);
     if (selected_id == get_menu_item_id("Return"))
         return;
     player->xp -= required_xp;
@@ -844,16 +874,23 @@ static int display_exit_to_main_menu_menu()
 
     display_menu(&m);
 
-    if (m.items[m.selected_item].item_id == get_menu_item_id("Yes"))
+    int item_id = m.selected_item->item_id;
+    free(m.items);
+    if (item_id == get_menu_item_id("Yes"))
         return 1;
-    if (m.items[m.selected_item].item_id == get_menu_item_id("Exit"))
+    if (item_id == get_menu_item_id("Exit"))
         return 2;
     return 0;
 }
 
+struct mission_pack_id
+{
+    char data[64];
+};
+
 static int change_level_pack_menu(GlobalGameState *ggs)
 {
-    char mission_pack_ids[NUM_MENU_ITEMS][64];
+    struct mission_pack_id *mission_pack_ids = NULL;
     struct menu m = create_menu("Change level pack");
 
     struct menu_item *cancel_mi = add_menu_item(&m, "Cancel", "Return to main menu");
@@ -888,7 +925,8 @@ static int change_level_pack_menu(GlobalGameState *ggs)
             if (f)
             {
                 fclose(f);
-                strcpy(mission_pack_ids[m.num_items], name);
+                mission_pack_ids = realloc(mission_pack_ids, sizeof(struct mission_pack_id) * (m.num_items + 1));
+                strcpy(mission_pack_ids[m.num_items].data, name);
                 int current = !strcmp(name, get_game_settings()->mission_pack);
                 struct menu_item *mi = add_menu_item(&m, "", current ? "Current level pack" : "");
                 get_mission_pack_name(name, mi->name);
@@ -900,10 +938,60 @@ static int change_level_pack_menu(GlobalGameState *ggs)
     al_close_directory(e);
     al_destroy_fs_entry(e);
     display_menu(&m);
-    if (m.items[m.selected_item].item_id == 1)
+    int item_id = m.selected_item->item_id;
+    free(m.items);
+    if (item_id == 1)
+    {
+        free(mission_pack_ids);
         return 0;
-    strcpy(ggs->mission_pack, mission_pack_ids[m.selected_item]);
+    }
+    strcpy(ggs->mission_pack, mission_pack_ids[m.selected_item_index].data);
+    free(mission_pack_ids);
     return 1;
+}
+
+void display_rogue_like_mods_menu(GlobalGameState *ggs)
+{
+    struct menu m = create_menu("Rogue like modifiers");
+
+    struct menu_item *cancel_mi = add_menu_item(&m, "Return to main menu", "");
+    cancel_mi->item_id = 1;
+    m.cancel_menu_item_id = 1;
+
+    char param_id_map[256];
+    memset(param_id_map, 0, sizeof(param_id_map));
+    GameTuningModifier *mod;
+    LINKED_LIST_FOR_EACH(&ggs->rogue_like_modifiers, GameTuningModifier, mod, 0)
+    {
+        if (!param_id_map[mod->param_id])
+        {
+            double amount = 0;
+            GameTuningModifier *mod2;
+            LINKED_LIST_FOR_EACH(&ggs->rogue_like_modifiers, GameTuningModifier, mod2, 0)
+            {
+                if (mod2->param_id == mod->param_id)
+                {
+                    amount += mod2->amount;
+                }
+            }
+            if (fabs(amount) > 0.01)
+            {
+                add_menu_item(&m, get_tuning_param_description(mod->param_id),
+                        "Current value: %.1lf\nmodifiers: %s %.1lf",
+                        get_tuning_param_current_value(get_tuning_params(), mod->param_id),
+                        amount >= 0 ? "+" : "-", fabs(amount));
+            }
+            param_id_map[mod->param_id] = 1;
+        }
+    }
+    if (ggs->rogue_like_gimmick & 1)
+        add_menu_item(&m, "Gimmick: 3 modifiers per option", "");
+    if (ggs->rogue_like_gimmick & 2)
+        add_menu_item(&m, "Gimmick: 4 options", "");
+    if (ggs->rogue_like_gimmick & 1)
+        add_menu_item(&m, "Gimmick: double effect", "");
+    display_menu(&m);
+    free(m.items);
 }
 
 int menu(int ingame, GlobalGameState *ggs)
@@ -938,7 +1026,8 @@ int menu(int ingame, GlobalGameState *ggs)
                 int save_slot = display_save_game_menu();
                 if (save_slot != 0)
                 {
-                    save_game(&ggs->plrautosave, ggs->mission, ggs->game_modifiers, save_slot - 1);
+                    save_game(NULL, &ggs->plrautosave, ggs->mission, ggs->game_modifiers, save_slot - 1);
+                    save_rogue_like_modifiers(NULL, save_slot - 1, &ggs->rogue_like_modifiers, ggs->rogue_like_gimmick);
                 }
             }
             else if (ingame_menu_selection == get_menu_item_id("Game options"))
@@ -967,6 +1056,10 @@ int menu(int ingame, GlobalGameState *ggs)
                 ggs->next_mission = ggs->mission;
                 ggs->mission = LIMBO_MISSION;
                 ggs->custom_next_mission_set = 1;
+            }
+            else if (ingame_menu_selection == get_menu_item_id("Display"))
+            {
+                display_rogue_like_mods_menu(ggs);
             }
         }
         exit_menu = 0;
@@ -1018,7 +1111,7 @@ int menu(int ingame, GlobalGameState *ggs)
             if (load_slot != 0)
             {
                 exit_menu = 1;
-                do_load_game(&ggs->plrautosave, &ggs->mission, &ggs->game_modifiers, load_slot - 1);
+                do_load_game(&ggs->plrautosave, ggs, load_slot - 1);
             }
         }
         else if (main_menu_selection == get_menu_item_id("Game options"))
@@ -1071,5 +1164,7 @@ int custom_flat_menu(const char *title, const struct custom_flat_menu_item *menu
     }
     display_menu(&m);
     al_destroy_bitmap(menu_sprites);
-    return m.items[m.selected_item].item_id;
+    int ret = m.selected_item->item_id;
+    free(m.items);
+    return ret;
 }
