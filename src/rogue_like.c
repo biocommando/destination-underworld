@@ -748,7 +748,7 @@ static GameTuningModifier _get_tuning_param_modifier(int index, int is_bad, cons
     }
     else if (id == id_ammo_cap)
     {
-        modifier.amount = 1;
+        modifier.amount = 3;
     }
     else if (id == id_kill_health_bonus)
     {
@@ -792,11 +792,11 @@ static GameTuningModifier _get_tuning_param_modifier(int index, int is_bad, cons
     }
     else if (id == id_cluster_strength)
     {
-        modifier.amount = 1;
+        modifier.amount = 4;
     }
     else if (id == id_min_starting_ammo)
     {
-        modifier.amount = 2;
+        modifier.amount = 3;
     }
     else if (id == id_min_starting_health)
     {
@@ -912,11 +912,11 @@ static GameTuningModifier _get_tuning_param_modifier(int index, int is_bad, cons
     }
     else if (id == id_bullet_spread_multiplier)
     {
-        modifier.amount = -0.5;
+        modifier.amount = -2;
     }
     else if (id == id_breakable_wall_durability)
     {
-        modifier.amount = -3;
+        modifier.amount = -5;
     }
     else if (id == id_weapon_1_num_shots)
     {
@@ -952,7 +952,7 @@ static GameTuningModifier _get_tuning_param_modifier(int index, int is_bad, cons
     }
     else if (id == id_undetected_enemy_move_probability)
     {
-        modifier.amount = -5;
+        modifier.amount = -20;
     }
     else if (id == id_enemy_speed)
     {

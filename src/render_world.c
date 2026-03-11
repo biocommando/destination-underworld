@@ -233,7 +233,7 @@ void draw_player_legend(const World *world, int x, int y)
             draw_sprite_animated(world->spr, SPRITE_ID_AMMO, x + 17, y - 18 + 2 * n, world->plr.reload != 0, 0);
         }
 
-        const char *weapon_text = world->plr.shots > 1 ? "L" : "S";
+        const char *weapon_text = world->plr.weapon == 1 ? "L" : "S";
         if (*world->game_modifiers & GAMEMODIFIER_UBER_WIZARD)
         {
             if (world->plr.weapon == 1)
@@ -589,7 +589,7 @@ static inline void check_valid_time_for_display(float *f)
     *f = *f > 9999.9f ? 9999.9f : *f;
 }
 
-void display_level_info(const World *world, int mission, int next_mission, int mission_count, long completetime)
+void display_level_info(const World *world, int mission, int next_mission, int mission_count, long completetime, int is_rogue_like)
 {
     const int y_margin = al_get_font_line_height(get_menu_font()) + 2;
     const int y_margin_small_text = al_get_font_line_height(get_font()) + 1;
@@ -601,6 +601,8 @@ void display_level_info(const World *world, int mission, int next_mission, int m
         y += y_margin;
         struct best_times best_times;
         best_times.game_modifiers = *world->game_modifiers;
+        if (is_rogue_like)
+            best_times.game_modifiers |= GAMEMODIFIER_ROGUE_LIKE;
         best_times.mission = mission;
         populate_best_times(get_game_settings()->mission_pack, &best_times);
         float time_secs = (float)completetime / FRAMES_PER_SECOND;

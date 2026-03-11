@@ -514,7 +514,10 @@ static int display_new_game_menu(int game_modifiers, int rogue_like)
     for (int arena = 0; arena < get_game_settings()->arena_config.number_of_arenas; arena++)
     {
         const ArenaConfig *ac = &get_game_settings()->arena_config.arenas[arena];
-        int kills = get_arena_highscore(ac->level_number, game_modifiers);
+        int score_game_modifiers = game_modifiers;
+        if (rogue_like)
+            score_game_modifiers |= GAMEMODIFIER_ROGUE_LIKE;
+        int kills = get_arena_highscore(ac->level_number, score_game_modifiers);
         mi = add_menu_item(&m, ac->name, "Highscore: %d kills", kills);
         mi->item_id = arena;
     }
@@ -546,7 +549,6 @@ static int display_game_options(int default_opt)
     mi = add_menu_item(&m, "Set music on/off", "Current: %s", get_game_settings()->music_on ? "on" : "off");
     mi->item_id = get_menu_item_id("m.on/off");
     mi = add_menu_item(&m, "Select music track", "Now playing: %s", get_midi_playlist_entry_file_name(-1));
-    track_name_mi = mi;
     mi = add_menu_item(&m, "Set music volume", "Current: %d %%%%", (int)(100 * get_game_settings()->music_vol));
     mi->item_id = get_menu_item_id("m.vol");
     mi = add_menu_item(&m, "Set sound volume", "Current: %d %%%%", (int)(100 * get_game_settings()->sfx_vol));
@@ -560,6 +562,7 @@ static int display_game_options(int default_opt)
     mi = add_menu_item(&m, "Set keys", "Change the control keys");
     mi->item_id = get_menu_item_id("keys");
     set_item_by_id(&m, default_opt);
+    track_name_mi = &m.items[2];
     display_menu(&m);
     track_name_mi = NULL;
     int ret = m.selected_item->item_id;
@@ -1099,6 +1102,11 @@ int menu(int ingame, GlobalGameState *ggs)
                     ggs->mission = get_game_settings()->arena_config.arenas[arena].level_number;
                     ggs->game_modifiers |= GAMEMODIFIER_ARENA_FIGHT;
                     ggs->plrautosave.alive = 0;
+                }
+                if (exit_menu)
+                {
+                    linked_list_clear(&ggs->rogue_like_modifiers);
+                    ggs->rogue_like_gimmick = 0;
                 }
             }
         }

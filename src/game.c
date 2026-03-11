@@ -68,7 +68,10 @@ static void set_game_mode_beaten_flag(int game_modifiers)
 
 static void display_arena_fight_end_screen(const World *world, GlobalGameState *ggs, const int *record_mode, int no_player_damage)
 {
-    int highscore_kills = get_arena_highscore(ggs->mission, ggs->game_modifiers);
+    int score_game_modifiers = ggs->game_modifiers;
+    if (ggs->enable_rogue_like)
+        score_game_modifiers |= GAMEMODIFIER_ROGUE_LIKE;
+    int highscore_kills = get_arena_highscore(ggs->mission, score_game_modifiers);
     int offx = (DISPLAY_W - 340) / 2, offy = (DISPLAY_H - 125) / 2;
     for (int grayscale = 0; grayscale < 5; grayscale++)
     {
@@ -82,7 +85,7 @@ static void display_arena_fight_end_screen(const World *world, GlobalGameState *
         al_draw_textf(get_font(), WHITE, offx + 10, offy + 50, ALLEGRO_ALIGN_LEFT, "NEW HIGHSCORE!");
         if (!no_player_damage)
         {
-            set_arena_highscore(ggs->mission, ggs->game_modifiers, world->kills);
+            set_arena_highscore(ggs->mission, score_game_modifiers, world->kills);
         }
         else
         {
@@ -378,6 +381,12 @@ void game(GlobalGameState *ggs)
     init_world(&world);
     read_enemy_configs(&world);
 
+    if (ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+    {
+        linked_list_clear(&ggs->rogue_like_modifiers);
+        ggs->rogue_like_gimmick = 0;
+    }
+
     int mission_count = read_mission_count(ggs->game_modifiers);
     init_player(&world, &ggs->plrautosave);
 
@@ -421,8 +430,17 @@ void game(GlobalGameState *ggs)
         screenshot(SCREENSHOT_ACT_INIT);
     midi_track_name = get_midi_playlist_entry_file_name(-1);
     set_notify_next_track_name(notify_track_name_changed);
+    int next_roguelike_kill_count = 10;
     while (1)
     {
+        if (world.kills >= next_roguelike_kill_count && ggs->game_modifiers & GAMEMODIFIER_ARENA_FIGHT)
+        {
+            show_rogue_like_modifier_menu(ggs);
+            read_game_tuning_params();
+            modify_tuning_modifiers(ggs);
+            handle_player_weapon_selection(&world, world.plr.weapon);
+            next_roguelike_kill_count += 10;
+        }
         if (world.plr.health <= 0)
         {
             // Draw well outside of screen so that the zoom in transformation would not look like ass
@@ -473,7 +491,7 @@ void game(GlobalGameState *ggs)
                     world.visual_fx.hint.time_shows = 0;
                     trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-                    display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1);
+                    display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1, ggs->enable_rogue_like);
 
                     if (!ggs->no_player_interaction)
                         wait_key_press(ALLEGRO_KEY_ENTER);
@@ -567,7 +585,7 @@ void game(GlobalGameState *ggs)
             world.visual_fx.hint.time_shows = 0;
             trigger_sample_with_params(SAMPLE_WARP, 255, 127, 500);
 
-            display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1);
+            display_level_info(&world, ggs->mission, ggs->next_mission, mission_count, world.time_stamp - 1, ggs->enable_rogue_like);
 
             if (*record_mode != RECORD_MODE_PLAYBACK)
                 wait_key_press(ALLEGRO_KEY_ENTER);
