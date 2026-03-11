@@ -113,3 +113,5 @@ Enemy *create_turret(World *world);
  * Does all the required actions when an enemy dies.
  */
 void kill_enemy(Enemy *enm, World *world);
+
+int handle_player_weapon_selection(World *world, int weapon);

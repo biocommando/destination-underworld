@@ -20,7 +20,7 @@
 static void do_load_game(Enemy *autosave, GlobalGameState *ggs, int slot)
 {
     load_game(NULL, autosave, &ggs->mission, &ggs->game_modifiers, slot);
-    ggs->enable_rogue_like = !(load_rogue_like_modifiers(NULL, slot, &ggs->rogue_like_modifiers, &ggs->rogue_like_gimmick) != 0 || ggs->rogue_like_modifiers.count == 0);
+    ggs->enable_rogue_like = load_rogue_like_modifiers(NULL, slot, &ggs->rogue_like_modifiers, &ggs->rogue_like_gimmick) == 0;
     autosave->alive = 1;
     autosave->killed = 0;
     if (ggs->mission == 1)
@@ -1028,7 +1028,8 @@ int menu(int ingame, GlobalGameState *ggs)
                 if (save_slot != 0)
                 {
                     save_game(NULL, &ggs->plrautosave, ggs->mission, ggs->game_modifiers, save_slot - 1);
-                    save_rogue_like_modifiers(NULL, save_slot - 1, &ggs->rogue_like_modifiers, ggs->rogue_like_gimmick);
+                    if (ggs->enable_rogue_like)
+                        save_rogue_like_modifiers(NULL, save_slot - 1, &ggs->rogue_like_modifiers, ggs->rogue_like_gimmick);
                 }
             }
             else if (ingame_menu_selection == get_menu_item_id("Game options"))

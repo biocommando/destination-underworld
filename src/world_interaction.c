@@ -512,6 +512,11 @@ void set_player_start_state(World *world, GlobalGameState *ggs)
         world->potion_effect_flags = POTION_EFFECT_FAST_PLAYER;
         world->potion_duration = gt->potion_duration_big_boost;
     }
+
+    if (world->plr.ammo > gt->ammo_cap || world->plr.ammo == -1)
+        world->plr.ammo = gt->ammo_cap;
+
+    handle_player_weapon_selection(world, world->plr.weapon);
 }
 
 inline void apply_timed_potion_effects(World *world)
@@ -660,4 +665,38 @@ void kill_enemy(Enemy *enm, World *world)
     {
         trigger_sample_with_params(SAMPLE_DEATH(rand() % 6), 255, 127 + (enm->x - 240) / 8, 900 + rand() % 200);
     }
+}
+
+int handle_player_weapon_selection(World *world, int weapon)
+{
+    int wp_changed = 0;
+    if (world->plr.weapon != weapon)
+        wp_changed = 1;
+
+    const int difficulty = GET_DIFFICULTY(world);
+    const GameTuningParams *gt = get_tuning_params();
+    if (weapon == 1)
+    {
+        world->plr.weapon = 1;
+        world->plr.shots = gt->weapon_2_num_shots;
+        world->plr.rate = gt->weapon_2_rate;
+        if (difficulty == DIFFICULTY_BRUTAL)
+        {
+            // better damage output but enemies are stronger
+            world->plr.shots = gt->weapon_2_brutal_shots;
+            world->plr.rate = gt->weapon_2_brutal_rate;
+        }
+    }
+    else
+    {
+        world->plr.weapon = 0;
+        world->plr.shots = gt->weapon_1_num_shots;
+        world->plr.rate = gt->weapon_1_rate;
+        if (difficulty == DIFFICULTY_BRUTAL)
+        {
+            world->plr.shots = gt->weapon_1_brutal_shots;
+            world->plr.rate = gt->weapon_1_brutal_rate;
+        }
+    }
+    return wp_changed;
 }

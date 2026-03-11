@@ -120,11 +120,16 @@ long init_playback(World *world, GlobalGameState *ggs, int record_mode)
         game_playback_set_filename(record_input_filename);
         game_playback_init();
         save_game(record_input_filename, &world->plr, ggs->mission, ggs->game_modifiers, 0);
+        if (ggs->enable_rogue_like)
+        {
+            save_rogue_like_modifiers(record_input_filename, 0, &ggs->rogue_like_modifiers, ggs->rogue_like_gimmick);
+        }
     }
     else if (record_mode == RECORD_MODE_PLAYBACK)
     {
         game_playback_init();
         load_game(game_playback_get_filename(), &world->plr, &ggs->mission, &ggs->game_modifiers, 0);
+        ggs->enable_rogue_like = load_rogue_like_modifiers(game_playback_get_filename(), 0, &ggs->rogue_like_modifiers, &ggs->rogue_like_gimmick) == 0;
         return game_playback_get_time_stamp();
     }
     return 0;
@@ -345,6 +350,18 @@ static void show_rogue_like_modifier_menu(GlobalGameState *ggs)
     }
 }
 
+static void modify_tuning_modifiers(GlobalGameState *ggs)
+{
+    GameTuningParams new_gt;
+    memcpy(&new_gt, get_tuning_params(), sizeof(GameTuningParams));
+    GameTuningModifier *tuning_modifier;
+    LINKED_LIST_FOR_EACH(&ggs->rogue_like_modifiers, GameTuningModifier, tuning_modifier, 0)
+    {
+        modify_tuning_params(&new_gt, tuning_modifier);
+    }
+    set_tuning_params(&new_gt);
+}
+
 void game(GlobalGameState *ggs)
 {
     pr_reset_random();
@@ -358,28 +375,21 @@ void game(GlobalGameState *ggs)
 
     int vibrations = 0;
 
-    read_game_tuning_params();
-    {
-        GameTuningParams new_gt;
-        memcpy(&new_gt, get_tuning_params(), sizeof(GameTuningParams));
-        GameTuningModifier *tuning_modifier;
-        LINKED_LIST_FOR_EACH(&ggs->rogue_like_modifiers, GameTuningModifier, tuning_modifier, 0)
-        {
-            modify_tuning_params(&new_gt, tuning_modifier);
-        }
-        set_tuning_params(&new_gt);
-    }
-
     init_world(&world);
     read_enemy_configs(&world);
+
     int mission_count = read_mission_count(ggs->game_modifiers);
     init_player(&world, &ggs->plrautosave);
 
     long key_press_mask = 0;
 
     int *record_mode = get_playback_mode();
-    long playback_next_event_time_stamp = init_playback(&world, ggs, *record_mode);
+    long playback_next_event_time_stamp = 0;
+    if (*record_mode == RECORD_MODE_PLAYBACK)
+        playback_next_event_time_stamp = init_playback(&world, ggs, *record_mode);
 
+    read_game_tuning_params();
+    modify_tuning_modifiers(ggs);
     read_level(&world, ggs->mission, 1);
     ggs->custom_next_mission_set = 0;
     if (ggs->next_mission == 0)
@@ -394,6 +404,9 @@ void game(GlobalGameState *ggs)
     }
 
     set_player_start_state(&world, ggs);
+
+    if (*record_mode == RECORD_MODE_RECORD)
+        playback_next_event_time_stamp = init_playback(&world, ggs, *record_mode);
 
     int plr_dir_helper_intensity = 0;
 

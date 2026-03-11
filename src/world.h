@@ -70,6 +70,7 @@ typedef struct
     int dy;
     // Current health
     int health;
+    int weapon;
     // How many shots the enemy shoots at a time
     int shots;
     // Set to 'rate' when a shot is fired. The enemy can

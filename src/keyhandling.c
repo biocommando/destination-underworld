@@ -53,47 +53,36 @@ void handle_weapon_change_keys(World *world, int key_x, int key_z)
         if (key_x)
         {
             world->plr.reload = 20;
-            world->plr.shots++;
-            if (world->plr.shots > 4)
-                world->plr.shots = 1;
+            world->plr.weapon++;
+            if (world->plr.weapon > 4)
+                world->plr.weapon = 1;
         }
         if (key_z)
         {
             world->plr.reload = 20;
-            world->plr.shots--;
-            if (world->plr.shots < 1)
-                world->plr.shots = 4;
+            world->plr.weapon--;
+            if (world->plr.weapon < 1)
+                world->plr.weapon = 4;
         }
         trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
         return;
     }
-    const int difficulty = GET_DIFFICULTY(world);
     int play_sample = 0;
-    const GameTuningParams *gt = get_tuning_params();
     if (key_x && world->plr.reload == 0) // Power
     {
-        world->plr.shots = gt->weapon_2_num_shots;
-        world->plr.rate = gt->weapon_2_rate;
-        if (difficulty == DIFFICULTY_BRUTAL)
+        if (handle_player_weapon_selection(world, 1))
         {
-            // better damage output but enemies are stronger
-            world->plr.shots = gt->weapon_2_brutal_shots;
-            world->plr.rate = gt->weapon_2_brutal_rate;
+            world->plr.reload = 20;
+            play_sample = 1;
         }
-        world->plr.reload = 20;
-        play_sample = 1;
     }
     else if (key_z && world->plr.reload == 0) // Speed
     {
-        world->plr.shots = gt->weapon_1_num_shots;
-        world->plr.rate = gt->weapon_1_rate;
-        if (difficulty == DIFFICULTY_BRUTAL)
+        if (handle_player_weapon_selection(world, 0))
         {
-            world->plr.shots = gt->weapon_1_brutal_shots;
-            world->plr.rate = gt->weapon_1_brutal_rate;
+            world->plr.reload = 20;
+            play_sample = 1;
         }
-        world->plr.reload = 20;
-        play_sample = 1;
     }
     if (play_sample)
         trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);
@@ -103,16 +92,16 @@ int handle_power_up_keys(World *world, int key_a, int key_s, int key_d, int key_
 {
     if (*world->game_modifiers & GAMEMODIFIER_UBER_WIZARD)
     {
-        int orig = world->plr.shots;
+        int orig = world->plr.weapon;
         if (key_a)
-            world->plr.shots = 1;
+            world->plr.weapon = 1;
         else if (key_s)
-            world->plr.shots = 2;
+            world->plr.weapon = 2;
         else if (key_d)
-            world->plr.shots = 3;
+            world->plr.weapon = 3;
         else if (key_f)
-            world->plr.shots = 4;
-        if (orig != world->plr.shots)
+            world->plr.weapon = 4;
+        if (orig != world->plr.weapon)
         {
             world->plr.reload = 20;
             trigger_sample_with_params(SAMPLE_SELECT_WEAPON, 127, 127, 1000);

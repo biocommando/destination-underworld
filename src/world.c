@@ -201,7 +201,6 @@ inline int get_wall_type_at(const World *world, int x, int y)
 
 void init_player(World *world, Enemy *plrautosave)
 {
-    const GameTuningParams *gt = get_tuning_params();
     Enemy *plr = &world->plr;
     if (!plrautosave->alive)
     {
@@ -209,15 +208,8 @@ void init_player(World *world, Enemy *plrautosave)
         plr->alive = 1;
         plr->killed = 0;
         plr->sprite = -1;
-        plr->shots = gt->weapon_1_num_shots;
-        plr->health = gt->kill_health_cap;
-        plr->rate = gt->weapon_1_rate;
-        if ((*world->game_modifiers & GAMEMODIFIER_BRUTAL) != 0)
-        {
-            plr->rate = gt->weapon_1_brutal_rate;
-            plr->shots = gt->weapon_1_brutal_shots;
-        }
-        plr->ammo = gt->ammo_cap;
+        plr->weapon = 0;
+        plr->ammo = -1;
         plr->gold = 0;
         plr->hurts_monsters = 1;
     }

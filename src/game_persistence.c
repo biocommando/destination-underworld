@@ -43,6 +43,11 @@ static inline void format_rogue_like_modifier(int slot, int idx, char *name)
     sprintf(name, "slot_%d_mod_%d", slot, idx);
 }
 
+static inline void format_rogue_like_flag(int slot, char *name)
+{
+    sprintf(name, "slot_%d_is_roguelike", slot);
+}
+
 static inline void create_rogue_like_verification_hash(char *hash_hex, const GameTuningModifier *m, int salt)
 {
     char state_string[200];
@@ -58,11 +63,14 @@ int load_rogue_like_modifiers(const char *filename, int slot, LinkedList *dst, i
 {
     HANDLE_NULL_FN(filename)
     linked_list_clear(dst);
+    char key[32];
+    format_rogue_like_flag(slot, key);
+    if (record_file_find_and_read(filename, key) != 0)
+        return -2;
     int auth = get_game_settings()->require_authentication;
     int idx = 0;
     while (1)
     {
-        char key[32];
         format_rogue_like_modifier(slot, idx, key);
         if (record_file_find_and_read(filename, key) != 0)
             break;
@@ -71,8 +79,6 @@ int load_rogue_like_modifiers(const char *filename, int slot, LinkedList *dst, i
         m.param_id = record_file_next_param_as_int(-1);
         if (idx == 0)
             *gimmicks = record_file_next_param_as_int(0);
-        if (m.param_id == -1)
-            break;
         if (auth)
         {
             int salt = record_file_next_param_as_int(0);
@@ -93,11 +99,13 @@ void save_rogue_like_modifiers(const char *filename, int slot, LinkedList *src, 
 {
     HANDLE_NULL_FN(filename)
     int auth = get_game_settings()->require_authentication;
+    char key[32];
+    format_rogue_like_flag(slot, key);
+    record_file_find_and_modify(filename, key);
     int idx = 0;
     GameTuningModifier *m;
     LINKED_LIST_FOR_EACH(src, GameTuningModifier, m, 0)
     {
-        char key[32];
         format_rogue_like_modifier(slot, idx, key);
         record_file_find_and_modify(filename, key);
         record_file_add_float_param(m->amount);
@@ -127,6 +135,8 @@ static void load_game_save_data(const char *filename, Enemy *data, int *mission,
     *mission = record_file_next_param_as_int(1);
     data->health = record_file_next_param_as_int(0);
     data->shots = record_file_next_param_as_int(0);
+    // For now... to make it kinda backwards compatible
+    data->weapon = data->shots > 1 ? 1 : 0;
     data->reload = record_file_next_param_as_int(0);
     data->rate = record_file_next_param_as_int(0);
     data->ammo = record_file_next_param_as_int(0);
@@ -160,7 +170,7 @@ void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifi
     char filename[100];
     sprintf(filename, SAVE_FILENAME, get_game_settings()->mission_pack);
 
-    char slot_name[20];
+    char slot_name[32];
     format_slot_name(slot, slot_name);
     if (record_file_find_and_read(filename, slot_name) != 0)
     {
@@ -188,11 +198,8 @@ void peek_into_save_data(int slot, int *has_save, int *mission, int *game_modifi
 
     *has_save = 1;
 
-    LinkedList lst = linked_list_create();
-    int dummy;
-    load_rogue_like_modifiers(filename, slot, &lst, &dummy);
-    *is_rogue_like = lst.count > 0;
-    linked_list_clear(&lst);
+    format_rogue_like_flag(slot, slot_name);
+    *is_rogue_like = record_file_find_and_read(filename, slot_name) == 0;
 }
 
 static void save_game_save_data(const char *filename, Enemy *data, int mission, int game_modifiers, int slot)
@@ -203,7 +210,7 @@ static void save_game_save_data(const char *filename, Enemy *data, int mission, 
     record_file_add_int_param(game_modifiers);
     record_file_add_int_param(mission);
     record_file_add_int_param(data->health);
-    record_file_add_int_param(data->shots);
+    record_file_add_int_param(data->weapon + 1);
     record_file_add_int_param(data->reload);
     record_file_add_int_param(data->rate);
     record_file_add_int_param(data->ammo);
