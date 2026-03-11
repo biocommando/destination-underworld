@@ -236,13 +236,13 @@ void draw_player_legend(const World *world, int x, int y)
         const char *weapon_text = world->plr.shots > 1 ? "L" : "S";
         if (*world->game_modifiers & GAMEMODIFIER_UBER_WIZARD)
         {
-            if (world->plr.shots == 1)
+            if (world->plr.weapon == 1)
                 weapon_text = "Death ray";
-            if (world->plr.shots == 2)
+            if (world->plr.weapon == 2)
                 weapon_text = "Blast";
-            if (world->plr.shots == 3)
+            if (world->plr.weapon == 3)
                 weapon_text = "Leech";
-            if (world->plr.shots == 4)
+            if (world->plr.weapon == 4)
                 weapon_text = "Shield";
 
             if (world->plr.reload)

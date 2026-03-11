@@ -201,7 +201,7 @@ void handle_uber_wizard_weapon(World *world)
 {
     if (world->plr.reload > 0)
         return;
-    if (world->plr.shots == 4)
+    if (world->plr.weapon == 4)
     {
         int *plr_rune_of_protection_active = &world->powerups.rune_of_protection_active;
         if (*plr_rune_of_protection_active != 0)
@@ -233,12 +233,12 @@ void handle_uber_wizard_weapon(World *world)
                     enm->y - HALFTILESIZE < y && enm->y + HALFTILESIZE > y)
                 {
                     create_uber_wizard_weapon_fx(world, &world->visual_fx, x, y, 0);
-                    if (world->plr.shots == 1)
+                    if (world->plr.weapon == 1)
                     {
                         kill_enemy(enm, world);
                         trigger_sample(SAMPLE_BLAST, 200);
                     }
-                    if (world->plr.shots == 2)
+                    if (world->plr.weapon == 2)
                     {
                         for (x = -2; x <= 2; x++)
                         {
@@ -268,7 +268,7 @@ void handle_uber_wizard_weapon(World *world)
                         create_cluster_explosion(world, enm->x, enm->y, 16, 3, enm);
                         trigger_sample(SAMPLE_WARP, 200);
                     }
-                    if (world->plr.shots == 3)
+                    if (world->plr.weapon == 3)
                     {
                         world->plr.reload = 100;
                         for (int i = 0; i < 2 && enm->health > 0; i++)
