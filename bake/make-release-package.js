@@ -29,7 +29,8 @@ function renameMidiFiles(targetDir) {
     2025-11-chill-melody : Wild Walrus on a Vacation
     2025-11-dnb : Devil in the Details
     prob2 : Lord of Lies
-    Project_1 : Battle Bot Disassembly`
+    Project_1 : Battle Bot Disassembly
+    breaks_kinda_2 : Interstellar Hyperdrive`
 
     names.split('\n').forEach(x => {
         const [origName, newName] = x.split(':').map(x => x.trim())
