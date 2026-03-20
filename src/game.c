@@ -331,7 +331,7 @@ static void show_rogue_like_modifier_menu(GlobalGameState *ggs)
             struct custom_flat_menu_item *mi = &menu_items[num_choices + num_gimmicks_to_choose];
             num_gimmicks_to_choose++;
             const char *name = i == 0 ? "3 modifiers per option" : (i == 1 ? "4 options" : "double effect");
-            sprintf(mi->name, "Add gimmick: %s", name);
+            sprintf(mi->name, "Permanent option modifier: %s", name);
             *mi->description = 0;
         }
 

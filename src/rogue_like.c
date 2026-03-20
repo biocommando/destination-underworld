@@ -357,48 +357,48 @@ void modify_tuning_params(GameTuningParams *params, const GameTuningModifier *mo
         params->blood_stains_enabled += amount;
 }
 
-static const char *name_max_health_with_perk = "max_health_with_perk";
-static const char *name_max_health = "max_health";
+static const char *name_max_health_with_perk = "Maximum health with Iron skin";
+static const char *name_max_health = "Maximum health";
 static const char *name_turret_ammo = "turret_ammo";
 static const char *name_turret_shots = "turret_shots";
 static const char *name_turret_reload = "turret_reload";
-static const char *name_turret_move = "turret_move";
+static const char *name_turret_move = "Turret move amount";
 static const char *name_turret_health = "turret_health";
-static const char *name_kill_ammo_bonus = "kill_ammo_bonus";
-static const char *name_ammo_cap = "ammo_cap";
-static const char *name_kill_health_bonus = "kill_health_bonus";
-static const char *name_kill_health_cap = "kill_health_cap";
+static const char *name_kill_ammo_bonus = "Kill mana bonus";
+static const char *name_ammo_cap = "Maximum mana";
+static const char *name_kill_health_bonus = "Kill health bonus";
+static const char *name_kill_health_cap = "Kill health bonus health cap";
 static const char *name_instant_heal_potion_drop_health_threshold = "instant_heal_potion_drop_health_threshold";
 static const char *name_potion_turbo_mode_effect_amount = "potion_turbo_mode_effect_amount";
-static const char *name_initial_potion_healing_counter = "initial_potion_healing_counter";
-static const char *name_initial_potion_shield_counter = "initial_potion_shield_counter";
-static const char *name_potion_duration_big_boost = "potion_duration_big_boost";
-static const char *name_potion_duration_mini_boost = "potion_duration_mini_boost";
+static const char *name_initial_potion_healing_counter = "Potion of regeneration healing interval";
+static const char *name_initial_potion_shield_counter = "Potion of bursting anger blast interval";
+static const char *name_potion_duration_big_boost = "Potion duration";
+static const char *name_potion_duration_mini_boost = "Potion duration (mini boost)";
 static const char *name_multiplied_gold_mode_initial_gold = "multiplied_gold_mode_initial_gold";
 static const char *name_multiplied_gold_mode_cluster_strength = "multiplied_gold_mode_cluster_strength";
-static const char *name_cluster_strength = "cluster_strength";
-static const char *name_min_starting_ammo = "min_starting_ammo";
-static const char *name_min_starting_health = "min_starting_health";
-static const char *name_initial_gold_cap = "initial_gold_cap";
-static const char *name_healing_powerup_amount = "healing_powerup_amount";
-static const char *name_healing_powerup_amount_brutal = "healing_powerup_amount_brutal";
-static const char *name_healing_powerup_perk_bonus = "healing_powerup_perk_bonus";
+static const char *name_cluster_strength = "Torrent of Fire blast strength";
+static const char *name_min_starting_ammo = "Minimum mana at the start of a level";
+static const char *name_min_starting_health = "Minimum health at the start of a level";
+static const char *name_initial_gold_cap = "Maximum number of souls at the start of a level";
+static const char *name_healing_powerup_amount = "Heal powerup strength";
+static const char *name_healing_powerup_amount_brutal = "Heal powerup strength";
+static const char *name_healing_powerup_perk_bonus = "Heal powerup strength bonus with Healer";
 static const char *name_healing_powerup_multiplier_overpowered = "healing_powerup_multiplier_overpowered";
-static const char *name_healing_powerup_cost = "healing_powerup_cost";
-static const char *name_protection_powerup_cost = "protection_powerup_cost";
-static const char *name_protection_powerup_amount = "protection_powerup_amount";
-static const char *name_protection_powerup_perk_bonus = "protection_powerup_perk_bonus";
-static const char *name_turret_powerup_cost = "turret_powerup_cost";
-static const char *name_turret_powerup_cost_brutal = "turret_powerup_cost_brutal";
-static const char *name_turret_powerup_perk_blast_intensity = "turret_powerup_perk_blast_intensity";
-static const char *name_turret_powerup_perk_blast_directions = "turret_powerup_perk_blast_directions";
+static const char *name_healing_powerup_cost = "Heal powerup soul cost";
+static const char *name_protection_powerup_cost = "Shield powerup soul cost";
+static const char *name_protection_powerup_amount = "Shield powerup strength";
+static const char *name_protection_powerup_perk_bonus = "Shield powerup strength bonus with Protector";
+static const char *name_turret_powerup_cost = "Turret powerup soul cost";
+static const char *name_turret_powerup_cost_brutal = "Turret powerup soul cost";
+static const char *name_turret_powerup_perk_blast_intensity = "Turret powerup blast intensity with Engineer";
+static const char *name_turret_powerup_perk_blast_directions = "Turret powerup blast directions with Engineer";
 static const char *name_turret_powerup_overpowered_speed_boost = "turret_powerup_overpowered_speed_boost";
-static const char *name_blast_powerup_cost = "blast_powerup_cost";
-static const char *name_blast_powerup_cost_brutal = "blast_powerup_cost_brutal";
-static const char *name_blast_powerup_projectile_speed = "blast_powerup_projectile_speed";
+static const char *name_blast_powerup_cost = "Torrent of Fire powerup soul cost";
+static const char *name_blast_powerup_cost_brutal = "Torrent of Fire powerup soul cost";
+static const char *name_blast_powerup_projectile_speed = "Torrent of Fire powerup projectile speed";
 static const char *name_blast_powerup_overpowered_blast_intensity = "blast_powerup_overpowered_blast_intensity";
 static const char *name_blast_powerup_overpowered_blast_directions = "blast_powerup_overpowered_blast_directions";
-static const char *name_blast_powerup_perk_timed_cluster_rate = "blast_powerup_perk_timed_cluster_rate";
+static const char *name_blast_powerup_perk_timed_cluster_rate = "Torrent of Fire powerup blast interval with Annihilator";
 static const char *name_blast_powerup_perk_turret_enabled = "blast_powerup_perk_turret_enabled";
 static const char *name_overpriced_powerups_cost_increase = "overpriced_powerups_cost_increase";
 static const char *name_boss_killing_xp_bonus = "boss_killing_xp_bonus";
@@ -406,21 +406,21 @@ static const char *name_brutal_enemy_health_bonus = "brutal_enemy_health_bonus";
 static const char *name_fast_potion_reload_divider = "fast_potion_reload_divider";
 static const char *name_doubled_shots_shot_multiplier = "doubled_shots_shot_multiplier";
 static const char *name_boost_potion_shot_multiplier = "boost_potion_shot_multiplier";
-static const char *name_bullet_spread_multiplier = "bullet_spread_multiplier";
-static const char *name_breakable_wall_durability = "breakable_wall_durability";
-static const char *name_weapon_1_num_shots = "weapon_1_num_shots";
-static const char *name_weapon_1_rate = "weapon_1_rate";
-static const char *name_weapon_1_brutal_shots = "weapon_1_brutal_shots";
-static const char *name_weapon_1_brutal_rate = "weapon_1_brutal_rate";
-static const char *name_weapon_2_num_shots = "weapon_2_num_shots";
-static const char *name_weapon_2_rate = "weapon_2_rate";
-static const char *name_weapon_2_brutal_shots = "weapon_2_brutal_shots";
-static const char *name_weapon_2_brutal_rate = "weapon_2_brutal_rate";
-static const char *name_undetected_enemy_move_probability = "undetected_enemy_move_probability";
-static const char *name_enemy_speed = "enemy_speed";
-static const char *name_fast_enemy_speed = "fast_enemy_speed";
-static const char *name_plr_speed = "plr_speed";
-static const char *name_fast_potion_plr_speed_bonus = "fast_potion_plr_speed_bonus";
+static const char *name_bullet_spread_multiplier = "Shot spread";
+static const char *name_breakable_wall_durability = "Breakable wall durability";
+static const char *name_weapon_1_num_shots = "Weapon 1: number of fire balls";
+static const char *name_weapon_1_rate = "Weapon 1: rate of fire";
+static const char *name_weapon_1_brutal_shots = "Weapon 1: number of fire balls";
+static const char *name_weapon_1_brutal_rate = "Weapon 1: rate of fire";
+static const char *name_weapon_2_num_shots = "Weapon 2: number of fire balls";
+static const char *name_weapon_2_rate = "Weapon 2: rate of fire";
+static const char *name_weapon_2_brutal_shots = "Weapon 2: number of fire balls";
+static const char *name_weapon_2_brutal_rate = "Weapon 2: rate of fire";
+static const char *name_undetected_enemy_move_probability = "Undetected enemy move probability";
+static const char *name_enemy_speed = "Enemy move speed";
+static const char *name_fast_enemy_speed = "Fast enemy move speed";
+static const char *name_plr_speed = "Player move speed";
+static const char *name_fast_potion_plr_speed_bonus = "Player move speed bonus with Potion of Gotta Go Fast";
 static const char *name_fast_potion_plr_speed_bonus_turbo = "fast_potion_plr_speed_bonus_turbo";
 static const char *name_perk_xp_base = "perk_xp_base";
 static const char *name_perk_xp_level_multiplier = "perk_xp_level_multiplier";
@@ -768,19 +768,19 @@ static GameTuningModifier _get_tuning_param_modifier(int index, int is_bad, cons
     }
     else if (id == id_initial_potion_healing_counter)
     {
-        modifier.amount = 10;
+        modifier.amount = -5;
     }
     else if (id == id_initial_potion_shield_counter)
     {
-        modifier.amount = 10;
+        modifier.amount = -5;
     }
     else if (id == id_potion_duration_big_boost)
     {
-        modifier.amount = 5;
+        modifier.amount = 50;
     }
     else if (id == id_potion_duration_mini_boost)
     {
-        modifier.amount = 5;
+        modifier.amount = 20;
     }
     else if (id == id_multiplied_gold_mode_initial_gold)
     {
@@ -940,7 +940,7 @@ static GameTuningModifier _get_tuning_param_modifier(int index, int is_bad, cons
     }
     else if (id == id_weapon_2_rate)
     {
-        modifier.amount = -5;
+        modifier.amount = -25;
     }
     else if (id == id_weapon_2_brutal_shots)
     {
